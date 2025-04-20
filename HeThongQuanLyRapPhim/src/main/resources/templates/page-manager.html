@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang quản lý</title>
+    <link rel="stylesheet" th:href="@{/css/page-manager.css}" type="text/css">
+</head>
+<body>
+<h1>Trang quản lý</h1>
+<div class="button-group">
+    <a class="btn">Quản lý dãy ghế</a>
+    <a class="btn">Quản lý ghế</a>
+    <a th:href="@{/cinema-manager/list}" class="btn" >Quản lý rạp phim</a>
+    <a class="btn">Quản lý phòng chiếu</a>
+    <a class="btn">Quản lý suất chiếu</a>
+</div>
+</body>

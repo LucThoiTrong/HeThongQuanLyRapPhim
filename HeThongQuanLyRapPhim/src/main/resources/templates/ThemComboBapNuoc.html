@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Combo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f4f7fc;
+    }
+    .container {
+      margin-top: 50px;
+      padding: 30px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h3 {
+      color: #2c3e50;
+    }
+    .form-control {
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .btn-info {
+      background-color: #3498db;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 10px 20px;
+    }
+    .btn-info:hover {
+      background-color: #2980b9;
+    }
+    .mb-4 {
+      margin-bottom: 1.5rem;
+    }
+    .w-25 {
+      width: 60%;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+      font-size: 1.1rem;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div th:with="combo=${comboBapNuoc}">
+    <div class="container">
+      <h3 class = "text-center">Thông tin combo bắp nước</h3>
+    </div>
+  </div>
+
+  <form action="#" th:action="@{/combo/save}" th:object="${comboBapNuoc}" method="post">
+    <input type="hidden" th:field="*{idComboBapNuoc}">
+    <div class="mb-4">
+      <input type="text" th:field="*{tenCombo}" class="form-control" placeholder="Tên combo">
+    </div>
+    <div class="mb-4">
+      <input type="text" th:field="*{moTaCombo}" class="form-control" placeholder="Mô tả">
+    </div>
+    <div class="mb-4">
+      <input type="text" th:field="*{giaTien}" class="form-control" placeholder="Giá tiền">
+    </div>
+    <div class="text-center">
+      <button type="submit" class="btn btn-info">Lưu</button>
+    </div>
+    <hr>
+    <div class="text-center">
+      <a th:href="@{/combo/list}">Xem danh sách các combo</a>
+    </div>
+  </form>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const tenComboInput = form.querySelector('[name="tenCombo"]');
+    const moTaComboInput = form.querySelector('[name="moTaCombo"]');
+    const giaTienInput = form.querySelector('[name="giaTien"]');
+
+    form.addEventListener('submit', function (event) {
+      document.querySelectorAll('.error-message').forEach(e => e.remove());
+
+      let isValid = true;
+
+      if (!tenComboInput.value.trim()) {
+        showError(tenComboInput, 'Tên combo không được để trống');
+        isValid = false;
+      }
+
+      // Mô tả không được rỗng
+      if (!moTaComboInput.value.trim()) {
+        showError(moTaComboInput, 'Mô tả combo không được để trống');
+        isValid = false;
+      }
+
+      const giaTien = parseFloat(giaTienInput.value);
+      if (!giaTienInput.value.trim()) {
+        showError(giaTienInput, 'Giá tiền không được để trống');
+        isValid = false;
+      } else if (isNaN(giaTien) || giaTien <= 0) {
+        showError(giaTienInput, 'Giá tiền phải là số và lớn hơn 0');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        event.preventDefault();
+      }
+    });
+
+    function showError(inputElement, message) {
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'text-danger error-message mt-1';
+      errorDiv.textContent = message;
+      inputElement.insertAdjacentElement('afterend', errorDiv);
+    }
+  });
+</script>
+
+</body>
+</html>

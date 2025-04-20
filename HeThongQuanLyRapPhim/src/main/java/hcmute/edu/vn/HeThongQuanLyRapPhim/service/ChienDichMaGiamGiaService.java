@@ -1,0 +1,15 @@
+package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
+
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
+
+import java.util.List;
+
+public interface ChienDichMaGiamGiaService {
+    List<ChienDichGiamGia> findAll();
+
+    ChienDichGiamGia findById(int theId);
+
+    ChienDichGiamGia save(ChienDichGiamGia chienDichGiamGia);
+
+    void deleteById(int theId);
+}

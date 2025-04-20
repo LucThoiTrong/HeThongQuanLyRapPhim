@@ -75,4 +75,11 @@ public class ChienDichGiamGia implements Serializable {
     public void setDsMaGiamGia(Set<MaGiamGia> dsMaGiamGia) {
         this.dsMaGiamGia = dsMaGiamGia;
     }
+    public void addMaGiamGia(MaGiamGia maGiamGia) {
+        if (dsMaGiamGia == null) {
+            dsMaGiamGia = new HashSet<>();
+        }
+        dsMaGiamGia.add(maGiamGia);
+        maGiamGia.setChienDichGiamGia(this); // Đảm bảo liên kết hai chiều
+    }
 }

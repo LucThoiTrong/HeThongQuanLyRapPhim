@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh Sách Rạp Phim</title>
+
+  <!-- Hiển thị thông báo -->
+  <div th:if="${message}" th:classappend="${messageType == 'error' ? 'alert error' : 'alert'}"
+       th:text="${message}" id="flash-message"></div>
+
+  <link rel="stylesheet" th:href="@{/css/cinema-manager.css}" type="text/css">
+</head>
+<body>
+<h1>Danh Sách Rạp Phim</h1>
+<div class="button-group">
+  <a th:href="@{/cinema-manager/show-add-form}" class="btn">Thêm rạp phim mới</a>
+</div>
+<!-- Danh sách rạp phim -->
+<table>
+  <thead>
+  <tr>
+    <th>Tên Rạp Phim</th>
+    <th>Địa Chỉ</th>
+    <th>Trạng Thái</th>
+    <th>Nhân Viên Quản Lý</th>
+    <th></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="cinema : ${cinemas}">
+    <td th:text="${cinema.tenRapPhim}"></td>
+    <td th:text="${cinema.diaChiRapPhim}"></td>
+    <td th:text="${cinema.trangThaiRapPhim.moTa}"></td>
+    <td>
+      <span th:if="${cinema.nhanVien != null}" th:text="${cinema.nhanVien.hoTen}"></span>
+      <span th:if="${cinema.nhanVien == null}">&lt;Trống&gt;</span>
+    </td>
+    <td>
+      <a th:href="@{'/cinema-manager/show-edit-form/' + ${cinema.idRapPhim}}" class="btn btnEdit">Sửa</a>
+      <a th:href="@{'/cinema-manager/delete-by-id/' + ${cinema.idRapPhim}}"
+         onclick="return confirm('Bạn có chắc chắn muốn xóa?')" class="btn btnDelete">Xóa</a>
+    </td>
+
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
