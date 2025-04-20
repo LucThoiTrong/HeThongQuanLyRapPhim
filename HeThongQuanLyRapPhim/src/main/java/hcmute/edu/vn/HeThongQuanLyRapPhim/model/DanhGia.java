@@ -102,4 +102,8 @@ public class DanhGia implements Serializable {
     public void setDsPhanHoi(Set<PhanHoi> dsPhanHoi) {
         this.dsPhanHoi = dsPhanHoi;
     }
+
+    public void themPhanHoi(PhanHoi phanHoi) {
+        dsPhanHoi.add(phanHoi);
+    }
 }

@@ -17,6 +17,9 @@ public class RapPhim implements Serializable {
     @Column(name = "ten_rap_phim", nullable = false)
     private String tenRapPhim;
 
+    @Column(name = "dia_chi_rap_phim")
+    private String diaChiRapPhim;
+
     @Column(name = "trang_thai_rap_phim", nullable = false)
     @Enumerated(EnumType.STRING)
     private TrangThaiRapPhim trangThaiRapPhim;
@@ -30,9 +33,10 @@ public class RapPhim implements Serializable {
 
     public RapPhim() {}
 
-    public RapPhim(String tenRapPhim, TrangThaiRapPhim trangThaiRapPhim) {
+    public RapPhim(String tenRapPhim, String diaChiRapPhim, TrangThaiRapPhim trangThaiRapPhim) {
         this.tenRapPhim = tenRapPhim;
         this.trangThaiRapPhim = trangThaiRapPhim;
+        this.diaChiRapPhim = diaChiRapPhim;
         this.nhanVien = null;
         dsPhongChieuPhim = new HashSet<>();
     }
@@ -75,5 +79,13 @@ public class RapPhim implements Serializable {
 
     public void setDsPhongChieuPhim(Set<PhongChieuPhim> dsPhongChieuPhim) {
         this.dsPhongChieuPhim = dsPhongChieuPhim;
+    }
+
+    public String getDiaChiRapPhim() {
+        return diaChiRapPhim;
+    }
+
+    public void setDiaChiRapPhim(String diaChiRapPhim) {
+        this.diaChiRapPhim = diaChiRapPhim;
     }
 }

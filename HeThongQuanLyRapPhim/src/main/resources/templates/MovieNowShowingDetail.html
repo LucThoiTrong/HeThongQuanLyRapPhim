@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông Tin Phim</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .movie-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-header {
+            display: flex;
+            padding: 20px;
+        }
+
+        .movie-poster img {
+            width: 300px;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+        .movie-info h1 {
+            margin: 0;
+            color: #333;
+            font-size: 2em;
+        }
+
+        .movie-info p {
+            margin: 10px 0;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .book-ticket-btn, .trailer-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .book-ticket-btn {
+            background-color: #28a745;
+        }
+
+        .book-ticket-btn:hover {
+            background-color: #218838;
+        }
+
+        .trailer-btn {
+            background-color: #e50914;
+        }
+
+        .trailer-btn:hover {
+            background-color: #c40812;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popup iframe {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .close-btn:hover {
+            color: #e50914;
+        }
+
+        .rating-section {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .rating-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .rating-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .rating-button:hover {
+            background-color: #0056b3;
+        }
+
+        .rating-form {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        /* Fix: Show when active */
+        .rating-form.active {
+            display: flex;
+        }
+
+        .rating-form select, .rating-form textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .rating-form textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .rating-form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: fit-content;
+        }
+
+        .rating-form button:hover {
+            background-color: #218838;
+        }
+
+        .rating-list {
+            max-width: 800px;
+        }
+
+        .rating-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+
+        .rating-item:last-child {
+            border-bottom: none;
+        }
+
+        .rating-item p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 768px) {
+            .movie-header {
+                flex-direction: column;
+            }
+
+            .movie-poster img {
+                width: 100%;
+            }
+
+            .movie-info {
+                padding-left: 0;
+                padding-top: 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .book-ticket-btn, .trailer-btn {
+                width: 100%;
+            }
+
+            .popup-content {
+                width: 90%;
+            }
+
+            .popup iframe {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="movie-container">
+    <div class="movie-header">
+        <div class="movie-poster">
+            <img th:src="@{${phim.linkAnh}}" alt="Ảnh phim">
+        </div>
+        <div class="movie-info">
+            <h1 th:text="${phim.tenPhim}"></h1>
+            <p><span class="info-label">Đạo diễn:</span> <span th:text="${phim.daoDien}"></span></p>
+            <p><span class="info-label">Diễn viên:</span> <span th:text="${phim.dienVien}"></span></p>
+            <p><span class="info-label">Thể loại:</span> <span th:text="${phim.theLoai}"></span></p>
+            <p><span class="info-label">Khởi chiếu:</span> <span th:text="${#dates.format(phim.thoiGianKhoiChieu, 'dd-MM-yyyy')}"></span></p>
+            <p><span class="info-label">Thời lượng:</span> <span th:text="${phim.thoiLuongChieu} + ' phút'"></span></p>
+            <p><span class="info-label">Độ tuổi:</span> <span th:text="${phim.doTuoi}"></span></p>
+            <p><span class="info-label">Ngôn ngữ:</span> <span th:text="${phim.ngonNgu}"></span></p>
+            <p><span class="info-label">Hình thức chiếu:</span> <span th:text="${phim.hinhThucChieu}"></span></p>
+            <p><span class="info-label">Mô tả:</span> <span th:text="${phim.moTaPhim}"></span></p>
+            <div class="button-group">
+                <a th:href="@{/booking}" class="book-ticket-btn">Đặt vé</a>
+                <button class="trailer-btn" onclick="openPopup()">Xem trailer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup" id="trailerPopup">
+        <div class="popup-content">
+            <button class="close-btn" onclick="closePopup()">×</button>
+            <iframe th:src="${phim.linkTrailer}" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="rating-section">
+        <h2>Đánh Giá Phim</h2>
+        <button class="rating-button" onclick="toggleRatingForm()">Viết Đánh Giá</button>
+
+        <form class="rating-form">
+            <label for="rating">Điểm đánh giá:</label>
+            <select id="rating" name="rating">
+                <option value="1">1 sao</option>
+                <option value="2">2 sao</option>
+                <option value="3">3 sao</option>
+                <option value="4">4 sao</option>
+                <option value="5">5 sao</option>
+            </select>
+
+            <label for="comment">Bình luận:</label>
+            <textarea id="comment" name="comment" placeholder="Nhập bình luận của bạn..."></textarea>
+
+            <button type="submit">Gửi đánh giá</button>
+        </form>
+
+        <div class="rating-list">
+            <div class="rating-item" th:each="danhGia : ${phim.dsDanhGia}">
+                <p>
+                    <strong th:text="${danhGia.getDoiTuongSuDung().getHoTen()}"></strong> -
+                    <span th:text="${danhGia.getDiemDanhGia()}"></span>
+                </p>
+                <p th:text="${danhGia.getNoiDungDanhGia()}"></p>
+                <p><small th:text="${#dates.format(danhGia.getThoiGianDanhGia(), 'dd-MM-yyyy HH:mm')}"></small></p>
+            </div>
+            <div th:if="${phim.dsDanhGia.isEmpty()}">
+                <p>Chưa có đánh giá nào.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openPopup() {
+        document.getElementById('trailerPopup').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('trailerPopup').style.display = 'none';
+    }
+
+    function toggleRatingForm() {
+        const form = document.querySelector('.rating-form');
+        form.classList.toggle('active');
+    }
+</script>
+</body>
+</html>

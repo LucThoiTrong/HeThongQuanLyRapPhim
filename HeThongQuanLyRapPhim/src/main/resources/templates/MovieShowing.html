@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Phim đang chiếu</title>
+</head>
+<body>
+<h1>Danh sách phim đang chiếu</h1>
+<ul>
+    <li th:each="phim : ${danhSachPhim}">
+        <a th:href="@{now-showing/movie-detail/{id}(id=${phim.getIdPhim()})}" th:text="${phim.getTenPhim()}"></a>
+    </li>
+</ul>
+</body>
+</html>

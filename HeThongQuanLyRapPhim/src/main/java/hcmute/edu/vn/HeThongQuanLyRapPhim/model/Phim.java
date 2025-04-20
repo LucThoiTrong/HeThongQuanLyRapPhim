@@ -3,7 +3,6 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +56,7 @@ public class Phim implements Serializable {
     @Column(name = "ngon_ngu")
     private String ngonNgu;
 
-    @OneToMany(mappedBy = "phim", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "phim", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<DanhGia> dsDanhGia;
 
     @OneToMany(mappedBy = "phim", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
@@ -210,5 +209,9 @@ public class Phim implements Serializable {
 
     public void setDsSuatChieu(Set<SuatChieu> dsSuatChieu) {
         this.dsSuatChieu = dsSuatChieu;
+    }
+
+    public void themDanhGia(DanhGia danhGia) {
+        this.dsDanhGia.add(danhGia);
     }
 }

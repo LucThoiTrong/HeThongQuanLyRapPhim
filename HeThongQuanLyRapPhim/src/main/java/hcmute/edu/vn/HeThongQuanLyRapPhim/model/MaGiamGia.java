@@ -14,7 +14,7 @@ public class MaGiamGia implements Serializable {
     private int idMaGiamGia;
 
     @Column(name = "ma_giam_gia", nullable = false)
-    private String maGiamGia;
+    private String tenMaGiamGia;
 
     @Column(name = "phan_tram_giam_gia", nullable = false)
     private int phanTramGiamGia;
@@ -44,8 +44,8 @@ public class MaGiamGia implements Serializable {
 
     public MaGiamGia() {}
 
-    public MaGiamGia(String maGiamGia, int phanTramGiamGia, double hanMucApDung, LocalDateTime ngayBatDauApDung, LocalDateTime ngayKetThucApDung, boolean trangThaiSuDung, ChienDichGiamGia chienDichGiamGia, int giaTriGiamToiDa) {
-        this.maGiamGia = maGiamGia;
+    public MaGiamGia(String tenMaGiamGia, int phanTramGiamGia, double hanMucApDung, LocalDateTime ngayBatDauApDung, LocalDateTime ngayKetThucApDung, boolean trangThaiSuDung, ChienDichGiamGia chienDichGiamGia, int giaTriGiamToiDa) {
+        this.tenMaGiamGia = tenMaGiamGia;
         this.phanTramGiamGia = phanTramGiamGia;
         this.hanMucApDung = hanMucApDung;
         this.ngayBatDauApDung = ngayBatDauApDung;
@@ -64,12 +64,12 @@ public class MaGiamGia implements Serializable {
         this.idMaGiamGia = idMaGiamGia;
     }
 
-    public String getMaGiamGia() {
-        return maGiamGia;
+    public String getTenMaGiamGia() {
+        return tenMaGiamGia;
     }
 
-    public void setMaGiamGia(String maGiamGia) {
-        this.maGiamGia = maGiamGia;
+    public void setTenMaGiamGia(String tenMaGiamGia) {
+        this.tenMaGiamGia = tenMaGiamGia;
     }
 
     public int getPhanTramGiamGia() {
