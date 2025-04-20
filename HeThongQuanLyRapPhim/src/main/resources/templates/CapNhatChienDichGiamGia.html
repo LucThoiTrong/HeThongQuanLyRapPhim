@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Chiến dịch Giảm giá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title mb-4 text-primary text-center">Cập Nhật Chiến dịch Giảm giá</h4>
+
+            <form action="#" th:action="@{/discountCampaign/capNhat}"
+                  th:object="${chienDichGiamGia}"
+                  onsubmit="return validateDates()"
+                  class="form-container">
+
+                <!-- Hidden field -->
+                <input type="hidden" th:field="*{idChienDichGiamGia}">
+
+                <div class="mb-3">
+                    <label for="tenChienDich" class="form-label">Tên chiến dịch</label>
+                    <input type="text" th:field="*{tenChienDich}" id="tenChienDich"
+                           class="form-control" placeholder="Nhập tên chiến dịch">
+                </div>
+
+                <p th:text="${ngayBatDauChienDich}"></p>
+
+                <div class="mb-3">
+                    <label for="ngayBatDauChienDich">Ngày bắt đầu</label>
+                    <input type="datetime-local"
+                           id="ngayBatDauChienDich"
+                           name="ngayBatDauChienDich"
+                           th:value="${#temporals.format(chienDichGiamGia.ngayBatDauChienDich, 'yyyy-MM-dd''T''HH:mm')}"
+                            class="form-control"/>
+                </div>
+
+
+                <div class="mb-3">
+                    <label for="ngayKetThucChienDich" class="form-label">Ngày kết thúc</label>
+                    <input type="datetime-local"
+                           id="ngayKetThucChienDich"
+                           name="ngayKetThucChienDich"
+                           th:value="${#temporals.format(chienDichGiamGia.ngayKetThucChienDich, 'yyyy-MM-dd''T''HH:mm')}"
+                           class="form-control"/>
+                    <span id="errorMessage" class="error"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <a th:href="@{/discountCampaign/list}" class="text-decoration-none">📋 Xem danh sách các chiến dịch</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+    function validateDates() {
+        const startDateInput = document.getElementById("ngayBatDauChienDich");
+        const endDateInput = document.getElementById("ngayKetThucChienDich");
+        const errorMessage = document.getElementById("errorMessage");
+
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        const today = new Date();
+
+        if (startDate < today) {
+            errorMessage.textContent = "Ngày/Giờ bắt đầu phải lớn hơn hoặc bằng ngày hiện tại.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+        if (endDate <= startDate) {
+            errorMessage.textContent = "Ngày kết thúc phải sau ngày bắt đầu.";
+            errorMessage.style.display = "block";
+            return false;
+        } else {
+            errorMessage.style.display = "none";
+            return true;
+        }
+    }
+</script>
+</body>
+</html>
