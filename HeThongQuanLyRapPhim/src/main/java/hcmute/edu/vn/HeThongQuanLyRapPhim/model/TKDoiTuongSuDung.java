@@ -75,4 +75,5 @@ public class TKDoiTuongSuDung implements Serializable {
     public void setDoiTuongSuDung(DoiTuongSuDung doiTuongSuDung) {
         this.doiTuongSuDung = doiTuongSuDung;
     }
+
 }
