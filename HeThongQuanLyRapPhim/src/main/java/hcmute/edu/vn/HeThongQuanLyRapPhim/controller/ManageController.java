@@ -1,5 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/manager")
-public class ManagerController {
+public class ManageController {
 
     @Autowired
     private CinemaService cinemaService;
