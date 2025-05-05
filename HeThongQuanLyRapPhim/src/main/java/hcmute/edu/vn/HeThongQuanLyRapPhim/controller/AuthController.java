@@ -1,76 +1,116 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.GioiTinh;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiDoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.Map;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/author")
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/author/password")
-    public String changePassword(@RequestParam String oldPassword, @RequestParam String newPassword, Model model) {
-        
-        return "";
-    }
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, Object> request) {
-        try {
-            String hoTen = (String) request.get("hoTen");
-            String email = (String) request.get("email");
-            String soDienThoai = (String) request.get("soDienThoai");
-            String ngaySinhStr = (String) request.get("ngaySinh");
-            String tenDangNhap = (String) request.get("tenDangNhap");
-            String matKhau = (String) request.get("matKhau");
-
-            // Validate required fields
-            if (hoTen == null || email == null || soDienThoai == null || ngaySinhStr == null ||
-                    tenDangNhap == null || matKhau == null) {
-                throw new IllegalArgumentException("Tất cả các trường là bắt buộc!");
-            }
-
-            // Parse ngaySinh from string to LocalDateTime
-            LocalDateTime ngaySinh = LocalDateTime.parse(ngaySinhStr);
-
-            String result = authService.register(hoTen, email, soDienThoai, ngaySinh, tenDangNhap, matKhau);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyAccount(@RequestParam("token") String token, @RequestParam("id") int id) {
-        try {
-            String result = authService.verifyAccount(token, id);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/login")
+    public String showLoginForm(Model model) {
+        model.addAttribute("error", "");
+        model.addAttribute("username", "");
+        model.addAttribute("password", "");
+        return "Login";
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> request) {
-        try {
-            String tenDangNhap = request.get("tenDangNhap");
-            String matKhau = request.get("matKhau");
-            if (tenDangNhap == null || matKhau == null) {
-                throw new IllegalArgumentException("Tên đăng nhập và mật khẩu là bắt buộc!");
-            }
-            String result = authService.login(tenDangNhap, matKhau);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public String login(@RequestParam("tenDangNhap") String tenDangNhap,
+                        @RequestParam("matKhau") String matKhau,
+                        Model model) {
+        String result = authService.login(tenDangNhap, matKhau);
+        model.addAttribute("tenDangNhap", tenDangNhap);
+        model.addAttribute("matKhau", matKhau);
+        if (result.equals("success")) {
+            return "redirect:/home";
+        } else {
+            model.addAttribute("message", result);
+            model.addAttribute("success", false);
+            return "Login";
         }
     }
 
+
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("doiTuongSuDung", new DoiTuongSuDung());
+        model.addAttribute("gioiTinhList", GioiTinh.values());
+        model.addAttribute("error", "");
+        return "Register";
+    }
+
+    @PostMapping("/register")
+    public String register(
+            @Valid @ModelAttribute("doiTuongSuDung") DoiTuongSuDung doiTuongSuDung,
+            BindingResult result,
+            @RequestParam String tenDangNhap,
+            @RequestParam String password,
+            @RequestParam String confirmPassword,
+            Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("gioiTinhList", GioiTinh.values());
+            model.addAttribute("error", "");
+            return "Register";
+        }
+
+        try {
+            doiTuongSuDung.setLoaiDoiTuongSuDung(LoaiDoiTuongSuDung.KHACH_HANG);
+            authService.register(doiTuongSuDung, tenDangNhap, password, confirmPassword);
+            model.addAttribute("message", "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.");
+            return "Login";
+        } catch (Exception e) {
+            model.addAttribute("gioiTinhList", GioiTinh.values());
+            model.addAttribute("error", e.getMessage());
+            return "Register";
+        }
+    }
+
+    @GetMapping("/auth/verify")
+    public String verifyAccount(@RequestParam("id") int id, Model model) {
+        try {
+            authService.verifyAccount(id);
+            model.addAttribute("message", "Tài khoản đã được xác thực! Vui lòng đăng nhập.");
+            return "Login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "Login";
+        }
+    }
+
+    @GetMapping("/change-password")
+    public String showChangePasswordForm(Model model) {
+        model.addAttribute("error", "");
+        return "Change-Password";
+    }
+
+    @PostMapping("/change-password")
+    public String changePassword(
+            @RequestParam String username,
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmNewPassword,
+            Model model) {
+        try {
+            authService.changePassword(username, oldPassword, newPassword, confirmNewPassword);
+            model.addAttribute("message", "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+            return "Login";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "Change-Password";
+        }
+    }
 }

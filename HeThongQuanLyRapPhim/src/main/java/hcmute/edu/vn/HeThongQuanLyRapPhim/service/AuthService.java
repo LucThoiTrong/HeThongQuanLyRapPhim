@@ -1,13 +1,10 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
-import jakarta.mail.MessagingException;
-import java.time.LocalDateTime;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 
 public interface AuthService {
-    String register(String hoTen, String email, String soDienThoai, LocalDateTime ngaySinh,
-                    String tenDangNhap, String matKhau) throws MessagingException;
-
-    String verifyAccount(String token, int id);
-
-    String login(String tenDangNhap, String matKhau);
+    void register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password, String confirmPassword) throws Exception;
+    String login(String username, String password);
+    void verifyAccount(int id) throws Exception;
+    void changePassword(String username, String oldPassword, String newPassword, String confirmNewPassword) throws Exception;
 }

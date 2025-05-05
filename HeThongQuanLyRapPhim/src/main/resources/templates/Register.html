@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng ký</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 8px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h2>Đăng ký tài khoản</h2>
+<div th:if="${error}" th:text="${error}" class="error"></div>
+<form th:action="@{/register}" th:object="${doiTuongSuDung}" method="post">
+    <label>Tên đăng nhập:</label>
+    <input type="text" name="tenDangNhap" required/>
+    <label>Họ tên:</label>
+    <input type="text" th:field="*{hoTen}" required/>
+    <div class="error" th:errors="*{hoTen}"></div>
+    <label>Email:</label>
+    <input type="email" th:field="*{email}" required/>
+    <div class="error" th:errors="*{email}"></div>
+    <label>Số điện thoại:</label>
+    <input type="text" th:field="*{soDienThoai}"/>
+    <div class="error" th:errors="*{soDienThoai}"></div>
+    <label>Giới tính:</label>
+    <select th:field="*{gioiTinh}" required>
+        <option value="">Chọn giới tính</option>
+        <option th:each="gioiTinh : ${gioiTinhList}" th:value="${gioiTinh}" th:text="${gioiTinh}"></option>
+    </select>
+    <div class="error" th:errors="*{gioiTinh}"></div>
+    <label>Mật khẩu:</label>
+    <input type="password" name="password" required/>
+    <label>Xác nhận mật khẩu:</label>
+    <input type="password" name="confirmPassword" required/>
+    <button type="submit">Đăng ký</button>
+</form>
+<p>Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
+</body>
+</html>
