@@ -9,21 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/manager")
-public class ManageController {
+public class ManagerController {
 
     @Autowired
     private CinemaService cinemaService;
 
     // Hiển thị trang quản lý chính
-    @GetMapping("")
+    @GetMapping("/")
     public String showManagementPage() {
-        return "page-manager";
+        return "ManagePage";
     }
 
     // Hiển thị danh sách dãy ghế
     @GetMapping("/cinema/list")
     public String showList(Model model) {
         model.addAttribute("dsDayGhe", cinemaService.getAllCinemas());
-        return "list-cinema";
+        return "CinemaListPage";
     }
 }

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh Sách Dãy Ghế</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f7f6;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #555;
+    }
+    tr:hover {
+      background-color: #f1f3f5;
+    }
+    .button-group {
+      margin-top: 20px;
+      text-align: right;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      transition: background-color 0.2s ease-in-out, opacity 0.2s;
+    }
+    .btn:hover {
+      opacity: 0.85;
+    }
+    .btn-update {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    .btn-state {
+      background-color: #13669a;
+      border-color: rgba(7, 54, 87, 0.5);
+    }
+    .btn-back {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      max-width: 800px;
+      margin: 15px auto;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      max-width: 800px;
+      margin: 15px auto;
+    }
+    #flash-message {
+      transition: opacity 0.5s ease-out;
+    }
+  </style>
+</head>
+<body>
+<div th:if="${message}"
+     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}"
+     id="flash-message">
+</div>
+
+<h1>Danh Sách Dãy Ghế - <span th:text="${phongChieuPhim.tenPhongChieuPhim}"></span></h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Tên Dãy Ghế</th>
+    <th>Loại Ghế</th>
+    <th>Giá (VNĐ)</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="dayGhe : ${dsDayGhe}">
+    <td th:text="${dayGhe.tenDayGhe}"></td>
+    <td th:text="${dayGhe.loaiGhe}"></td>
+    <td th:text="${dayGhe.giaDayGhe}"></td>
+  </tr>
+  <tr th:if="${#lists.isEmpty(dsDayGhe)}">
+    <td colspan="4" style="text-align: center;">Không có dãy ghế nào.</td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="button-group">
+  <a th:if="${phongChieuPhim.idPhongChieuPhim}"
+     th:href="@{/seats/edit/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}"
+     th:classappend="${#lists.isEmpty(dsDayGhe)} ? 'btn btn-state disabled' : 'btn btn-state'"
+     th:attr="disabled=${#lists.isEmpty(dsDayGhe)} ? true : null"
+     class="btn btn-state">Trạng thái ghế</a>
+
+  <a th:href="@{/rows/update/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}" class="btn btn-update">Cập Nhật Dãy Ghế</a>
+  <a th:href="@{/rooms/update/{idPhongChieuPhim}(idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim},idRapPhim=${idRapPhim})}" class="btn btn-back">Quay Lại</a>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const flashMessage = document.getElementById('flash-message');
+    if (flashMessage) {
+      setTimeout(function() {
+        flashMessage.style.opacity = '0';
+        setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
+      }, 3000);
+    }
+  });
+</script>
+</body>
+</html>

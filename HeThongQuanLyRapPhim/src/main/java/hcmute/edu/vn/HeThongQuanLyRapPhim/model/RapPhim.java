@@ -1,5 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ public class RapPhim implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rap_phim")
-    private int idRapPhim;
+    private Integer idRapPhim;
 
     @Column(name = "ten_rap_phim", nullable = false)
     private String tenRapPhim;
@@ -29,6 +30,7 @@ public class RapPhim implements Serializable {
     private DoiTuongSuDung nhanVien;
 
     @OneToMany(mappedBy = "rapPhim",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<PhongChieuPhim> dsPhongChieuPhim;
 
     public RapPhim() {}
@@ -41,11 +43,11 @@ public class RapPhim implements Serializable {
         dsPhongChieuPhim = new HashSet<>();
     }
 
-    public int getIdRapPhim() {
+    public Integer getIdRapPhim() {
         return idRapPhim;
     }
 
-    public void setIdRapPhim(int idRapPhim) {
+    public void setIdRapPhim(Integer idRapPhim) {
         this.idRapPhim = idRapPhim;
     }
 

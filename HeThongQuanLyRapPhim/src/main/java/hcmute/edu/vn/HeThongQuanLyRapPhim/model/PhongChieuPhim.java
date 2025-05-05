@@ -1,5 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ public class PhongChieuPhim implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_phong_chieu_phim")
-    private int idPhongChieuPhim;
+    private Integer idPhongChieuPhim;
 
     @Column(name = "ten_phong_chieu_phim")
     private String tenPhongChieuPhim;
@@ -22,26 +23,41 @@ public class PhongChieuPhim implements Serializable {
     private RapPhim rapPhim;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore // Ngăn tuần tự hóa dsDayGhe
     private Set<DayGhe> dsDayGhe;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore // Ngăn tuần tự hóa dsSuatChieu
     private Set<SuatChieu> dsSuatChieu;
+
+    @Column(name = "kich_thuoc_phong")
+    @Enumerated(EnumType.STRING)
+    private KichThuocPhong kichThuocPhong;
 
     public PhongChieuPhim() {}
 
-    public PhongChieuPhim(String tenPhongChieuPhim, RapPhim rapPhim) {
+    public PhongChieuPhim(String tenPhongChieuPhim, KichThuocPhong kichThuocPhong, RapPhim rapPhim) {
         this.tenPhongChieuPhim = tenPhongChieuPhim;
+        this.kichThuocPhong = kichThuocPhong;
         this.rapPhim = rapPhim;
         dsDayGhe = new HashSet<>();
         dsSuatChieu = new HashSet<>();
     }
 
-    public int getIdPhongChieuPhim() {
+    public Integer getIdPhongChieuPhim() {
         return idPhongChieuPhim;
     }
 
-    public void setIdPhongChieuPhim(int idPhongChieuPhim) {
+    public void setIdPhongChieuPhim(Integer idPhongChieuPhim) {
         this.idPhongChieuPhim = idPhongChieuPhim;
+    }
+
+    public KichThuocPhong getKichThuocPhong() {
+        return kichThuocPhong;
+    }
+
+    public void setKichThuocPhong(KichThuocPhong kichThuocPhong) {
+        this.kichThuocPhong = kichThuocPhong;
     }
 
     public RapPhim getRapPhim() {

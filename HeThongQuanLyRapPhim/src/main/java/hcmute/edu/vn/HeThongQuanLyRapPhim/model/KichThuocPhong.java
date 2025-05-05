@@ -1,13 +1,13 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
-public enum LoaiGhe {
-    VIP("Ghế VIP"),
-    THUONG("Ghế Thường"),
-    DOI("Ghế Đôi");
+public enum KichThuocPhong {
+    NHO("Nhỏ"),
+    VUA("Vừa"),
+    LON("Lớn");
 
     private final String moTa;
 
-    LoaiGhe(String moTa) {
+    KichThuocPhong(String moTa) {
         this.moTa = moTa;
     }
 

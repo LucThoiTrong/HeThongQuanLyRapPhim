@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm Rạp Phim</title>
+  <style>
+    /* --- CSS Để Làm Đẹp Form --- */
+
+    /* Thiết lập cơ bản cho trang */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Font hệ thống hiện đại */
+      margin: 40px; /* Khoảng cách xung quanh nội dung trang */
+      background-color: #f4f7f6; /* Màu nền trang nhạt */
+      color: #333; /* Màu chữ mặc định */
+      line-height: 1.6; /* Giãn dòng dễ đọc */
+    }
+
+    /* Căn giữa và định dạng tiêu đề H1 */
+    h1 {
+      color: #2c3e50; /* Màu tiêu đề đậm */
+      text-align: center; /* Căn giữa tiêu đề */
+      margin-bottom: 30px; /* Khoảng cách dưới tiêu đề */
+    }
+
+    /* Định dạng khung chứa form */
+    form {
+      max-width: 600px; /* Giới hạn chiều rộng form */
+      margin: 0 auto; /* Căn giữa form theo chiều ngang */
+      padding: 30px; /* Khoảng cách bên trong form */
+      background-color: #ffffff; /* Nền trắng cho form */
+      border: 1px solid #e0e0e0; /* Viền mờ */
+      border-radius: 8px; /* Bo góc mềm mại */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ */
+    }
+
+    /* Khoảng cách giữa các nhóm trường nhập liệu */
+    .form-group {
+      margin-bottom: 20px; /* Khoảng cách dưới mỗi nhóm */
+    }
+
+    /* Định dạng nhãn (label) */
+    label {
+      display: block; /* Hiển thị trên một dòng riêng */
+      margin-bottom: 8px; /* Khoảng cách giữa nhãn và ô nhập */
+      font-weight: 600; /* Chữ hơi đậm */
+      color: #555; /* Màu chữ xám đậm */
+    }
+
+    /* Định dạng ô nhập text và ô chọn select */
+    input[type="text"],
+    select {
+      width: 100%; /* Chiếm toàn bộ chiều rộng của container */
+      padding: 12px 15px; /* Tăng padding cho dễ nhìn và nhập */
+      border: 1px solid #ccc; /* Viền xám nhạt */
+      border-radius: 4px; /* Bo góc nhẹ */
+      box-sizing: border-box; /* Quan trọng: để padding/border không làm tăng kích thước */
+      font-size: 16px; /* Cỡ chữ dễ đọc */
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Hiệu ứng khi focus */
+    }
+
+    /* Định dạng khi focus vào ô nhập/chọn */
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #007bff; /* Đổi màu viền khi focus */
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Thêm hiệu ứng bóng mờ */
+      outline: none; /* Bỏ viền mặc định của trình duyệt */
+    }
+
+    /* Định dạng nhóm nút bấm */
+    .button-group {
+      margin-top: 30px; /* Khoảng cách phía trên nhóm nút */
+      text-align: right; /* Căn các nút về bên phải */
+    }
+
+    /* Định dạng chung cho các nút (.btn) */
+    .btn {
+      display: inline-block;
+      padding: 10px 20px; /* Tăng padding cho nút */
+      margin-left: 10px; /* Khoảng cách giữa các nút nếu có nhiều nút */
+      font-size: 16px; /* Cỡ chữ nút */
+      font-weight: 600; /* Chữ nút đậm */
+      line-height: 1.5;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      text-decoration: none; /* Bỏ gạch chân cho thẻ <a> */
+      color: white; /* Màu chữ trắng */
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s; /* Hiệu ứng chuyển động */
+    }
+    .btn:hover {
+      opacity: 0.85; /* Giảm độ mờ nhẹ khi di chuột qua */
+    }
+
+    /* Định dạng riêng cho nút "Thêm" (type="submit") */
+    button.btn {
+      background-color: #007bff; /* Màu xanh dương (primary) */
+      border-color: #007bff;
+    }
+
+    /* Định dạng riêng cho nút "Hủy" (thẻ <a>) */
+    a.btn {
+      background-color: #6c757d; /* Màu xám (secondary) */
+      border-color: #6c757d;
+      color: white; /* Đảm bảo chữ vẫn màu trắng */
+    }
+
+    /* --- Hết CSS --- */
+  </style>
+</head>
+<body>
+
+<h1>Thêm Rạp Phim Mới</h1>
+
+<form th:action="@{/cinemas/new}" th:object="${rapPhim}" method="post">
+
+  <div class="form-group">
+    <label for="tenRapPhim">Tên Rạp Phim:</label>
+    <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+  </div>
+
+  <div class="form-group">
+    <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
+    <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
+  </div>
+
+  <div class="form-group">
+    <label for="trangThaiRapPhim">Trạng Thái:</label>
+    <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
+      <option th:each="trangThai : ${trangThaiList}"
+              th:value="${trangThai}"
+              th:text="${trangThai.moTa}"></option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label> <select id="nhanVien" th:field="*{nhanVien}">
+    <option value="">--Chọn nhân viên--</option>
+    <option th:each="nv : ${nhanVienList}"
+            th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option> </select>
+  </div>
+
+  <div class="button-group">
+    <button type="submit" class="btn">Thêm</button>
+    <a th:href="@{/cinemas/}" class="btn">Hủy</a>
+  </div>
+
+</form>
+
+</body>
+</html>

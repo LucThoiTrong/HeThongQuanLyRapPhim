@@ -1,6 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.CinemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,15 +31,13 @@ public class CinemaServiceImplement implements CinemaService {
 
     @Override
     public RapPhim updateCinema(int id, RapPhim rapPhimMoi) {
-        Optional<RapPhim> optionalRapPhim = cinemaRepository.findById(id);
-        if (optionalRapPhim.isPresent()) {
-            RapPhim rapPhim = optionalRapPhim.get();
-            rapPhim.setTenRapPhim(rapPhimMoi.getTenRapPhim());
-            rapPhim.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
-            rapPhim.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
-            rapPhim.setNhanVien(rapPhimMoi.getNhanVien());
-            rapPhim.setDsPhongChieuPhim(rapPhimMoi.getDsPhongChieuPhim());
-            return cinemaRepository.save(rapPhim);
+        RapPhim rapPhimCu = cinemaRepository.findById(id).orElse(null);
+        if (rapPhimCu != null) {
+            rapPhimCu.setTenRapPhim(rapPhimMoi.getTenRapPhim());
+            rapPhimCu.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
+            rapPhimCu.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
+            rapPhimCu.setNhanVien(rapPhimMoi.getNhanVien());
+            return cinemaRepository.save(rapPhimCu);
         }
         return null;
     }
@@ -53,4 +52,3 @@ public class CinemaServiceImplement implements CinemaService {
         return false;
     }
 }
-

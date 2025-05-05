@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh Sách Rạp Phim</title>
+  <style>
+    /* CSS giữ nguyên như code bạn cung cấp */
+    body { font-family: sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; box-shadow: 0 2px 3px rgba(0,0,0,0.1); }
+    th, td { border: 1px solid #ddd; padding: 10px 12px; text-align: left; }
+    th { background-color: #f2f2f2; color: #555; font-weight: bold; }
+    tr:nth-child(even) { background-color: #f9f9f9; }
+    tr:hover { background-color: #f1f1f1; }
+    .btn {
+      display: inline-block;
+      padding: 8px 15px;
+      margin-bottom: 0;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      margin-right: 5px; /* Khoảng cách giữa các nút */
+      background-color: #007bff; /* Màu xanh dương mặc định */
+      border-color: #007bff;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btnDelete {
+      background-color: #dc3545; /* Màu đỏ cho nút xóa */
+      border-color: #dc3545;
+    }
+    .button-group { margin-bottom: 20px; }
+    /* CSS cho flash message */
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    #flash-message { margin-top: 15px; }
+
+    #flash-message { margin-top: 15px; }
+    /* Đảm bảo form không có margin/padding thừa */
+    form { margin: 0; padding: 0; display: inline; }
+  </style>
+</head>
+<body>
+
+<h1>Danh Sách Rạp Phim</h1>
+
+<div th:if="${message}"
+     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}"
+     id="flash-message">
+</div>
+
+<div class="button-group">
+  <a th:href="@{/cinemas/new}" class="btn">Thêm rạp phim mới</a>
+  <a th:href="@{/manager/}" class="btn btn-secondary">Quay lại</a>
+</div>
+
+<table>
+  <thead>
+  <tr>
+    <th>Tên Rạp Phim</th>
+    <th>Địa Chỉ</th>
+    <th>Trạng Thái</th>
+    <th>Nhân Viên Quản Lý</th>
+    <th>Hành động</th> </tr>
+  </thead>
+  <tbody>
+  <tr th:each="cinema : ${cinemas}">
+    <td th:text="${cinema.tenRapPhim}"></td>
+    <td th:text="${cinema.diaChiRapPhim}"></td>
+    <td th:text="${cinema.trangThaiRapPhim.moTa}"></td>
+    <td>
+      <span th:if="${cinema.nhanVien != null}" th:text="${cinema.nhanVien.hoTen}"></span>
+      <span th:if="${cinema.nhanVien == null}">&lt;Trống&gt;</span>
+    </td>
+    <td>
+      <a th:href="@{/cinemas/update/{id}(id=${cinema.idRapPhim})}" class="btn">Sửa</a>
+
+      <form th:action="@{/cinemas/delete/{id}(id=${cinema.idRapPhim})}"
+            method="post"
+            class="delete-form"
+            style="display: inline;">
+        <button type="button" class="btn btnDelete delete-button" th:attr="data-cinema-name=${cinema.tenRapPhim}">Xóa</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    // --- PHẦN 1: Xử lý nút xóa (Giữ nguyên như cũ) ---
+    const deleteButtons = document.querySelectorAll('.delete-button');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function(event) {
+        const cinemaName = event.target.dataset.cinemaName;
+        const confirmationMessage = `Bạn có chắc chắn muốn xóa rạp phim ${cinemaName}?`;
+        if (confirm(confirmationMessage)) {
+          const form = event.target.closest('form');
+          if (form) {
+            form.submit();
+          } else {
+            console.error("Không tìm thấy form cha để submit.");
+          }
+        }
+      });
+    });
+
+    // --- PHẦN 2: Tự động ẩn thông báo flash message ---
+    // Tìm phần tử thông báo bằng ID
+    const flashMessage = document.getElementById('flash-message');
+
+    // Kiểm tra xem phần tử thông báo có tồn tại trên trang không
+    // (Nó chỉ tồn tại nếu th:if="${message}" là đúng)
+    if (flashMessage) {
+      console.log("Tìm thấy flash message, đặt hẹn giờ ẩn sau 5 giây."); // Thêm log để kiểm tra
+      // Đặt hẹn giờ: sau 5000 mili giây (5 giây) sẽ thực hiện hàm bên trong
+      setTimeout(function() {
+        console.log("Đã hết 5 giây, đang ẩn flash message."); // Thêm log để kiểm tra
+        // Ẩn phần tử đi bằng cách thay đổi style CSS display thành 'none'
+        // flashMessage.style.display = 'none';
+        // Hoặc làm mờ dần rồi ẩn (cần CSS transition):
+        flashMessage.style.opacity = '0';
+        // Đợi hiệu ứng mờ kết thúc rồi mới ẩn hoàn toàn (tùy chọn)
+        setTimeout(function() { flashMessage.style.display = 'none'; }, 500); // Đợi 0.5s (phải khớp với transition duration trong CSS)
+
+      }, 3000); // 5 giây
+    } else {
+      console.log("Không tìm thấy flash message."); // Thêm log để kiểm tra
+    }
+
+  });
+</script>
+
+</body>
+</html>

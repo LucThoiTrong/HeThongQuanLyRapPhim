@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Rạp Phim</title>
+    <style>
+        /* --- CSS Để Làm Đẹp Form (Tương tự form Thêm) --- */
+
+        /* Thiết lập cơ bản cho trang */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Căn giữa và định dạng tiêu đề H1 */
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Định dạng khung chứa form */
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Khoảng cách giữa các nhóm trường nhập liệu */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Định dạng nhãn (label) */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* Định dạng ô nhập text và ô chọn select */
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        /* Định dạng khi focus vào ô nhập/chọn */
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        /* Định dạng nhóm nút bấm */
+        .button-group {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        /* Định dạng chung cho các nút (.btn) */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        /* Định dạng riêng cho nút "Cập Nhật" (type="submit") */
+        button.btn {
+            background-color: #28a745; /* Màu xanh lá cây cho Cập nhật */
+            border-color: #28a745;
+        }
+
+        /* Định dạng riêng cho nút "Hủy" (thẻ <a>) */
+        a.btn {
+            background-color: #6c757d; /* Màu xám */
+            border-color: #6c757d;
+            color: white;
+        }
+
+        /* --- Hết CSS --- */
+    </style>
+</head>
+<body>
+
+<h1>Sửa Thông Tin Rạp Phim</h1>
+
+<form th:action="@{/cinemas/update/{id}(id=${rapPhim.idRapPhim})}" th:object="${rapPhim}" method="post">
+    <input type="hidden" th:field="*{idRapPhim}" />
+
+    <div class="form-group">
+        <label for="tenRapPhim">Tên Rạp Phim:</label>
+        <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
+        <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="trangThaiRapPhim">Trạng Thái:</label>
+        <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
+            <option th:each="trangThai : ${trangThaiList}"
+                    th:value="${trangThai}"
+                    th:text="${trangThai.moTa}"></option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="nhanVien">Nhân Viên Quản Lý:</label> <select id="nhanVien" th:field="*{nhanVien}"> <option value="">--Chọn nhân viên--</option> <option th:each="nv : ${nhanVienList}"
+                                                                                                                                                            th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option> </select>
+    </div>
+
+    <div class="button-group">
+        <a th:href="@{/rooms/{id}(id=${rapPhim.idRapPhim})}" class="btn btn-info">Quản lý phòng chiếu phim</a>
+        <button type="submit" class="btn">Cập Nhật</button>
+        <a th:href="@{/cinemas/}" class="btn">Hủy</a> </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang quản lý</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>Trang quản lý</h1>
+<div class="button-group">
+    <a th:href="@{/cinemas/}" class="btn">Quản lý rạp phim</a>
+    <a th:href="@{/movies/}" class="btn">Quản lý phim</a>
+    <a th:href="@{/showtimes/}" class="btn">Quản lý suất chiếu</a>
+    <a th:href="@{/discount-campaign/}" class="btn">Quản lý chiến dịch giảm giá</a>
+    <a th:href="@{/combos/}" class="btn">Quản lý combo bắp nước</a>
+</div>
+</body>
+</html>

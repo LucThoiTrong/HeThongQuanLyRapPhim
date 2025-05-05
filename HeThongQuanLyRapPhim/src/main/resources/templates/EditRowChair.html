@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Cập Nhật Số Lượng Dãy Ghế</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f7f6;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    input[type="number"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+      outline: none;
+    }
+    .button-group {
+      margin-top: 30px;
+      text-align: right;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-left: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s;
+    }
+    .btn:hover {
+      opacity: 0.85;
+    }
+    button.btn {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+    a.btn {
+      background-color: #6c757d;
+      border-color: #6c757d;
+    }
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    #flash-message { margin-top: 15px; }
+  </style>
+</head>
+<body>
+<div th:if="${message}"
+     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}"
+     id="flash-message">
+</div>
+
+<h1>Cập Nhật Số Lượng Dãy Ghế</h1>
+
+<form th:action="@{/rows/update/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}" method="post">
+  <div class="form-group">
+    <label for="soLuongDoi">Số lượng dãy Đôi (Giá: 240,000 VNĐ):</label>
+    <input type="number" id="soLuongDoi" name="soLuongDoi" th:value="${soLuongDoi}" min="0" required>
+  </div>
+  <div class="form-group">
+    <label for="soLuongVip">Số lượng dãy VIP (Giá: 120,000 VNĐ):</label>
+    <input type="number" id="soLuongVip" name="soLuongVip" th:value="${soLuongVip}" min="0" required>
+  </div>
+  <div class="form-group">
+    <label for="soLuongThuong">Số lượng dãy Thường (Giá: 100,000 VNĐ):</label>
+    <input type="number" id="soLuongThuong" name="soLuongThuong" th:value="${soLuongThuong}" min="0" required>
+    <small>Tổng số dãy ghế phải bằng <span th:text="${maxRows}"></span> (dựa trên kích thước phòng: <span th:text="${phongChieuPhim.kichThuocPhong.moTa}"></span>)</small>
+  </div>
+  <div class="button-group">
+    <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}" class="btn">Quay lại</a>
+    <button type="submit" class="btn">Cập Nhật</button>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const flashMessage = document.getElementById('flash-message');
+    if (flashMessage) {
+      console.log("Tìm thấy flash message, đặt hẹn giờ ẩn sau 3 giây.");
+      setTimeout(function() {
+        console.log("Đã hết 3 giây, đang ẩn flash message.");
+        flashMessage.style.opacity = '0';
+        setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
+      }, 3000);
+    } else {
+      console.log("Không tìm thấy flash message.");
+    }
+  });
+</script>
+</body>
+</html>
