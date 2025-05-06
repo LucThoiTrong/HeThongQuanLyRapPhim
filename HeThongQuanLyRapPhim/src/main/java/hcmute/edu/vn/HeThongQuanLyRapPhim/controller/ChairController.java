@@ -3,15 +3,21 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DayGhe;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Ghe;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
+
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ChairService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 @Controller
@@ -31,12 +37,18 @@ public class ChairController {
                                Model model) {
         try {
             PhongChieuPhim phongChieuPhim = chairService.getPhongChieuPhimById(idPhongChieuPhim);
-            // Chuyển từ Set sang List và sắp xếp theo tên dãy ghế
             List<DayGhe> dsDayGheList = new ArrayList<>(phongChieuPhim.getDsDayGhe());
             dsDayGheList.sort(Comparator.comparing(DayGhe::getTenDayGhe));
 
+            // Sắp xếp dsGhe trong mỗi DayGhe
+            for (DayGhe dayGhe : dsDayGheList) {
+                List<Ghe> dsGheList = new ArrayList<>(dayGhe.getDsGhe());
+                dsGheList.sort(Comparator.comparing(ghe -> dayGhe.getTenDayGhe() + ghe.getIdGhe())); // Sắp xếp theo tên dãy + idGhe
+                dayGhe.setDsGhe(new LinkedHashSet<>(dsGheList)); // Chuyển lại thành Set để lưu trữ
+            }
+
             model.addAttribute("phongChieuPhim", phongChieuPhim);
-            model.addAttribute("dsDayGhe", dsDayGheList); // gán list đã sắp xếp
+            model.addAttribute("dsDayGhe", dsDayGheList);
             model.addAttribute("idRapPhim", idRapPhim);
             return "ChairPage";
         } catch (RuntimeException e) {
