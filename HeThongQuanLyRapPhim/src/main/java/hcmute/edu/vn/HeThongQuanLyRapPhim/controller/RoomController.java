@@ -18,9 +18,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/rooms")
 public class RoomController {
+    private final RoomService roomService;
 
     @Autowired
-    private RoomService roomService;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @GetMapping("/{id}")
     public String getAll(Model model, @PathVariable("id") int idRapPhim) {

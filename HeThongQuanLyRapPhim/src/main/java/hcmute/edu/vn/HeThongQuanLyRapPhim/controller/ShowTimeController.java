@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -86,51 +87,26 @@ public class ShowTimeController {
 
     // Hiển thị form chỉnh sửa suất chiếu
     @GetMapping("/update/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
-        @SuppressWarnings("unchecked")
-        List<SuatChieu> dsSuatChieu = (List<SuatChieu>) session.getAttribute("showtimes");
-        SuatChieu suatChieu;
-        if (dsSuatChieu == null) {
-            suatChieu = showTimeService.getShowTimeById(id);
-        } else {
-            suatChieu = dsSuatChieu.stream()
-                    .filter(s -> s.getIdSuatChieu() == id)
-                    .findFirst().orElse(null);
-        }
-        if (suatChieu == null) {
-            redirectAttributes.addFlashAttribute("message", "Không tìm thấy suất chiếu với ID: " + id);
-            return "redirect:/showtimes/";
-        }
+    public String showEditForm(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
+        // Lấy suất chiếu
+        SuatChieu suatChieu = showTimeService.getShowTimeById(id);
 
-        // Kiểm tra và ghi log ngayGioChieu
-        System.out.println("SuatChieu ID: " + id + ", ngayGioChieu: " + suatChieu.getNgayGioChieu());
-        if (suatChieu.getNgayGioChieu() == null) {
-            suatChieu.setNgayGioChieu(LocalDateTime.now());
-            System.out.println("ngayGioChieu was null, set to: " + suatChieu.getNgayGioChieu());
-        }
+        // Lấy danh sách hình thức chiếu
+        List<HinhThucChieu> hinhThucChieuList = Arrays.asList(HinhThucChieu.values());
 
-        // Khởi tạo phongChieuPhim và phim nếu null
-        if (suatChieu.getPhongChieuPhim() == null) {
-            suatChieu.setPhongChieuPhim(new PhongChieuPhim());
-        }
-        if (suatChieu.getPhim() == null) {
-            suatChieu.setPhim(new Phim());
-        }
+        // Lấy danh sách phòng chiếu dựa trên id rạp phim
+        int idRapPhim = suatChieu.getPhongChieuPhim().getRapPhim().getIdRapPhim();
+        List<PhongChieuPhim> phongChieuList = roomService.getAllRoomsByCinemaId(idRapPhim);
+        LocalDateTime ngayGioChieu = suatChieu.getNgayGioChieu();
+        System.out.println(ngayGioChieu);
 
-        // Lấy danh sách phòng chiếu dựa trên rạp phim
-        List<PhongChieuPhim> phongChieuList = Collections.emptyList();
-        Integer selectedRapPhimId = null;
-        if (suatChieu.getPhongChieuPhim().getRapPhim() != null) {
-            selectedRapPhimId = suatChieu.getPhongChieuPhim().getRapPhim().getIdRapPhim();
-            phongChieuList = roomService.getAllRoomsByCinemaId(selectedRapPhimId);
-        }
 
         model.addAttribute("suatChieu", suatChieu);
-        model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+        model.addAttribute("hinhThucChieuList", hinhThucChieuList);
         model.addAttribute("phimList", movieService.getAllMovies());
         model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
         model.addAttribute("phongChieuList", phongChieuList);
-        model.addAttribute("selectedRapPhimId", selectedRapPhimId);
+        model.addAttribute("ngayGioChieu", ngayGioChieu);
         return "EditShowTime";
     }
 
