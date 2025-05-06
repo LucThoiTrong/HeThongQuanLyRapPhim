@@ -1,4 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
-public class ReviewReplyServiceImpl {
+import org.springframework.stereotype.Service;
+
+@Service
+public class ReviewReplyServiceImpl{
 }

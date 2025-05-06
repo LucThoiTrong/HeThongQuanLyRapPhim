@@ -10,7 +10,8 @@ import java.util.Optional;
 
 @Service
 public class ChienDichMaGiamGiaServiceImpl implements ChienDichMaGiamGiaService {
-    private ChienDichMaGiamGiaRepository chienDichMaGiamGiaRepository;
+    private final ChienDichMaGiamGiaRepository chienDichMaGiamGiaRepository;
+
     @Autowired
     public ChienDichMaGiamGiaServiceImpl(ChienDichMaGiamGiaRepository chienDichMaGiamGiaRepository) {
         this.chienDichMaGiamGiaRepository = chienDichMaGiamGiaRepository;

@@ -1,5 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,22 +8,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/manager")
-public class ManagerController {
+@RequestMapping("/manage")
+public class ManageController {
+    private final CinemaService cinemaService;
 
     @Autowired
-    private CinemaService cinemaService;
+    public ManageController(CinemaService cinemaService) {
+        this.cinemaService = cinemaService;
+    }
 
     // Hiển thị trang quản lý chính
-    @GetMapping("")
-    public String showManagementPage() {
-        return "page-manager";
+    @GetMapping("/")
+    public String showManagementPage(Model model) {
+        model.addAttribute("dsRapPhim", cinemaService.getAllCinemas());
+        return "ManagePage";
     }
 
     // Hiển thị danh sách dãy ghế
     @GetMapping("/cinema/list")
     public String showList(Model model) {
         model.addAttribute("dsDayGhe", cinemaService.getAllCinemas());
-        return "list-cinema";
+        return "CinemaListPage";
     }
 }

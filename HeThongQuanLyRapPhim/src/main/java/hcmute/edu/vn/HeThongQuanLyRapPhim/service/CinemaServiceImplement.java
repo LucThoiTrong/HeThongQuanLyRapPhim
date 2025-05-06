@@ -1,17 +1,21 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.CinemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CinemaServiceImplement implements CinemaService {
 
+    private final CinemaRepository cinemaRepository;
+
     @Autowired
-    private CinemaRepository cinemaRepository;
+    public CinemaServiceImplement(CinemaRepository cinemaRepository) {
+        this.cinemaRepository = cinemaRepository;
+    }
 
     @Override
     public List<RapPhim> getAllCinemas() {
@@ -30,23 +34,17 @@ public class CinemaServiceImplement implements CinemaService {
 
     @Override
     public RapPhim updateCinema(int id, RapPhim rapPhimMoi) {
-        Optional<RapPhim> optionalRapPhim = cinemaRepository.findById(id);
-        if (optionalRapPhim.isPresent()) {
-            RapPhim rapPhim = optionalRapPhim.get();
-            rapPhim.setTenRapPhim(rapPhimMoi.getTenRapPhim());
-            rapPhim.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
-            rapPhim.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
-            rapPhim.setNhanVien(rapPhimMoi.getNhanVien());
-            rapPhim.setDsPhongChieuPhim(rapPhimMoi.getDsPhongChieuPhim());
-            return cinemaRepository.save(rapPhim);
+        RapPhim rapPhim = cinemaRepository.findById(id).orElse(null);
+        if (rapPhim != null) {
+            return cinemaRepository.save(rapPhimMoi);
         }
         return null;
     }
 
     @Override
     public boolean deleteCinema(int id) {
-        Optional<RapPhim> optionalRapPhim = cinemaRepository.findById(id);
-        if (optionalRapPhim.isPresent()) {
+        RapPhim rapPhim = cinemaRepository.findById(id).orElse(null);
+        if (rapPhim != null) {
             cinemaRepository.deleteById(id);
             return true;
         }

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 //ComboBapNuoc: Kiểu Entity tương ứng với bảng combo_bap_nuoc.
 //
 //Integer: Kiểu dữ liệu của khóa chính (id_combo_bap_nuoc) trong bảng
-public interface ComboBapNuocRepository extends JpaRepository<ComboBapNuoc, Integer> {
+public interface PopcornDrinkComboRepository extends JpaRepository<ComboBapNuoc, Integer> {
 }

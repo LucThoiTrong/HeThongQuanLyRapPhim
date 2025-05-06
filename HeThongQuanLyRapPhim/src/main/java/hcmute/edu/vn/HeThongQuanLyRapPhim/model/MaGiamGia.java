@@ -44,13 +44,8 @@ public class MaGiamGia implements Serializable {
 
     public MaGiamGia() {}
 
-<<<<<<< HEAD
     public MaGiamGia(String tenMaGiamGia, int phanTramGiamGia, double hanMucApDung, LocalDateTime ngayBatDauApDung, LocalDateTime ngayKetThucApDung, boolean trangThaiSuDung, ChienDichGiamGia chienDichGiamGia, int giaTriGiamToiDa) {
         this.tenMaGiamGia = tenMaGiamGia;
-=======
-    public MaGiamGia(String maGiamGia, int phanTramGiamGia, double hanMucApDung, LocalDateTime ngayBatDauApDung, LocalDateTime ngayKetThucApDung, boolean trangThaiSuDung, ChienDichGiamGia chienDichGiamGia, int giaTriGiamToiDa) {
-        this.tenMaGiamGia = maGiamGia;
->>>>>>> 46cee73ef9bd954f035ad100b733574c2fd5818a
         this.phanTramGiamGia = phanTramGiamGia;
         this.hanMucApDung = hanMucApDung;
         this.ngayBatDauApDung = ngayBatDauApDung;
@@ -73,13 +68,8 @@ public class MaGiamGia implements Serializable {
         return tenMaGiamGia;
     }
 
-<<<<<<< HEAD
     public void setTenMaGiamGia(String tenMaGiamGia) {
         this.tenMaGiamGia = tenMaGiamGia;
-=======
-    public void setTenMaGiamGia(String maGiamGia) {
-        this.tenMaGiamGia = maGiamGia;
->>>>>>> 46cee73ef9bd954f035ad100b733574c2fd5818a
     }
 
     public int getPhanTramGiamGia() {

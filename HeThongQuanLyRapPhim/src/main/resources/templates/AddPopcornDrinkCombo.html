@@ -53,11 +53,11 @@
 <div class="container">
   <div th:with="combo=${comboBapNuoc}">
     <div class="container">
-      <h3 class = "text-center">Thông tin combo bắp nước</h3>
+      <h3 class = "text-center">Thêm combo bắp nước</h3>
     </div>
   </div>
 
-  <form action="#" th:action="@{/combo/save}" th:object="${comboBapNuoc}" method="post">
+  <form action="#" th:action="@{/combos/new}" th:object="${comboBapNuoc}" method="post">
     <input type="hidden" th:field="*{idComboBapNuoc}">
     <div class="mb-4">
       <input type="text" th:field="*{tenCombo}" class="form-control" placeholder="Tên combo">
@@ -73,7 +73,7 @@
     </div>
     <hr>
     <div class="text-center">
-      <a th:href="@{/combo/list}">Xem danh sách các combo</a>
+      <a th:href="@{/combos/}">Xem danh sách các combo</a>
     </div>
   </form>
 </div>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard for cinema management">
+    <title>Admin Dashboard</title>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0a3d62;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .btn {
+            background-color: #fff;
+            color: var(--primary-color);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn i {
+            font-size: 1.8rem;
+        }
+
+        .btn:nth-child(1) i { color: #6d4c41; }
+        .btn:nth-child(2) i { color: #757575; }
+        .btn:nth-child(3) i { color: #2e7d32; }
+        .btn:nth-child(4) i { color: #d81b60; }
+        .btn:nth-child(5) i { color: #0288d1; }
+        .btn:nth-child(6) i { color: #f57c00; }
+        .btn:nth-child(7) i { color: #ffd700; }
+        .btn:nth-child(8) i { color: #6a1b9a; }
+
+        .user-account {
+            position: relative;
+        }
+
+        .user-account button {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .user-account button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #fff;
+            box-shadow: var(--card-shadow);
+            border-radius: 8px;
+            min-width: 150px;
+            z-index: 1000;
+        }
+
+        .user-dropdown-content a {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .user-dropdown-content a:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        footer {
+            background-color: #f0f4f8;
+            padding: 1rem 2rem;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .dialog-content {
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .dialog-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .dialog-content select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .dialog-buttons button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dialog-buttons .confirm-btn {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .dialog-buttons .cancel-btn {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .dialog-buttons button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1 class="sr-only">Bảng điều khiển Admin</h1>
+    <div class="header-controls">
+        <div class="user-account">
+            <button id="user-menu-button" aria-label="Tài khoản người dùng" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-user"></i>
+            </button>
+            <div id="user-dropdown" class="user-dropdown-content" role="menu">
+                <a href="/profile" role="menuitem"><i class="fas fa-user-edit"></i> Hồ sơ</a>
+                <a href="/logout" role="menuitem"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <main>
+        <h1>Bảng điều khiển</h1>
+        <div class="button-container">
+            <a href="#" class="btn"><i class="fas fa-th"></i> Bố cục ghế</a>
+            <a href="#" class="btn"><i class="fas fa-chair"></i> Quản lý ghế</a>
+            <a href="/cinemas/" class="btn"><i class="fas fa-building"></i> Quản lý rạp phim</a>
+            <a href="#" class="btn"><i class="fas fa-door-open"></i> Quản lý phòng chiếu</a>
+            <a href="#" class="btn"><i class="fas fa-clock"></i> Quản lý suất chiếu</a>
+            <a href="/discount-campaign/" class="btn"><i class="fas fa-tags"></i> Chiến dịch giảm giá</a>
+            <a href="/combos/" class="btn"><i class="fas fa-popcorn"></i> Combo bắp nước</a>
+            <a href="#" class="btn" id="revenue-btn"><i class="fas fa-chart-line"></i> Xem doanh thu</a>
+        </div>
+    </main>
+</div>
+<div class="dialog-overlay" id="cinema-dialog">
+    <div class="dialog-content">
+        <h2>Chọn rạp phim</h2>
+        <label for="cinema-select" class="sr-only">Chọn rạp phim</label>
+        <select id="cinema-select">
+            <!-- Lặp qua danh sách các rạp phim được truyền từ model -->
+            <option th:each="cinema : ${dsRapPhim}"
+                    th:value="${cinema.idRapPhim}"
+                    th:text="${cinema.tenRapPhim}">Rạp phim</option>
+        </select>
+        <div class="dialog-buttons">
+            <button class="confirm-btn" id="confirm-cinema">Xác nhận</button>
+            <button class="cancel-btn" id="cancel-cinema">Hủy</button>
+        </div>
+    </div>
+</div>
+<footer>
+    <p>© 2025 Bảng điều khiển Admin Rạp chiếu phim</p>
+</footer>
+
+<script>
+    // Toggle user dropdown menu
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userDropdown = document.getElementById('user-dropdown');
+    userMenuButton.addEventListener('click', () => {
+        const isExpanded = userMenuButton.getAttribute('aria-expanded') === 'true';
+        userMenuButton.setAttribute('aria-expanded', !isExpanded);
+        userDropdown.style.display = isExpanded ? 'none' : 'block';
+    });
+
+    // Handle cinema selection dialog
+    const revenueBtn = document.getElementById('revenue-btn');
+    const cinemaDialog = document.getElementById('cinema-dialog');
+    const confirmCinemaBtn = document.getElementById('confirm-cinema');
+    const cancelCinemaBtn = document.getElementById('cancel-cinema');
+    const cinemaSelect = document.getElementById('cinema-select');
+
+    revenueBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        cinemaDialog.style.display = 'flex';
+    });
+
+    confirmCinemaBtn.addEventListener('click', () => {
+        alert(`Bạn đã chọn: ${cinemaSelect.options[cinemaSelect.selectedIndex].text}`);
+        cinemaDialog.style.display = 'none';
+    });
+
+    cancelCinemaBtn.addEventListener('click', () => {
+        cinemaDialog.style.display = 'none';
+    });
+
+    // Close dialogs on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            userDropdown.style.display = 'none';
+            userMenuButton.setAttribute('aria-expanded', 'false');
+            cinemaDialog.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>

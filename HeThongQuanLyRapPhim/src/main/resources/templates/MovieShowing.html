@@ -7,7 +7,7 @@
 <h1>Danh sách phim đang chiếu</h1>
 <ul>
     <li th:each="phim : ${danhSachPhim}">
-        <a th:href="@{now-showing/movie-detail/{id}(id=${phim.getIdPhim()})}" th:text="${phim.getTenPhim()}"></a>
+        <a th:href="@{movie-detail/{id}(id=${phim.getIdPhim()})}" th:text="${phim.getTenPhim()}"></a>
     </li>
 </ul>
 </body>

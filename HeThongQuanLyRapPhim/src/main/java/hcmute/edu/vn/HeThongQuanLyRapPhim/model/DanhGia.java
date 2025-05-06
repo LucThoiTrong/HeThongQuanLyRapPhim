@@ -3,7 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +22,7 @@ public class DanhGia implements Serializable {
     private int diemDanhGia;
 
     @Column(name = "thoi_gian_danh_gia")
-    private LocalDateTime thoiGianDanhGia;
+    private Date thoiGianDanhGia;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_phim")
@@ -38,7 +38,7 @@ public class DanhGia implements Serializable {
     public DanhGia() {
     }
 
-    public DanhGia(String noiDungDanhGia, int diemDanhGia, LocalDateTime thoiGianDanhGia, Phim phim, DoiTuongSuDung doiTuongSuDung) {
+    public DanhGia(String noiDungDanhGia, int diemDanhGia, Date thoiGianDanhGia, Phim phim, DoiTuongSuDung doiTuongSuDung) {
         this.noiDungDanhGia = noiDungDanhGia;
         this.diemDanhGia = diemDanhGia;
         this.thoiGianDanhGia = thoiGianDanhGia;
@@ -71,11 +71,11 @@ public class DanhGia implements Serializable {
         this.diemDanhGia = diemDanhGia;
     }
 
-    public LocalDateTime getThoiGianDanhGia() {
+    public Date getThoiGianDanhGia() {
         return thoiGianDanhGia;
     }
 
-    public void setThoiGianDanhGia(LocalDateTime thoiGianDanhGia) {
+    public void setThoiGianDanhGia(Date thoiGianDanhGia) {
         this.thoiGianDanhGia = thoiGianDanhGia;
     }
 

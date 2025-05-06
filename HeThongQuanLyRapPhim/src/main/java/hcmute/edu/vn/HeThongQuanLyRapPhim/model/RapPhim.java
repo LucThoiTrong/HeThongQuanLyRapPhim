@@ -1,5 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ public class RapPhim implements Serializable {
     private DoiTuongSuDung nhanVien;
 
     @OneToMany(mappedBy = "rapPhim",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<PhongChieuPhim> dsPhongChieuPhim;
 
     public RapPhim() {}

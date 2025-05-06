@@ -22,8 +22,8 @@ public class ProfileController {
     }
 
     // Cập nhật thông tin cá nhân
-    @PutMapping("/account")
-    private DoiTuongSuDung updateMyProfile(@RequestBody DoiTuongSuDung profile) {
+    @PostMapping("/account")
+    private DoiTuongSuDung updateMyProfile(@ModelAttribute("doiTuongSuDung") DoiTuongSuDung profile) {
         return profileService.updateProfile(profile);
     }
 }

@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ChienDichMaGiamGiaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -11,26 +12,33 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@RequestMapping("/discountCampaign")
-public class ChienDichMaGiamGiaController {
-    private ChienDichMaGiamGiaService chienDichGiamGiaService;
-    public ChienDichMaGiamGiaController(ChienDichMaGiamGiaService chienDichMaGiamGiaService) {
+@RequestMapping("/discount-campaign")
+public class DiscountCampaignController {
+    private final ChienDichMaGiamGiaService chienDichGiamGiaService;
+
+    @Autowired
+    public DiscountCampaignController(ChienDichMaGiamGiaService chienDichMaGiamGiaService) {
         this.chienDichGiamGiaService = chienDichMaGiamGiaService;
     }
 
-    @GetMapping("/list")
+    // Lấy danh sách chiến dịch giảm giá
+    @GetMapping("/")
     public String list(Model model) {
         List<ChienDichGiamGia> chienDichGiamGiaList = chienDichGiamGiaService.findAll();
         model.addAttribute("chienDichGiamGiaList", chienDichGiamGiaList);
         return "DanhSachChienDichGiamGia";
     }
+
+    // Thêm chiến dịch giảm giá
     @GetMapping("/themChienDich")
     public String themChienDich(Model model) {
         //tao model de lien ket du lieu tu form
         ChienDichGiamGia chienDichGiamGia = new ChienDichGiamGia();
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
-        return "ThemChienDichGiamGia";
+        return "AddDiscountCampaign";
     }
+
+
     @GetMapping("/themDanhSachMaGiamGia")
     public String themDanhSachMaGiamGia(@ModelAttribute("chienDichGiamGia") ChienDichGiamGia chienDichGiamGia,
                                         Model model)
@@ -48,8 +56,7 @@ public class ChienDichMaGiamGiaController {
                        @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
                        @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc,
                        @ModelAttribute("maGiamGia") MaGiamGia maGiamGia,
-                       @RequestParam("soLuongMaGiamGia") int soLuongMaGiamGia,
-                       Model model) {
+                       @RequestParam("soLuongMaGiamGia") int soLuongMaGiamGia) {
         //add danh sach ma giam gia vao chien dich
         ChienDichGiamGia chienDichGiamGia=new ChienDichGiamGia();
         chienDichGiamGia.setTenChienDich(tenChienDich);
@@ -71,12 +78,13 @@ public class ChienDichMaGiamGiaController {
         chienDichGiamGiaService.save(chienDichGiamGia);
         return "redirect:/discountCampaign/list";
     }
+
+
     @GetMapping("/capNhat")
     public String save(@RequestParam("idChienDichGiamGia") int id,
             @RequestParam("tenChienDich") String tenChienDich,
                        @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
-                       @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc,
-                       Model model) {
+                       @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc) {
         ChienDichGiamGia chienDichGiamGia;
         chienDichGiamGia = chienDichGiamGiaService.findById(id);
         // Gán giá trị mới
@@ -86,6 +94,7 @@ public class ChienDichMaGiamGiaController {
         chienDichGiamGiaService.save(chienDichGiamGia);
         return "redirect:/discountCampaign/list";
     }
+
     @GetMapping("/HienFormDeCapNhat")
     public String showFormForUpdate(@RequestParam("idChienDichGiamGia") int theId, Model model) {
         ChienDichGiamGia chienDichGiamGia = chienDichGiamGiaService.findById(theId);
@@ -94,6 +103,7 @@ public class ChienDichMaGiamGiaController {
         System.out.println(chienDichGiamGia.getNgayKetThucChienDich());
         return "CapNhatChienDichGiamGia";
     }
+
     @GetMapping("/delete")
     public String delete(@RequestParam("idChienDichGiamGia") int theId) {
         chienDichGiamGiaService.deleteById(theId);

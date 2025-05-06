@@ -61,7 +61,7 @@
             margin-top: 10px;
         }
 
-        .book-ticket-btn, .trailer-btn {
+        .book-ticket-btn, .trailer-btn, .rating-btn {
             display: inline-block;
             padding: 10px 20px;
             color: white;
@@ -87,6 +87,14 @@
             background-color: #c40812;
         }
 
+        .rating-btn {
+            background-color: #007bff;
+        }
+
+        .rating-btn:hover {
+            background-color: #0056b3;
+        }
+
         .popup {
             display: none;
             position: fixed;
@@ -104,8 +112,9 @@
             background-color: white;
             border-radius: 10px;
             width: 80%;
-            max-width: 800px;
+            max-width: 600px;
             position: relative;
+            padding: 20px;
             overflow: hidden;
         }
 
@@ -140,46 +149,33 @@
             color: #333;
         }
 
-        .rating-button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
-        .rating-button:hover {
-            background-color: #0056b3;
-        }
-
-        .rating-form {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            max-width: 500px;
-            margin-bottom: 20px;
-        }
-
-        /* Fix: Show when active */
-        .rating-form.active {
+        .rating-popup-content {
             display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .rating-form select, .rating-form textarea {
+        .rating-popup-content label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .rating-popup-content select,
+        .rating-popup-content textarea {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 1em;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .rating-form textarea {
-            height: 100px;
+        .rating-popup-content textarea {
+            height: 120px;
             resize: vertical;
         }
 
-        .rating-form button {
+        .rating-popup-content button[type="submit"] {
             padding: 10px 20px;
             background-color: #28a745;
             color: white;
@@ -187,9 +183,10 @@
             border-radius: 5px;
             cursor: pointer;
             width: fit-content;
+            align-self: flex-end;
         }
 
-        .rating-form button:hover {
+        .rating-popup-content button[type="submit"]:hover {
             background-color: #218838;
         }
 
@@ -208,6 +205,11 @@
 
         .rating-item p {
             margin: 5px 0;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
         }
 
         @media (max-width: 768px) {
@@ -229,7 +231,7 @@
                 gap: 10px;
             }
 
-            .book-ticket-btn, .trailer-btn {
+            .book-ticket-btn, .trailer-btn, .rating-btn {
                 width: 100%;
             }
 
@@ -276,32 +278,81 @@
 
     <div class="rating-section">
         <h2>Đánh Giá Phim</h2>
-        <button class="rating-button" onclick="toggleRatingForm()">Viết Đánh Giá</button>
+        <button class="rating-btn" onclick="openRatingPopup()">Viết Đánh Giá</button>
 
-        <form class="rating-form">
-            <label for="rating">Điểm đánh giá:</label>
-            <select id="rating" name="rating">
-                <option value="1">1 sao</option>
-                <option value="2">2 sao</option>
-                <option value="3">3 sao</option>
-                <option value="4">4 sao</option>
-                <option value="5">5 sao</option>
-            </select>
+        <div th:if="${param.error != null}" class="error-message">
+            <span th:if="${param.error == 'loginRequired'}">Vui lòng đăng nhập để viết đánh giá.</span>
+            <span th:if="${param.error == 'invalidInput'}">Dữ liệu không hợp lệ, vui lòng kiểm tra lại.</span>
+            <span th:if="${param.error == 'movieNotFound'}">Không tìm thấy phim.</span>
+            <span th:if="${param.error == 'userNotFound'}">Không tìm thấy người dùng.</span>
+        </div>
 
-            <label for="comment">Bình luận:</label>
-            <textarea id="comment" name="comment" placeholder="Nhập bình luận của bạn..."></textarea>
+        <div class="popup" id="ratingPopup">
+            <div class="popup-content">
+                <button class="close-btn" onclick="closeRatingPopup()">×</button>
+                <div th:with="movieId=${phim.idPhim}">
+                    <form th:action="@{/movies/{id}/reviews(id=${movieId})}" th:object="${danhGia}" method="post" class="rating-popup-content">
+                        <label for="diemDanhGia">Điểm đánh giá:</label>
+                        <select id="diemDanhGia" name="diemDanhGia" required>
+                            <option value="">Chọn điểm</option>
+                            <option th:each="i : ${#numbers.sequence(1, 10)}"
+                                    th:value="${i}"
+                                    th:text="${i} + ' sao'"
+                                    th:selected="${i == 10}">
+                            </option>
+                        </select>
 
-            <button type="submit">Gửi đánh giá</button>
-        </form>
+                        <div th:if="${#fields.hasErrors('diemDanhGia')}" th:errors="*{diemDanhGia}" style="color: red;"></div>
+
+                        <label for="noiDungDanhGia">Bình luận:</label>
+                        <textarea id="noiDungDanhGia" th:field="*{noiDungDanhGia}" placeholder="Nhập bình luận của bạn..." required></textarea>
+                        <div th:if="${#fields.hasErrors('noiDungDanhGia')}" th:errors="*{noiDungDanhGia}" style="color: red;"></div>
+
+                        <button type="submit">Gửi đánh giá</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+<!--        <div class="popup" id="editRatingPopup" style="display: none;">-->
+<!--            <div class="popup-content">-->
+<!--                <button class="close-btn" onclick="closeEditPopup()">×</button>-->
+<!--                <form id="editRatingForm" th:action="@{/reviews/{id}/update(id=${danhGia.idDanhGia})}" method="post" class="rating-popup-content" th:object="${danhGia}">-->
+<!--                    <label for="editDiemDanhGia">Điểm đánh giá:</label>-->
+<!--                    <select id="editDiemDanhGia" name="diemDanhGia" th:field="*{diemDanhGia}" required>-->
+<!--                        <option value="">Chọn điểm</option>-->
+<!--                        <option th:each="i : ${#numbers.sequence(1, 10)}"-->
+<!--                                th:value="${i}"-->
+<!--                                th:text="${i} + ' sao'">-->
+<!--                        </option>-->
+<!--                    </select>-->
+
+<!--                    <label for="editNoiDungDanhGia">Bình luận:</label>-->
+<!--                    <textarea id="editNoiDungDanhGia" th:field="*{noiDungDanhGia}" placeholder="Nhập bình luận của bạn..." required></textarea>-->
+
+<!--                    <button type="submit">Cập nhật đánh giá</button>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+
 
         <div class="rating-list">
             <div class="rating-item" th:each="danhGia : ${phim.dsDanhGia}">
                 <p>
-                    <strong th:text="${danhGia.getDoiTuongSuDung().getHoTen()}"></strong> -
-                    <span th:text="${danhGia.getDiemDanhGia()}"></span>
+                    <strong th:text="${danhGia.doiTuongSuDung.hoTen}"></strong> -
+                    <span th:text="${danhGia.diemDanhGia} + ' sao'"></span>
                 </p>
-                <p th:text="${danhGia.getNoiDungDanhGia()}"></p>
-                <p><small th:text="${#dates.format(danhGia.getThoiGianDanhGia(), 'dd-MM-yyyy HH:mm')}"></small></p>
+                <p th:text="${danhGia.noiDungDanhGia}"></p>
+                <p>
+                    <small class="rating-time" th:data-thoigiandanhgia="${danhGia.thoiGianDanhGia}"></small>
+                </p>
+                <!-- Nút sửa -->
+                <button type="button" onclick=openEditPopup()>Sửa</button>
+
+                <!-- Nút xoá (form POST) -->
+                <form th:action="@{/movies/{idPhim}/reviews/{idDanhGia}/delete(idPhim=${phim.idPhim}, idDanhGia=${danhGia.idDanhGia})}" method="post" style="display: inline;">
+                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn xoá đánh giá này không?')">Xoá</button>
+                </form>
             </div>
             <div th:if="${phim.dsDanhGia.isEmpty()}">
                 <p>Chưa có đánh giá nào.</p>
@@ -319,10 +370,48 @@
         document.getElementById('trailerPopup').style.display = 'none';
     }
 
-    function toggleRatingForm() {
-        const form = document.querySelector('.rating-form');
-        form.classList.toggle('active');
+    function openRatingPopup() {
+        document.getElementById('ratingPopup').style.display = 'flex';
     }
+
+    function closeRatingPopup() {
+        document.getElementById('ratingPopup').style.display = 'none';
+    }
+
+    function openEditPopup() {
+        document.getElementById("editRatingPopup").style.display = "flex";
+    }
+
+    function closeEditPopup() {
+        document.getElementById("editRatingPopup").style.display = "none";
+    }
+
+    // Hàm định dạng ngày giờ
+    function formatDateTime(date) {
+        const pad = (num) => String(num).padStart(2, '0');
+        const day = pad(date.getDate());
+        const month = pad(date.getMonth() + 1);
+        const year = date.getFullYear();
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }
+
+    // Cập nhật thời gian đánh giá
+    document.addEventListener('DOMContentLoaded', () => {
+        const timeElements = document.querySelectorAll('.rating-time');
+        timeElements.forEach(element => {
+            const timeString = element.getAttribute('data-thoigiandanhgia');
+            if (timeString) {
+                const date = new Date(timeString);
+                if (!isNaN(date)) {
+                    element.textContent = formatDateTime(date);
+                } else {
+                    element.textContent = 'Không xác định';
+                }
+            }
+        });
+    });
 </script>
 </body>
 </html>

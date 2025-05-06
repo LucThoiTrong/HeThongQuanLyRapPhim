@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Combo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --primary-color: #0a3d62;
+            --danger-color: #dc3545;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .container {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: var(--primary-color);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline-info {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline-info:hover {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-outline-danger {
+            background-color: transparent;
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #ffffff;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .card-body {
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #e0f2f7;
+            color: #0a3d62;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-end {
+            text-align: right;
+        }
+
+        .text-muted {
+            color: #888;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #e6f3e6;
+            color: #2e7d32;
+            border: 1px solid #c3e6cb;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #flash-message {
+            margin-top: 15px;
+        }
+
+        form {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Danh Sách Combo Bắp Nước</h1>
+</header>
+
+<div class="container">
+    <div th:if="${message}" class="alert" th:text="${message}" id="flash-message"></div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="mb-0">Danh sách Combo</h2>
+            <a th:href="@{/combos/new}" class="btn">➕ Thêm Combo</a>
+        </div>
+        <div class="card-body">
+            <table>
+                <thead>
+                <tr class="text-center">
+                    <th style="width: 25%;">Tên Combo</th>
+                    <th style="width: 35%;">Mô Tả</th>
+                    <th style="width: 15%;">Giá Tiền (VNĐ)</th>
+                    <th style="width: 25%;">Thao Tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="temp : ${comboBapNuocs}">
+                    <td th:text="${temp.tenCombo}"></td>
+                    <td th:text="${temp.moTaCombo}"></td>
+                    <td th:text="${#numbers.formatDecimal(temp.giaTien, 0, 'COMMA', 0, 'POINT')}" class="text-end"></td>
+                    <td class="text-center">
+                        <form th:action="@{/combos/update/{id}(id=${temp.idComboBapNuoc})}" method="get">
+                            <button type="submit" class="btn btn-sm btn-outline-info me-1">✏️ Cập nhật</button>
+                        </form>
+                        <form th:action="@{/combos/delete/{id}(id=${temp.idComboBapNuoc})}" method="post">
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-button" th:attr="data-combo-name=${temp.tenCombo}">🗑️ Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(comboBapNuocs)}">
+                    <td colspan="4" class="text-center text-muted">Không có combo nào.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý nút xóa
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const comboName = event.target.dataset.comboName;
+                const confirmMsg = `Bạn có chắc chắn muốn xóa combo "${comboName}" không?`;
+                if (confirm(confirmMsg)) {
+                    const form = event.target.closest('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error("Không tìm thấy form cha để submit.");
+                    }
+                }
+            });
+        });
+
+        // Ẩn flash message sau 3 giây
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(function() {
+                flashMessage.style.opacity = '0';
+                setTimeout(function() {
+                    flashMessage.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+    });
+</script>
+</body>
+</html>

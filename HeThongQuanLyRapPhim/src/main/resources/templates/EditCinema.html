@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Rạp Phim</title> <style>
+    /* --- CSS Copy từ code Thêm Rạp Phim --- */
+    :root {
+        --primary-color: #0a3d62;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-color: #f0f4f8;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        background-color: var(--primary-color);
+        color: #ffffff;
+        padding: 1rem 2rem;
+        box-shadow: var(--card-shadow);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    /* H1 đã được đổi màu trong header, không cần style riêng nữa */
+    h1 {
+        color: #ffffff; /* Đảm bảo màu trắng trong header */
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+
+    .container {
+        padding: 2rem;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        /* align-items: flex-start; Cân nhắc nếu form quá dài */
+    }
+
+    form {
+        max-width: 600px;
+        width: 100%; /* Thêm để form chiếm đủ không gian trong container */
+        padding: 30px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0; /* Có thể bỏ nếu dùng box-shadow */
+        border-radius: 8px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .form-group {
+        margin-bottom: 25px; /* Đồng bộ khoảng cách */
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    input[type="text"],
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px; /* Đồng bộ border-radius */
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+        border-color: var(--primary-color); /* Sử dụng biến CSS */
+        box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25); /* Đồng bộ box-shadow focus */
+        outline: none;
+    }
+
+    .button-group {
+        margin-top: 30px;
+        text-align: right;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem; /* Đồng bộ padding */
+        font-size: 1rem; /* Đồng bộ font-size */
+        font-weight: 500; /* Đồng bộ font-weight */
+        line-height: 1.5;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        cursor: pointer;
+        border-radius: 8px; /* Đồng bộ border-radius */
+        text-decoration: none;
+        color: #ffffff;
+        margin-left: 10px;
+        border: none; /* Bỏ border mặc định */
+        transition: var(--transition); /* Sử dụng biến transition */
+        box-shadow: var(--card-shadow); /* Thêm shadow cho button */
+    }
+
+    .btn:hover {
+        transform: translateY(-2px); /* Thêm hiệu ứng hover */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Thêm hiệu ứng hover */
+        opacity: 0.9; /* Giảm nhẹ opacity khi hover */
+    }
+
+    /* Nút submit (Cập nhật) dùng màu chính */
+    button.btn {
+        background-color: var(--primary-color);
+    }
+
+    /* Nút Hủy dùng màu xám */
+    a.btn {
+        background-color: #6c757d;
+    }
+    /* --- Hết CSS --- */
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Sửa Thông Tin Rạp Phim</h1> </header>
+
+<div class="container">
+    <form th:action="@{/cinemas/update/{id}(id=${rapPhim.idRapPhim})}" th:object="${rapPhim}" method="post">
+        <input type="hidden" th:field="*{idRapPhim}" />
+
+        <div class="form-group">
+            <label for="tenRapPhim">Tên Rạp Phim:</label>
+            <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
+            <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="trangThaiRapPhim">Trạng Thái:</label>
+            <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
+                <option th:each="trangThai : ${trangThaiList}"
+                        th:value="${trangThai}"
+                        th:text="${trangThai.moTa}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label>
+            <select id="nhanVien" th:field="*{nhanVien}">
+                <option value="">--Chọn nhân viên--</option> <option th:each="nv : ${nhanVienList}"
+                                                                     th:value="${nv.idDoiTuongSuDung}"
+                                                                     th:text="${nv.hoTen}"></option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn">Cập Nhật</button>
+            <a th:href="@{/cinemas/}" class="btn">Hủy</a>
+        </div>
+    </form>
+</div> </body>
+</html>

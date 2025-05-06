@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Phim sắp chiếu</title>
 </head>
 <body>
-
+<h1>Danh sách phim sắp chiếu</h1>
+<ul>
+    <li th:each="phim : ${danhSachPhim}">
+        <a th:href="@{movie-detail/{id}(id=${phim.getIdPhim()})}" th:text="${phim.getTenPhim()}"></a>
+    </li>
+</ul>
 </body>
 </html>

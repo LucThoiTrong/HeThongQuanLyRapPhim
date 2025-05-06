@@ -1,60 +1,120 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiRapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DoiTuongSuDungService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.*;
 
-@RestController
-@RequestMapping("/api/cinema")
+@Controller
+@RequestMapping("/cinemas")
 public class CinemaController {
+    private final CinemaService cinemaService;
+    private final DoiTuongSuDungService doiTuongSuDungService;
 
     @Autowired
-    private CinemaService cinemaService;
+    public CinemaController(CinemaService cinemaService, DoiTuongSuDungService doiTuongSuDungService) {
+        this.cinemaService = cinemaService;
+        this.doiTuongSuDungService = doiTuongSuDungService;
+    }
 
     // Lấy danh sách tất cả rạp phim
-    @GetMapping("/get-all")
-    public ResponseEntity<List<RapPhim>> getAllCinemas() {
+    @GetMapping("/")
+    public String showList(Model model) {
+        // Lấy danh sách rạp phim
         List<RapPhim> dsRapPhim = cinemaService.getAllCinemas();
-        return ResponseEntity.ok(dsRapPhim);
+        model.addAttribute("cinemas", dsRapPhim);
+
+        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
+        model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
+
+        return "CinemaListPage";
     }
 
-    // Lấy thông tin một rạp phim theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<RapPhim> getCinemaByID(@PathVariable int id) {
+    // Hiển thị form thêm rạp
+    @GetMapping("/new")
+    public String showAddForm(Model model) {
+        model.addAttribute("rapPhim", new RapPhim());
+        model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
+        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
+        model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
+        return "AddCinema";
+    }
+
+    // Xử lý thêm rạp
+    @PostMapping("/new")
+    public String insertCinema(@ModelAttribute("rapPhim") RapPhim rapPhim, RedirectAttributes redirectAttributes) {
+        RapPhim rp = cinemaService.createCinema(rapPhim);
+        if(rp != null) {
+            redirectAttributes.addFlashAttribute("message", "Thêm rạp phim thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Thêm rạp phim thất bại");
+        }
+        return "redirect:/cinemas/";
+    }
+
+    // Hiển thị form điền khi cập nhật rạp
+    @GetMapping("/update/{id}")
+    public String showEditForm(@PathVariable("id") int id, Model model) {
         RapPhim rapPhim = cinemaService.getCinemaById(id);
-        if (rapPhim != null) {
-            return ResponseEntity.ok(rapPhim);
-        }
-        return ResponseEntity.notFound().build();
+
+        // Lấy danh sách nhân viên chưa được phân công
+        assert rapPhim != null;
+        List<DoiTuongSuDung> nhanVienList = getNhanVienListChoRap(rapPhim);
+
+        // Thêm các thuộc tính vào model
+        model.addAttribute("rapPhim", rapPhim);
+        // Trạng thái của 1 rạp phim
+        model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
+        // Danh sách nhân viên chưa quản lý rạp nào + 1 nhân viên đang quản lý của rạp hiện tại (nếu có)
+        model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
+        return "EditCinema";
     }
 
-    // Thêm rạp phim mới
-    @PostMapping("/add")
-    public ResponseEntity<RapPhim> addNewCinema(@RequestBody RapPhim rapPhim) {
-        RapPhim rapPhimMoi = cinemaService.createCinema(rapPhim);
-        return ResponseEntity.ok(rapPhimMoi);
+    // Thực hiện update
+    @PostMapping("/update/{id}")
+    public String updateCinema(@ModelAttribute("rapPhim") RapPhim rapPhim, @PathVariable int id, RedirectAttributes redirectAttributes) {
+        RapPhim rp = cinemaService.updateCinema(id, rapPhim);
+        if(rp != null) {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thất bại");
+        }
+        return "redirect:/cinemas/";
     }
 
-    // Sửa thông tin rạp phim
-    @PutMapping("/update/{id}")
-    public ResponseEntity<RapPhim> updateCinema(@PathVariable int id, @RequestBody RapPhim rapPhim) {
-        RapPhim rapPhimMoi = cinemaService.updateCinema(id, rapPhim);
-        if (rapPhimMoi != null) {
-            return ResponseEntity.ok(rapPhimMoi);
+    private List<DoiTuongSuDung> getNhanVienListChoRap(RapPhim rapPhim) {
+        // Lấy danh sách nhân viên chưa quản lý rạp nào
+        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
+
+        // Lấy nhân viên quản lý hiện tại của rạp
+        DoiTuongSuDung currentNhanVien = rapPhim.getNhanVien();
+
+        if(currentNhanVien != null) {
+            if(nhanVienList == null) {
+                nhanVienList = new ArrayList<>();
+            }
+            nhanVienList.add(currentNhanVien);
         }
-        return ResponseEntity.notFound().build();
+        return nhanVienList;
     }
 
-    // Xóa dãy ghế
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteCinema(@PathVariable int id) {
-        boolean isDeleted = cinemaService.deleteCinema(id);
-        if (isDeleted) {
-            return ResponseEntity.ok("Xóa rạp phim thành công");
+    // Xoá rạp
+    @PostMapping("/delete/{id}")
+    public String deleteCinema(@PathVariable("id") int id, RedirectAttributes redirectAttributes) {
+        boolean isSuccess = cinemaService.deleteCinema(id);
+        if(isSuccess) {
+            redirectAttributes.addFlashAttribute("message", "Xoá rạp phim thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Xoá rạp phim thất bại");
         }
-        return ResponseEntity.status(404).body("Không tìm thấy rạp phim để xóa");
+        return "redirect:/cinemas/";
     }
 }
