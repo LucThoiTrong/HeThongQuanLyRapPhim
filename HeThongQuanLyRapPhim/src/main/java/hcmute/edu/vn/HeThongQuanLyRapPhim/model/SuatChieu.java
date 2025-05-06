@@ -12,7 +12,7 @@ public class SuatChieu implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_suat_chieu")
-    private int idSuatChieu;
+    private Integer idSuatChieu;
 
     @Column(name = "ngay_gio_chieu")
     private LocalDateTime ngayGioChieu;
@@ -42,11 +42,11 @@ public class SuatChieu implements Serializable {
         this.phim = phim;
     }
 
-    public int getIdSuatChieu() {
+    public Integer getIdSuatChieu() {
         return idSuatChieu;
     }
 
-    public void setIdSuatChieu(int idSuatChieu) {
+    public void setIdSuatChieu(Integer idSuatChieu) {
         this.idSuatChieu = idSuatChieu;
     }
 

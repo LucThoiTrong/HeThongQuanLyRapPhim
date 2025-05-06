@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách suất chiếu</title>
+
+  <style>
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .error-message:empty {
+      display: none;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .input-group .form-control, .input-group .form-select {
+      flex: 1 1 auto;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+
+  <h1 class="text-center mb-4">Danh sách suất chiếu</h1>
+
+  <div th:if="${message}" class="alert" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+       role="alert" th:text="${message}">
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <a th:href="@{/showtimes/new}" class="btn btn-primary mb-3">Thêm suất chiếu mới</a>
+      <a th:href="@{/manager/}" class="btn btn-secondary mb-3">Quay lại</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+        <tr>
+          <th scope="col">Phim</th>
+          <th scope="col">Rạp phim</th>
+          <th scope="col">Phòng chiếu</th>
+          <th scope="col">Ngày giờ chiếu</th>
+          <th scope="col">Hình thức chiếu</th>
+          <th scope="col">Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="suatChieu : ${showtimes}">
+          <td th:text="${suatChieu.phim.tenPhim}"></td>
+          <td th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></td>
+          <td th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></td>
+          <td th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}"></td>
+          <td th:text="${suatChieu.hinhThucChieu}"></td>
+          <td>
+            <a th:href="@{/showtimes/update/{id}(id=${suatChieu.idSuatChieu})}" class="btn btn-sm btn-warning">Sửa</a>
+            <form th:action="@{/showtimes/delete/{id}(id=${suatChieu.idSuatChieu})}" method="post" style="display:inline;">
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Bạn có chắc muốn xóa suất chiếu này?')">Xóa</button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${showtimes.isEmpty}">
+          <td colspan="6" class="text-center">Không có suất chiếu nào.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.onload = function () {
+    const flashMessage = document.getElementById('flash-message');
+    if (flashMessage) {
+      setTimeout(() => {
+        flashMessage.style.opacity = '0';
+        setTimeout(() => flashMessage.remove(), 500);
+      }, 3000);
+    }
+  };
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

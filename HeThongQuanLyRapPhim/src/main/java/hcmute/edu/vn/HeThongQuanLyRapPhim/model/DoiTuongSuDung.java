@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class DoiTuongSuDung implements Serializable {
     @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<HoaDon> dsHoaDon;
 
-    public DoiTuongSuDung() {}
+    public DoiTuongSuDung(String hoTen, String email, LocalDateTime ngaySinh, Object gioiTinh, LoaiDoiTuongSuDung khachHang, String soDienThoai) {}
 
     public DoiTuongSuDung(String hoTen, String email, Date ngaySinh, GioiTinh gioiTinh, LoaiDoiTuongSuDung loaiDoiTuongSuDung, String soDienThoai) {
         this.hoTen = hoTen;

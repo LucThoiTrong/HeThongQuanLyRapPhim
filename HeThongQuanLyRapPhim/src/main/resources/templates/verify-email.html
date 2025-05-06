@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Xác thực tài khoản</title>
+</head>
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+<h2 style="text-align: center; color: #333;">Xác thực tài khoản</h2>
+<p style="font-size: 16px; color: #333;">
+    Xin chào,
+</p>
+<p style="font-size: 16px; color: #333;">
+    Cảm ơn bạn đã đăng ký tài khoản tại hệ thống quản lý rạp phim. Vui lòng nhấp vào nút bên dưới để xác thực tài khoản của bạn:
+</p>
+<div style="text-align: center; margin: 20px 0;">
+    <a th:href="${verificationLink}"
+       style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">
+        Xác thực ngay
+    </a>
+</div>
+<p style="font-size: 16px; color: #333;">
+    Nếu nút không hoạt động, bạn có thể sao chép và dán liên kết sau vào trình duyệt:
+    <br/>
+    <a th:href="${verificationLink}" th:text="${verificationLink}" style="color: #0066cc;"></a>
+</p>
+<p style="font-size: 16px; color: #333;">
+    Trân trọng,<br/>
+    Hệ thống quản lý rạp phim
+</p>
+</body>
+</html>

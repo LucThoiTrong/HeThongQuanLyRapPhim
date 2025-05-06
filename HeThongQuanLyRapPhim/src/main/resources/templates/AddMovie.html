@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm phim mới</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .error-message:empty {
+      display: none;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .input-group .form-control, .input-group .form-select {
+      flex: 1 1 auto;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Thêm phim mới</h1>
+
+  <!-- Form thu hẹp chiều ngang với col-md-6 -->
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form th:action="@{/movies/new}" th:object="${phim}" method="post" class="needs-validation" novalidate>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="tenPhim" class="form-label">Tên phim</label>
+            <input type="text" class="form-control" id="tenPhim" th:field="*{tenPhim}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên phim.</div>
+          </div>
+          <div th:errors="*{tenPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="daoDien" class="form-label">Đạo diễn</label>
+            <input type="text" class="form-control" id="daoDien" th:field="*{daoDien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên đạo diễn.</div>
+          </div>
+          <div th:errors="*{daoDien}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="dienVien" class="form-label">Diễn viên</label>
+            <input type="text" class="form-control" id="dienVien" th:field="*{dienVien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên diễn viên.</div>
+          </div>
+          <div th:errors="*{dienVien}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="moTaPhim" class="form-label">Mô tả phim</label>
+            <textarea class="form-control" id="moTaPhim" th:field="*{moTaPhim}" rows="4" required></textarea>
+            <div class="invalid-feedback">Vui lòng nhập mô tả phim.</div>
+          </div>
+          <div th:errors="*{moTaPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="theLoai" class="form-label">Thể loại</label>
+            <input type="text" class="form-control" id="theLoai" th:field="*{theLoai}" required>
+            <div class="invalid-feedback">Vui lòng nhập thể loại.</div>
+          </div>
+          <div th:errors="*{theLoai}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="thoiGianKhoiChieu" class="form-label">Thời gian khởi chiếu</label>
+            <input type="date" class="form-control" id="thoiGianKhoiChieu" th:field="*{thoiGianKhoiChieu}" required>
+            <div class="invalid-feedback">Vui lòng chọn thời gian khởi chiếu.</div>
+          </div>
+          <div th:errors="*{thoiGianKhoiChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="thoiLuongChieu" class="form-label">Thời lượng chiếu (phút)</label>
+            <input type="number" class="form-control" id="thoiLuongChieu" th:field="*{thoiLuongChieu}" required>
+            <div class="invalid-feedback">Vui lòng nhập thời lượng chiếu.</div>
+          </div>
+          <div th:errors="*{thoiLuongChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="linkTrailer" class="form-label">Link trailer</label>
+            <input type="url" class="form-control" id="linkTrailer" th:field="*{linkTrailer}" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:errors="*{linkTrailer}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="linkAnh" class="form-label">Link ảnh</label>
+            <input type="url" class="form-control" id="linkAnh" th:field="*{linkAnh}" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:errors="*{linkAnh}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="doTuoi" class="form-label">Độ tuổi</label>
+            <select class="form-select" id="doTuoi" th:field="*{doTuoi}" required>
+              <option th:each="doTuoi : ${doTuoiList}" th:value="${doTuoi}" th:text="${doTuoi}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn độ tuổi.</div>
+          </div>
+          <div th:errors="*{doTuoi}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="trangThaiPhim" class="form-label">Trạng thái phim</label>
+            <select class="form-select" id="trangThaiPhim" th:field="*{trangThaiPhim}" required>
+              <option th:each="trangThai : ${trangThaiPhimList}" th:value="${trangThai}" th:text="${trangThai}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn trạng thái phim.</div>
+          </div>
+          <div th:errors="*{trangThaiPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="hinhThucChieu" class="form-label">Hình thức chiếu</label>
+            <input type="text" class="form-control" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
+            <div class="invalid-feedback">Vui lòng nhập hình thức chiếu.</div>
+          </div>
+          <div th:errors="*{hinhThucChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="ngonNgu" class="form-label">Ngôn ngữ</label>
+            <input type="text" class="form-control" id="ngonNgu" th:field="*{ngonNgu}" required>
+            <div class="invalid-feedback">Vui lòng nhập ngôn ngữ.</div>
+          </div>
+          <div th:errors="*{ngonNgu}" class="error-message align-self-end"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm phim</button>
+        <a th:href="@{/movies/}" class="btn btn-secondary">Hủy</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Bootstrap form validation
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,8 +1,10 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +15,7 @@ public class Phim implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_phim")
-    private int idPhim;
+    private Integer idPhim;
 
     @Column(name = "ten_phim")
     private String tenPhim;
@@ -30,11 +32,14 @@ public class Phim implements Serializable {
     @Column(name = "the_loai")
     private String theLoai;
 
-    @Column(name = "thoi_gian_khoi_chieu")
+
+    @Column(name = "thoiGianKhoiChieu")
+    @Temporal(TemporalType.DATE) // Chỉ định kiểu dữ liệu DATE cho JPA
+    @DateTimeFormat(pattern = "yyyy-MM-dd") // Định dạng ngày từ biểu mẫu
     private Date thoiGianKhoiChieu;
 
     @Column(name = "thoi_luong_chieu")
-    private int thoiLuongChieu;
+    private Integer thoiLuongChieu;
 
     @Column(name = "link_trailer")
     private String linkTrailer;
@@ -56,7 +61,7 @@ public class Phim implements Serializable {
     @Column(name = "ngon_ngu")
     private String ngonNgu;
 
-    @OneToMany(mappedBy = "phim", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "phim", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<DanhGia> dsDanhGia;
 
     @OneToMany(mappedBy = "phim", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
@@ -65,7 +70,7 @@ public class Phim implements Serializable {
     public Phim() {
     }
 
-    public Phim(String tenPhim, String daoDien, String dienVien, String moTaPhim, String theLoai, Date thoiGianKhoiChieu, int thoiLuongChieu, String linkTrailer,String linkAnh, DoTuoi doTuoi, TrangThaiPhim trangThaiPhim, String hinhThucChieu, String ngonNgu) {
+    public Phim(String tenPhim, String daoDien, String dienVien, String moTaPhim, String theLoai, Date thoiGianKhoiChieu, Integer thoiLuongChieu, String linkTrailer,String linkAnh, DoTuoi doTuoi, TrangThaiPhim trangThaiPhim, String hinhThucChieu, String ngonNgu) {
         this.tenPhim = tenPhim;
         this.daoDien = daoDien;
         this.dienVien = dienVien;
@@ -83,11 +88,11 @@ public class Phim implements Serializable {
         dsSuatChieu = new HashSet<>();
     }
 
-    public int getIdPhim() {
+    public Integer getIdPhim() {
         return idPhim;
     }
 
-    public void setIdPhim(int idPhim) {
+    public void setIdPhim(Integer idPhim) {
         this.idPhim = idPhim;
     }
 
@@ -139,11 +144,11 @@ public class Phim implements Serializable {
         this.thoiGianKhoiChieu = thoiGianKhoiChieu;
     }
 
-    public int getThoiLuongChieu() {
+    public Integer getThoiLuongChieu() {
         return thoiLuongChieu;
     }
 
-    public void setThoiLuongChieu(int thoiLuongChieu) {
+    public void setThoiLuongChieu(Integer thoiLuongChieu) {
         this.thoiLuongChieu = thoiLuongChieu;
     }
 
@@ -209,9 +214,5 @@ public class Phim implements Serializable {
 
     public void setDsSuatChieu(Set<SuatChieu> dsSuatChieu) {
         this.dsSuatChieu = dsSuatChieu;
-    }
-
-    public void themDanhGia(DanhGia danhGia) {
-        this.dsDanhGia.add(danhGia);
     }
 }
