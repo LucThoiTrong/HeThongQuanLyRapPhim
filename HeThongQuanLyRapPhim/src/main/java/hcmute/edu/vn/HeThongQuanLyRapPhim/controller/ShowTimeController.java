@@ -1,15 +1,14 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HinhThucChieu;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.SuatChieu;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.RoomService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ShowTimeService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +42,8 @@ public class ShowTimeController {
 
     // Hiển thị danh sách suất chiếu
     @GetMapping("/")
-    public String showList(Model model, HttpSession session) {
+    public String showList(Model model) {
         List<SuatChieu> dsSuatChieu = showTimeService.getAllShowTimes();
-        session.setAttribute("showtimes", dsSuatChieu);
         model.addAttribute("showtimes", dsSuatChieu);
         return "ShowTimeListPage";
     }
@@ -72,14 +70,22 @@ public class ShowTimeController {
             model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
             model.addAttribute("phimList", movieService.getAllMovies());
             model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
-            model.addAttribute("phongChieuList", Collections.emptyList());
             return "AddShowTime";
         }
-        SuatChieu savedShowTime = showTimeService.createShowTime(suatChieu);
-        if (savedShowTime != null) {
+        try {
+            PhongChieuPhim phongChieu = roomService.getRoomById(suatChieu.getPhongChieuPhim().getIdPhongChieuPhim());
+            Phim phim = movieService.getMovieById(suatChieu.getPhim().getIdPhim());
+            if (phongChieu == null || phim == null) {
+                redirectAttributes.addFlashAttribute("message", "Phòng chiếu hoặc phim không hợp lệ");
+                return "redirect:/showtimes/";
+            }
+            suatChieu.setPhongChieuPhim(phongChieu);
+            suatChieu.setPhim(phim);
+            SuatChieu savedShowTime = showTimeService.createShowTime(suatChieu);
             redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thất bại");
+        } catch (Exception e) {
+            logger.error("Error creating showtime: {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thất bại: " + e.getMessage());
         }
         return "redirect:/showtimes/";
     }
@@ -89,9 +95,10 @@ public class ShowTimeController {
     public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         @SuppressWarnings("unchecked")
         List<SuatChieu> dsSuatChieu = (List<SuatChieu>) session.getAttribute("showtimes");
-        SuatChieu suatChieu;
-        if (dsSuatChieu == null) {
-            suatChieu = showTimeService.getShowTimeById(id);
+        SuatChieu suatChieu = showTimeService.getShowTimeById(id);
+        if (suatChieu == null) {
+            redirectAttributes.addFlashAttribute("message", "Không tìm thấy suất chiếu với ID: " + id);
+            return "redirect:/showtimes/";
         } else {
             suatChieu = dsSuatChieu.stream()
                     .filter(s -> s.getIdSuatChieu() == id)
@@ -166,26 +173,16 @@ public class ShowTimeController {
         return "redirect:/showtimes/";
     }
 
+    private static final Logger logger = LoggerFactory.getLogger(ShowTimeController.class);
+
     @GetMapping("/api/rooms/{idRapPhim}")
     public ResponseEntity<List<PhongChieuPhim>> getRoomsByCinemaId(@PathVariable int idRapPhim) {
         try {
             List<PhongChieuPhim> rooms = roomService.getAllRoomsByCinemaId(idRapPhim);
-            if (rooms == null || rooms.isEmpty()) {
-                return ResponseEntity.ok(Collections.emptyList()); // Trả về danh sách rỗng nếu không có phòng
-            }
-            return ResponseEntity.ok(rooms);
+            return ResponseEntity.ok(rooms != null ? rooms : Collections.emptyList());
         } catch (Exception e) {
-            // Ghi log lỗi để debug
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyList());
+            logger.error("Error fetching rooms for cinema ID {}: {}", idRapPhim, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
-    }
-
-    // API để lấy danh sách phòng chiếu theo idRapPhim
-    @GetMapping("/rooms/{idRapPhim}")
-    @ResponseBody
-    public List<PhongChieuPhim> getRoomsByRapPhimId(@PathVariable int idRapPhim) {
-        return roomService.getAllRoomsByCinemaId(idRapPhim);
     }
 }
