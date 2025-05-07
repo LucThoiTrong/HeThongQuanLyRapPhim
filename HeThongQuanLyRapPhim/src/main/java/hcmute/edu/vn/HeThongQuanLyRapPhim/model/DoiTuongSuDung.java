@@ -14,7 +14,7 @@ public class DoiTuongSuDung implements Serializable {
     @Id
     @Column(name = "id_doi_tuong_su_dung")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idDoiTuongSuDung;
+    private Integer idDoiTuongSuDung;
 
     @Column(name = "ho_ten", nullable = false)
     private String hoTen;
@@ -67,11 +67,11 @@ public class DoiTuongSuDung implements Serializable {
         }
     }
 
-    public int getIdDoiTuongSuDung() {
+    public Integer getIdDoiTuongSuDung() {
         return idDoiTuongSuDung;
     }
 
-    public void setIdDoiTuongSuDung(int idDoiTuongSuDung) {
+    public void setIdDoiTuongSuDung(Integer idDoiTuongSuDung) {
         this.idDoiTuongSuDung = idDoiTuongSuDung;
     }
 

@@ -2,34 +2,84 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Chỉnh Sửa Rạp Phim</title>
+    <title>Sửa Rạp Phim</title>
     <style>
+        :root {
+            --primary-color: #0a3d62;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f7f6;
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .container {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: opacity 0.5s ease-out;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
 
         form {
             max-width: 600px;
-            margin: 0 auto;
+            width: 100%;
             padding: 30px;
             background-color: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--card-shadow);
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         label {
@@ -44,7 +94,7 @@
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 8px;
             box-sizing: border-box;
             font-size: 16px;
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -52,8 +102,8 @@
 
         input[type="text"]:focus,
         select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25);
             outline: none;
         }
 
@@ -64,34 +114,35 @@
 
         .btn {
             display: inline-block;
-            padding: 10px 20px;
-            margin-left: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
             line-height: 1.5;
             text-align: center;
             white-space: nowrap;
             vertical-align: middle;
             cursor: pointer;
-            border: 1px solid transparent;
-            border-radius: 4px;
+            border-radius: 8px;
             text-decoration: none;
-            color: white;
-            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s;
+            color: #ffffff;
+            margin-left: 10px;
+            border: none;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
         }
+
         .btn:hover {
-            opacity: 0.85;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            opacity: 0.9;
         }
 
         button.btn {
-            background-color: #007bff;
-            border-color: #007bff;
+            background-color: var(--primary-color);
         }
 
         a.btn {
             background-color: #6c757d;
-            border-color: #6c757d;
-            color: white;
         }
 
         .error-message {
@@ -107,56 +158,60 @@
     </style>
 </head>
 <body>
+<header>
+    <h1>Sửa Thông Tin Rạp Phim</h1>
+</header>
 
-<h1>Chỉnh Sửa Rạp Phim</h1>
+<div th:if="${message}" class="alert" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}" th:text="${message}" id="flash-message"></div>
 
-<form id="cinemaForm" th:action="@{/cinemas/update/{id}(id=${rapPhim.idRapPhim})}" th:object="${rapPhim}" method="post" onsubmit="return validateForm(event)">
-    <div class="form-group">
-        <label for="tenRapPhim">Tên Rạp Phim:</label>
-        <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
-        <span id="tenRapPhimError" class="error-message" th:text="${tenRapPhimError}"></span>
-    </div>
+<div class="container">
+    <form id="cinemaForm" th:action="@{/cinemas/update/{id}(id=${rapPhim.idRapPhim})}" th:object="${rapPhim}" method="post" onsubmit="return validateForm(event)">
+        <input type="hidden" th:field="*{idRapPhim}" />
 
-    <div class="form-group">
-        <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
-        <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
-        <span id="diaChiRapPhimError" class="error-message"></span>
-    </div>
+        <div class="form-group">
+            <label for="tenRapPhim">Tên Rạp Phim:</label>
+            <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+            <span id="tenRapPhimError" class="error-message" th:text="${tenRapPhimError}"></span>
+        </div>
 
-    <div class="form-group">
-        <label for="trangThaiRapPhim">Trạng Thái:</label>
-        <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
-            <option value="">--Chọn trạng thái--</option>
-            <option th:each="trangThai : ${trangThaiList}"
-                    th:value="${trangThai}"
-                    th:text="${trangThai.moTa}"></option>
-        </select>
-        <span id="trangThaiRapPhimError" class="error-message"></span>
-    </div>
+        <div class="form-group">
+            <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
+            <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
+            <span id="diaChiRapPhimError" class="error-message"></span>
+        </div>
 
-    <div class="form-group">
-        <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label>
-        <select id="nhanVien" th:field="*{nhanVien}" required>
-            <option value="">--Chọn nhân viên--</option>
-            <option th:each="nv : ${nhanVienList}"
-                    th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option>
-        </select>
-        <span id="nhanVienError" class="error-message"></span>
-    </div>
+        <div class="form-group">
+            <label for="trangThaiRapPhim">Trạng Thái:</label>
+            <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
+                <option value="">--Chọn trạng thái--</option>
+                <option th:each="trangThai : ${trangThaiList}" th:value="${trangThai}" th:text="${trangThai.moTa}"></option>
+            </select>
+            <span id="trangThaiRapPhimError" class="error-message"></span>
+        </div>
 
-    <div class="button-group">
-        <button type="submit" class="btn">Lưu</button>
-        <a th:href="@{/cinemas/}" class="btn">Hủy</a>
-    </div>
-</form>
+        <div class="form-group">
+            <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label>
+            <select id="nhanVien" th:field="*{nhanVien.idDoiTuongSuDung}" required>
+                <option value="">--Chọn nhân viên--</option>
+                <option th:each="nv : ${nhanVienList}" th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option>
+            </select>
+            <span id="nhanVienError" class="error-message" th:text="${nhanVienError}"></span>
+        </div>
+
+        <div class="button-group">
+            <a th:href="@{/rooms/{id}(id=${rapPhim.idRapPhim})}" class="btn">Quản lý phòng chiếu phim</a>
+            <button type="submit" class="btn">Cập Nhật</button>
+            <a th:href="@{/cinemas/}" class="btn">Hủy</a>
+        </div>
+    </form>
+</div>
 
 <script>
     function validateForm(event) {
         event.preventDefault();
         let isValid = true;
 
-        // Reset các thông báo lỗi client-side, trừ tenRapPhimError
-        const errorElements = document.querySelectorAll('.error-message:not(#tenRapPhimError)');
+        const errorElements = document.querySelectorAll('.error-message');
         const inputElements = document.querySelectorAll('input, select');
         errorElements.forEach(el => el.style.display = 'none');
         inputElements.forEach(el => el.classList.remove('error'));
@@ -210,15 +265,26 @@
         errorElement.style.display = 'block';
     }
 
-    // Hiển thị lỗi server nếu có
     window.onload = function() {
         const tenRapPhimError = document.getElementById('tenRapPhimError');
+        const nhanVienError = document.getElementById('nhanVienError');
         if (tenRapPhimError.textContent) {
             tenRapPhimError.style.display = 'block';
             document.getElementById('tenRapPhim').classList.add('error');
         }
+        if (nhanVienError.textContent) {
+            nhanVienError.style.display = 'block';
+            document.getElementById('nhanVien').classList.add('error');
+        }
+
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(() => {
+                flashMessage.style.opacity = '0';
+                setTimeout(() => flashMessage.remove(), 500);
+            }, 3000);
+        }
     };
 </script>
-
 </body>
 </html>
