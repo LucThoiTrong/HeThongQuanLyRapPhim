@@ -169,10 +169,11 @@
             </select>
         </div>
 
-        <div class="button-group">
-            <button type="submit" class="btn">Cập Nhật</button>
-            <a th:href="@{/cinemas/}" class="btn">Hủy</a>
-        </div>
+            <div class="button-group">
+                <a th:href="@{/rooms/{id}(id=${rapPhim.idRapPhim})}" class="btn btn-info">Quản lý phòng chiếu phim</a>
+                <button type="submit" class="btn">Cập Nhật</button>
+                <a th:href="@{/cinemas/}" class="btn">Hủy</a>
+            </div>
     </form>
 </div> </body>
 </html>

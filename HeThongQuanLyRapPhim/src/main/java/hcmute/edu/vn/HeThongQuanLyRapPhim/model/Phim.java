@@ -56,7 +56,8 @@ public class Phim implements Serializable {
     private TrangThaiPhim trangThaiPhim;
 
     @Column(name = "hinh_thuc_chieu")
-    private String hinhThucChieu;
+    @Enumerated(EnumType.STRING)
+    private HinhThucChieu hinhThucChieu;
 
     @Column(name = "ngon_ngu")
     private String ngonNgu;
@@ -70,7 +71,7 @@ public class Phim implements Serializable {
     public Phim() {
     }
 
-    public Phim(String tenPhim, String daoDien, String dienVien, String moTaPhim, String theLoai, Date thoiGianKhoiChieu, Integer thoiLuongChieu, String linkTrailer,String linkAnh, DoTuoi doTuoi, TrangThaiPhim trangThaiPhim, String hinhThucChieu, String ngonNgu) {
+    public Phim(String tenPhim, String daoDien, String dienVien, String moTaPhim, String theLoai, Date thoiGianKhoiChieu, Integer thoiLuongChieu, String linkTrailer,String linkAnh, DoTuoi doTuoi, TrangThaiPhim trangThaiPhim, HinhThucChieu hinhThucChieu, String ngonNgu) {
         this.tenPhim = tenPhim;
         this.daoDien = daoDien;
         this.dienVien = dienVien;
@@ -184,11 +185,11 @@ public class Phim implements Serializable {
         this.trangThaiPhim = trangThaiPhim;
     }
 
-    public String getHinhThucChieu() {
+    public HinhThucChieu getHinhThucChieu() {
         return hinhThucChieu;
     }
 
-    public void setHinhThucChieu(String hinhThucChieu) {
+    public void setHinhThucChieu(HinhThucChieu hinhThucChieu) {
         this.hinhThucChieu = hinhThucChieu;
     }
 

@@ -61,7 +61,7 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="phongChieuPhim" class="form-label">Phòng chiếu</label>
-            <select class="form-select" id="phongChieuPhim" name="phongChieuPhimId" required>
+            <select class="form-select" id="phongChieuPhim" th:field="*{phongChieuPhim.idPhongChieuPhim}" required>
               <option value="">Chọn phòng chiếu</option>
             </select>
             <input type="hidden" th:field="*{phongChieuPhim.idPhongChieuPhim}" id="phongChieuPhimIdHidden">
@@ -143,10 +143,6 @@
               roomError.style.display = 'block';
             });
   }
-
-  document.getElementById('phongChieuPhim').addEventListener('change', function() {
-    document.getElementById('phongChieuPhimIdHidden').value = this.value;
-  });
 </script>
 </body>
 </html>
