@@ -18,12 +18,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/rooms")
 public class RoomController {
-    private final RoomService roomService;
 
     @Autowired
-    public RoomController(RoomService roomService) {
-        this.roomService = roomService;
-    }
+    private RoomService roomService;
 
     @GetMapping("/{id}")
     public String getAll(Model model, @PathVariable("id") int idRapPhim) {
@@ -50,13 +47,25 @@ public class RoomController {
                                        BindingResult result,
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
-        if (result.hasErrors() || phongChieuPhim.getKichThuocPhong() == null) {
-            redirectAttributes.addFlashAttribute("message", "Thêm phòng chiếu thất bại: Vui lòng chọn kích thước phòng!");
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu không hợp lệ!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
+            return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
+        }
+        if (phongChieuPhim.getKichThuocPhong() == null) {
+            redirectAttributes.addFlashAttribute("kichThuocPhongError", "Vui lòng chọn kích thước phòng!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
             return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
         }
         RapPhim rapPhim = new RapPhim();
         rapPhim.setIdRapPhim(idRapPhim);
         phongChieuPhim.setRapPhim(rapPhim);
+        PhongChieuPhim existingRoom = roomService.findRoomByNameAndCinemaId(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
+        if (existingRoom != null) {
+            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu đã tồn tại trong rạp này!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
+            return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
+        }
         try {
             roomService.createRoom(phongChieuPhim);
             redirectAttributes.addFlashAttribute("message", "Thêm phòng chiếu thành công");
@@ -82,13 +91,25 @@ public class RoomController {
                                        BindingResult result,
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
-        if (result.hasErrors() || phongChieuPhim.getKichThuocPhong() == null) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật phòng chiếu thất bại: Vui lòng chọn kích thước phòng!");
+        if (result.hasErrors()) {
+            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu không hợp lệ!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
+            return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
+        }
+        if (phongChieuPhim.getKichThuocPhong() == null) {
+            redirectAttributes.addFlashAttribute("kichThuocPhongError", "Vui lòng chọn kích thước phòng!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
             return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
         }
         RapPhim rapPhim = new RapPhim();
         rapPhim.setIdRapPhim(idRapPhim);
         phongChieuPhim.setRapPhim(rapPhim);
+        PhongChieuPhim existingRoom = roomService.findRoomByNameAndCinemaId(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
+        if (existingRoom != null && existingRoom.getIdPhongChieuPhim() != id) {
+            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu đã tồn tại trong rạp này!");
+            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
+            return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
+        }
         try {
             roomService.updateRoom(id, phongChieuPhim);
             redirectAttributes.addFlashAttribute("message", "Cập nhật phòng chiếu thành công");

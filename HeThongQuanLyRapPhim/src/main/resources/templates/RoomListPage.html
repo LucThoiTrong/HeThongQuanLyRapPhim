@@ -1,146 +1,175 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>Danh sách phòng chiếu</title>
     <style>
+        :root {
+            --primary-color: #0a3d62;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f7f6;
-            color: #333;
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        h2 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: opacity 0.5s ease-out;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #ffffff;
+            border: none;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-primary { background-color: #007bff; }
+        .btn-secondary { background-color: #6c757d; }
+        .btn-warning { background-color: #ffc107; color: #212529; }
+        .btn-danger { background-color: #dc3545; }
+
+        table {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-collapse: collapse;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        td form {
+            display: inline;
+        }
+
         .alert-success {
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 4px;
-            /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
-            transition: opacity 0.5s ease-out;
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+            max-width: 800px;
+            margin: 15px auto;
         }
         .alert-danger {
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 4px;
-            /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
-            transition: opacity 0.5s ease-out;
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
-        #flash-message { margin-top: 15px; }
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-        .table th, .table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            cursor: pointer;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            text-decoration: none;
-            color: white;
-            transition: opacity 0.2s;
-        }
-        .btn:hover {
-            opacity: 0.85;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-        .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-            color: #212529;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-        .button-group {
-            margin-bottom: 20px; /* Tăng khoảng cách giữa nút và bảng */
-            display: flex;
-            gap: 10px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-
-        input[type="text"]:focus,
-        select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-            outline: none;
+            max-width: 800px;
+            margin: 15px auto;
         }
     </style>
 </head>
 <body>
-<!-- Hiển thị thông báo -->
-<div th:if="${message}" class="alert" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}" th:text="${message}"></div>
-
-<div class="container">
+<header>
     <h1>Danh sách phòng chiếu</h1>
+</header>
 
+<div th:if="${message}"
+     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}"
+     id="flash-message">
+</div>
+<div class="container">
     <div class="button-group">
         <a th:href="@{/rooms/new(idRapPhim=${idRapPhim})}" class="btn btn-primary">Thêm phòng chiếu</a>
         <a th:href="@{/cinemas/update/{id}(id=${idRapPhim})}" class="btn btn-secondary">Quay lại</a>
     </div>
 
-    <table class="table">
+    <table>
         <thead>
         <tr>
             <th>Tên phòng chiếu</th>
@@ -153,14 +182,26 @@
             <td th:text="${phong.tenPhongChieuPhim}"></td>
             <td th:text="${phong.kichThuocPhong != null} ? ${phong.kichThuocPhong.moTa} : '<Trống>'"></td>
             <td>
-                <a th:href="@{/rooms/update/{id}(idRapPhim=${idRapPhim},id=${phong.idPhongChieuPhim})}" class="btn btn-warning btn-sm">Sửa</a>
+                <a th:href="@{/rooms/update/{id}(idRapPhim=${idRapPhim},id=${phong.idPhongChieuPhim})}" class="btn btn-warning">Sửa</a>
                 <form th:action="@{/rooms/delete/{id}(idRapPhim=${idRapPhim},id=${phong.idPhongChieuPhim})}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa phòng chiếu này?')">Xóa</button>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phòng chiếu này?')">Xóa</button>
                 </form>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+
+<script>
+    window.onload = function () {
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(() => {
+                flashMessage.style.opacity = '0';
+                setTimeout(() => flashMessage.remove(), 500);
+            }, 3000);
+        }
+    };
+</script>
 </body>
 </html>

@@ -10,4 +10,5 @@ public interface RoomService {
     PhongChieuPhim createRoom(PhongChieuPhim phongChieuPhim);
     PhongChieuPhim updateRoom(int id, PhongChieuPhim phongChieuPhim);
     boolean deleteRoom(int id);
+    PhongChieuPhim findRoomByNameAndCinemaId(String tenPhongChieuPhim, int idRapPhim);
 }

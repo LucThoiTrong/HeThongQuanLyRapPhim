@@ -137,6 +137,11 @@
             opacity: 0.9;
         }
 
+        .btn-quanlykhac {
+            background-color: #5e20c9; /* màu xanh ngọc */
+            color: #fff;
+        }
+
         button.btn {
             background-color: var(--primary-color);
         }
@@ -199,7 +204,7 @@
         </div>
 
         <div class="button-group">
-            <a th:href="@{/rooms/{id}(id=${rapPhim.idRapPhim})}" class="btn">Quản lý phòng chiếu phim</a>
+            <a th:href="@{/rooms/{id}(id=${rapPhim.idRapPhim})}" class="btn btn-quanlykhac">Quản lý phòng chiếu phim</a>
             <button type="submit" class="btn">Cập Nhật</button>
             <a th:href="@{/cinemas/}" class="btn">Hủy</a>
         </div>
