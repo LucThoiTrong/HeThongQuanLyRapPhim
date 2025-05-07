@@ -21,6 +21,7 @@ public class HoaDon implements Serializable {
     private LocalDateTime ngayThanhToan;
 
     @Column(name = "trang_thai_hoa_don")
+    @Enumerated(EnumType.STRING)
     private TrangThaiHoaDon trangThaiHoaDon;
 
     @ManyToOne(optional = false)

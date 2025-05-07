@@ -19,10 +19,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/", "/login", "/register", "/auth/verify", "/change-password", "/css/**", "/js/**").permitAll()
+//                        .anyRequest().authenticated()
+//                )
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/register", "/auth/verify", "/change-password", "/css/**", "/js/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
+
                 .formLogin(form -> form
                         .disable() // Disable default Spring Security form login
                 )

@@ -30,7 +30,7 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="ngayGioChieu" class="form-label">Ngày giờ chiếu</label>
-            <input type="datetime-local" class="form-control" id="ngayGioChieu" th:field="*{ngayGioChieu}" required>
+            <input type="datetime-local" class="form-control" id="ngayGioChieu" name="ngayGioChieu" required>
             <div class="invalid-feedback">Vui lòng chọn ngày giờ chiếu.</div>
           </div>
           <div th:errors="*{ngayGioChieu}" class="error-message align-self-end"></div>
@@ -39,7 +39,10 @@
           <div class="flex-grow-1">
             <label for="hinhThucChieu" class="form-label">Hình thức chiếu</label>
             <select class="form-select" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
-              <option th:each="hinhThuc : ${hinhThucChieuList}" th:value="${hinhThuc}" th:text="${hinhThuc}"></option>
+              <option th:each="hinhThuc : ${hinhThucChieuList}"
+                      th:value="${hinhThuc.name()}"
+                      th:text="${hinhThuc.moTa}">
+              </option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
           </div>
@@ -48,11 +51,12 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="rapPhim" class="form-label">Rạp phim</label>
-            <select class="form-select" id="rapPhim" name="rapPhim" required
-                    th:value="${suatChieu.phongChieuPhim.rapPhim.idRapPhim}"
-                    onchange="loadRooms(this.value)">
+            <select class="form-select" id="rapPhim" name="rapPhim" required>
               <option value="">Chọn rạp phim</option>
-              <option th:each="rap : ${rapPhimList}" th:value="${rap.idRapPhim}" th:text="${rap.tenRapPhim}"></option>
+              <option th:each="rap : ${rapPhimList}"
+                      th:value="${rap.idRapPhim}"
+                      th:text="${rap.tenRapPhim}"
+                      th:selected="${suatChieu.getPhongChieuPhim().getRapPhim().tenRapPhim}"></option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn rạp phim.</div>
           </div>
@@ -62,8 +66,10 @@
             <label for="phongChieuPhim" class="form-label">Phòng chiếu</label>
             <select class="form-select" id="phongChieuPhim" th:field="*{phongChieuPhim}" required>
               <option value="">Chọn phòng chiếu</option>
-              <option th:each="phong : ${phongChieuPhimList}" th:value="${phong.idPhongChieuPhim}"
-                      th:text="${phong.tenPhongChieuPhim}"></option>
+              <option th:each="phong : ${phongChieuList}"
+                      th:value="${phong.idPhongChieuPhim}"
+                      th:text="${phong.tenPhongChieuPhim}">
+              </option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn phòng chiếu.</div>
           </div>
@@ -73,7 +79,9 @@
           <div class="flex-grow-1">
             <label for="phim" class="form-label">Phim</label>
             <select class="form-select" id="phim" th:field="*{phim}" required>
-              <option th:each="phim : ${phimList}" th:value="${phim.idPhim}" th:text="${phim.tenPhim}"></option>
+              <option th:each="phim : ${phimList}"
+                      th:value="${phim.idPhim}"
+                      th:text="${phim.tenPhim}"></option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn phim.</div>
           </div>
@@ -87,49 +95,13 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  (function () {
-    'use strict';
-    const forms = document.querySelectorAll('.needs-validation');
-    Array.prototype.slice.call(forms).forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      }, false);
-    });
-  })();
-
-  function loadRooms(idRapPhim) {
-    if (!idRapPhim) {
-      document.getElementById('phongChieuPhim').innerHTML = '<option value="">Chọn phòng chiếu</option>';
-      return;
-    }
-
-    fetch('/showtimes/api/rooms/' + idRapPhim)
-            .then(response => response.json())
-            .then(data => {
-              const select = document.getElementById('phongChieuPhim');
-              select.innerHTML = '<option value="">Chọn phòng chiếu</option>';
-              data.forEach(room => {
-                const option = document.createElement('option');
-                option.value = room.idPhongChieuPhim;
-                option.text = room.tenPhongChieuPhim;
-                select.appendChild(option);
-              });
-            })
-            .catch(error => console.error('Lỗi khi tải phòng chiếu:', error));
-  }
-
-  // Load rooms on page load based on the selected cinema
-  window.onload = function() {
-    const rapPhimSelect = document.getElementById('rapPhim');
-    if (rapPhimSelect.value) {
-      loadRooms(rapPhimSelect.value);
-    }
-  };
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+<script th:inline="javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    const rawDateTime = /*[[${suatChieu.ngayGioChieu}]]*/ null;
+    const formatted = moment(rawDateTime).format('YYYY-MM-DDTHH:mm');
+    document.getElementById('ngayGioChieu').value = formatted;
+  });
 </script>
 </body>
 </html>

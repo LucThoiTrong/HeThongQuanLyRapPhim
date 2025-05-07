@@ -23,11 +23,4 @@ public class ManageController {
         model.addAttribute("dsRapPhim", cinemaService.getAllCinemas());
         return "ManagePage";
     }
-
-    // Hiển thị danh sách dãy ghế
-    @GetMapping("/cinema/list")
-    public String showList(Model model) {
-        model.addAttribute("dsDayGhe", cinemaService.getAllCinemas());
-        return "CinemaListPage";
-    }
 }

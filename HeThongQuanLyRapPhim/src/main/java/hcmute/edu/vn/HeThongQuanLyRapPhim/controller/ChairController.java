@@ -18,8 +18,12 @@ import java.util.List;
 @RequestMapping("/seats")
 public class ChairController {
 
+    private final ChairService chairService;
+
     @Autowired
-    private ChairService chairService;
+    public ChairController(ChairService chairService) {
+        this.chairService = chairService;
+    }
 
     @GetMapping("/edit/{idRapPhim}/{idPhongChieuPhim}")
     public String manageChairs(@PathVariable("idRapPhim") int idRapPhim,
