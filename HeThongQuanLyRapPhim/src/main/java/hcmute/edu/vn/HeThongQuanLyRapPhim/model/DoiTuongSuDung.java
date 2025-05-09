@@ -1,6 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class DoiTuongSuDung implements Serializable {
     private String email;
 
     @Column(name = "ngay_sinh")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngaySinh;
 
     @Column(name = "gioi_tinh")
@@ -47,6 +49,15 @@ public class DoiTuongSuDung implements Serializable {
 
     @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<HoaDon> dsHoaDon;
+
+    @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<HoanTra> dsHoanTra;
+
+    @OneToOne(mappedBy = "doiTuongSuDung", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TKDoiTuongSuDung tkDoiTuongSuDung;
+
+    @OneToOne(mappedBy = "nhanVien", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RapPhim rapPhim;
 
     public DoiTuongSuDung() {}
 
@@ -153,5 +164,29 @@ public class DoiTuongSuDung implements Serializable {
 
     public void setDsHoaDon(Set<HoaDon> dsHoaDon) {
         this.dsHoaDon = dsHoaDon;
+    }
+
+    public Set<HoanTra> getDsHoanTra() {
+        return dsHoanTra;
+    }
+
+    public void setDsHoanTra(Set<HoanTra> dsHoanTra) {
+        this.dsHoanTra = dsHoanTra;
+    }
+
+    public TKDoiTuongSuDung getTkDoiTuongSuDung() {
+        return tkDoiTuongSuDung;
+    }
+
+    public void setTkDoiTuongSuDung(TKDoiTuongSuDung tkDoiTuongSuDung) {
+        this.tkDoiTuongSuDung = tkDoiTuongSuDung;
+    }
+
+    public RapPhim getRapPhim() {
+        return rapPhim;
+    }
+
+    public void setRapPhim(RapPhim rapPhim) {
+        this.rapPhim = rapPhim;
     }
 }

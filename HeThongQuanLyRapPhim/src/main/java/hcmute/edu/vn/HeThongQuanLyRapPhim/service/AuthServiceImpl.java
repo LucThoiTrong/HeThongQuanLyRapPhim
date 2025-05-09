@@ -18,20 +18,24 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    private DoiTuongSuDungRepository doiTuongSuDungRepository;
+    private final DoiTuongSuDungRepository doiTuongSuDungRepository;
+
+    private final TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository;
+
+    private final JavaMailSender mailSender;
+
+    private final SpringTemplateEngine templateEngine;
+
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository;
-
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private SpringTemplateEngine templateEngine;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    public AuthServiceImpl(DoiTuongSuDungRepository doiTuongSuDungRepository, TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository, JavaMailSender mailSender, SpringTemplateEngine templateEngine, BCryptPasswordEncoder passwordEncoder) {
+        this.doiTuongSuDungRepository = doiTuongSuDungRepository;
+        this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
+        this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password, String confirmPassword) throws Exception {

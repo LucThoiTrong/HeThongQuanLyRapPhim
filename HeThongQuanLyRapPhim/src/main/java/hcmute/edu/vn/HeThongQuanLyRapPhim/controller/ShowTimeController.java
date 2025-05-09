@@ -142,22 +142,6 @@ public class ShowTimeController {
         return "redirect:/showtimes/";
     }
 
-    @GetMapping("/api/rooms/{idRapPhim}")
-    public ResponseEntity<List<PhongChieuPhim>> getRoomsByCinemaId(@PathVariable int idRapPhim) {
-        try {
-            List<PhongChieuPhim> rooms = roomService.getAllRoomsByCinemaId(idRapPhim);
-            if (rooms == null || rooms.isEmpty()) {
-                return ResponseEntity.ok(Collections.emptyList()); // Trả về danh sách rỗng nếu không có phòng
-            }
-            return ResponseEntity.ok(rooms);
-        } catch (Exception e) {
-            // Ghi log lỗi để debug
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyList());
-        }
-    }
-
     // API để lấy danh sách phòng chiếu theo idRapPhim
     @GetMapping("/rooms/{idRapPhim}")
     @ResponseBody

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm Nhân Viên Mới</title>
+  <style>
+    :root {
+      --primary-color: #0a3d62;
+      --secondary-color: #6c757d;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      /* --success-color: #28a745; /* Will use primary-color for save button */
+      --success-bg-color: #e6f3e6;
+      --success-text-color: #2e7d32;
+      --success-border-color: #c3e6cb;
+      --danger-bg-color: #f8d7da;
+      --danger-text-color: #721c24;
+      --danger-border-color: #f5c6cb;
+
+      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+      --border-radius: 8px;
+
+      --input-border-color: #ccc;
+      --input-focus-border-color: var(--primary-color);
+      --input-focus-box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25);
+      --label-text-color: #555;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      padding: 1rem 2rem;
+      box-shadow: var(--card-shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header h1 {
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .container {
+      padding: 2rem;
+      flex: 1;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .page-heading {
+      color: var(--primary-color);
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .form-card {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--label-text-color);
+      font-weight: 600;
+    }
+
+    .form-control,
+    .form-select {
+      display: block;
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #212529;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid var(--input-border-color);
+      appearance: none;
+      border-radius: var(--border-radius);
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+    .form-select {
+      padding-right: 2.25rem;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 16px 12px;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      color: #212529;
+      background-color: #fff;
+      border-color: var(--input-focus-border-color);
+      outline: 0;
+      box-shadow: var(--input-focus-box-shadow);
+    }
+
+    .button-group-form {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.5;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      color: #ffffff;
+      border: none;
+      transition: var(--transition);
+      box-shadow: var(--card-shadow);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      opacity: 0.9;
+    }
+
+    .btn-save {
+      background-color: var(--primary-color);
+    }
+    .btn-cancel {
+      background-color: var(--secondary-color);
+    }
+
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      border: 1px solid transparent;
+      transition: opacity 0.5s ease-out, transform 0.3s ease-out;
+      opacity: 1;
+      visibility: visible;
+    }
+    .alert-success {
+      background-color: var(--success-bg-color);
+      color: var(--success-text-color);
+      border-color: var(--success-border-color);
+    }
+    .alert-danger {
+      background-color: var(--danger-bg-color);
+      color: var(--danger-text-color);
+      border-color: var(--danger-border-color);
+    }
+    .alert-hidden {
+      opacity: 0;
+      transform: translateY(-20px);
+      visibility: hidden;
+    }
+
+    #flash-message {
+      margin-bottom: 20px;
+    }
+
+    .text-danger {
+      color: var(--danger-color);
+      font-size: 0.875em;
+      margin-top: 0.25rem;
+    }
+
+  </style>
+</head>
+<body>
+<header>
+  <h1>Quản Lý Nhân Viên</h1>
+</header>
+
+<div class="container">
+  <h2 class="page-heading">Thêm Nhân Viên Mới</h2>
+
+  <div th:if="${message}"
+       th:classappend="${messageType == 'success' ? 'alert-success' : 'alert-danger'}"
+       th:text="${message}"
+       id="flash-message"
+       class="alert"
+       role="alert">
+  </div>
+
+  <div class="form-card">
+    <form th:action="@{/employees/new/}" th:object="${nhanVien}" method="post">
+
+      <div class="form-group">
+        <label for="hoTen">Họ và Tên <span style="color:red;">*</span></label>
+        <input type="text" id="hoTen" class="form-control" th:field="*{hoTen}" placeholder="Nhập họ và tên" required>
+        <div th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}" class="text-danger"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email <span style="color:red;">*</span></label>
+        <input type="email" id="email" class="form-control" th:field="*{email}" placeholder="Nhập địa chỉ email" required>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="soDienThoai">Số điện thoại</label>
+        <input type="tel" id="soDienThoai" class="form-control" th:field="*{soDienThoai}" placeholder="Nhập số điện thoại">
+        <div th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}" class="text-danger"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="ngaySinh">Ngày sinh</label>
+        <input type="date" id="ngaySinh" class="form-control" th:field="*{ngaySinh}">
+        <div th:if="${#fields.hasErrors('ngaySinh')}" th:errors="*{ngaySinh}" class="text-danger"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="gioiTinh">Giới tính</label>
+        <select id="gioiTinh" class="form-select" th:field="*{gioiTinh}">
+          <option value="">-- Chọn giới tính --</option>
+          <option value="NAM">Nam</option>
+          <option value="NU">Nữ</option>
+          <option value="KHAC">Khác</option>
+        </select>
+        <div th:if="${#fields.hasErrors('gioiTinh')}" th:errors="*{gioiTinh}" class="text-danger"></div>
+      </div>
+
+      <div class="button-group-form">
+        <a th:href="@{/employees/}" class="btn btn-cancel">Quay lại danh sách</a>
+        <button type="submit" class="btn btn-save">Thêm Nhân Viên</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const flashMessage = document.getElementById('flash-message');
+    if (flashMessage) {
+      setTimeout(function() {
+        flashMessage.classList.add('alert-hidden');
+        setTimeout(() => {
+          if(flashMessage.parentNode) {
+            flashMessage.remove();
+          }
+        }, 500);
+      }, 3000);
+    }
+  });
+</script>
+</body>
+</html>

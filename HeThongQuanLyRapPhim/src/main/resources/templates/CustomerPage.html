@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Khách Hàng</title>
+    <style>
+        :root {
+            --primary-color: #0a3d62; /* Màu xanh đậm chủ đạo */
+            --secondary-color: #6c757d; /* Màu xám cho nút phụ */
+            --danger-color: #dc3545; /* Màu đỏ cho nút xóa */
+            --success-color: #28a745; /* Màu xanh lá cho thông báo thành công */
+            --info-color: #17a2b8; /* Màu xanh dương cho thông báo thông tin */
+            --warning-color: #ffc107; /* Màu vàng cho cảnh báo/trạng thái không xác định */
+            --light-gray-color: #f8f9fa; /* Màu xám rất nhạt cho nền */
+
+            --background-light: #f0f4f8; /* Màu nền sáng */
+            --card-background: #ffffff; /* Màu nền thẻ */
+            --text-dark: #343a40; /* Màu chữ đậm */
+            --text-light: #ffffff; /* Màu chữ sáng */
+            --text-muted: #6c757d; /* Màu chữ mờ */
+
+            --border-color: #dee2e6; /* Màu viền */
+            --table-header-background: #e0f2f7; /* Màu nền header bảng */
+            --table-hover-background: #f1f1f1; /* Màu nền khi hover dòng bảng */
+
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 1.25rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000; /* Giữ header ở trên */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--text-light);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .container {
+            padding: 2rem;
+            flex: 1;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .button-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--text-light);
+            background-color: var(--primary-color);
+            border: 1px solid transparent;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .btn svg {
+            width: 1em;
+            height: 1em;
+            fill: currentColor;
+        }
+
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-edit {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+            color: var(--text-light);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+            color: var(--text-dark);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background-color: var(--card-background);
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.9rem 1rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--table-header-background);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+
+        tr:hover {
+            background-color: var(--table-hover-background);
+        }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid transparent;
+            opacity: 1;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out, visibility 0.5s;
+            visibility: visible;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .alert-hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-20px);
+        }
+
+        #flash-message {
+            margin-top: 1rem;
+        }
+
+        form {
+            margin: 0;
+            padding: 0;
+            display: inline;
+        }
+
+        .actions-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.3em 0.65em;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border: 1px solid transparent;
+        }
+        .status-active {
+            color: var(--success-color);
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .status-inactive {
+            color: var(--danger-color);
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        .status-unknown {
+            color: var(--text-dark);
+            background-color: #e9ecef;
+            border-color: var(--border-color);
+        }
+        .status-disabled {
+            color: var(--text-muted);
+            background-color: var(--light-gray-color);
+            border-color: var(--border-color);
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.7rem;
+            font-size: 0.8rem;
+        }
+
+        /* === DIALOG STYLES (Vẫn giữ lại) === */
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .dialog-box {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 80%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dialog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .dialog-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .dialog-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+        .dialog-close-btn:hover {
+            color: var(--danger-color);
+        }
+
+        .dialog-content {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .dialog-content .loading-spinner,
+        .dialog-content .no-data,
+        .dialog-content .error-message {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: 1.1em;
+            color: var(--text-muted);
+            min-height: 100px;
+        }
+        .dialog-content .error-message {
+            color: var(--danger-color);
+        }
+
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .history-list li {
+            padding: 8px 0;
+            border-bottom: 1px dotted var(--border-color);
+        }
+        .history-list li:last-child {
+            border-bottom: none;
+        }
+        .history-item-date {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 10px;
+        }
+        /* ======================== */
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .button-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                justify-content: center;
+            }
+            .btn:last-child {
+                margin-bottom: 0;
+            }
+            .container {
+                padding: 1rem;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                margin-bottom: 1rem;
+                border: 1px solid var(--border-color);
+                border-radius: var(--border-radius);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+                background-color: var(--card-background);
+            }
+            td {
+                border: none;
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 45%;
+                padding-right: 1rem;
+                min-height: 2.5em;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+            td:before {
+                position: absolute;
+                top: 50%;
+                left: 1rem;
+                transform: translateY(-50%);
+                width: 40%;
+                padding-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: left;
+                font-weight: bold;
+                color: var(--primary-color);
+                content: attr(data-label);
+            }
+            .actions-cell {
+                justify-content: flex-end;
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+            .actions-cell .btn {
+                width: auto;
+                margin-bottom: 0.25rem;
+            }
+            .actions-cell .btn:last-child {
+                margin-bottom: 0;
+            }
+            td:last-child {
+                border-bottom: 0;
+            }
+            .dialog-box {
+                width: 90%;
+                max-height: 85vh;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Quản Lý Khách Hàng</h1>
+</header>
+<div class="container">
+    <div th:if="${message}"
+         th:classappend="${messageType == 'success' ? 'alert-success' : (messageType == 'info' ? 'alert-info' : (messageType == 'danger' ? 'alert-danger' : 'alert-info'))}"
+         class="alert"
+         id="flash-message"
+         role="alert">
+        <span th:text="${message}"></span>
+    </div>
+
+    <div class="button-group">
+        <a th:href="@{/manage/}" class="btn btn-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+            </svg>
+            Quay lại
+        </a>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Họ Tên</th>
+            <th>Email</th>
+            <th>Số Điện Thoại</th>
+            <th>Trạng thái hoạt động</th>
+            <th>Hành Động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${danhSachKhachHang == null or #lists.isEmpty(danhSachKhachHang)}">
+            <td colspan="5" style="text-align: center; padding: 1rem;">Không có dữ liệu khách hàng nào để hiển thị.</td>
+        </tr>
+        <tr th:each="customer : ${danhSachKhachHang}">
+            <td data-label="Họ Tên:" th:text="${customer.hoTen}"></td>
+            <td data-label="Email:" th:text="${customer.email}"></td>
+            <td data-label="SĐT:" th:text="${customer.soDienThoai}"></td>
+            <td data-label="Trạng thái hoạt động:">
+                <span th:if="${customer.tkDoiTuongSuDung != null}">
+                    <span th:if="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-active">Đang hoạt động</span>
+                    <span th:unless="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-inactive">Không hoạt động</span>
+                </span>
+                <span th:if="${customer.tkDoiTuongSuDung == null}" class="status-badge status-disabled">
+                        Chưa có tài khoản
+                </span>
+            </td>
+            <td data-label="Hành Động:" class="actions-cell">
+                <a th:href="@{/customers/update/{id}(id=${customer.idDoiTuongSuDung})}" class="btn btn-edit btn-sm" title="Sửa thông tin khách hàng">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                    </svg>
+                    Sửa
+                </a>
+                <form th:action="@{/customers/delete/{id}(id=${customer.idDoiTuongSuDung})}" method="post" class="delete-form" style="display: inline;" th:if="${customer.idDoiTuongSuDung != null}">
+                    <button type="button" class="btn btn-danger btn-sm delete-button"
+                            th:attr="data-customer-name=${customer.hoTen}, data-customer-id=${customer.idDoiTuongSuDung}"
+                            title="Xóa khách hàng">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m3.5.5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0zM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 .5.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5"/>
+                        </svg>
+                        Xóa
+                    </button>
+                </form>
+                <a href="#" class="btn btn-success btn-sm history-btn"
+                   th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
+                   data-history-type="purchase"
+                   title="Xem lịch sử mua hàng">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0L11 1.293l.646-.647a.5.5 0 0 1 .708 0L13 1.293l.646-.647a.5.5 0 0 1 .708 0L15 1.293l.646-.647a.5.5 0 0 1 .434-.14L16 1.5V15a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1.5l.006-.066a.5.5 0 0 1 .03-.111ZM2.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-11Z"/>
+                    </svg>
+                    LS Mua
+                </a>
+                <a href="#" class="btn btn-warning btn-sm history-btn"
+                   th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
+                   data-history-type="return"
+                   title="Xem lịch sử hoàn trả">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.5A5.002 5.002 0 0 0 8 3M3.5 13A5.002 5.002 0 0 0 8 15c1.552 0 2.94-.707 3.857-1.818a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.5a5.002 5.002 0 0 0 0 4"/>
+                    </svg>
+                    LS Trả
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="historyDialog" class="dialog-overlay">
+    <div class="dialog-box">
+        <div class="dialog-header">
+            <h3 id="dialogTitleEl">Lịch sử Khách Hàng</h3>
+            <button id="closeDialogBtn" class="dialog-close-btn" title="Đóng">&times;</button>
+        </div>
+        <div class="dialog-content" id="dialogContentEl">
+            <p class="loading-spinner">Đang tải dữ liệu...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Logic cho nút Xóa (giữ nguyên) ---
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                const customerName = button.dataset.customerName;
+                const customerId = button.dataset.customerId;
+                const confirmationMessage = `Bạn có chắc chắn muốn xóa khách hàng "${customerName}" (ID: ${customerId})? Hành động này không thể hoàn tác.`;
+                if (confirm(confirmationMessage)) {
+                    const form = button.closest('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error("Không tìm thấy form cha để submit cho nút:", button);
+                    }
+                }
+            });
+        });
+
+        // --- Logic cho Flash Message (giữ nguyên) ---
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(function() {
+                flashMessage.classList.add('alert-hidden');
+            }, 5000);
+        }
+
+        // --- Logic cho History Dialog (Vẫn giữ lại các biến và hàm, nhưng bỏ sự kiện cho nút history) ---
+        const historyDialog = document.getElementById('historyDialog');
+        const dialogTitleEl = document.getElementById('dialogTitleEl');
+        const dialogContentEl = document.getElementById('dialogContentEl');
+        const closeDialogBtn = document.getElementById('closeDialogBtn');
+        // const historyButtons = document.querySelectorAll('.history-btn'); // Bỏ dòng này hoặc comment lại
+
+        function openDialog() {
+            if (historyDialog) historyDialog.style.display = 'flex';
+        }
+
+        function closeDialog() {
+            if (historyDialog) {
+                historyDialog.style.display = 'none';
+                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+            }
+        }
+
+        if (closeDialogBtn) {
+            closeDialogBtn.addEventListener('click', closeDialog);
+        }
+
+        if (historyDialog) {
+            historyDialog.addEventListener('click', function(event) {
+                if (event.target === historyDialog) {
+                    closeDialog();
+                }
+            });
+        }
+
+        /* // === BỎ HOẶC COMMENT LẠI KHỐI GẮN SỰ KIỆN CHO NÚT LỊCH SỬ ===
+        historyButtons.forEach(button => { // Nếu đã comment dòng const historyButtons thì khối này cũng sẽ không chạy
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                const customerId = this.dataset.customerId;
+                const customerName = this.dataset.customerName;
+                const historyType = this.dataset.historyType;
+
+                let titleText = "";
+                if (historyType === 'purchase') {
+                    titleText = `Lịch sử mua hàng của ${customerName}`;
+                } else if (historyType === 'return') {
+                    titleText = `Lịch sử hoàn trả của ${customerName}`;
+                } else {
+                    titleText = `Lịch sử của ${customerName}`;
+                }
+                dialogTitleEl.textContent = titleText;
+                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+                openDialog();
+
+                const fragmentUrl = `/customers/${customerId}/history-fragment?type=${historyType}`;
+
+                fetch(fragmentUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Lỗi mạng: ${response.status} ${response.statusText}`);
+                        }
+                        return response.text();
+                    })
+                    .then(htmlFragment => {
+                        dialogContentEl.innerHTML = htmlFragment;
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi tải fragment lịch sử:', error);
+                        dialogContentEl.innerHTML = `<p class="error-message">Không thể tải lịch sử. Vui lòng thử lại sau. (${error.message})</p>`;
+                    });
+            });
+        });
+        */ // === KẾT THÚC KHỐI COMMENT ===
+    });
+</script>
+</body>
+</html>
