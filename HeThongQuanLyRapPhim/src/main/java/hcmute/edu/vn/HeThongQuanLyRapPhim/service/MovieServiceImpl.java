@@ -28,6 +28,7 @@ public class MovieServiceImpl implements MovieService {
     public Phim getPhimById(int id) {
         return movieRepository.findById(id).get();
     }
+
     @Override
     public List<Phim> getAllMovies() {
         return movieRepository.findAll();
@@ -41,28 +42,33 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Phim createMovie(Phim phim) {
+        Phim existing = movieRepository.findByTenPhim(phim.getTenPhim()).orElse(null);
+        if (existing != null) {
+            return null; // Phim đã tồn tại, trả về null
+        }
         return movieRepository.save(phim);
     }
 
     @Override
     public Phim updateMovie(int id, Phim phimMoi) {
-        Phim phimCu = movieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Phim không tồn tại với ID: " + id));
-        phimCu.setTenPhim(phimMoi.getTenPhim());
-        phimCu.setDaoDien(phimMoi.getDaoDien());
-        phimCu.setDienVien(phimMoi.getDienVien());
-        phimCu.setMoTaPhim(phimMoi.getMoTaPhim());
-        phimCu.setTheLoai(phimMoi.getTheLoai());
-        phimCu.setThoiGianKhoiChieu(phimMoi.getThoiGianKhoiChieu());
-        phimCu.setThoiLuongChieu(phimMoi.getThoiLuongChieu());
-        phimCu.setLinkTrailer(phimMoi.getLinkTrailer());
-        phimCu.setLinkAnh(phimMoi.getLinkAnh());
-        phimCu.setDoTuoi(phimMoi.getDoTuoi());
-        phimCu.setTrangThaiPhim(phimMoi.getTrangThaiPhim());
-        phimCu.setHinhThucChieu(phimMoi.getHinhThucChieu());
-        phimCu.setNgonNgu(phimMoi.getNgonNgu());
-        return movieRepository.save(phimCu);
+        Phim existing = movieRepository.findById(id).orElse(null);
+        if (existing != null) {
+            Phim phimTrungTen = movieRepository.findByTenPhim(phimMoi.getTenPhim()).orElse(null);
+            // Nếu tên bị trùng và ID khác thì không update
+            if (phimTrungTen != null && phimTrungTen.getIdPhim() != id) {
+                return null;
+            }
+            existing.setTenPhim(phimMoi.getTenPhim());
+            existing.setDoTuoi(phimMoi.getDoTuoi());
+            existing.setHinhThucChieu(phimMoi.getHinhThucChieu());
+            existing.setThoiLuongChieu(phimMoi.getThoiLuongChieu());
+            existing.setMoTaPhim(phimMoi.getMoTaPhim());
+            existing.setTrangThaiPhim(phimMoi.getTrangThaiPhim());
+            return movieRepository.save(existing);
+        }
+        return null;
     }
+
 
     @Override
     public boolean deleteMovieById(int id) {
@@ -72,6 +78,11 @@ public class MovieServiceImpl implements MovieService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Optional<Phim> findByMovieName(String tenPhim) {
+        return movieRepository.findByTenPhim(tenPhim);
     }
 }
 

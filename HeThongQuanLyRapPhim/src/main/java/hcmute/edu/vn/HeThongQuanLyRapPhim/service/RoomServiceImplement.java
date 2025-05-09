@@ -52,4 +52,9 @@ public class RoomServiceImplement implements RoomService {
         }
         return false;
     }
+
+    @Override
+    public PhongChieuPhim findRoomByNameAndCinemaId(String tenPhongChieuPhim, int idRapPhim) {
+        return roomRepository.findByTenPhongChieuPhimAndRapPhimId(tenPhongChieuPhim, idRapPhim).orElse(null);
+    }
 }

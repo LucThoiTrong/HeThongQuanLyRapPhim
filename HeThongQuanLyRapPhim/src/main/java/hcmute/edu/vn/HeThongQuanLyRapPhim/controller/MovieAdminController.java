@@ -1,10 +1,8 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoTuoi;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HinhThucChieu;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,14 +19,21 @@ import java.util.List;
 public class MovieAdminController {
     private final MovieService movieService;
 
+    private void prepareFormModel(Model model) {
+        model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
+        model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
+        model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+    }
+
     @Autowired
     public MovieAdminController(MovieService movieService) {
         this.movieService = movieService;
     }
 
     @GetMapping("/")
-    public String showList(Model model) {
+    public String showList(Model model, HttpSession session) {
         List<Phim> dsPhim = movieService.getAllMovies();
+        session.setAttribute("movies", dsPhim);
         model.addAttribute("movies", dsPhim);
         return "MovieListPage";
     }
@@ -43,25 +48,37 @@ public class MovieAdminController {
     }
 
     @PostMapping("/new")
-    public String insertPhim(@Valid @ModelAttribute("phim") Phim phim, BindingResult result, Model model, RedirectAttributes redirectAttributes) {
+    public String insertPhim(@Valid @ModelAttribute("phim") Phim phim,
+                             BindingResult result,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
-            model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
-            model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+            prepareFormModel(model);
             return "AddMovie";
         }
-        Phim p = movieService.createMovie(phim);
-        if (p != null) {
-            redirectAttributes.addFlashAttribute("message", "Thêm phim thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Thêm phim thất bại");
+        Phim created = movieService.createMovie(phim);
+        if (created == null) {
+            model.addAttribute("phim", phim);
+            prepareFormModel(model);
+            model.addAttribute("message", "Tên phim đã tồn tại");
+            return "AddMovie";
         }
+        redirectAttributes.addFlashAttribute("message", "Thêm phim thành công");
         return "redirect:/movies/";
     }
 
     @GetMapping("/update/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model) {
-        Phim phim = movieService.getMovieById(id);
+    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session) {
+        @SuppressWarnings("unchecked")
+        List<Phim> dsPhim = (List<Phim>) session.getAttribute("movies");
+        Phim phim;
+        if (dsPhim == null) {
+            phim = movieService.getMovieById(id);
+        } else {
+            phim = dsPhim.stream()
+                    .filter(p -> p.getIdPhim() == id)
+                    .findFirst().orElse(null);
+        }
         if (phim == null) {
             return "redirect:/movies/";
         }
@@ -74,19 +91,23 @@ public class MovieAdminController {
     }
 
     @PostMapping("/update/{id}")
-    public String updatePhim(@Valid @ModelAttribute("phim") Phim phim, BindingResult result, @PathVariable int id, Model model, RedirectAttributes redirectAttributes) {
+    public String updatePhim(@Valid @ModelAttribute("phim") Phim phim,
+                             BindingResult result,
+                             @PathVariable int id,
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
-            model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
-            model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+            prepareFormModel(model);
             return "EditMovie";
         }
-        Phim p = movieService.updateMovie(id, phim);
-        if (p != null) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật phim thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật phim thất bại");
+        Phim updated = movieService.updateMovie(id, phim);
+        if (updated == null) {
+            model.addAttribute("phim", phim);
+            prepareFormModel(model);
+            model.addAttribute("message", "Tên phim đã tồn tại hoặc không tìm thấy phim");
+            return "EditMovie";
         }
+        redirectAttributes.addFlashAttribute("message", "Cập nhật phim thành công");
         return "redirect:/movies/";
     }
 

@@ -10,4 +10,5 @@ public interface CinemaService {
     RapPhim createCinema(RapPhim rapPhim);
     RapPhim updateCinema(int id, RapPhim rapPhim);
     boolean deleteCinema(int id);
+    RapPhim findCinemaByName(String tenRapPhim);
 }

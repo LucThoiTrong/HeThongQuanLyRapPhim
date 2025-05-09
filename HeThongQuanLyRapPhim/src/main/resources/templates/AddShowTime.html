@@ -21,10 +21,34 @@
       display: none;
       margin-top: 10px;
     }
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 <body>
 <div class="container mt-5">
+  <div th:if="${message}" class="alert" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+       role="alert" th:text="${message}">
+  </div>
+
   <h1 class="text-center mb-4">Thêm suất chiếu mới</h1>
 
   <div class="row justify-content-center">
@@ -80,6 +104,7 @@
           <div th:errors="*{phim}" class="error-message align-self-end"></div>
         </div>
         <div id="room-error" class="alert alert-danger alert-error"></div>
+        <div th:if="${message}" class="alert alert-danger alert-error" th:text="${message}"></div>
         <button type="submit" class="btn btn-primary">Thêm suất chiếu</button>
         <a th:href="@{/showtimes/}" class="btn btn-secondary">Hủy</a>
       </form>

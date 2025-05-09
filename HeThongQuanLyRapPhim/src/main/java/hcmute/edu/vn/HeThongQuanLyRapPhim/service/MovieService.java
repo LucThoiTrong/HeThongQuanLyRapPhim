@@ -4,6 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiPhim;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface MovieService {
@@ -14,4 +15,5 @@ public interface MovieService {
     Phim createMovie(Phim phim);
     Phim updateMovie(int id, Phim Phim);
     boolean deleteMovieById(int id);
+    Optional<Phim> findByMovieName(String tenPhim);
 }

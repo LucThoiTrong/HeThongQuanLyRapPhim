@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -76,11 +75,20 @@ public class ShowTimeController {
             model.addAttribute("phongChieuList", Collections.emptyList());
             return "AddShowTime";
         }
-        SuatChieu savedShowTime = showTimeService.createShowTime(suatChieu);
-        if (savedShowTime != null) {
-            redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thất bại");
+        try {
+            SuatChieu savedShowTime = showTimeService.createShowTime(suatChieu);
+            if (savedShowTime != null) {
+                redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Thêm suất chiếu thất bại");
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+            model.addAttribute("phimList", movieService.getAllMovies());
+            model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
+            model.addAttribute("phongChieuList", Collections.emptyList());
+            model.addAttribute("message", e.getMessage());
+            return "AddShowTime";
         }
         return "redirect:/showtimes/";
     }
@@ -88,46 +96,80 @@ public class ShowTimeController {
     // Hiển thị form chỉnh sửa suất chiếu
     @GetMapping("/update/{id}")
     public String showEditForm(@PathVariable("id") int id, Model model, RedirectAttributes redirectAttributes) {
-        // Lấy suất chiếu
         SuatChieu suatChieu = showTimeService.getShowTimeById(id);
+        if (suatChieu == null || suatChieu.getPhongChieuPhim() == null || suatChieu.getPhongChieuPhim().getRapPhim() == null) {
+            redirectAttributes.addFlashAttribute("message", "Không tìm thấy suất chiếu hoặc thông tin phòng chiếu/rạp phim không hợp lệ.");
+            return "redirect:/showtimes/";
+        }
 
-        // Lấy danh sách hình thức chiếu
         List<HinhThucChieu> hinhThucChieuList = Arrays.asList(HinhThucChieu.values());
-
-        // Lấy danh sách phòng chiếu dựa trên id rạp phim
         int idRapPhim = suatChieu.getPhongChieuPhim().getRapPhim().getIdRapPhim();
         List<PhongChieuPhim> phongChieuList = roomService.getAllRoomsByCinemaId(idRapPhim);
-        LocalDateTime ngayGioChieu = suatChieu.getNgayGioChieu();
-        System.out.println(ngayGioChieu);
-
 
         model.addAttribute("suatChieu", suatChieu);
         model.addAttribute("hinhThucChieuList", hinhThucChieuList);
         model.addAttribute("phimList", movieService.getAllMovies());
         model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
         model.addAttribute("phongChieuList", phongChieuList);
-        model.addAttribute("ngayGioChieu", ngayGioChieu);
+        model.addAttribute("selectedRapPhimId", idRapPhim);
         return "EditShowTime";
     }
 
     // Xử lý cập nhật suất chiếu
     @PostMapping("/update/{id}")
     public String updateShowTime(@Valid @ModelAttribute("suatChieu") SuatChieu suatChieu, BindingResult result, @PathVariable int id, Model model, RedirectAttributes redirectAttributes) {
+        // Log dữ liệu nhận được từ form để debug
+        System.out.println("Received SuatChieu: " + suatChieu);
+        System.out.println("Phim ID: " + (suatChieu.getPhim() != null ? suatChieu.getPhim().getIdPhim() : null));
+        System.out.println("PhongChieuPhim ID: " + (suatChieu.getPhongChieuPhim() != null ? suatChieu.getPhongChieuPhim().getIdPhongChieuPhim() : null));
+        System.out.println("NgayGioChieu: " + suatChieu.getNgayGioChieu());
+        System.out.println("HinhThucChieu: " + suatChieu.getHinhThucChieu());
+
+        // Khởi tạo model attributes cho trường hợp lỗi
+        Integer selectedRapPhimId = suatChieu.getPhongChieuPhim() != null && suatChieu.getPhongChieuPhim().getRapPhim() != null ? suatChieu.getPhongChieuPhim().getRapPhim().getIdRapPhim() : null;
+        List<PhongChieuPhim> phongChieuList = selectedRapPhimId != null ? roomService.getAllRoomsByCinemaId(selectedRapPhimId) : Collections.emptyList();
+        model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
+        model.addAttribute("phimList", movieService.getAllMovies());
+        model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
+        model.addAttribute("phongChieuList", phongChieuList);
+        model.addAttribute("selectedRapPhimId", selectedRapPhimId);
+
         if (result.hasErrors()) {
-            model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
-            model.addAttribute("phimList", movieService.getAllMovies());
-            model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
-            model.addAttribute("phongChieuList", Collections.emptyList());
-            model.addAttribute("selectedRapPhimId", suatChieu.getPhongChieuPhim() != null && suatChieu.getPhongChieuPhim().getRapPhim() != null ? suatChieu.getPhongChieuPhim().getRapPhim().getIdRapPhim() : null);
+            System.out.println("Validation errors: " + result.getAllErrors());
             return "EditShowTime";
         }
-        SuatChieu updatedShowTime = showTimeService.updateShowTime(id, suatChieu);
-        if (updatedShowTime != null) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật suất chiếu thành công");
-        } else {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật suất chiếu thất bại");
+
+        try {
+            // Kiểm tra và ánh xạ phim từ phim.idPhim
+            if (suatChieu.getPhim() == null || suatChieu.getPhim().getIdPhim() == null) {
+                model.addAttribute("message", "Vui lòng chọn phim.");
+                return "EditShowTime";
+            }
+            Phim phim = movieService.getMovieById(suatChieu.getPhim().getIdPhim());
+            if (phim == null || phim.getThoiLuongChieu() == null) {
+                model.addAttribute("message", "Phim không hợp lệ hoặc thiếu thời lượng chiếu.");
+                return "EditShowTime";
+            }
+            suatChieu.setPhim(phim);
+
+            // Kiểm tra phòng chiếu
+            if (suatChieu.getPhongChieuPhim() == null || suatChieu.getPhongChieuPhim().getIdPhongChieuPhim() == null) {
+                model.addAttribute("message", "Vui lòng chọn phòng chiếu.");
+                return "EditShowTime";
+            }
+
+            SuatChieu updatedShowTime = showTimeService.updateShowTime(id, suatChieu);
+            if (updatedShowTime != null) {
+                redirectAttributes.addFlashAttribute("message", "Cập nhật suất chiếu thành công");
+                return "redirect:/showtimes/";
+            } else {
+                model.addAttribute("message", "Không tìm thấy suất chiếu để cập nhật.");
+                return "EditShowTime";
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("message", e.getMessage());
+            return "EditShowTime";
         }
-        return "redirect:/showtimes/";
     }
 
     // Xóa suất chiếu
@@ -140,6 +182,21 @@ public class ShowTimeController {
             redirectAttributes.addFlashAttribute("message", "Xóa suất chiếu thất bại");
         }
         return "redirect:/showtimes/";
+    }
+
+    @GetMapping("/api/rooms/{idRapPhim}")
+    public ResponseEntity<List<PhongChieuPhim>> getRoomsByCinemaId(@PathVariable int idRapPhim) {
+        try {
+            List<PhongChieuPhim> rooms = roomService.getAllRoomsByCinemaId(idRapPhim);
+            if (rooms == null || rooms.isEmpty()) {
+                return ResponseEntity.ok(Collections.emptyList());
+            }
+            return ResponseEntity.ok(rooms);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
     }
 
     // API để lấy danh sách phòng chiếu theo idRapPhim
