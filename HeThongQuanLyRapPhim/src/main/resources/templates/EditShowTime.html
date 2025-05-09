@@ -17,10 +17,36 @@
     .input-group .form-control, .input-group .form-select {
       flex: 1 1 auto;
     }
+    .alert-error {
+      display: none;
+      margin-top: 10px;
+    }
+    .alert-error.active {
+      display: block;
+    }
+    .alert-success {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
+      transition: opacity 0.5s ease-out;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 <body>
-<div class="container mt-5">
   <h1 class="text-center mb-4">Chỉnh sửa suất chiếu</h1>
 
   <div class="row justify-content-center">
@@ -30,7 +56,7 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="ngayGioChieu" class="form-label">Ngày giờ chiếu</label>
-            <input type="datetime-local" class="form-control" id="ngayGioChieu" name="ngayGioChieu" required>
+            <input type="datetime-local" class="form-control" id="ngayGioChieu" th:field="*{ngayGioChieu}" required>
             <div class="invalid-feedback">Vui lòng chọn ngày giờ chiếu.</div>
           </div>
           <div th:errors="*{ngayGioChieu}" class="error-message align-self-end"></div>
@@ -41,8 +67,7 @@
             <select class="form-select" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
               <option th:each="hinhThuc : ${hinhThucChieuList}"
                       th:value="${hinhThuc.name()}"
-                      th:text="${hinhThuc.moTa}">
-              </option>
+                      th:text="${hinhThuc.moTa}"></option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
           </div>
@@ -51,12 +76,12 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="rapPhim" class="form-label">Rạp phim</label>
-            <select class="form-select" id="rapPhim" name="rapPhim" required>
+            <select class="form-select" id="rapPhim" name="rapPhim" required onchange="loadRooms(this.value)">
               <option value="">Chọn rạp phim</option>
               <option th:each="rap : ${rapPhimList}"
                       th:value="${rap.idRapPhim}"
                       th:text="${rap.tenRapPhim}"
-                      th:selected="${suatChieu.getPhongChieuPhim().getRapPhim().tenRapPhim}"></option>
+                      th:selected="${selectedRapPhimId != null and rap.idRapPhim == selectedRapPhimId}"></option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn rạp phim.</div>
           </div>
@@ -64,12 +89,11 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="phongChieuPhim" class="form-label">Phòng chiếu</label>
-            <select class="form-select" id="phongChieuPhim" th:field="*{phongChieuPhim}" required>
+            <select class="form-select" id="phongChieuPhim" th:field="*{phongChieuPhim.idPhongChieuPhim}" required>
               <option value="">Chọn phòng chiếu</option>
               <option th:each="phong : ${phongChieuList}"
                       th:value="${phong.idPhongChieuPhim}"
-                      th:text="${phong.tenPhongChieuPhim}">
-              </option>
+                      th:text="${phong.tenPhongChieuPhim}"></option>
             </select>
             <div class="invalid-feedback">Vui lòng chọn phòng chiếu.</div>
           </div>
@@ -78,7 +102,8 @@
         <div class="mb-3 input-group">
           <div class="flex-grow-1">
             <label for="phim" class="form-label">Phim</label>
-            <select class="form-select" id="phim" th:field="*{phim}" required>
+            <select class="form-select" id="phim" th:field="*{phim.idPhim}" required>
+              <option value="">Chọn phim</option>
               <option th:each="phim : ${phimList}"
                       th:value="${phim.idPhim}"
                       th:text="${phim.tenPhim}"></option>
@@ -87,6 +112,8 @@
           </div>
           <div th:errors="*{phim}" class="error-message align-self-end"></div>
         </div>
+        <div id="room-error" class="alert alert-danger alert-error"></div>
+        <div th:if="${message}" class="alert alert-danger alert-error active" th:text="${message}"></div>
         <button type="submit" class="btn btn-primary">Cập nhật suất chiếu</button>
         <a th:href="@{/showtimes/}" class="btn btn-secondary">Hủy</a>
       </form>
@@ -99,9 +126,71 @@
 <script th:inline="javascript">
   document.addEventListener('DOMContentLoaded', function () {
     const rawDateTime = /*[[${suatChieu.ngayGioChieu}]]*/ null;
-    const formatted = moment(rawDateTime).format('YYYY-MM-DDTHH:mm');
+    const formatted = rawDateTime ? moment(rawDateTime).format('YYYY-MM-DDTHH:mm') : '';
     document.getElementById('ngayGioChieu').value = formatted;
+
+    const currentRapId = /*[[${selectedRapPhimId}]]*/ null;
+    const currentPhongId = /*[[${suatChieu.phongChieuPhim != null ? suatChieu.phongChieuPhim.idPhongChieuPhim : null}]]*/ null;
+    if (currentRapId) {
+      loadRooms(currentRapId, currentPhongId);
+    }
   });
+
+  function loadRooms(idRapPhim, selectedPhongId = null) {
+    const roomSelect = document.getElementById('phongChieuPhim');
+    const roomError = document.getElementById('room-error');
+
+    if (!idRapPhim) {
+      roomSelect.innerHTML = '<option value="">Chọn phòng chiếu</option>';
+      roomError.style.display = 'none';
+      return;
+    }
+
+    fetch('/showtimes/api/rooms/' + idRapPhim)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Không thể tải danh sách phòng chiếu. Mã lỗi: ' + response.status);
+              }
+              return response.json();
+            })
+            .then(data => {
+              roomSelect.innerHTML = '<option value="">Chọn phòng chiếu</option>';
+              if (data.length === 0) {
+                roomError.textContent = 'Không có phòng chiếu nào cho rạp này.';
+                roomError.style.display = 'block';
+              } else {
+                data.forEach(room => {
+                  const option = document.createElement('option');
+                  option.value = room.idPhongChieuPhim;
+                  option.text = room.tenPhongChieuPhim;
+                  if (selectedPhongId && room.idPhongChieuPhim == selectedPhongId) {
+                    option.selected = true;
+                  }
+                  roomSelect.appendChild(option);
+                });
+                roomError.style.display = 'none';
+              }
+            })
+            .catch(error => {
+              console.error('Lỗi khi tải phòng chiếu:', error);
+              roomError.textContent = 'Lỗi khi tải phòng chiếu: ' + error.message;
+              roomError.style.display = 'block';
+            });
+  }
+
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
 </script>
 </body>
 </html>
