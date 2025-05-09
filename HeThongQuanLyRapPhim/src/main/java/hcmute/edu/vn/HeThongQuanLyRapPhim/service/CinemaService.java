@@ -5,6 +5,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
 import java.util.List;
 
 public interface CinemaService {
+    List<RapPhim> isCinemaWithoutManager();
     List<RapPhim> getAllCinemas();
     RapPhim getCinemaById(int id);
     RapPhim createCinema(RapPhim rapPhim);

@@ -11,8 +11,17 @@ import java.util.Optional;
 @Service
 public class CinemaServiceImplement implements CinemaService {
 
+    private final CinemaRepository cinemaRepository;
+
     @Autowired
-    private CinemaRepository cinemaRepository;
+    public CinemaServiceImplement(CinemaRepository cinemaRepository) {
+        this.cinemaRepository = cinemaRepository;
+    }
+
+    @Override
+    public List<RapPhim> isCinemaWithoutManager() {
+        return cinemaRepository.findAll().stream().filter(x -> x.getNhanVien() == null).toList();
+    }
 
     @Override
     public List<RapPhim> getAllCinemas() {

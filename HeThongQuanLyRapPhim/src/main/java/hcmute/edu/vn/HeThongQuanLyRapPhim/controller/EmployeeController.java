@@ -2,6 +2,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiDoiTuongSuDung;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.AuthService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.EmployeeService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -67,7 +69,12 @@ public class EmployeeController {
         DoiTuongSuDung nhanVien = employeeService.getEmployeeById(id);
         if(nhanVien != null) {
             model.addAttribute("nhanVien", nhanVien);
-            model.addAttribute("dsCinema", cinemaService.getAllCinemas());
+            List<RapPhim> dsRapPhim = new ArrayList<>(cinemaService.isCinemaWithoutManager());
+            if (nhanVien.getRapPhim() != null) {
+                dsRapPhim.add(nhanVien.getRapPhim()); // Không còn lỗi nữa
+            }
+
+            model.addAttribute("dsCinema", dsRapPhim);
             return "EditEmployee";
         } else {
             redirectAttributes.addFlashAttribute("message", "Không tìm thấy nhân viên");

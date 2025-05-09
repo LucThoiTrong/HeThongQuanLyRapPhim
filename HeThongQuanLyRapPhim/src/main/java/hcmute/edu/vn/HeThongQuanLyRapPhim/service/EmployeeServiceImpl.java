@@ -49,6 +49,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setEmail(newEmployee.getEmail());
             employee.getTkDoiTuongSuDung().setTrangThaiTaiKhoan(newEmployee.getTkDoiTuongSuDung().isTrangThaiTaiKhoan());
 
+            if(employee.getRapPhim() != null) {
+                employee.getRapPhim().setNhanVien(null);
+                cinemaRepository.save(employee.getRapPhim());
+            }
+
             assert rapPhim != null;
             rapPhim.setNhanVien(employee);
             cinemaRepository.save(rapPhim);
