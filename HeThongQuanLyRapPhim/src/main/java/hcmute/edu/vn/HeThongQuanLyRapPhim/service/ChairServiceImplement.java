@@ -6,7 +6,9 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChairServiceImplement implements ChairService {
@@ -46,4 +48,21 @@ public class ChairServiceImplement implements ChairService {
         }
         return phongChieuPhim;
     }
+
+    @Override
+    public void capNhatTrangThaiGhe(String danhSachGheDuocChon, boolean trangThaiGhe) {
+        String[] mangIdGhe = danhSachGheDuocChon.split(",");
+        List<Integer> danhSachId = Arrays.stream(danhSachGheDuocChon.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .collect(Collectors.toList());
+        for (int id: danhSachId)
+        {
+            //tim id tung ghe va cap nhat trang thai cua ghe
+            Ghe ghe = chairRepository.findById(id).get();
+            ghe.setTrangThaiGhe(trangThaiGhe);
+            chairRepository.save(ghe);
+        }
+    }
+
 }

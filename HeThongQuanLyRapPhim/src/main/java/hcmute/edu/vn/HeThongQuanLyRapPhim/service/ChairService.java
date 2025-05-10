@@ -11,4 +11,5 @@ public interface ChairService {
     Ghe createChair(Ghe ghe);
     Ghe updateChair(int id, Ghe ghe);
     PhongChieuPhim getPhongChieuPhimById(int idPhongChieuPhim);
+    void capNhatTrangThaiGhe(String danhSachGheDuocChon, boolean trangThaiGhe);
 }

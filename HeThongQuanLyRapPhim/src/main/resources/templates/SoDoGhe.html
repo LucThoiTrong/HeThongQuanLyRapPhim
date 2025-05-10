@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Đồ Ghế Phòng Chiếu</title>
+    <link rel="stylesheet" href="/css/sodoghe.css">
+</head>
+<body>
+<h2>SCREEN</h2>
+
+<!-- hiển thị sơ đồ ghế -->
+<div class="seat-map">
+    <div th:each="dayGhe : ${danhSachDayGhe}" class="seat-row">
+        <b class="seat-row-name" th:text="${dayGhe.tenDayGhe}"></b>
+        <div class="seat-container">
+            <button th:each="ghe : ${dayGhe.dsGhe}"
+                    th:text="${ghe.idGhe}"
+                    th:attr="data-id=${ghe.idGhe},
+                    data-trangthai=${ghe.trangThaiGhe},
+                    data-giave=${dayGhe.giaDayGhe}"
+                    th:class="${ghe.trangThaiGhe} ? 'seat-box seat-occupied' : 'seat-box seat-available'"
+                    onclick="selectSeat(this)">
+            </button>
+        </div>
+    </div>
+</div>
+<div class="ticket-container">
+    <div class="ticket-details">
+        <div class="column">
+            <span class="bold" th:text="${phim.tenPhim}"></span>
+        </div>
+
+        <div class="column">
+            <span class="label">Rạp</span>
+            <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+            <span class="label">Suất chiếu</span>
+            <span class="bold">
+                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                <br>
+                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+            </span>
+
+            <span class="label">Phòng chiếu</span>
+            <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+        </div>
+
+        <div class="column">
+            <span class="label">Giá vé</span>
+            <span class="bold" id="total-ve">0 ₫</span>
+            <span class="label">Combo</span>
+            <span class="bold">0 ₫ </span>
+            <span class="label">Tổng</span>
+            <span class="bold" id="total">0 ₫ </span>
+        </div>
+    </div>
+
+    <form id="seatForm" method="POST" action="/booking/combo-list">
+        <input type="hidden" name="danhSachGheDuocChon" id="danhSachGheDuocChon">
+        <input type="hidden" name="tongGiaVe" id="tongGiaVe">
+        <button type="submit" id="continue-button" class="nav-button next" onclick="return validateSelection()">→<br>NEXT</button>
+    </form>
+</div>
+
+</body>
+<script>
+    // Hàm chọn hoặc bỏ chọn ghế
+    function selectSeat(btn) {
+        // Nếu ghế đã có trạng thái "occupied" thì không cho chọn
+        if (btn.classList.contains('seat-occupied')) {
+            return;
+        }
+
+        // Toggle giữa trạng thái được chọn và chưa chọn
+        btn.classList.toggle('seat-selected');
+        updateTotalPrice();
+    }
+
+    function validateSelection() {
+        let isValid = true; // Reset trạng thái hợp lệ
+
+        // Lấy tất cả các hàng ghế
+        const allRows = document.querySelectorAll('.seat-row');
+
+        allRows.forEach(row => {
+
+            const seatButtons = Array.from(row.querySelectorAll('button'));
+            const danhSachGheDuocChon = seatButtons
+                .filter(btn => btn.classList.contains('seat-selected'))
+                .map(btn => parseInt(btn.innerText));
+
+            const occupiedSeats = seatButtons
+                .filter(btn => btn.classList.contains('seat-occupied'))
+                .map(btn => parseInt(btn.innerText));
+
+            const allSeats = seatButtons.map(btn => parseInt(btn.innerText));
+
+            danhSachGheDuocChon.sort((a, b) => a - b);
+
+            // Kiểm tra ghế trống giữa các ghế đã chọn
+            danhSachGheDuocChon.forEach(ghe => {
+                const right1 = ghe + 1;
+                const right2 = ghe + 2;
+
+                if (
+                    allSeats.includes(right1) &&
+                    !danhSachGheDuocChon.includes(right1) &&
+                    !occupiedSeats.includes(right1) &&
+
+                    allSeats.includes(right2) &&
+                    (danhSachGheDuocChon.includes(right2) || occupiedSeats.includes(right2))
+                ) {
+                    isValid = false;
+                    alert(`Không thể để ghế ${right1} trống giữa ghế ${ghe} và ghế ${right2}.`);
+                }
+            });
+
+            // Kiểm tra đầu hàng
+            const firstSeat = allSeats[0];
+            const secondSeat = allSeats[1];
+            if (
+                danhSachGheDuocChon.includes(secondSeat) &&
+                !danhSachGheDuocChon.includes(firstSeat) &&
+                !occupiedSeats.includes(firstSeat)
+            ) {
+                isValid = false;
+                alert(`Không thể để ghế đầu tiên (${firstSeat}) trống nếu bạn chọn ghế kế tiếp (${secondSeat}).`);
+            }
+
+            // Kiểm tra cuối hàng
+            const lastSeat = allSeats[allSeats.length - 1];
+            const beforeLastSeat = allSeats[allSeats.length - 2];
+            if (
+                danhSachGheDuocChon.includes(beforeLastSeat) &&
+                !danhSachGheDuocChon.includes(lastSeat) &&
+                !occupiedSeats.includes(lastSeat)
+            ) {
+                isValid = false;
+                alert(`Không thể để ghế cuối (${lastSeat}) trống nếu bạn chọn ghế sát cuối (${beforeLastSeat}).`);
+            }
+        });
+
+        if (!isValid) {
+            alert('Có lỗi trong việc chọn ghế, vui lòng kiểm tra lại.');
+            return false; // Ngăn form submit
+        }
+        return true; // Cho phép submit
+    }
+
+    let danhSachGheDuocChonIds = [];
+    let suatchieu = '';
+    let total = 0;
+
+    function updateTotalPrice() {
+        const danhSachGheDuocChon = document.querySelectorAll('.seat-selected');
+        total = 0;
+        danhSachGheDuocChonIds = [];
+
+        danhSachGheDuocChon.forEach(ghe => {
+            danhSachGheDuocChonIds.push(ghe.innerText);
+            const giaVe = parseInt(ghe.getAttribute('data-giave')) || 0;
+            total += giaVe;
+        });
+
+        document.getElementById('total-ve').innerText = formatCurrency(total);
+        document.getElementById('total').innerText = formatCurrency(total);
+        document.getElementById('danhSachGheDuocChon').value = danhSachGheDuocChonIds.join(',');
+        document.getElementById('tongGiaVe').value = total;
+    }
+
+    function formatCurrency(number) {
+        return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+</script>
+
+</html>

@@ -263,7 +263,7 @@
             <p><span class="info-label">Hình thức chiếu:</span> <span th:text="${phim.hinhThucChieu}"></span></p>
             <p><span class="info-label">Mô tả:</span> <span th:text="${phim.moTaPhim}"></span></p>
             <div class="button-group">
-                <a th:href="@{/booking}" class="book-ticket-btn">Đặt vé</a>
+                <a th:href="@{/booking/suat-chieu/{idPhim}(idPhim=${phim.idPhim})}" class="book-ticket-btn">Đặt vé</a>
                 <button class="trailer-btn" onclick="openPopup()">Xem trailer</button>
             </div>
         </div>

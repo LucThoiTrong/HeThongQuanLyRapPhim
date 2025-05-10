@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif;">
+<h2>Hóa Đơn Thanh Toán</h2>
+<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+
+<h3>Thông Tin Hóa Đơn</h3>
+<p><strong>Mã Hóa Đơn:</strong> <span th:text="${hoaDon.idHoaDon}"></span></p>
+<p><strong>Ngày Thanh Toán:</strong>
+    <span th:text="${#temporals.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></span>
+</p>
+<p><strong>Khách Hàng:</strong> <span th:text="${hoaDon.doiTuongSuDung.hoTen}"></span></p>
+
+<h3>Chi Tiết Vé Xem Phim</h3>
+<p><strong>Phim:</strong> <span th:text="${hoaDon.suatChieu.phim.tenPhim}"></span></p>
+<p><strong>Thời Gian Chiếu:</strong>
+    <span th:text="${#temporals.format(hoaDon.suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}"></span>
+</p>
+<p><strong>Phòng Chiếu:</strong> <span th:text="${hoaDon.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span></p>
+<p><strong>Ghế:</strong>
+    <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}"
+          th:text="${ve.ghe.idGhe + (stat.last ? '' : ', ')}"></span>
+</p>
+
+<h3 th:if="${!hoaDon.dsChiTietComBoDaMua.isEmpty()}">Combo Bắp Nước</h3>
+<p th:each="combo : ${hoaDon.dsChiTietComBoDaMua}">
+    <span th:text="${combo.comboBapNuoc.tenCombo + ' x ' + combo.soLuong}"></span>
+</p>
+
+<h3>Tổng Tiền:</h3>
+<p><strong th:text="${hoaDon.tongGiaTien + ' VNĐ'}"></strong></p>
+
+<p>Vui lòng giữ email này để quét mã lấy vé khi đến rạp chiếu phim.</p>
+<p>Trân trọng,<br>Hệ Thống Quản Lý Rạp Phim</p>
+</body>
+</html>
