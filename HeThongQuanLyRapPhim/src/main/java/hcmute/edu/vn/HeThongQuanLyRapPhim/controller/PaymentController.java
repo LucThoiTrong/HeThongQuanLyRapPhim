@@ -1,0 +1,120 @@
+package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
+
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.*;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+@Controller
+@RequestMapping("/payment")
+public class PaymentController {
+    private VNPayService vnpayService;
+    private InvoiceService hoaDonService;
+    private ChairService chairService;
+    private PopcornDrinkComboService popcornDrinkComboService;
+    private EmailService emailService;
+    public PaymentController(VNPayService vnpayService, InvoiceService hoaDonService,
+                             ChairService chairService,PopcornDrinkComboService popcornDrinkComboService,
+                             EmailService emailService) {
+        this.vnpayService = vnpayService;
+        this.hoaDonService = hoaDonService;
+        this.chairService = chairService;
+        this.popcornDrinkComboService = popcornDrinkComboService;
+        this.emailService = emailService;
+    }
+
+    @PostMapping("/vnpay")
+    public String createPayment(@RequestParam("tongTienSauGiam") double amount,
+                                @RequestParam("idCustomer") int idCustomer,
+                                @RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
+                                @RequestParam("suatChieu") int idSuatChieu,
+                                Model model, HttpSession session) {
+        session.setAttribute("idSuatChieu", idSuatChieu);
+        session.setAttribute("tongTienSauGiam", amount);
+        session.setAttribute("idCustomer", idCustomer);
+        session.setAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
+        int amountInt = (int) amount;
+        try {
+            String paymentUrl = vnpayService.createPayment(amountInt);
+            return "redirect:" + paymentUrl; // chuyển hướng đến URL thanh toán
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "vnpay";
+        } catch (Exception e) {
+            model.addAttribute("error", "Đã xảy ra lỗi khi tạo thanh toán!");
+            return "vnpay";
+        }
+    }
+    @GetMapping("/vnpay-return")
+    public String handlePaymentReturn(@RequestParam("vnp_ResponseCode") String responseCode,
+                                      Model model, HttpSession session) {
+        String message = vnpayService.getPaymentMessage(responseCode);
+        // thanh toan thanh cong -> tao hoa don mo
+        if ("00".equals(responseCode)) {
+            SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
+            double tongTienSauGiam = (Double) session.getAttribute("tongTienSauGiam");
+            DoiTuongSuDung doiTuongSuDung = (DoiTuongSuDung) session.getAttribute("doiTuongSuDung");
+            String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChon");
+
+            //bat dau tao hoa don
+            HoaDon hoaDon = new HoaDon();
+            Set<VeXemPhim> dsVeXemPhim = new HashSet<>();
+
+            if (danhSachGhe != null && !danhSachGhe.isEmpty()) {
+                // Tách chuỗi thành mảng
+                String[] gheArray = danhSachGhe.split(",");
+                for (String id : gheArray) {
+                    Ghe ghe = chairService.getChairById(Integer.parseInt(id.trim()));
+                    VeXemPhim veXemPhim = new VeXemPhim();
+                    veXemPhim.setGhe(ghe);
+                    veXemPhim.setSuatChieu(suatChieu);
+                    veXemPhim.setHoaDon(hoaDon);
+                    dsVeXemPhim.add(veXemPhim);
+                }
+            }
+            Set<ChiTietComBoBapNuoc> dsChiTietComBoBapNuoc = new HashSet<>();
+            Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
+            for (Map.Entry<Integer, Integer> entry : comboSoLuong.entrySet()) {
+                Integer idCombo = entry.getKey();
+                Integer soLuong = entry.getValue();
+                System.out.println(idCombo + " " + soLuong);
+                ComboBapNuoc comboBapNuoc = popcornDrinkComboService.findById(idCombo);
+                ChiTietComBoBapNuoc chiTietComBoBapNuoc = new ChiTietComBoBapNuoc();
+                chiTietComBoBapNuoc.setComboBapNuoc(comboBapNuoc);
+                chiTietComBoBapNuoc.setSoLuong(soLuong);
+                chiTietComBoBapNuoc.setHoaDon(hoaDon);
+                dsChiTietComBoBapNuoc.add(chiTietComBoBapNuoc);
+                // Xử lý idCombo và soLuong
+            }
+            hoaDon.setDoiTuongSuDung(doiTuongSuDung);
+            hoaDon.setSuatChieu(suatChieu);
+            hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DA_THANH_TOAN);
+            hoaDon.setDsVeXemPhimDaMua(dsVeXemPhim);
+            hoaDon.setTongGiaTien(tongTienSauGiam);
+            hoaDon.setDsComBoDaMua(dsChiTietComBoBapNuoc);
+            hoaDon.setNgayThanhToan(LocalDateTime.now());
+            hoaDonService.save(hoaDon);
+            // Gửi email hóa đơn
+            try {
+                emailService.guiHoaDonQuaEmail(
+                        doiTuongSuDung.getEmail(),
+                        hoaDon
+                );
+            } catch (Exception e) {
+                System.err.println("Lỗi gửi email hóa đơn: " + e.getMessage());
+            }
+        }
+        model.addAttribute("message", message);
+        return "SauKhiThanhToan";
+    }
+}

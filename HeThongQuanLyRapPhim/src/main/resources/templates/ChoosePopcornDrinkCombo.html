@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Combo Bắp Nước</title>
+    <link rel="stylesheet" href="/css/sodoghe.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<form action="/booking/thanh-toan" method="post">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Chọn Combo Bắp Nước</h2>
+        <div class="clock-box mt-4">
+            <p class="text-center fw-bold">Countdown Clock</p>
+            <div class="countdown">
+                <span id="minutes">5</span> Minutes <br>
+                <span id="seconds">00</span> Seconds
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center bg-white">
+                <thead class="table-dark">
+                <tr>
+                    <th scope="col">Tên Combo</th>
+                    <th scope="col">Mô Tả</th>
+                    <th scope="col">Giá Tiền</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Thành tiền</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="combo : ${danhSachCombo}">
+                    <td th:text="${combo.tenCombo}"></td>
+                    <td th:text="${combo.moTaCombo}"></td>
+                    <td class="gia-tien" th:data-gia="${combo.giaTien}" th:text="${combo.giaTien}"></td>
+                    <td>
+                        <input type="number" class="form-control so-luong" min="0" th:value="0" data-id="${combo.idComboBapNuoc}" th:name="${combo.idComboBapNuoc}">                    </td>
+                    <td class="thanh-tien">0 VND</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                    <td id="tong-tien" class="fw-bold text-danger">0 VND</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="ticket-container">
+        <div class="ticket-details">
+            <div class="column">
+                <span class="bold" th:text="${phim.tenPhim}"></span>
+            </div>
+            <div class="column">
+                <span class="label">Rạp</span>
+                <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+                <span class="label">Suất chiếu</span>
+                <span class="bold">
+                    <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                    <br>
+                    <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+                </span>
+                <span class="label">Phòng chiếu</span>
+                <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+                <span class="label">Số ghế</span>
+                <span class="bold" th:text="${danhSachGheDuocChon}"></span>
+            </div>
+            <div class="column">
+                <span class="label">Giá vé</span>
+                <span class="bold" th:text="${tongGiaVe} + ' ₫'"></span>
+                <span class="label">Combo</span>
+                <span class="bold" id="combo-price">0 ₫</span>
+                <span class="label">Tổng</span>
+                <span class="bold" id="final-price" th:text="${tongGiaVe} + ' ₫'"></span>
+            </div>
+        </div>
+        <input type="hidden" name="tongVePrice" id="tongVePrice" th:value="${tongGiaVe}">
+        <input type="hidden" name="giaTienCombo" id="giaTienCombo">
+        <input type="hidden" name="tongComboVaVe" id="tongComboVaVe">
+        <input type="hidden" name="danhSachGheDuocChon" th:value="${danhSachGheDuocChon}">
+        <button id="continue-button" class="nav-button next">→NEXT</button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll("tbody tr");
+        const tongTienCell = document.getElementById("tong-tien");
+        const comboPriceSpan = document.getElementById("combo-price");
+        const finalPriceSpan = document.getElementById("final-price");
+        const giaVe = parseInt([[${tongGiaVe}]]) || 0; // Thymeleaf đưa totalPrice vào JS
+
+        function capNhatTongTien() {
+            let tongCombo = 0;
+
+            rows.forEach(row => {
+                const giaTienCell = row.querySelector(".gia-tien");
+                const soLuongInput = row.querySelector(".so-luong");
+                const thanhTienCell = row.querySelector(".thanh-tien");
+
+                if (!giaTienCell || !soLuongInput || !thanhTienCell) return;
+
+                const giaTien = parseFloat(giaTienCell.dataset.gia);
+                const soLuong = parseInt(soLuongInput.value) || 0;
+                const thanhTien = giaTien * soLuong;
+
+                thanhTienCell.textContent = thanhTien.toLocaleString("vi-VN") + " VND";
+                tongCombo += thanhTien;
+            });
+
+            comboPriceSpan.textContent = tongCombo.toLocaleString("vi-VN") + " ₫";
+            tongTienCell.textContent = tongCombo.toLocaleString("vi-VN") + " VND";
+
+            const tongCuoi = giaVe + tongCombo;
+            finalPriceSpan.textContent = tongCuoi.toLocaleString("vi-VN") + " ₫";
+
+            // Gán vào input hidden để gửi về server
+            document.getElementById("giaTienCombo").value = tongCombo;
+            document.getElementById("tongComboVaVe").value = tongCuoi;
+        }
+
+        rows.forEach(row => {
+            const soLuongInput = row.querySelector(".so-luong");
+            if (soLuongInput) {
+                soLuongInput.addEventListener("input", capNhatTongTien);
+            }
+        });
+
+        capNhatTongTien();
+    });
+</script>
+<script>
+    let timeLeft = 300; // 5 phút = 300 giây
+
+    function updateCountdown() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        document.getElementById('minutes').textContent = minutes;
+        document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+        } else {
+            clearInterval(timer);
+            alert("Hết thời gian giữ ghế! Vui lòng chọn lại.");
+            window.location.href = "/booking/return-view";
+        }
+    }
+
+    const timer = setInterval(updateCountdown, 1000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
