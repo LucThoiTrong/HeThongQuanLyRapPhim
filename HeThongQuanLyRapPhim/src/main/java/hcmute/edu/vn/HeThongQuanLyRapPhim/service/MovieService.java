@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface MovieService {
-    Set<Phim> getMoviesByTrangThaiPhim(TrangThaiPhim trangThaiPhim);
+    List<Phim> getMoviesByTrangThaiPhim(TrangThaiPhim trangThaiPhim);
     Phim getPhimById(int id);
     List<Phim> getAllMovies();
     Phim getMovieById(int id);

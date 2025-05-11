@@ -28,6 +28,10 @@ public class HoaDon implements Serializable {
     @JoinColumn(name = "id_doi_tuong_su_dung")
     private DoiTuongSuDung doiTuongSuDung;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "id_suat_chieu")
+    private SuatChieu suatChieu;
+
     @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<VeXemPhim> dsVeXemPhimDaMua;
 
@@ -37,13 +41,14 @@ public class HoaDon implements Serializable {
     public HoaDon() {
     }
 
-    public HoaDon(double tongGiaTien, LocalDateTime ngayThanhToan, TrangThaiHoaDon trangThaiHoaDon, DoiTuongSuDung doiTuongSuDung, Set<VeXemPhim> dsVeXemPhimDaMua, Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
+    public HoaDon(double tongGiaTien, LocalDateTime ngayThanhToan, TrangThaiHoaDon trangThaiHoaDon, DoiTuongSuDung doiTuongSuDung, SuatChieu suatChieu, Set<VeXemPhim> dsVeXemPhimDaMua, Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
         this.tongGiaTien = tongGiaTien;
         this.ngayThanhToan = ngayThanhToan;
         this.trangThaiHoaDon = trangThaiHoaDon;
         this.doiTuongSuDung = doiTuongSuDung;
         this.dsVeXemPhimDaMua = dsVeXemPhimDaMua;
         this.dsComBoDaMua = dsComBoDaMua;
+        this.suatChieu = suatChieu;
     }
 
     public int getIdHoaDon() {
@@ -100,5 +105,13 @@ public class HoaDon implements Serializable {
 
     public void setDsComBoDaMua(Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
         this.dsComBoDaMua = dsComBoDaMua;
+    }
+
+    public SuatChieu getSuatChieu() {
+        return suatChieu;
+    }
+
+    public void setSuatChieu(SuatChieu suatChieu) {
+        this.suatChieu = suatChieu;
     }
 }

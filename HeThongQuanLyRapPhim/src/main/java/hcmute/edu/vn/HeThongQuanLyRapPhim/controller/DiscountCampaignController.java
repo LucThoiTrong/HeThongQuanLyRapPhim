@@ -51,6 +51,7 @@ public class DiscountCampaignController {
         model.addAttribute("soLuongMaGiamGia", 0);
         return "ThemMaGiamGiaTheoChienLuoc";
     }
+
     @PostMapping("/save")
     public String save(@RequestParam("tenChienDich") String tenChienDich,
                        @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
@@ -76,7 +77,7 @@ public class DiscountCampaignController {
             chienDichGiamGia.addMaGiamGia(newMaGiamGia);
         }
         chienDichGiamGiaService.save(chienDichGiamGia);
-        return "redirect:/discountCampaign/list";
+        return "redirect:/discount-campaign/";
     }
 
 
@@ -92,7 +93,7 @@ public class DiscountCampaignController {
         chienDichGiamGia.setNgayBatDauChienDich(ngayBatDau);
         chienDichGiamGia.setNgayKetThucChienDich(ngayKetThuc);
         chienDichGiamGiaService.save(chienDichGiamGia);
-        return "redirect:/discountCampaign/list";
+        return "redirect:/discount-campaign/";
     }
 
     @GetMapping("/HienFormDeCapNhat")
@@ -107,6 +108,6 @@ public class DiscountCampaignController {
     @GetMapping("/delete")
     public String delete(@RequestParam("idChienDichGiamGia") int theId) {
         chienDichGiamGiaService.deleteById(theId);
-        return "redirect:/discountCampaign/list";
+        return "redirect:/discount-campaign/";
     }
 }

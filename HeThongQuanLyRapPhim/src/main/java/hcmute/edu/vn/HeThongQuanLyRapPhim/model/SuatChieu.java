@@ -32,6 +32,9 @@ public class SuatChieu implements Serializable {
     @OneToMany(mappedBy = "suatChieu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<VeXemPhim> dsVeXemPhim;
 
+    @OneToMany(mappedBy = "suatChieu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<HoaDon> dsHoaDon;
+
     public SuatChieu() {
     }
 
@@ -88,5 +91,13 @@ public class SuatChieu implements Serializable {
 
     public void setDsVeXemPhim(Set<VeXemPhim> dsVeXemPhim) {
         this.dsVeXemPhim = dsVeXemPhim;
+    }
+
+    public Set<HoaDon> getDsHoaDon() {
+        return dsHoaDon;
+    }
+
+    public void setDsHoaDon(Set<HoaDon> dsHoaDon) {
+        this.dsHoaDon = dsHoaDon;
     }
 }

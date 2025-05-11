@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -20,13 +19,13 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Set<Phim> getMoviesByTrangThaiPhim(TrangThaiPhim trangThaiPhim) {
+    public List<Phim> getMoviesByTrangThaiPhim(TrangThaiPhim trangThaiPhim) {
         return movieRepository.findByTrangThaiPhim(trangThaiPhim);
     }
 
     @Override
     public Phim getPhimById(int id) {
-        return movieRepository.findById(id).get();
+        return movieRepository.findById(id).orElse(null);
     }
 
     @Override

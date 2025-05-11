@@ -28,7 +28,7 @@ public class MovieController {
     // Lấy danh sách phim đang chiếu
     @GetMapping("/now-showing")
     public String getNowShowing(Model model) {
-        Set<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.DANG_CHIEU);
+        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.DANG_CHIEU);
         model.addAttribute("danhSachPhim", danhSachPhim);
         return "MovieShowing";
     }
@@ -37,7 +37,7 @@ public class MovieController {
     // Lấy danh sách phim sắp chiếu
     @GetMapping("/coming-soon")
     public String getComingSoon(Model model) {
-        Set<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.SAP_CHIEU);
+        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.SAP_CHIEU);
         model.addAttribute("danhSachPhim", danhSachPhim);
         return "MovieComingSoon";
     }

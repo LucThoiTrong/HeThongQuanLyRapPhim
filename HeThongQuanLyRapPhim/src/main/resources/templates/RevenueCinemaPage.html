@@ -1,10 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|Doanh Thu ${rapPhim.tenRapPhim} - Năm ${nam}|">Biểu Đồ Doanh Thu Rạp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .header-controls {
+            width: 95%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cinema-name {
+            font-size: 1.8em;
+            color: #333;
+            margin: 0;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+        }
+
+        .year-selector label {
+            margin-right: 10px;
+            font-size: 1em;
+            color: #555;
+        }
+
+        .year-selector select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .chart-title {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            width: 95%;
+            max-width: 1000px;
+            height: 450px;
+            border: 1px solid #d1d1d1;
+            padding: 20px;
+            padding-left: 90px; /* Tăng thêm để nhãn trục Y không bị che */
+            padding-bottom: 50px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin: 0 8px;
+            height: 100%;
+            justify-content: flex-end;
+            min-width: 60px;
+        }
+
+        .bar {
+            width: 40px;
+            background-image: linear-gradient(to top, #007bff, #0056b3);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            border-radius: 4px 4px 0 0;
+            transition: background-color 0.3s ease, transform 0.2s ease, height 0.3s ease-out;
+        }
+
+        .bar:hover {
+            background-image: linear-gradient(to top, #0056b3, #003f7f);
+            transform: translateY(-5px);
+        }
+
+        .bar .revenue-value {
+            position: absolute;
+            top: -22px;
+            width: 100%;
+            font-size: 11px;
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+
+        .month-label {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .y-axis-lines {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: calc(100% - 50px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .y-axis-lines .line {
+            width: calc(100% - 90px); /* Cập nhật để khớp với padding-left */
+            margin-left: 90px; /* Cập nhật để khớp với padding-left */
+            border-top: 1px dashed #e0e0e0;
+            position: absolute;
+            left: 0;
+        }
+        .y-axis-lines .line-label {
+            position: absolute;
+            left: 2px; /* Đặt sát mép trái hơn nữa */
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #777;
+            background-color: white;
+            padding: 0 3px;
+        }
+        .y-axis-title {
+            position: absolute;
+            left: -20px; /* Điều chỉnh để sát mép trái */
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 13px;
+            color: #555;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 <body>
-$END$
+
+<div class="header-controls">
+    <h1 class="cinema-name" th:text="|Tên Rạp: ${rapPhim.tenRapPhim}|">Tên Rạp: Placeholder</h1>
+    <div class="year-selector">
+        <label for="year-select">Chọn năm:</label>
+        <select id="year-select" name="year">
+            <option th:each="yearOpt : ${availableYears}"
+                    th:value="${yearOpt}"
+                    th:text="${yearOpt}"
+                    th:selected="${yearOpt == nam}">2023</option>
+        </select>
+    </div>
+</div>
+
+<h2 class="chart-title" th:text="|Biểu Đồ Doanh Thu Hàng Tháng (Năm ${nam})|">Biểu Đồ Doanh Thu Hàng Tháng</h2>
+
+<div class="chart-container" th:with="maxScale = ${maxDoanhThuThang != null && maxDoanhThuThang > 0 ? maxDoanhThuThang : 1.0}">
+    <div class="y-axis-title">(VNĐ)</div>
+    <div class="y-axis-lines">
+        <div class="line" style="bottom: 0%;"><span class="line-label">0</span></div>
+        <div class="line" style="bottom: 20%;">
+            <span class="line-label" th:text="${#numbers.formatDecimal(maxScale * 0.2, 0, 'COMMA', 0, 'POINT')}"></span>
+        </div>
+        <div class="line" style="bottom: 40%;">
+            <span class="line-label" th:text="${#numbers.formatDecimal(maxScale * 0.4, 0, 'COMMA', 0, 'POINT')}"></span>
+        </div>
+        <div class="line" style="bottom: 60%;">
+            <span class="line-label" th:text="${#numbers.formatDecimal(maxScale * 0.6, 0, 'COMMA', 0, 'POINT')}"></span>
+        </div>
+        <div class="line" style="bottom: 80%;">
+            <span class="line-label" th:text="${#numbers.formatDecimal(maxScale * 0.8, 0, 'COMMA', 0, 'POINT')}"></span>
+        </div>
+        <div class="line" style="bottom: 100%;">
+            <span class="line-label" style="transform: translateY(-100%);" th:text="${#numbers.formatDecimal(maxScale, 0, 'COMMA', 0, 'POINT')}"></span>
+        </div>
+    </div>
+
+    <th:block th:each="monthNumber : ${#numbers.sequence(1, 12)}">
+        <div class="bar-wrapper">
+            <div class="bar"
+                 th:with="currentMonthRevenue = ${tongDoanhThu['Tháng ' + monthNumber] ?: 0.0}"
+                 th:styleappend="|height: ${ (maxScale > 0 ? (currentMonthRevenue / maxScale) : 0) * 100.0 }%;|">
+                 <span class="revenue-value"
+                       th:text="${#numbers.formatDecimal(currentMonthRevenue, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</span>
+            </div>
+            <div class="month-label" th:text="|Tháng ${monthNumber}|">Tháng X</div>
+        </div>
+    </th:block>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.getElementById('year-select').addEventListener('change', function() {
+        const selectedYear = this.value;
+        const cinemaId = /*[[${rapPhim.idRapPhim}]]*/ '0';
+        window.location.href = `/revenue/${cinemaId}/${selectedYear}`;
+    });
+    /*]]>*/
+</script>
+
 </body>
 </html>

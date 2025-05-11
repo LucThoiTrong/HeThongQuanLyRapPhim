@@ -1,165 +1,225 @@
 <!DOCTYPE html>
-<html lang="vi">
-
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Đăng nhập & Đăng ký</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="/vendor/animate/animate.css">
-    <link rel="stylesheet" type="text/css" href="/vendor/css-hamburgers/hamburgers.min.css">
-    <link rel="stylesheet" type="text/css" href="/vendor/select2/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/util.css">
-    <link rel="stylesheet" type="text/css" href="/css/main.css">
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .login-header {
+            margin-bottom: 30px;
+        }
+
+        .login-header .logo a {
+            color: #1a202c;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .login-header .logo a i {
+            color: #f56565;
+            font-size: 1em;
+        }
+
+        .login-header h2 {
+            font-size: 1.8em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* --- START: CSS CHO MESSAGE --- */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.95em;
+            text-align: left;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        /* --- END: CSS CHO MESSAGE --- */
+
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 0.95em;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1em;
+            color: #2d3748;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-form input[type="text"]:focus,
+        .login-form input[type="password"]:focus {
+            border-color: #3182ce;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+        }
+
+        .btn-login-submit {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login-submit:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+        }
+
+        .login-footer {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .login-footer a {
+            color: #f56565;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: #e53e3e;
+            text-decoration: underline;
+        }
+
+        /* ... (các CSS khác của bạn giữ nguyên) ... */
+
+        @media (max-width: 500px) {
+            .login-container {
+                padding: 30px 25px;
+            }
+            .login-header .logo a {
+                font-size: 2em;
+            }
+            .login-header h2 {
+                font-size: 1.5em;
+            }
+            .login-form input[type="text"],
+            .login-form input[type="password"] {
+                padding: 10px 12px;
+                font-size: 0.95em;
+            }
+            .btn-login-submit {
+                font-size: 1em;
+                padding: 10px 15px;
+            }
+            .alert { /* Điều chỉnh padding cho message trên mobile */
+                padding: 10px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-<div class="limiter">
-    <div class="container-login100">
-        <div class="wrap-login100">
-            <div class="login100-pic js-tilt" data-tilt>
-                <img src="/images/team.jpg" alt="IMG">
-            </div>
-            <!--=====LOGIN FORM======-->
-            <form class="login100-form validate-form" id="login-form">
-                <span class="login100-form-title">
-                    <b>ĐĂNG NHẬP HỆ THỐNG</b>
-                </span>
-                <div class="wrap-input100 validate-input">
-                    <input class="input100" type="text" placeholder="Tài khoản" name="username" id="username">
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-user'></i>
-                    </span>
-                </div>
-                <div class="wrap-input100 validate-input">
-                    <input autocomplete="off" class="input100" type="password" placeholder="Mật khẩu" name="current-password" id="password-field">
-                    <span toggle="#password-field" class="bx fa-fw bx-hide field-icon click-eye"></span>
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-key'></i>
-                    </span>
-                </div>
-                <div class="container-login100-form-btn">
-                    <input type="button" value="Đăng nhập" id="submit" onclick="validate()" />
-                </div>
-                <div class="text-right p-t-12">
-                    <a class="txt2" href="/forgot/">Bạn quên mật khẩu?</a>
-                </div>
-                <div class="text-center p-t-12">
-                    <a style="color: red !important; font-style: italic" class="txt2" href="#" onclick="toggleForm('signup')">Chưa có tài khoản? Đăng ký</a>
-                </div>
-            </form>
-            <!--=====SIGNUP FORM======-->
-            <form class="login100-form validate-form" id="signup-form" style="display: none;">
-                <span class="login100-form-title">
-                    <b>ĐĂNG KÝ TÀI KHOẢN</b>
-                </span>
-                <div class="wrap-input100 validate-input">
-                    <input class="input100" type="text" placeholder="Tài khoản" name="signup-username" id="signup-username">
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-user'></i>
-                    </span>
-                </div>
-                <div class="wrap-input100 validate-input">
-                    <input class="input100" type="email" placeholder="Email" name="signup-email" id="signup-email">
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-envelope'></i>
-                    </span>
-                </div>
-                <div class="wrap-input100 validate-input">
-                    <input autocomplete="off" class="input100" type="password" placeholder="Mật khẩu" name="signup-password" id="signup-password-field">
-                    <span toggle="#signup-password-field" class="bx fa-fw bx-hide field-icon click-eye"></span>
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-key'></i>
-                    </span>
-                </div>
-                <div class="wrap-input100 validate-input">
-                    <input autocomplete="off" class="input100" type="password" placeholder="Xác nhận mật khẩu" name="signup-confirm-password" id="signup-confirm-password-field">
-                    <span toggle="#signup-confirm-password-field" class="bx fa-fw bx-hide field-icon click-eye"></span>
-                    <span class="focus-input100"></span>
-                    <span class="symbol-input100">
-                        <i class='bx bx-key'></i>
-                    </span>
-                </div>
-                <div class="container-login100-form-btn">
-                    <input type="button" value="Đăng ký" id="signup-submit" onclick="validateSignup()" />
-                </div>
-                <div class="text-center p-t-12">
-                    <a style="color: red !important; font-style: italic" class="txt2" href="#" onclick="toggleForm('login')">Đã có tài khoản? Đăng nhập</a>
-                </div>
-            </form>
-            <!--=====FOOTER======-->
-            <div class="text-center p-t-70 txt2">
-                Phần mềm quản lý bán hàng <i class="far fa-copyright" aria-hidden="true"></i>
-                <script type="text/javascript">document.write(new Date().getFullYear());</script> <a class="txt2" href="https://www.facebook.com/truongvo.vd1503/"> Code Nhóm 1 </a>
-            </div>
+<main class="login-container">
+    <div class="login-header">
+        <div class="logo">
+            <a th:href="@{/index}"><i class="fas fa-film"></i> PhimHay</a>
         </div>
+        <h2>Đăng Nhập Tài Khoản</h2>
     </div>
-</div>
-<!--Javascript-->
-<script src="/js/main.js"></script>
-<script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
-<script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
-<script src="/vendor/bootstrap/js/popper.js"></script>
-<script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
-<script src="/vendor/select2/select2.min.js"></script>
-<script type="text/javascript">
-    // Show - hide password
-    $(".click-eye").click(function () {
-        $(this).toggleClass("bx-show bx-hide");
-        var input = $($(this).attr("toggle"));
-        if (input.attr("type") === "password") {
-            input.attr("type", "text");
-        } else {
-            input.attr("type", "password");
-        }
-    });
 
-    // Toggle between login and signup forms
-    function toggleForm(form) {
-        if (form === 'signup') {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('signup-form').style.display = 'block';
-        } else {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('signup-form').style.display = 'none';
-        }
-    }
+    <div th:if="${param.error}" class="alert alert-danger">
+        <p th:text="'Tên đăng nhập hoặc mật khẩu không đúng.'"></p>
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success">
+        <p th:text="'Bạn đã đăng xuất thành công.'"></p>
+    </div>
+    <div th:if="${message}" class="alert" th:classappend="${message_type == 'SUCCESS'} ? 'alert-success' : (${message_type == 'ERROR'} ? 'alert-danger' : 'alert-info')">
+        <p th:text="${message}"></p>
+    </div>
+    <form class="login-form" th:action="@{/login}" method="POST" th:object="${taiKhoan}">
+        <div class="form-group">
+            <label for="username"><i class="fas fa-user"></i> Tên đăng nhập</label>
+            <input type="text" id="username" th:field="*{tenDangNhap}" placeholder="Nhập tên đăng nhập của bạn" required>
+        </div>
+        <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Mật khẩu</label>
+            <input type="password" id="password" th:field="*{matKhau}" placeholder="Nhập mật khẩu của bạn" required>
+        </div>
+        <button type="submit" class="btn-login-submit">
+            <i class="fas fa-sign-in-alt"></i> Đăng Nhập
+        </button>
+    </form>
 
-    // Validate signup form
-    function validateSignup() {
-        var username = document.getElementById("signup-username").value;
-        var email = document.getElementById("signup-email").value;
-        var password = document.getElementById("signup-password-field").value;
-        var confirmPassword = document.getElementById("signup-confirm-password-field").value;
-
-        if (username === "" || email === "" || password === "" || confirmPassword === "") {
-            swal("Lỗi", "Vui lòng điền đầy đủ thông tin!", "error");
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            swal("Lỗi", "Mật khẩu xác nhận không khớp!", "error");
-            return;
-        }
-
-        // Add your signup logic here (e.g., send data to server)
-        swal("Thành công", "Đăng ký thành công!", "success").then(() => {
-            toggleForm('login'); // Switch back to login form after successful signup
-        });
-    }
-</script>
+    <div class="login-footer">
+        <p>Bạn chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a></p>
+    </div>
+</main>
 </body>
 </html>

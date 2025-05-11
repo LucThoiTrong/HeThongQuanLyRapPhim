@@ -1,10 +1,1166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Tài Khoản - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* All CSS styles from the original HTML should be placed here or linked via <link rel="stylesheet" th:href="@{/css/your-styles.css}"> */
+        /* For brevity, I'm omitting the full CSS block here, but it's identical to your provided CSS. */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            /* padding-top sẽ được set bằng JS */
+        }
+
+        .container-fluid-header { /* Container riêng cho header để chiếm full width */
+            width: 100%;
+        }
+        .container-fluid-header .container { /* Container bên trong header để giới hạn nội dung */
+            width: 90%;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px; /* Giữ padding nếu cần */
+        }
+
+
+        .main-content-area { /* Thay thế main-profile-content-wrapper */
+            flex-grow: 1;
+            width: 100%;
+            display: flex; /* Để .container bên trong có thể căn giữa và chiếm không gian */
+            /* padding-top sẽ được set bằng JS */
+        }
+
+        .main-content-area > .container { /* Đây là .container chứa .profile-page-container */
+            width: 90%; /* Hoặc 100% nếu bạn muốn .profile-page-container quyết định max-width */
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px 0px; /* Chỉ padding trên dưới, không padding trái phải để profile-page-container full width */
+            display: flex; /* Quan trọng */
+            flex-grow: 1; /* Quan trọng */
+        }
+
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(90deg, #1a202c, #2d3748);
+            color: #fff;
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        header .container { /* Style cho container bên trong header */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        header .logo a {
+            color: #fff;
+            font-size: 2em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        header .logo a i {
+            color: #f56565;
+            font-size: 1.2em;
+        }
+
+        header nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding-left: 0;
+        }
+
+        header nav ul li a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        header nav ul li a:hover,
+        header nav ul li a.active-header-link {
+            background: #f56565;
+            color: #fff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+        .user-menu-container {
+            position: relative;
+        }
+        .user-menu-container > a {
+            background: linear-gradient(45deg, #3182ce, #63b3ed);
+            color: #fff;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-menu-container > a:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+        }
+        .user-menu-container .dropdown-menu-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            background: #fff;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            z-index: 1001;
+            min-width: 200px;
+            padding: 8px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .user-menu-container:hover .dropdown-menu-content {
+            display: block;
+        }
+        .user-menu-container .dropdown-menu-content a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: #2d3748;
+            text-decoration: none;
+            font-size: 0.95em;
+            gap: 10px;
+        }
+        .user-menu-container .dropdown-menu-content a:hover {
+            background-color: #f0f2f5;
+        }
+        .user-menu-container .dropdown-menu-content a i {
+            color: #718096;
+            width: 16px;
+            text-align: center;
+        }
+
+
+        /* --- PROFILE PAGE CONTAINER --- */
+        .profile-page-container {
+            display: flex;
+            width: 100%;    /* Chiếm toàn bộ width của .container cha */
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden; /* Quan trọng để bo góc được áp dụng cho con */
+            flex-grow: 1;
+        }
+
+        /* --- PROFILE SIDEBAR --- */
+        .profile-sidebar {
+            width: 280px; /* Tăng nhẹ độ rộng sidebar */
+            background: #2d3748;
+            padding: 25px 0; /* Giảm padding top/bottom một chút */
+            color: #e2e8f0;
+            flex-shrink: 0;
+        }
+
+        .profile-sidebar .user-info-section {
+            text-align: left;
+            margin-bottom: 25px; /* Giảm margin bottom */
+            padding: 0 25px; /* Đồng bộ padding với nav link */
+        }
+        .profile-sidebar .user-info-section h4 {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 4px; /* Giảm margin */
+            color: #fff;
+        }
+        .profile-sidebar .user-info-section p {
+            font-size: 0.88em;
+            color: #a0aec0;
+            word-break: break-all;
+        }
+
+        .profile-sidebar nav ul {
+            list-style: none;
+        }
+        .profile-sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 14px 25px; /* Điều chỉnh padding */
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 0.95em; /* Điều chỉnh font size */
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            transition: background-color 0.2s ease, border-left-color 0.2s ease, color 0.2s ease;
+        }
+        .profile-sidebar nav ul li a i {
+            margin-right: 12px; /* Giảm margin */
+            font-size: 1.1em; /* Điều chỉnh icon size */
+            width: 20px;
+            text-align: center;
+        }
+        .profile-sidebar nav ul li a:hover {
+            background-color: #4a5568;
+            color: #fff;
+        }
+        .profile-sidebar nav ul li a.active {
+            background-color: #1a202c;
+            border-left-color: #f56565;
+            color: #fff;
+            font-weight: 600;
+        }
+        .profile-sidebar nav ul li a.active i {
+            color: #f56565;
+        }
+
+
+        /* --- PROFILE CONTENT --- */
+        .profile-content {
+            flex-grow: 1;
+            padding: 25px 35px; /* Điều chỉnh padding */
+            overflow-y: auto;
+            background-color: #fff; /* Đảm bảo nền trắng cho content */
+        }
+        .profile-content-section { display: none; }
+        .profile-content-section.active { display: block; }
+        .profile-content-section h2 {
+            font-size: 1.9em; /* Điều chỉnh font size */
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 25px; /* Điều chỉnh margin */
+            padding-bottom: 12px; /* Điều chỉnh padding */
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .profile-content-section h2 i {
+            margin-right: 10px; /* Điều chỉnh margin */
+            color: #f56565;
+        }
+
+        /* Styling cho form trong "Thông tin cá nhân" */
+        .profile-form .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Điều chỉnh minmax */
+            gap: 20px; /* Điều chỉnh gap */
+        }
+        .profile-form .form-group { position: relative; }
+        .profile-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px; /* Điều chỉnh margin */
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+        .profile-form .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .profile-form input[type="text"],
+        .profile-form input[type="email"],
+        .profile-form input[type="tel"],
+        .profile-form input[type="date"],
+        .profile-form input[type="password"], /* Thêm cho modal */
+        .profile-form select {
+            width: 100%;
+            padding: 10px 12px; /* Điều chỉnh padding */
+            padding-left: 38px; /* Điều chỉnh padding cho icon */
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.92em; /* Điều chỉnh font size */
+            color: #2d3748;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #f8fafc;
+        }
+        .profile-form input[readonly] {
+            background-color: #e9ecef; /* Màu xám nhạt hơn */
+            cursor: not-allowed;
+            color: #718096;
+        }
+        .profile-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234A5568' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center; /* Điều chỉnh vị trí icon */
+            padding-right: 35px; /* Điều chỉnh padding */
+        }
+        .profile-form select:invalid { color: #718096; }
+        .profile-form input:focus,
+        .profile-form select:focus {
+            border-color: #3182ce;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+            background-color: #fff;
+        }
+        .profile-form .symbol-input {
+            position: absolute;
+            left: 12px; /* Điều chỉnh vị trí icon */
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+            font-size: 1em;
+            pointer-events: none;
+        }
+        .profile-form .form-actions {
+            grid-column: 1 / -1;
+            margin-top: 25px;
+            display: flex;
+            gap: 12px; /* Điều chỉnh gap */
+            justify-content: flex-start;
+        }
+        .profile-form .btn-save,
+        .profile-form .btn-change-password {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 10px 22px; /* Điều chỉnh padding */
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95em; /* Điều chỉnh font size */
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-form .btn-save:hover,
+        .profile-form .btn-change-password:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+        }
+        .profile-form .btn-change-password { background: linear-gradient(45deg, #3182ce, #63b3ed); }
+        .profile-form .btn-change-password:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+
+        /* Styling cho "Lịch sử" và "Mã giảm giá" */
+        .history-table, .coupon-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px; /* Điều chỉnh margin */
+            font-size: 0.9em;
+        }
+        .history-table th, .history-table td,
+        .coupon-list th, .coupon-list td {
+            border: 1px solid #e2e8f0;
+            padding: 10px 12px; /* Điều chỉnh padding */
+            text-align: left;
+            vertical-align: middle;
+        }
+        .history-table th, .coupon-list th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .history-table td .status, .coupon-list td .status {
+            padding: 4px 8px; /* Điều chỉnh padding */
+            border-radius: 12px; /* Điều chỉnh bo góc */
+            font-size: 0.82em; /* Điều chỉnh font size */
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+        }
+        .history-table td .status.completed { background-color: #34d399; }
+        .history-table td .status.pending { background-color: #f59e0b; }
+        .history-table td .status.cancelled { background-color: #ef4444; }
+        .history-table td .status.refunded { background-color: #63b3ed; }
+
+        .coupon-list .coupon-code {
+            font-weight: bold;
+            color: #e53e3e;
+            background-color: #fee2e2;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            font-size: 0.95em; /* Tăng nhẹ font size */
+        }
+        .coupon-list .btn-copy-coupon {
+            background: #63b3ed;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em; /* Điều chỉnh font size */
+        }
+        .coupon-list .btn-copy-coupon:hover { background: #4299e1; }
+        .coupon-list td .status.active { background-color: #34d399; }
+        .coupon-list td .status.expired { background-color: #9ca3af; }
+        .coupon-list td .status.used { background-color: #fbbf24; }
+
+
+        .no-data-message {
+            text-align: center;
+            padding: 35px 20px; /* Điều chỉnh padding */
+            color: #718096;
+            font-size: 1.05em; /* Điều chỉnh font size */
+        }
+        .no-data-message i {
+            font-size: 2.8em; /* Điều chỉnh icon size */
+            display: block;
+            margin-bottom: 12px; /* Điều chỉnh margin */
+            color: #cbd5e0;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 25px 0; /* Điều chỉnh padding */
+        }
+        footer .container { display: flex; flex-direction: column; align-items: center; }
+        .footer-nav ul { list-style: none; padding: 0; margin-bottom: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px;}
+        .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.92em; transition: color 0.3s ease; }
+        .footer-nav ul li a:hover { color: #fff; }
+        .social-media { margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; }
+        .social-media a { color: #bdc3c7; font-size: 1.5em; text-decoration: none; transition: color 0.3s ease; }
+        .social-media a:hover { color: #e74c3c; }
+        footer p { font-size: 0.88em; line-height: 1.5; }
+        footer p:not(:last-child) { margin-bottom: 4px; }
+
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 992px) {
+            header .container { justify-content: space-between; } /* Đổi lại để logo và action gần nhau hơn */
+            .logo { order: 1; width: auto; text-align: left; margin-bottom: 0; }
+            header nav { order: 2; width: auto; margin-top: 0; margin-left: 20px; margin-right: 20px; } /* Nav vào giữa */
+            .header-actions { order: 3; margin-left: 0; width: auto; text-align: right; margin-top: 0; }
+
+
+            .profile-page-container {
+                flex-direction: column;
+            }
+            .profile-sidebar {
+                width: 100%;
+                display: flex;
+                flex-direction: column; /* User info trên, nav dưới */
+                align-items: stretch; /* Cho nav full width */
+                padding: 20px; /* Đồng nhất padding */
+                height: auto;
+            }
+            .profile-sidebar .user-info-section {
+                margin-bottom: 15px;
+                padding: 0;
+                text-align: center; /* Căn giữa info trên mobile */
+            }
+            .profile-sidebar nav { width: 100%; }
+            .profile-sidebar nav ul {
+                display: flex;
+                flex-direction: row; /* Nav nằm ngang */
+                justify-content: space-around; /* Hoặc space-between */
+                border-top: 1px solid #4a5568; /* Ngăn cách info và nav */
+                padding-top: 10px;
+            }
+            .profile-sidebar nav ul li a {
+                padding: 10px 8px; /* Giảm padding cho vừa */
+                font-size: 0.85em; /* Giảm font */
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                justify-content: center;
+                text-align: center; /* Cho chữ trong link nav căn giữa */
+            }
+            .profile-sidebar nav ul li a i { margin-right: 5px; font-size: 1em;}
+            .profile-sidebar nav ul li a.active {
+                border-bottom-color: #f56565;
+                background-color: transparent;
+                color: #f56565;
+            }
+            .profile-sidebar nav ul li a.active i { color: #f56565; }
+            .profile-content { padding: 20px; } /* Giảm padding content */
+            .profile-content-section h2 { font-size: 1.6em; margin-bottom: 20px; }
+            .profile-form .form-grid { grid-template-columns: 1fr; gap: 15px; }
+        }
+
+        @media (max-width: 768px) {
+            header nav ul { gap: 10px; }
+            header nav ul li a { padding: 8px 10px; font-size: 0.9em; }
+            .profile-sidebar nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .profile-sidebar nav ul li {
+                flex-basis: calc(50% - 10px);
+                margin-bottom: 5px;
+            }
+            .profile-sidebar nav ul li a { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            header nav { display: none; }
+            .user-menu-container > a { padding: 6px 10px; font-size: 0.9em; }
+            .user-menu-container .dropdown-menu-content { min-width: 160px;}
+            .user-menu-container .dropdown-menu-content a { padding: 8px 15px; font-size: 0.9em;}
+            .profile-sidebar nav ul li {
+                flex-basis: 100%;
+            }
+            .profile-content { padding: 15px;}
+            .profile-content-section h2 {font-size: 1.4em; margin-bottom: 15px;}
+            .profile-form .form-actions { flex-direction: column; gap: 10px; }
+            .profile-form .btn-save, .profile-form .btn-change-password { width: 100%; justify-content: center;}
+            .history-table, .coupon-list { font-size: 0.85em; }
+            .history-table th, .history-table td,
+            .coupon-list th, .coupon-list td { padding: 8px; }
+            .coupon-list .btn-copy-coupon { padding: 4px 8px; font-size: 0.8em; }
+        }
+
+        /* --- CSS CHO MODAL ĐỔI MẬT KHẨU --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1050;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-container {
+            background-color: #fff;
+            padding: 30px 35px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            animation: slideDownModal 0.3s ease-out;
+        }
+        @keyframes slideDownModal {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h3 {
+            font-size: 1.5em;
+            color: #1a202c;
+            font-weight: 600;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            color: #718096;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .modal-close-btn:hover {
+            color: #f56565;
+        }
+
+        .modal-body .form-group { /* Sử dụng class .form-group của .profile-form */
+            margin-bottom: 20px;
+        }
+        /* Input trong modal dùng chung style với .profile-form input[type="password"] đã có */
+        .modal-body input[type="password"] { /* Thêm style này nếu muốn input trong modal khác */
+            font-size: 0.95em;
+            padding: 12px 15px; /* Bỏ padding-left cho icon nếu không dùng icon trong modal password */
+            padding-left: 15px !important; /* Override .profile-form input rule */
+        }
+
+
+        .modal-footer {
+            margin-top: 30px;
+            text-align: right;
+        }
+        .modal-footer .btn-modal-save {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .modal-footer .btn-modal-save:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+        .modal-footer .btn-modal-cancel {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .modal-footer .btn-modal-cancel:hover {
+            background-color: #cbd5e0;
+        }
+        .password-validation-error {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none; /* Initially hidden, JS will show it */
+        }
+        /* Thymeleaf error styling */
+        .error-message {
+            color: red;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+    </style>
 </head>
 <body>
-$END$
+<header id="pageHeader">
+    <div class="container-fluid-header">
+        <div class="container">
+            <div class="logo">
+                <a th:href="@{/}"><i class="fas fa-film"></i> PhimHay</a>
+            </div>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/}">Trang Chủ</a></li>
+                    <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
+                    <li><a th:href="@{/movies/coming-soon}">Phim Sắp Chiếu</a></li>
+                    <li><a th:href="@{/coupon-general}">Mã Giảm Giá</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="headerUserDisplayName"
+                              th:text="${khachHang != null && khachHang.hoTen != null} ? 'Chào, ' + ${khachHang.hoTen.substring(khachHang.hoTen.lastIndexOf(' ') + 1)} : 'Chào, Khách'"></span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
+                    </a>
+                    <div class="dropdown-menu-content">
+                        <a th:href="@{/user/profile}" class="active-header-link">
+                            <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/logout}">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="main-content-area" id="mainContentArea">
+    <div class="container">
+        <div class="profile-page-container" th:if="${khachHang != null}">
+            <aside class="profile-sidebar">
+                <div class="user-info-section">
+                    <h4 id="sidebarUserDisplayName" th:text="${khachHang.hoTen}">Trần Văn Admin</h4>
+                    <p id="sidebarUserEmailDisplay" th:text="${khachHang.email}">admin@phimhay.com</p>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="profile-nav-link active" data-target="info-section"><i class="fas fa-user-cog"></i>Thông tin cá nhân</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="booking-history-section"><i class="fas fa-history"></i>Lịch sử đặt vé</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="refund-history-section"><i class="fas fa-undo-alt"></i>Lịch sử hoàn trả</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="my-coupons-section"><i class="fas fa-tags"></i>Mã giảm giá của tôi</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="profile-content">
+                <section id="info-section" class="profile-content-section active">
+                    <h2><i class="fas fa-id-card"></i>Thông tin cá nhân</h2>
+                    <form class="profile-form" id="personalInfoForm" th:action="@{/user/profile/update}" th:object="${khachHang}" method="post">
+                        <div th:if="${param.success_update_info != null}" class="alert alert-success" role="alert" style="color: green; margin-bottom: 15px; border: 1px solid green; padding: 10px; border-radius: 5px; background-color: #e6ffed;">
+                            Cập nhật thông tin cá nhân thành công!
+                        </div>
+                        <div th:if="${param.error_update_info != null}" class="alert alert-danger" role="alert" style="color: red; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 5px; background-color: #ffebeb;">
+                            Cập nhật thông tin cá nhân thất bại! Vui lòng thử lại.
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ho_ten">Họ và tên</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-user-circle'></i></span>
+                                    <input type="text" id="ho_ten" th:field="*{hoTen}" required>
+                                </div>
+                                <small th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="ten_dang_nhap">Tên đăng nhập</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-user'></i></span>
+                                    <input type="text" id="ten_dang_nhap" name="ten_dang_nhap" th:value="${username}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-envelope'></i></span>
+                                    <input type="email" id="email" th:field="*{email}" required>
+                                </div>
+                                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="so_dien_thoai">Số điện thoại</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-phone'></i></span>
+                                    <input type="tel" id="so_dien_thoai" th:field="*{soDienThoai}">
+                                </div>
+                                <small th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="ngay_sinh">Ngày sinh</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-calendar'></i></span>
+                                    <input type="date" id="ngay_sinh" th:field="*{ngaySinh}" th:value="${#dates.format(khachHang.ngaySinh, 'yyyy-MM-dd')}">
+                                </div>
+                                <small th:if="${#fields.hasErrors('ngaySinh')}" th:errors="*{ngaySinh}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="gioi_tinh">Giới tính</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-male-female'></i></span>
+                                    <select id="gioi_tinh" th:field="*{gioiTinh}">
+                                        <option value="" disabled>Chọn giới tính</option>
+                                        <option th:each="gtVal : ${T(com.example.yourproject.model.enums.GioiTinh).values()}"
+                                                th:value="${gtVal}"
+                                                th:text="${gtVal.displayName}"
+                                                th:selected="${gtVal == khachHang.gioiTinh}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <small th:if="${#fields.hasErrors('gioiTinh')}" th:errors="*{gioiTinh}" class="error-message"></small>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save"><i class="fas fa-save"></i>Lưu thay đổi</button>
+                            <button type="button" class="btn-change-password" id="btnOpenChangePasswordModal"><i class="fas fa-key"></i>Đổi mật khẩu</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="booking-history-section" class="profile-content-section">
+                    <h2><i class="fas fa-ticket-alt"></i>Lịch sử đặt vé</h2>
+                    <div th:if="${#lists.isEmpty(bookingHistories)}">
+                        <div class="no-data-message" id="noBookingMessage">
+                            <i class="fas fa-film-alt"></i> <p>Bạn chưa có lịch sử đặt vé nào.</p>
+                        </div>
+                    </div>
+                    <table class="history-table" th:unless="${#lists.isEmpty(bookingHistories)}">
+                        <thead>
+                        <tr>
+                            <th>Mã vé</th> <th>Tên phim</th> <th>Rạp</th> <th>Ngày chiếu</th> <th>Suất chiếu</th> <th>SL</th> <th>Tổng tiền</th> <th>Trạng thái</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${bookingHistories}">
+                            <td th:text="${booking.maVe}">PHV00123</td>
+                            <td th:text="${booking.tenPhim}">Lật Mặt 7</td>
+                            <td th:text="${booking.rap}">CGV Landmark 81</td>
+                            <td th:text="${#dates.format(booking.ngayChieu, 'dd/MM/yyyy')}">10/05/2025</td>
+                            <td th:text="${booking.suatChieu}">19:30</td>
+                            <td th:text="${booking.soLuong}">2</td>
+                            <td th:text="${booking.tongTienFormatted}">250,000đ</td>
+                            <td><span class="status" th:classappend="${booking.trangThaiCssClass}" th:text="${booking.trangThaiText}">Đã xem</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="refund-history-section" class="profile-content-section">
+                    <h2><i class="fas fa-hand-holding-usd"></i>Lịch sử hoàn trả</h2>
+                    <div th:if="${#lists.isEmpty(refundHistories)}">
+                        <div class="no-data-message" id="noRefundMessage">
+                            <i class="fas fa-file-invoice-dollar"></i> <p>Bạn chưa có lịch sử hoàn trả nào.</p>
+                        </div>
+                    </div>
+                    <table class="history-table" th:unless="${#lists.isEmpty(refundHistories)}">
+                        <thead>
+                        <tr>
+                            <th>Mã hoàn trả</th> <th>Mã vé gốc</th> <th>Tên phim</th> <th>Ngày YC</th> <th>Số tiền</th> <th>Trạng thái</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="refund : ${refundHistories}">
+                            <td th:text="${refund.maHoanTra}">PHT00034</td>
+                            <td th:text="${refund.maVeGoc}">PHV00115</td>
+                            <td th:text="${refund.tenPhim}">Gấu Béo</td>
+                            <td th:text="${#dates.format(refund.ngayYeuCau, 'dd/MM/yyyy')}">02/05/2025</td>
+                            <td th:text="${refund.soTienFormatted}">100,000đ</td>
+                            <td><span class="status" th:classappend="${refund.trangThaiCssClass}" th:text="${refund.trangThaiText}">Đã hoàn</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="my-coupons-section" class="profile-content-section">
+                    <h2><i class="fas fa-tags"></i>Mã giảm giá của tôi</h2>
+                    <div th:if="${#lists.isEmpty(myCoupons)}">
+                        <div class="no-data-message" id="noCouponMessage">
+                            <i class="fas fa-barcode"></i> <p>Bạn chưa có mã giảm giá nào.</p>
+                        </div>
+                    </div>
+                    <table class="coupon-list" th:unless="${#lists.isEmpty(myCoupons)}">
+                        <thead>
+                        <tr>
+                            <th>Mã Code</th> <th>Mô tả</th> <th>Hạn SD</th> <th>Điều kiện</th> <th>Trạng thái</th> <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="coupon : ${myCoupons}">
+                            <td><span class="coupon-code" th:text="${coupon.maCode}">WELCOME25</span></td>
+                            <td th:text="${coupon.moTa}">Giảm 25% đơn đầu</td>
+                            <td th:text="${#dates.format(coupon.hanSuDung, 'dd/MM/yyyy')}">31/12/2025</td>
+                            <td th:text="${coupon.dieuKien}">ĐH > 100K</td>
+                            <td><span class="status" th:classappend="${coupon.trangThaiCssClass}" th:text="${coupon.trangThaiText}">Còn hạn</span></td>
+                            <td><button class="btn-copy-coupon" th:attr="data-coupon=${coupon.maCode}"><i class="fas fa-copy"></i></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+        <div th:unless="${khachHang != null}" class="profile-page-container" style="justify-content: center; align-items: center; text-align: center;">
+            <p>Không tìm thấy thông tin người dùng. Vui lòng <a th:href="@{/login}">đăng nhập</a> lại.</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="changePasswordModalOverlay">
+    <div class="modal-container" id="changePasswordModalContainer">
+        <div class="modal-header">
+            <h3>Đổi mật khẩu</h3>
+            <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form class="profile-form" id="changePasswordForm" th:action="@{/user/profile/change-password}" method="post" th:object="${changePasswordFormDto}">
+                <div th:if="${param.success_change_password != null}" class="alert alert-success" role="alert" style="color: green; margin-bottom: 15px; border: 1px solid green; padding: 10px; border-radius: 5px; background-color: #e6ffed;">
+                    Đổi mật khẩu thành công!
+                </div>
+                <div th:if="${param.error_change_password != null}" class="alert alert-danger" role="alert" style="color: red; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 5px; background-color: #ffebeb;"
+                     th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Mật khẩu hiện tại không đúng hoặc có lỗi xảy ra.'}">
+                </div>
+
+
+                <div class="form-group">
+                    <label for="current_password">Mật khẩu hiện tại (Nếu có)</label>
+                    <input type="password" id="current_password" name="currentPassword" placeholder="Bỏ trống nếu không muốn thay đổi mật khẩu hiện tại qua OTP/Email">
+                    <div th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}" class="password-validation-error" style="display:block"></div>
+                </div>
+                <div class="form-group">
+                    <label for="new_password">Mật khẩu mới</label>
+                    <input type="password" id="new_password" th:field="*{newPassword}" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required>
+                    <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="password-validation-error" style="display:block" id="newPasswordErrorThymeleaf"></div>
+                    <div class="password-validation-error" id="newPasswordError"></div> </div>
+                <div class="form-group">
+                    <label for="confirm_new_password">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirm_new_password" th:field="*{confirmNewPassword}" placeholder="Nhập lại mật khẩu mới" required>
+                    <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="password-validation-error" style="display:block" id="confirmPasswordErrorThymeleaf"></div>
+                    <div class="password-validation-error" id="confirmPasswordError"></div> </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-modal-cancel" id="modalCancelBtn">Hủy</button>
+            <button type="submit" form="changePasswordForm" class="btn-modal-save">Lưu mật khẩu</button>
+        </div>
+    </div>
+</div>
+
+<footer id="pageFooter">
+    <div class="container">
+        <div class="footer-nav">
+            <ul>
+                <li><a href="#">Về Chúng Tôi</a></li><li><a href="#">Điều Khoản Dịch Vụ</a></li><li><a href="#">Chính Sách Bảo Mật</a></li><li><a href="#">Liên Hệ</a></li><li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+        <div class="social-media">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a><a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a><a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+        <p>&copy; <span id="currentYear" th:text="${#dates.year(#dates.createNow())}">2025</span> PhimHay. All rights reserved.</p>
+        <p>Giao diện được xây dựng bởi AI.</p>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Pass success/error flags from query params to JS if needed for modal behavior
+    const urlParams = new URLSearchParams(window.location.search);
+    const successChangePassword = urlParams.get('success_change_password');
+    const errorChangePassword = urlParams.get('error_change_password');
+    const successUpdateInfo = urlParams.get('success_update_info');
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const pageHeader = document.getElementById('pageHeader');
+        const mainContentArea = document.getElementById('mainContentArea');
+
+        function setMainContentPadding() {
+            if (pageHeader && mainContentArea) {
+                const headerHeight = pageHeader.offsetHeight;
+                document.body.style.paddingTop = headerHeight + 'px';
+                mainContentArea.style.paddingTop = '0px'; // Main content starts right after header
+            } else if (mainContentArea) {
+                document.body.style.paddingTop = '0px';
+                mainContentArea.style.paddingTop = '20px'; // Default padding if no header
+            }
+        }
+
+        setMainContentPadding();
+        window.addEventListener('resize', setMainContentPadding);
+
+        const navLinks = document.querySelectorAll('.profile-nav-link');
+        const contentSections = document.querySelectorAll('.profile-content-section');
+
+        // Active tab based on URL hash or default
+        function setActiveTabFromHash() {
+            const hash = window.location.hash.substring(1); // Remove #
+            let activeLink = null;
+            let activeSection = null;
+
+            if (hash) {
+                navLinks.forEach(link => {
+                    if (link.dataset.target === hash) {
+                        activeLink = link;
+                    }
+                });
+                const targetSectionElem = document.getElementById(hash);
+                if (targetSectionElem) {
+                    activeSection = targetSectionElem;
+                }
+            }
+
+            if (activeLink && activeSection) {
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                contentSections.forEach(section => section.classList.remove('active'));
+                activeLink.classList.add('active');
+                activeSection.classList.add('active');
+            } else {
+                // Default to first tab if no valid hash or element not found
+                if (navLinks.length > 0) navLinks[0].classList.add('active');
+                if (contentSections.length > 0) contentSections[0].classList.add('active');
+            }
+        }
+        setActiveTabFromHash(); // Set on page load
+        window.addEventListener('hashchange', setActiveTabFromHash); // Listen for hash changes
+
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetSectionId = link.dataset.target;
+                window.location.hash = targetSectionId; // This will trigger hashchange event
+                // If hashchange event doesn't automatically re-trigger or for instant feedback:
+                // navLinks.forEach(nav => nav.classList.remove('active'));
+                // contentSections.forEach(section => section.classList.remove('active'));
+                // link.classList.add('active');
+                // const targetSection = document.getElementById(targetSectionId);
+                // if (targetSection) {
+                //     targetSection.classList.add('active');
+                // }
+            });
+        });
+
+        // const yearSpan = document.getElementById('currentYear'); // Thymeleaf handles this
+        // if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+
+
+        // Personal info form submission is now standard POST, JS alert is for demo.
+        // For real app, server would redirect or return JSON.
+        // The display name update in header/sidebar is handled by Thymeleaf on page reload.
+        // If using AJAX, you'd update these manually on success.
+        const personalInfoForm = document.getElementById('personalInfoForm');
+        if (personalInfoForm) {
+            personalInfoForm.addEventListener('submit', function(e) {
+                // Client-side validation can be added here before submit if needed
+                // e.g. if (!this.checkValidity()) { e.preventDefault(); return; }
+                // For demo purpose, an alert. In real app, this would be handled by server response.
+                // alert('Thông tin sẽ được gửi lên server để cập nhật!');
+            });
+        }
+        if (successUpdateInfo !== null) {
+            // Optionally show a more persistent success message or scroll to it
+            console.log("Thông tin cá nhân đã được cập nhật thành công (thông báo từ server).");
+            // You can switch to the info tab if not already on it
+            const infoLink = document.querySelector('.profile-nav-link[data-target="info-section"]');
+            if (infoLink) {
+                window.location.hash = "info-section";
+                // infoLink.click(); // this might cause issues if not handled carefully
+            }
+        }
+
+
+        // --- JAVASCRIPT CHO MODAL ĐỔI MẬT KHẨU ---
+        const btnOpenModal = document.getElementById('btnOpenChangePasswordModal');
+        const modalOverlay = document.getElementById('changePasswordModalOverlay');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        const newPasswordInput = document.getElementById('new_password');
+        const confirmNewPasswordInput = document.getElementById('confirm_new_password');
+        const newPasswordErrorJS = document.getElementById('newPasswordError'); // JS error placeholder
+        const confirmPasswordErrorJS = document.getElementById('confirmPasswordError'); // JS error placeholder
+        const currentPasswordInput = document.getElementById('current_password'); // For clearing
+
+
+        if (btnOpenModal && modalOverlay) {
+            btnOpenModal.addEventListener('click', () => {
+                modalOverlay.classList.add('active');
+                // Clear previous Thymeleaf errors if any, because we are re-opening
+                document.querySelectorAll('#changePasswordForm .password-validation-error[id$="Thymeleaf"]').forEach(el => {
+                    el.style.display = 'none';
+                    el.textContent = '';
+                });
+                // Clear JS errors
+                if(newPasswordErrorJS) { newPasswordErrorJS.style.display = 'none'; newPasswordErrorJS.textContent = '';}
+                if(confirmPasswordErrorJS) { confirmPasswordErrorJS.style.display = 'none'; confirmPasswordErrorJS.textContent = '';}
+
+                if(changePasswordForm) changePasswordForm.reset(); // Reset form fields
+                newPasswordInput.focus();
+            });
+        }
+
+        function closeModal() {
+            if (modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        }
+
+        if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+        if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
+
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (event) => {
+                if (event.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+        }
+
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener('submit', (e) => {
+                let isValid = true;
+                // Clear previous JS errors
+                if(newPasswordErrorJS) { newPasswordErrorJS.style.display = 'none'; newPasswordErrorJS.textContent = '';}
+                if(confirmPasswordErrorJS) { confirmPasswordErrorJS.style.display = 'none'; confirmPasswordErrorJS.textContent = '';}
+                // Clear Thymeleaf errors before JS validation
+                document.querySelectorAll('#changePasswordForm .password-validation-error[id$="Thymeleaf"]').forEach(el => {
+                    el.style.display = 'none';
+                    el.textContent = '';
+                });
+
+
+                if (newPasswordInput.value.length > 0 && newPasswordInput.value.length < 6) { // Only validate if not empty, backend handles required
+                    if(newPasswordErrorJS) {
+                        newPasswordErrorJS.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+                        newPasswordErrorJS.style.display = 'block';
+                    }
+                    isValid = false;
+                }
+
+                if (confirmNewPasswordInput.value === '' && newPasswordInput.value !== '') {
+                    if(confirmPasswordErrorJS) {
+                        confirmPasswordErrorJS.textContent = 'Vui lòng xác nhận mật khẩu mới.';
+                        confirmPasswordErrorJS.style.display = 'block';
+                    }
+                    isValid = false;
+                } else if (newPasswordInput.value !== confirmNewPasswordInput.value) {
+                    if(confirmPasswordErrorJS) {
+                        confirmPasswordErrorJS.textContent = 'Mật khẩu xác nhận không khớp.';
+                        confirmPasswordErrorJS.style.display = 'block';
+                    }
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault(); // Prevent submission if client-side validation fails
+                } else {
+                    // Client-side validation passed, allow form submission
+                    // Optional: alert('Mật khẩu sẽ được gửi lên server để thay đổi (demo)!');
+                }
+            });
+        }
+
+        // If password change was successful (from server redirect), close modal if it was open
+        // Or if there was an error, keep modal open (or reopen it) to show error
+        if (successChangePassword !== null && modalOverlay.classList.contains('active')) {
+            closeModal();
+            // Optionally clear the form again if needed, though server redirect usually means new page load
+        }
+        if (errorChangePassword !== null && !modalOverlay.classList.contains('active')) {
+            // If there was an error and modal isn't open, open it to show Thymeleaf errors
+            if (btnOpenModal) btnOpenModal.click();
+        }
+        // --- KẾT THÚC JAVASCRIPT CHO MODAL ---
+
+        // The checkTableEmpty function is replaced by Thymeleaf's th:if/th:unless for initial render.
+        // If tables are dynamically updated via JS later, such a function might be needed.
+
+        document.querySelectorAll('.btn-copy-coupon').forEach(button => {
+            button.addEventListener('click', function() {
+                const couponCode = this.dataset.coupon;
+                navigator.clipboard.writeText(couponCode).then(() => {
+                    const icon = this.querySelector('i');
+                    const originalIconHTML = this.innerHTML; // Store original HTML including icon
+                    this.innerHTML = '<i class="fas fa-check" style="color: lightgreen;"></i>&nbsp;Đã&nbsp;chép';
+                    setTimeout(() => {
+                        this.innerHTML = originalIconHTML;
+                    }, 1500);
+                }).catch(err => {
+                    console.error('Không thể sao chép: ', err);
+                    alert('Lỗi khi sao chép mã!');
+                });
+            });
+        });
+
+        // populateUserInfo function is no longer needed for initial load, Thymeleaf handles it.
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

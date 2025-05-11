@@ -1,10 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Chọn Rạp Để Xem Doanh Thu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Sử dụng font chữ hiện đại, dễ đọc */
+            margin: 0; /* Loại bỏ margin mặc định của body */
+            padding: 30px 20px; /* Thêm khoảng đệm cho body, nhiều hơn ở trên và dưới */
+            background-color: #f0f2f5; /* Một màu nền xám nhạt cho trang */
+            display: flex; /* Sử dụng Flexbox để căn giữa nội dung chính */
+            justify-content: center; /* Căn giữa theo chiều ngang */
+            align-items: flex-start; /* Căn trên nếu nội dung ít hơn chiều cao màn hình */
+            min-height: calc(100vh - 60px); /* Chiều cao tối thiểu để đảm bảo nội dung được căn giữa ngay cả khi ít */
+        }
+
+        .main-content-wrapper {
+            width: 100%;
+            max-width: 650px; /* Giới hạn chiều rộng tối đa của khu vực nội dung */
+        }
+
+        .page-title {
+            color: #2c3e50; /* Màu tiêu đề đậm hơn */
+            text-align: center;
+            margin-bottom: 35px; /* Tăng khoảng cách dưới tiêu đề */
+            font-size: 2.2em; /* Tăng kích thước font tiêu đề */
+            font-weight: 600;
+        }
+
+        .cinema-card {
+            background-color: #ffffff; /* Nền trắng cho card */
+            border-radius: 12px; /* Bo góc mềm mại hơn */
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Độ bóng tinh tế hơn */
+            padding: 30px; /* Tăng padding bên trong card */
+            margin-bottom: 25px; /* Khoảng cách giữa các card */
+            text-align: center; /* Căn giữa nội dung trong card (như nút bấm) */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
+        }
+
+        .cinema-card:hover {
+            transform: translateY(-8px); /* Hiệu ứng nhấc card lên khi hover */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Tăng độ bóng khi hover */
+        }
+
+        .cinema-card .cinema-name {
+            font-size: 1.6em; /* Kích thước tên rạp */
+            font-weight: 600;
+            color: #34495e; /* Màu cho tên rạp */
+            margin-bottom: 20px; /* Khoảng cách giữa tên rạp và nút */
+        }
+
+        .cinema-card form {
+            display: block; /* Form chiếm toàn bộ chiều rộng còn lại của card content */
+        }
+
+        .cinema-card button {
+            background-color: #3498db; /* Màu xanh dương hiện đại, thân thiện */
+            color: white;
+            padding: 14px 30px; /* Kích thước nút lớn hơn */
+            border: none;
+            border-radius: 8px; /* Bo góc nút */
+            cursor: pointer;
+            font-size: 1.05em; /* Kích thước chữ trên nút */
+            font-weight: 500;
+            text-transform: uppercase; /* Viết hoa chữ trên nút (tùy chọn) */
+            letter-spacing: 0.5px; /* Khoảng cách chữ (tùy chọn) */
+            transition: background-color 0.25s ease, transform 0.1s ease; /* Hiệu ứng cho nút */
+            width: auto; /* Nút tự động co giãn theo nội dung */
+            min-width: 220px; /* Chiều rộng tối thiểu cho nút */
+            display: inline-block; /* Để nút không chiếm toàn bộ dòng nếu không cần */
+        }
+
+        .cinema-card button:hover {
+            background-color: #2980b9; /* Màu đậm hơn khi hover */
+            transform: scale(1.03); /* Phóng to nhẹ nút khi hover */
+        }
+
+        .cinema-card button:active {
+            transform: scale(0.98); /* Thu nhỏ nhẹ nút khi nhấn */
+        }
+
+
+        .empty-state-container {
+            text-align: center;
+            padding: 50px 30px; /* Tăng padding */
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+        }
+
+        .empty-state-container p {
+            font-size: 1.25em; /* Kích thước chữ lớn hơn */
+            color: #7f8c8d; /* Màu chữ xám hơn */
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
-$END$
+
+<div class="main-content-wrapper">
+    <div th:if="${not #lists.isEmpty(dsRapPhim)}">
+        <h1 class="page-title">Chọn Rạp Để Xem Doanh Thu</h1>
+        <div th:each="rap : ${dsRapPhim}" class="cinema-card">
+            <div class="cinema-name" th:text="${rap.tenRapPhim}">Tên Rạp Phim</div>
+            <form th:action="@{/revenue/{id}/{nam}(id=${rap.idRapPhim}, nam = ${#dates.year(#dates.createNow())})}" method="post">
+                <button type="submit">Xem Doanh Thu</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(dsRapPhim)}" class="empty-state-container">
+        <p>Hiện tại không có thông tin rạp chiếu phim nào để hiển thị. <br>Vui lòng quay lại sau!</p>
+    </div>
+</div>
+
 </body>
 </html>

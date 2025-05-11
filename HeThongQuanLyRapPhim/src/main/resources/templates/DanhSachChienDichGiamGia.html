@@ -66,7 +66,7 @@
     <h2>Thông tin Chiến dịch Giảm giá</h2>
 
     <div class="d-flex justify-content-end mb-3">
-        <a th:href="@{/discountCampaign/themChienDich}" class="btn btn-custom-add">
+        <a th:href="@{/discount-campaign/themChienDich}" class="btn btn-custom-add">
             Thêm chiến dịch
         </a>
     </div>
@@ -90,10 +90,10 @@
                 <td th:text="${#temporals.format(chienDich.ngayBatDauChienDich, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${#temporals.format(chienDich.ngayKetThucChienDich, 'yyyy-MM-dd HH:mm')}"></td>
                 <td>
-                    <a th:href="@{/discountCampaign/HienFormDeCapNhat(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}" class="btn btn-info btn-sm me-1">
+                    <a th:href="@{/discount-campaign/HienFormDeCapNhat(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}" class="btn btn-info btn-sm me-1">
                         Cập nhật
                     </a>
-                    <a th:href="@{/discountCampaign/delete(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}"
+                    <a th:href="@{/discount-campaign/delete(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}"
                        class="btn btn-danger btn-sm"
                        onclick="return confirm('Bạn có chắc chắn muốn xóa chiến dịch này không?')">
                         Xóa

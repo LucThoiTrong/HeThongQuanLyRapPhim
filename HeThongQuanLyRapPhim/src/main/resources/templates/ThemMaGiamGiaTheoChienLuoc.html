@@ -15,7 +15,7 @@
             <h4 class="mb-0">Thêm Mã Giảm Giá</h4>
         </div>
         <div class="card-body">
-            <form id="discountForm" th:action="@{/discountCampaign/save}" th:object="${maGiamGia}" method="post">
+            <form id="discountForm" th:action="@{/discount-campaign/save}" th:object="${maGiamGia}" method="post">
 
                 <!-- Hidden ID -->
                 <input type="hidden" th:field="*{idMaGiamGia}">

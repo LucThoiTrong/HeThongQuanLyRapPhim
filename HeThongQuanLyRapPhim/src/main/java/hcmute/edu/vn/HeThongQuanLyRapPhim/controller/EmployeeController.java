@@ -20,7 +20,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/employees")
 public class EmployeeController {
-
     private final EmployeeService employeeService;
     private final AuthService authService;
     private final CinemaService cinemaService;
@@ -53,7 +52,7 @@ public class EmployeeController {
         if(nv != null) {
             String tenDangNhap = StringUtils.normalizeString(nhanVien.getHoTen());
             try {
-                authService.register(nv, tenDangNhap, "password123", "password123");
+                authService.register(nv, tenDangNhap, "password123");
                 redirectAttributes.addFlashAttribute("message", "Thêm nhân viên thành công");
             } catch (Exception e) {
                 throw new RuntimeException(e);

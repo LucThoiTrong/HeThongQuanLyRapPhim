@@ -38,11 +38,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password, String confirmPassword) throws Exception {
-        if (!password.equals(confirmPassword)) {
-            throw new Exception("Mật khẩu xác nhận không khớp");
-        }
-
+    public void register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password) throws Exception {
         if (tkDoiTuongSuDungRepository.findByTenDangNhap(tenDangNhap).isPresent()) {
             throw new Exception("Tên đăng nhập đã được sử dụng");
         }
@@ -61,19 +57,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String login(String username, String password) {
+    public DoiTuongSuDung login(String username, String password) {
         TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findByTenDangNhap(username)
                 .orElse(null);
         if (tk == null) {
-            return "Không tìm thấy tên đăng nhập";
+            return null;
         }
         if (!passwordEncoder.matches(password, tk.getMatKhau())) {
-            return "Sai mật khẩu";
+            return null;
         }
         if (!tk.isTrangThaiTaiKhoan()) {
-            return "Hãy kiểm tra Email của bạn để xác minh";
+            return null;
         }
-        return "success";
+        return tk.getDoiTuongSuDung();
     }
 
     @Override

@@ -33,7 +33,7 @@
         <div class="card-body">
             <h4 class="card-title mb-4 text-primary text-center">Thêm Chiến dịch Giảm giá</h4>
 
-            <form action="#" th:action="@{/discountCampaign/themDanhSachMaGiamGia}"
+            <form action="#" th:action="@{/discount-campaign/themDanhSachMaGiamGia}"
                   th:object="${chienDichGiamGia}"
                   onsubmit="return validateDates()"
                   class="form-container">
@@ -67,7 +67,7 @@
                 <hr class="my-4">
 
                 <div class="text-center">
-                    <a th:href="@{/discountCampaign/list}" class="text-decoration-none">📋 Xem danh sách các chiến dịch</a>
+                    <a th:href="@{/discount-campaign/}" class="text-decoration-none">📋 Xem danh sách các chiến dịch</a>
                 </div>
             </form>
         </div>
