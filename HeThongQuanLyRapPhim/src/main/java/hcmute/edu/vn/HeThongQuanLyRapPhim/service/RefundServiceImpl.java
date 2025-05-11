@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RefundServiceImpl implements RefundService {
-    private RefundRepository refundRepository;
+    private final RefundRepository refundRepository;
     @Autowired
     public RefundServiceImpl(RefundRepository refundRepository) {
         this.refundRepository = refundRepository;

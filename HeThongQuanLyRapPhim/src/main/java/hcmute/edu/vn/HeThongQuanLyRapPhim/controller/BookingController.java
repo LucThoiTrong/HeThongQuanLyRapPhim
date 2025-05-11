@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.*;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class BookingController {
     private final PopcornDrinkComboService popcornDrinkComboService;
     private final ChairService chairService;
 
+    @Autowired
     public BookingController(BookingService bookingService, MovieService movieService,
                              DoiTuongSuDungService doiTuongSuDungService,
                              PopcornDrinkComboService popcornDrinkComboService,
@@ -31,7 +33,7 @@ public class BookingController {
         this.chairService = chairService;
     }
     //tim suat chieu cua phim theo ngay chieu va hinh thuc chieu
-    @GetMapping("suat-chieu/{idPhim}")
+    @GetMapping("/{idPhim}")
     public String getSuatChieuTheoPhim(@PathVariable int idPhim,
                                        @RequestParam(required = false) LocalDate ngayChieu,
                                        @RequestParam(required = false) HinhThucChieu hinhThucChieu,
@@ -39,8 +41,8 @@ public class BookingController {
         //kiem tra session id nguoi dung -> neu ko co quay lai trang dang nhap
         //dang nhap lai
         // Kiểm tra đăng nhập
-        Integer idCustomer = (Integer) session.getAttribute("idCustomer");
-        if (idCustomer == null) {
+        DoiTuongSuDung customer = (DoiTuongSuDung) session.getAttribute("user");
+        if (customer == null) {
             return "Login";
         }
         else {
@@ -147,12 +149,12 @@ public class BookingController {
         session.setAttribute("tongComboVaVe", tongComboVaVe);
         session.setAttribute("giaTienCombo", giaTienCombo);
         session.setAttribute("danhSachComboDuocChon",comboSoLuong);
-        //lay id tu session
-        int idcustomer = (int) session.getAttribute("idcustomer");
-        //tim doi tuong su dung -> hien ds ma giam gia
-        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
-        session.setAttribute("doiTuongSuDung",doiTuongSuDung);
-        model.addAttribute("doiTuongSuDung", doiTuongSuDung);
+
+        //lay đối tượng
+        int idcustomer = (int) session.getAttribute("idCustomer");
+        DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
+
+        model.addAttribute("doiTuongSuDung", customer);
         model.addAttribute("danhSachComboDuocChon",comboSoLuong);
         model.addAttribute("phim", phim);
         model.addAttribute("suatChieu", suatChieu);

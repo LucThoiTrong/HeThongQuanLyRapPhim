@@ -40,6 +40,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("message", "Đăng nhập thành công");
             redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
             if (result.getLoaiDoiTuongSuDung() == LoaiDoiTuongSuDung.KHACH_HANG) {
+                session.setAttribute("idCustomer", result.getIdDoiTuongSuDung());
                 session.setAttribute("user", result);
                 return "redirect:/";
             } else {

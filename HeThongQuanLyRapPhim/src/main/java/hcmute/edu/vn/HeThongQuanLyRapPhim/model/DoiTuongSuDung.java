@@ -38,7 +38,7 @@ public class DoiTuongSuDung implements Serializable {
     @Enumerated(EnumType.STRING)
     private LoaiDoiTuongSuDung loaiDoiTuongSuDung;
 
-    @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<MaGiamGia> dsMaGiamGia;
 
     @OneToMany(mappedBy = "doiTuongSuDung", orphanRemoval = true, fetch = FetchType.LAZY)

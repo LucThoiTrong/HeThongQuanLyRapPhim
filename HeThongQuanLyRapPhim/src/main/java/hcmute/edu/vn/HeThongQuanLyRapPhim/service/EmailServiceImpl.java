@@ -11,11 +11,14 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
 
     @Autowired
-    private SpringTemplateEngine templateEngine;
+    public EmailServiceImpl(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
+        this.mailSender = mailSender;
+        this.templateEngine = templateEngine;
+    }
     
     @Override
     public void guiHoaDonQuaEmail(String toEmail, HoaDon hoaDon) {
