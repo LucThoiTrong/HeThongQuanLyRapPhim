@@ -64,6 +64,7 @@ public class PaymentController {
             SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
             double tongTienSauGiam = (Double) session.getAttribute("tongTienSauGiam");
             DoiTuongSuDung doiTuongSuDung = (DoiTuongSuDung) session.getAttribute("doiTuongSuDung");
+            System.out.println(doiTuongSuDung.getIdDoiTuongSuDung());
             String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChon");
 
             //bat dau tao hoa don
@@ -87,14 +88,12 @@ public class PaymentController {
             for (Map.Entry<Integer, Integer> entry : comboSoLuong.entrySet()) {
                 Integer idCombo = entry.getKey();
                 Integer soLuong = entry.getValue();
-                System.out.println(idCombo + " " + soLuong);
                 ComboBapNuoc comboBapNuoc = popcornDrinkComboService.findById(idCombo);
                 ChiTietComBoBapNuoc chiTietComBoBapNuoc = new ChiTietComBoBapNuoc();
                 chiTietComBoBapNuoc.setComboBapNuoc(comboBapNuoc);
                 chiTietComBoBapNuoc.setSoLuong(soLuong);
                 chiTietComBoBapNuoc.setHoaDon(hoaDon);
                 dsChiTietComBoBapNuoc.add(chiTietComBoBapNuoc);
-                // Xử lý idCombo và soLuong
             }
             hoaDon.setDoiTuongSuDung(doiTuongSuDung);
             hoaDon.setSuatChieu(suatChieu);

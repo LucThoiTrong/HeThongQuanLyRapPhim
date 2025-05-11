@@ -7,9 +7,9 @@
 <body>
 
 <!-- Header -->
-<h2 th:text="'Đặt vé cho ' + ${phim.tenPhim}"></h2>
+<h2 th:text="'Đặt vé cho ' + ${session.phim.tenPhim}"></h2>
 <hr>
-<form th:action="@{/booking/suat-chieu/{idPhim}(idPhim=${phim.idPhim})}" method="get" id="mainForm">
+<form th:action="@{/booking/{idPhim}(idPhim=${session.phim.idPhim})}" method="get" id="mainForm">
     <!-- Hidden inputs -->
     <input type="hidden" name="ngayChieu" id="ngayChieuInput" th:value="${ngayChieu}">
     <input type="hidden" name="hinhThucChieu" id="hinhThucInput" th:value="${hinhThucChieu}">

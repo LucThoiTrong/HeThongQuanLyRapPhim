@@ -26,15 +26,11 @@ public class RowSeatController {
     @GetMapping("/chon-ghe")
     public String hienThiSoDoGhe(@RequestParam ("idSuatChieu") int idSuatChieu,
                                  Model model, HttpSession session) {
-        //lay phim tu session
-        Phim phim = (Phim) session.getAttribute("phim");
         SuatChieu suatChieu = bookingService.findById(idSuatChieu);
         session.setAttribute("suatChieu", suatChieu);
         //tim danh sach day ghe cua phong chieu do
         List<DayGhe> danhSachDayGhe = gheService.findByPhongChieuPhim(suatChieu.getPhongChieuPhim());
-        model.addAttribute("suatChieu", suatChieu);
         model.addAttribute("danhSachDayGhe", danhSachDayGhe);
-        model.addAttribute("phim", phim);
         return "SoDoGhe";
     }
 }

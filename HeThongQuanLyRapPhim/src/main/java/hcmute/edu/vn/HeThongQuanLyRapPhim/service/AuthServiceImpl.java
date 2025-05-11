@@ -22,18 +22,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository;
 
-    private final JavaMailSender mailSender;
-
-    private final SpringTemplateEngine templateEngine;
-
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthServiceImpl(DoiTuongSuDungRepository doiTuongSuDungRepository, TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository, JavaMailSender mailSender, SpringTemplateEngine templateEngine, BCryptPasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(DoiTuongSuDungRepository doiTuongSuDungRepository,
+                           TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository,
+                           BCryptPasswordEncoder passwordEncoder) {
         this.doiTuongSuDungRepository = doiTuongSuDungRepository;
         this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
 
         TKDoiTuongSuDung savedTk = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
 
-        sendVerificationEmail(doiTuongSuDung.getEmail(), savedTk.getIdTKDoiTuongSuDung());
+//        sendVerificationEmail(doiTuongSuDung.getEmail(), savedTk.getIdTKDoiTuongSuDung());
     }
 
     @Override
@@ -102,20 +98,20 @@ public class AuthServiceImpl implements AuthService {
         tkDoiTuongSuDungRepository.save(tk);
     }
 
-    private void sendVerificationEmail(String email, int id) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-        Context context = new Context();
-        String verificationLink = "http://localhost:8080/auth/verify?id=" + id;
-        context.setVariable("verificationLink", verificationLink);
-
-        String emailContent = templateEngine.process("verify-email", context);
-
-        helper.setTo(email);
-        helper.setSubject("Xác thực tài khoản");
-        helper.setText(emailContent, true);
-
-        mailSender.send(message);
-    }
+//    private void sendVerificationEmail(String email, int id) throws MessagingException {
+//        MimeMessage message = mailSender.createMimeMessage();
+//        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//
+//        Context context = new Context();
+//        String verificationLink = "http://localhost:8080/auth/verify?id=" + id;
+//        context.setVariable("verificationLink", verificationLink);
+//
+//        String emailContent = templateEngine.process("verify-email", context);
+//
+//        helper.setTo(email);
+//        helper.setSubject("Xác thực tài khoản");
+//        helper.setText(emailContent, true);
+//
+//        mailSender.send(message);
+//    }
 }

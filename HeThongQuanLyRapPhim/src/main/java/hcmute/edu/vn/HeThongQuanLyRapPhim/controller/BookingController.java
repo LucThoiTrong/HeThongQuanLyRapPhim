@@ -40,9 +40,9 @@ public class BookingController {
                                        Model model, HttpSession session) {
         //kiem tra session id nguoi dung -> neu ko co quay lai trang dang nhap
         //dang nhap lai
-        // Kiểm tra đăng nhập
         DoiTuongSuDung customer = (DoiTuongSuDung) session.getAttribute("user");
         if (customer == null) {
+            model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
             return "Login";
         }
         else {
@@ -60,7 +60,7 @@ public class BookingController {
 
             // ban dau nguoi dung chua chon hinh thuc chieu -> chon dau tien trong ds
             if (hinhThucChieu == null && !dsHinhThucChieu.isEmpty()) {
-                hinhThucChieu = dsHinhThucChieu.get(0);
+                hinhThucChieu = dsHinhThucChieu.getFirst();
             }
 
             // lay ds suat chieu loc theo phim + hinh thuc chieu
@@ -79,7 +79,6 @@ public class BookingController {
                 danhSachNgay.add(LocalDate.now().plusDays(i));
             }
             model.addAttribute("danhSachNgay", danhSachNgay);
-            model.addAttribute("phim", phim);
             model.addAttribute("ngayChieu", ngayChieu);
             model.addAttribute("hinhThucChieu", hinhThucChieu);
             model.addAttribute("danhSachHinhThuc", dsHinhThucChieu);
@@ -92,22 +91,17 @@ public class BookingController {
                                 @RequestParam("tongGiaVe") int tongGiaVe,
                                 HttpSession session,
                                 Model model) {
-        //lay phim, suat chieu tu session
-        Phim phim = (Phim) session.getAttribute("phim");
-        SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
         List<ComboBapNuoc> comboList = popcornDrinkComboService.findAll();
         //cap nhat trang thai ghe da chon
         chairService.capNhatTrangThaiGhe(danhSachGheDuocChon,true);
-        //ban dau phai dat la 0.0 de khong bi lay tu session truoc
+        //ban dau phai dat soTienduocgiam va tonghoadonsau giam
+        // la 0.0 de khong bi lay tu session truoc
         session.setAttribute("soTienGiam", 0.0);
         session.setAttribute("tongHoaDonSauGiam", 0.0);
         session.setAttribute("danhSachGheDuocChon",danhSachGheDuocChon);
-        //gan vao model
-        model.addAttribute("danhSachGheDuocChon",danhSachGheDuocChon);
+
         model.addAttribute("tongGiaVe", tongGiaVe);
-        model.addAttribute("suatChieu", suatChieu);
         model.addAttribute("danhSachCombo", comboList);
-        model.addAttribute("phim", phim);
         return "ChoosePopcornDrinkCombo";
     }
     @PostMapping("/thanh-toan")
@@ -120,11 +114,8 @@ public class BookingController {
         //Mặc định là tổng tiền chưa giảm
         double tongTienSauGiam = tongComboVaVe;
         double soTienGiam = Optional.ofNullable((Double) session.getAttribute("soTienGiam")).orElse(0.0);
-        //lay phim, suatchieu tu session
-        Phim phim = (Phim) session.getAttribute("phim");
-        SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
         //lay danh sach combo duoc chon
-        Map<Integer, Integer> comboSoLuong = comboSoLuong = new HashMap<>();
+        Map<Integer, Integer> comboSoLuong = new HashMap<>();
 
         for (Map.Entry<String, String> entry : tatCaThamSo.entrySet()) {
             String key = entry.getKey();
@@ -153,19 +144,11 @@ public class BookingController {
         //lay đối tượng
         int idcustomer = (int) session.getAttribute("idCustomer");
         DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
-
+        session.setAttribute("doiTuongSuDung",customer);
         model.addAttribute("doiTuongSuDung", customer);
-        model.addAttribute("danhSachComboDuocChon",comboSoLuong);
-        model.addAttribute("phim", phim);
-        model.addAttribute("suatChieu", suatChieu);
         model.addAttribute("tongTienSauGiam", tongTienSauGiam);
         model.addAttribute("soTienGiam", soTienGiam);
-        model.addAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
-        model.addAttribute("tongVePrice", tongVePrice);
-        model.addAttribute("tongComboVaVe", tongComboVaVe);
-        model.addAttribute("giaTienCombo", giaTienCombo);
         model.addAttribute("tongTienSauGiam", tongTienSauGiam);
-        model.addAttribute("soTienGiam", soTienGiam);
         return "ThanhToan";
     }
     @PostMapping("/ap-dung-ma-giam-gia")
@@ -192,8 +175,6 @@ public class BookingController {
             tongSauGiam = tongHoaDon - tienDuocGiam;
             session.setAttribute("tongHoaDonSauGiam", tongSauGiam);
             session.setAttribute("soTienGiam", tienDuocGiam);
-            System.out.println("sau giảm"+tongSauGiam);
-            System.out.println(tienDuocGiam);
         }
 
         //lay tat ca du lieu tu session de gui lai trang thanh toan
@@ -267,11 +248,12 @@ public class BookingController {
     }
     //neu het thoi gian giu ghe -> chuyen ve trang chu
     @GetMapping("/return-view")
-    public String returnView(HttpSession session) {
+    public String returnView(HttpSession session,Model model) {
         String danhSachGheDuocChon = (String) session.getAttribute("danhSachGheDuocChon");
         chairService.capNhatTrangThaiGhe(danhSachGheDuocChon,false);
         //xoa het session va tro lai trang dang nhap -> dang nhap lai
         session.invalidate();
-        return "trangchu.html";
+        model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
+        return "Login.html";
     }
 }

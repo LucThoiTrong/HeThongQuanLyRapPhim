@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <body style="font-family: Arial, sans-serif;">
 <h2>Hóa Đơn Thanh Toán</h2>
 <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
@@ -18,12 +18,15 @@
 </p>
 <p><strong>Phòng Chiếu:</strong> <span th:text="${hoaDon.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span></p>
 <p><strong>Ghế:</strong>
-    <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}"
-          th:text="${ve.ghe.idGhe + (stat.last ? '' : ', ')}"></span>
+    <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}" th:remove="tag">
+        <span th:text="${ve.ghe.dayGhe.tenDayGhe + ve.ghe.idGhe}" th:remove="tag"></span>
+        <span th:if="${!stat.last}" th:remove="tag">, </span>
+    </span>
 </p>
 
-<h3 th:if="${!hoaDon.dsChiTietComBoDaMua.isEmpty()}">Combo Bắp Nước</h3>
-<p th:each="combo : ${hoaDon.dsChiTietComBoDaMua}">
+
+<h3 th:if="${!hoaDon.dsComBoDaMua.isEmpty()}">Combo Bắp Nước</h3>
+<p th:each="combo : ${hoaDon.dsComBoDaMua}">
     <span th:text="${combo.comboBapNuoc.tenCombo + ' x ' + combo.soLuong}"></span>
 </p>
 

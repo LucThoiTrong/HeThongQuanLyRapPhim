@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Danh sách Combo Bắp Nước</title>
@@ -50,21 +50,21 @@
     <div class="ticket-container">
         <div class="ticket-details">
             <div class="column">
-                <span class="bold" th:text="${phim.tenPhim}"></span>
+                <span class="bold" th:text="${session.phim.tenPhim}"></span>
             </div>
             <div class="column">
                 <span class="label">Rạp</span>
-                <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+                <span class="bold" th:text="${session.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
                 <span class="label">Suất chiếu</span>
                 <span class="bold">
-                    <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                    <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
                     <br>
-                    <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+                    <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
                 </span>
                 <span class="label">Phòng chiếu</span>
-                <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+                <span class="bold" th:text="${session.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
                 <span class="label">Số ghế</span>
-                <span class="bold" th:text="${danhSachGheDuocChon}"></span>
+                <span class="bold" th:text="${session.danhSachGheDuocChon}"></span>
             </div>
             <div class="column">
                 <span class="label">Giá vé</span>
@@ -78,7 +78,7 @@
         <input type="hidden" name="tongVePrice" id="tongVePrice" th:value="${tongGiaVe}">
         <input type="hidden" name="giaTienCombo" id="giaTienCombo">
         <input type="hidden" name="tongComboVaVe" id="tongComboVaVe">
-        <input type="hidden" name="danhSachGheDuocChon" th:value="${danhSachGheDuocChon}">
+        <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
         <button id="continue-button" class="nav-button next">→NEXT</button>
     </div>
 </form>

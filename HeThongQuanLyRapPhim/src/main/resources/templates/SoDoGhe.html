@@ -28,21 +28,21 @@
 <div class="ticket-container">
     <div class="ticket-details">
         <div class="column">
-            <span class="bold" th:text="${phim.tenPhim}"></span>
+            <span class="bold" th:text="${session.phim.tenPhim}"></span>
         </div>
 
         <div class="column">
             <span class="label">Rạp</span>
-            <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
             <span class="label">Suất chiếu</span>
             <span class="bold">
-                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
                 <br>
-                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
             </span>
 
             <span class="label">Phòng chiếu</span>
-            <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
         </div>
 
         <div class="column">

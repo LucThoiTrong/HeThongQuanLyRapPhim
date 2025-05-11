@@ -4,6 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiDoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.AuthService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.EmailService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,10 +18,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class AuthController {
     private final AuthService authService;
+    private final EmailService emailService;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, EmailService emailService) {
         this.authService = authService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/login")
@@ -75,6 +78,7 @@ public class AuthController {
         doiTuongSuDung.setLoaiDoiTuongSuDung(LoaiDoiTuongSuDung.KHACH_HANG);
         try {
             authService.register(doiTuongSuDung, taiKhoan.getTenDangNhap(), taiKhoan.getMatKhau());
+            emailService.sendVerificationEmail(doiTuongSuDung.getEmail(),doiTuongSuDung.getIdDoiTuongSuDung());
             redirectAttributes.addFlashAttribute("message", "Đăng ký tài khoản thành công vui lòng kiểm tra email để kích hoạt tài khoản");
             redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
             // Điều hướng qua 1 UI khác thông báo

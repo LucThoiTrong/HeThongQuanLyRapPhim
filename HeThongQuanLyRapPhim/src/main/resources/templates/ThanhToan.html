@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <!-- tong tien truoc khi giam-->
-                <input type="hidden" name="tongComboVaVe" th:value="${tongComboVaVe}" />
+                <input type="hidden" name="tongComboVaVe" th:value="${session.tongComboVaVe}" />
                 <button type="submit" class="btn btn-primary mt-2" id="ap-dung">Áp dụng</button>
             </form>
 
@@ -74,33 +74,33 @@
 <div class="ticket-container">
     <div class="ticket-details">
         <div class="column">
-            <span class="bold" th:text="${phim.tenPhim}"></span>
+            <span class="bold" th:text="${session.phim.tenPhim}"></span>
         </div>
 
         <div class="column">
             <span class="label">Rạp</span>
-            <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
             <span class="label">Suất chiếu</span>
             <span class="bold">
-                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
                 <br>
-                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
             </span>
 
             <span class="label">Phòng chiếu</span>
-            <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
             <span class="label">Số ghế</span>
-            <span class="bold" th:text="${danhSachGheDuocChon}"></span>
+            <span class="bold" th:text="${session.danhSachGheDuocChon}"></span>
         </div>
 
         <div class="column">
             <span class="label">Giá vé</span>
-            <span class = "bold" th:text="${tongVePrice} + ' ₫'"></span></p>
+            <span class = "bold" th:text="${session.tongVePrice} + ' ₫'"></span></p>
             <span class="label">Combo</span>
-            <span class = "bold" th:text="${giaTienCombo} + ' ₫'"></span></p>
+            <span class = "bold" th:text="${session.giaTienCombo} + ' ₫'"></span></p>
 
             <span class="label">Tổng</span>
-            <span class="bold" id="final-price" th:text="${tongComboVaVe} + ' ₫'"></span>
+            <span class="bold" id="final-price" th:text="${session.tongComboVaVe} + ' ₫'"></span>
 
         </div>
     </div>
@@ -108,10 +108,10 @@
     <form id="seatForm" method="POST" action="/payment/vnpay">
         <!--  gui thong tin de thanh toan va tao hoa don
               id khach, dscombo, so tien, dsve(ghe) -->
-        <input type="hidden" name="idCustomer" th:value="${doiTuongSuDung.idDoiTuongSuDung}">
-        <input type="hidden" name="danhSachGheDuocChon" th:value="${danhSachGheDuocChon}">
+        <input type="hidden" name="idCustomer" th:value="${session.doiTuongSuDung.idDoiTuongSuDung}">
+        <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
         <input type="hidden" name="tongTienSauGiam" th:value="${tongTienSauGiam}">
-        <input type="hidden" name="suatChieu" th:value="${suatChieu.idSuatChieu}">
+        <input type="hidden" name="suatChieu" th:value="${session.suatChieu.idSuatChieu}">
         <button type="submit" id="continue-button" class="nav-button next" onclick="">→PAYMENT</button>
     </form>
 </div>

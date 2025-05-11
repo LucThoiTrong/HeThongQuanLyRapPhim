@@ -5,4 +5,5 @@ import jakarta.mail.MessagingException;
 
 public interface EmailService {
     void guiHoaDonQuaEmail(String to, HoaDon hoaDon) throws MessagingException;
+    void sendVerificationEmail(String email, int id) throws MessagingException;
 }

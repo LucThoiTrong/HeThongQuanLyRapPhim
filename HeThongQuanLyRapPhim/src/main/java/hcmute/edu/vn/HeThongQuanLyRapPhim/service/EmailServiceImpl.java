@@ -1,6 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoaDon;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -21,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
     }
     
     @Override
-    public void guiHoaDonQuaEmail(String toEmail, HoaDon hoaDon) {
+    public void guiHoaDonQuaEmail(String toEmail, HoaDon hoaDon) throws MessagingException {
         try {
             Context context = new Context();
             context.setVariable("hoaDon", hoaDon);
@@ -43,5 +44,22 @@ public class EmailServiceImpl implements EmailService {
             e.printStackTrace();
             throw new RuntimeException("Không thể gửi email: " + e.getMessage());
         }
+    }
+    @Override
+    public void sendVerificationEmail(String email, int id) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        Context context = new Context();
+        String verificationLink = "http://localhost:8080/auth/verify?id=" + id;
+        context.setVariable("verificationLink", verificationLink);
+
+        String emailContent = templateEngine.process("verify-email", context);
+
+        helper.setTo(email);
+        helper.setSubject("Xác thực tài khoản");
+        helper.setText(emailContent, true);
+
+        mailSender.send(message);
     }
 }
