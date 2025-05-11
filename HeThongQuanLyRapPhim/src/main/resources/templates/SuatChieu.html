@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đặt vé xem phim</title>
+    <link rel="stylesheet" th:href="@{/css/SuatChieu.css}">
+</head>
+<body>
+
+<!-- Header -->
+<h2 th:text="'Đặt vé cho ' + ${phim.tenPhim}"></h2>
+<hr>
+<form th:action="@{/booking/suat-chieu/{idPhim}(idPhim=${phim.idPhim})}" method="get" id="mainForm">
+    <!-- Hidden inputs -->
+    <input type="hidden" name="ngayChieu" id="ngayChieuInput" th:value="${ngayChieu}">
+    <input type="hidden" name="hinhThucChieu" id="hinhThucInput" th:value="${hinhThucChieu}">
+
+    <!-- Chọn ngày chiếu -->
+    <h3>Chọn ngày chiếu</h3>
+    <div class="date-grid">
+        <div th:each="ngay : ${danhSachNgay}">
+            <button type="button"
+                    class="date-cell"
+                    th:classappend="${ngay == ngayChieu} ? ' selected' : ''"
+                    th:attr="data-ngay=${ngay}">
+                <div class="left">
+                    <div class="month" th:text="${#temporals.format(ngay, 'MM')}"></div>
+                    <div class="day" th:text="${#temporals.format(ngay, 'EEE')}"></div>
+                </div>
+                <div class="date" th:text="${#temporals.format(ngay, 'dd')}"></div>
+            </button>
+        </div>
+    </div>
+
+    <hr>
+    <!-- Chọn hình thức chiếu -->
+    <h3>Chọn hình thức chiếu</h3>
+    <div class="format-container">
+        <div class="format-row">
+            <div th:each="ht : ${danhSachHinhThuc}" class="format-box"
+                 th:classappend="${ht == hinhThucChieu} ? ' selected'">
+                <button type="button"
+                        class="btn"
+                        th:text="${ht.moTa}"
+                        th:attr="data-ht=${ht.name()}">
+                </button>
+            </div>
+        </div>
+    </div>
+
+</form>
+<hr>
+<h3>Danh sách rạp & giờ chiếu</h3>
+
+<ul>
+    <li th:each="entry : ${groupedByRap}">
+        <!-- Tên rạp -->
+        <h3 th:text="${entry.key}"></h3>
+        <div class="screening-row">
+            <form th:each="suat : ${entry.value}" th:action="@{/so-do-ghe/chon-ghe}" method="get">
+                <input type="hidden" name="idSuatChieu" th:value="${suat.idSuatChieu}">
+                <button
+                        type="submit"
+                        name="gioChieu"
+                        th:value="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}"
+                        th:text="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}"
+                        class="time-default">
+                </button>
+            </form>
+        </div>
+    </li>
+</ul>
+
+
+</body>
+
+<script>
+    // Chọn ngày
+    document.querySelectorAll('.date-cell').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('ngayChieuInput').value = btn.getAttribute('data-ngay');
+            document.getElementById('mainForm').submit();
+        });
+    });
+
+    // Chọn hình thức
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('hinhThucInput').value = btn.getAttribute('data-ht');
+            document.getElementById('mainForm').submit();
+        });
+    });
+</script>
+
+</html>

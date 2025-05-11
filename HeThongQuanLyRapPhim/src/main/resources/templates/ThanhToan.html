@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh Toán</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/TrangThanhToan.css">
+</head>
+<body>
+<div class="container">
+    <div class="section-title">THANH TOÁN</div>
+    <div class="row mt-3">
+        <!-- Cột bên trái -->
+        <div class="col-md-8">
+            <!-- Bước 1: Giảm Giá -->
+            <div class="step-title mt-3">Bước 1: GIẢM GIÁ
+                <span class="float-end">
+                    <form th:action="@{/booking/dat-lai-ma-giam-gia}" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-link p-0" style="text-decoration: none;">Đặt lại</button>
+                    </form>
+                </span>
+            </div>
+            <form action="/booking/ap-dung-ma-giam-gia" method="POST" id="mainForm">
+                <div class="discount-list">
+                    <div class="discount-option" th:each="ma : ${doiTuongSuDung.dsMaGiamGia}">
+                        <label>
+                            <input type="radio" name="maGiamGia" th:value="${ma.idMaGiamGia}" />
+                            <span th:text="${ma.tenMaGiamGia + ' - ' + ma.phanTramGiamGia + '%'}"></span>
+                        </label>
+                    </div>
+                </div>
+                <!-- tong tien truoc khi giam-->
+                <input type="hidden" name="tongComboVaVe" th:value="${tongComboVaVe}" />
+                <button type="submit" class="btn btn-primary mt-2" id="ap-dung">Áp dụng</button>
+            </form>
+
+            <!-- Bước 2: Hình thức thanh toán -->
+            <div class="step-title mt-3">Bước 2: HÌNH THỨC THANH TOÁN</div>
+            <div class="option-box">
+                <input type="radio" name="payment" value="vnpay"> VNPAY
+            </div>
+            <!-- Checkbox đồng ý -->
+            <div class="form-check mt-3">
+                <input class="form-check-input" type="checkbox" id="agree">
+                <label class="form-check-label" for="agree">
+                    Tôi đồng ý với điều khoản sử dụng và mua vé cho người có độ tuổi phù hợp
+                </label>
+            </div>
+        </div>
+
+        <!-- Cột bên phải -->
+        <div class="col-md-4">
+            <!-- Tổng kết và đồng hồ -->
+            <div class="summary-total">
+                Khuyến mãi:<br>
+                <span class="bold" th:text="${soTienGiam} + ' ₫'"></span><br>
+                Tổng hóa đơn:<br>
+                <span class="bold" th:text="${tongTienSauGiam} + ' ₫'"></span>
+            </div>
+
+            <div class="clock-box mt-4">
+                <p class="text-center fw-bold">Countdown Clock</p>
+                <div class="countdown">
+                    <span id="minutes">5</span> Minutes <br>
+                    <span id="seconds">00</span> Seconds
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="ticket-container">
+    <div class="ticket-details">
+        <div class="column">
+            <span class="bold" th:text="${phim.tenPhim}"></span>
+        </div>
+
+        <div class="column">
+            <span class="label">Rạp</span>
+            <span class="bold" th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+            <span class="label">Suất chiếu</span>
+            <span class="bold">
+                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
+                <br>
+                <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
+            </span>
+
+            <span class="label">Phòng chiếu</span>
+            <span class="bold" th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+            <span class="label">Số ghế</span>
+            <span class="bold" th:text="${danhSachGheDuocChon}"></span>
+        </div>
+
+        <div class="column">
+            <span class="label">Giá vé</span>
+            <span class = "bold" th:text="${tongVePrice} + ' ₫'"></span></p>
+            <span class="label">Combo</span>
+            <span class = "bold" th:text="${giaTienCombo} + ' ₫'"></span></p>
+
+            <span class="label">Tổng</span>
+            <span class="bold" id="final-price" th:text="${tongComboVaVe} + ' ₫'"></span>
+
+        </div>
+    </div>
+
+    <form id="seatForm" method="POST" action="/payment/vnpay">
+        <!--  gui thong tin de thanh toan va tao hoa don
+              id khach, dscombo, so tien, dsve(ghe) -->
+        <input type="hidden" name="idCustomer" th:value="${doiTuongSuDung.idDoiTuongSuDung}">
+        <input type="hidden" name="danhSachGheDuocChon" th:value="${danhSachGheDuocChon}">
+        <input type="hidden" name="tongTienSauGiam" th:value="${tongTienSauGiam}">
+        <input type="hidden" name="suatChieu" th:value="${suatChieu.idSuatChieu}">
+        <button type="submit" id="continue-button" class="nav-button next" onclick="">→PAYMENT</button>
+    </form>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let timeLeft = 300; // 5 phút = 300 giây
+
+    function updateCountdown() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+
+        document.getElementById('minutes').textContent = minutes;
+        document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+
+        if (timeLeft > 0) {
+            timeLeft--;
+        } else {
+            clearInterval(timer);
+            alert("Hết thời gian giữ ghế! Vui lòng chọn lại.");
+            // Tùy bạn, có thể redirect về trang khác
+            // window.location.href = "/booking";
+        }
+    }
+
+    const timer = setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>

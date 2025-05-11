@@ -41,14 +41,14 @@ public class HoaDon implements Serializable {
     public HoaDon() {
     }
 
-    public HoaDon(double tongGiaTien, LocalDateTime ngayThanhToan, TrangThaiHoaDon trangThaiHoaDon, DoiTuongSuDung doiTuongSuDung, SuatChieu suatChieu, Set<VeXemPhim> dsVeXemPhimDaMua, Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
+    public HoaDon(double tongGiaTien, LocalDateTime ngayThanhToan, TrangThaiHoaDon trangThaiHoaDon, DoiTuongSuDung doiTuongSuDung, SuatChieu suatChieu, Set<VeXemPhim> dsVeXemPhimDaMua, Set<ChiTietComBoBapNuoc> dsChiTietComBoDaMua) {
         this.tongGiaTien = tongGiaTien;
         this.ngayThanhToan = ngayThanhToan;
         this.trangThaiHoaDon = trangThaiHoaDon;
         this.doiTuongSuDung = doiTuongSuDung;
+        this.suatChieu = suatChieu;
         this.dsVeXemPhimDaMua = dsVeXemPhimDaMua;
         this.dsComBoDaMua = dsComBoDaMua;
-        this.suatChieu = suatChieu;
     }
 
     public int getIdHoaDon() {
@@ -91,6 +91,14 @@ public class HoaDon implements Serializable {
         this.doiTuongSuDung = doiTuongSuDung;
     }
 
+    public SuatChieu getSuatChieu() {
+        return suatChieu;
+    }
+
+    public void setSuatChieu(SuatChieu suatChieu) {
+        this.suatChieu = suatChieu;
+    }
+
     public Set<VeXemPhim> getDsVeXemPhimDaMua() {
         return dsVeXemPhimDaMua;
     }
@@ -105,13 +113,5 @@ public class HoaDon implements Serializable {
 
     public void setDsComBoDaMua(Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
         this.dsComBoDaMua = dsComBoDaMua;
-    }
-
-    public SuatChieu getSuatChieu() {
-        return suatChieu;
-    }
-
-    public void setSuatChieu(SuatChieu suatChieu) {
-        this.suatChieu = suatChieu;
     }
 }
