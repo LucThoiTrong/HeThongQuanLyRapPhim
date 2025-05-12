@@ -154,6 +154,8 @@ public class BookingController {
                                   @RequestParam("tongComboVaVe") String tongTien,
                                   Model model,
                                   HttpSession session) {
+        //luu ma giam gia vao session de cap nhat trang thai ma giam gia khi payment
+        session.setAttribute("maGiamGiaDaChon", maGiamGia);
         //tong hoa don ban dau chua giam
         double tongHoaDon = Double.parseDouble(tongTien);
         double tienDuocGiam = 0.0;
@@ -179,7 +181,6 @@ public class BookingController {
         // Lấy đối tượng sử dụng
         DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        model.addAttribute("maGiamDaChon", maGiamGia.getIdMaGiamGia());
         return "ThanhToan";
     }
     @PostMapping("/dat-lai-ma-giam-gia")
@@ -196,8 +197,11 @@ public class BookingController {
         session.setAttribute("doiTuongSuDung",doiTuongSuDung);
 
         //dat lai tong tien sau khi giam va so tien giam gia
-        double tongTienSauGiam =tongComboVaVe;
+        double tongTienSauGiam = tongComboVaVe;
         double soTienGiam = 0.0;
+        session.setAttribute("tongTienSauGiam", tongTienSauGiam);
+        session.setAttribute("soTienGiam", soTienGiam);
+        //de lay danh sach ma giam gia
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
         return "ThanhToan";
     }

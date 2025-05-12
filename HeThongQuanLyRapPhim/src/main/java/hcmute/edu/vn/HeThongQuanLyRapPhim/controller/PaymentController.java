@@ -23,26 +23,30 @@ public class PaymentController {
     private ChairService chairService;
     private PopcornDrinkComboService popcornDrinkComboService;
     private EmailService emailService;
+    private MaGiamGiaService maGiamGiaService;
     public PaymentController(VNPayService vnpayService, InvoiceService hoaDonService,
                              ChairService chairService,PopcornDrinkComboService popcornDrinkComboService,
-                             EmailService emailService) {
+                             EmailService emailService, MaGiamGiaService maGiamGiaService) {
         this.vnpayService = vnpayService;
         this.hoaDonService = hoaDonService;
         this.chairService = chairService;
         this.popcornDrinkComboService = popcornDrinkComboService;
         this.emailService = emailService;
+        this.maGiamGiaService = maGiamGiaService;
     }
 
     @PostMapping("/vnpay")
     public String createPayment(@RequestParam("tongTienSauGiam") double amount,
-                                @RequestParam("idCustomer") int idCustomer,
-                                @RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
-                                @RequestParam("suatChieu") int idSuatChieu,
                                 Model model, HttpSession session) {
-        session.setAttribute("idSuatChieu", idSuatChieu);
-        session.setAttribute("tongTienSauGiam", amount);
-        session.setAttribute("idCustomer", idCustomer);
-        session.setAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
+//        session.setAttribute("idSuatChieu", idSuatChieu);
+//        session.setAttribute("tongTienSauGiam", amount);
+//        session.setAttribute("idCustomer", idCustomer);
+//        session.setAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
+        MaGiamGia maGiamGia = (MaGiamGia) session.getAttribute("maGiamGiaDaChon");
+        if (maGiamGia != null) {
+            maGiamGia.setTrangThaiSuDung(true);
+            maGiamGiaService.save(maGiamGia);
+        }
         int amountInt = (int) amount;
         try {
             String paymentUrl = vnpayService.createPayment(amountInt);
@@ -59,12 +63,11 @@ public class PaymentController {
     public String handlePaymentReturn(@RequestParam("vnp_ResponseCode") String responseCode,
                                       Model model, HttpSession session) {
         String message = vnpayService.getPaymentMessage(responseCode);
-        // thanh toan thanh cong -> tao hoa don mo
+        // thanh toan thanh cong -> tao hoa don
         if ("00".equals(responseCode)) {
             SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
             double tongTienSauGiam = (Double) session.getAttribute("tongTienSauGiam");
             DoiTuongSuDung doiTuongSuDung = (DoiTuongSuDung) session.getAttribute("doiTuongSuDung");
-            System.out.println(doiTuongSuDung.getIdDoiTuongSuDung());
             String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChon");
 
             //bat dau tao hoa don

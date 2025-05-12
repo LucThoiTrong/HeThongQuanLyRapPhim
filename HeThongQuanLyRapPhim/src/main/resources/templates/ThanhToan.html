@@ -22,7 +22,7 @@
             </div>
             <form action="/booking/ap-dung-ma-giam-gia" method="POST" id="mainForm">
                 <div class="discount-list">
-                    <div class="discount-option" th:each="ma : ${doiTuongSuDung.dsMaGiamGia}">
+                    <div class="discount-option" th:each="ma : ${doiTuongSuDung.dsMaGiamGia}" th:if="${!ma.trangThaiSuDung}">
                         <label>
                             <input type="radio" name="maGiamGia" th:value="${ma.idMaGiamGia}" />
                             <span th:text="${ma.tenMaGiamGia + ' - ' + ma.phanTramGiamGia + '%'}"></span>
