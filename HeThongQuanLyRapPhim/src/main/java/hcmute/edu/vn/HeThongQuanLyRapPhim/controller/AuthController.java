@@ -53,7 +53,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("message", "Đăng nhập thất bại!, vui lòng kiểm tra lại tên đăng nhập và mật khẩu");
             redirectAttributes.addFlashAttribute("message_type", "ERROR");
             redirectAttributes.addFlashAttribute("taiKhoan", taiKhoan);
-            return "redirect:/login";
+            return "redirect:/signin";
         }
     }
 

@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-        /* All CSS styles from the original HTML should be placed here or linked via <link rel="stylesheet" th:href="@{/css/your-styles.css}"> */
-        /* For brevity, I'm omitting the full CSS block here, but it's identical to your provided CSS. */
         * {
             margin: 0;
             padding: 0;
@@ -43,7 +41,7 @@
             flex-grow: 1;
             width: 100%;
             display: flex; /* Để .container bên trong có thể căn giữa và chiếm không gian */
-            /* padding-top sẽ được set bằng JS */
+            /* padding-top sẽ được set bằng JS, nhưng có thể bỏ nếu header fixed và body có padding-top */
         }
 
         .main-content-area > .container { /* Đây là .container chứa .profile-page-container */
@@ -87,7 +85,7 @@
             gap: 8px;
         }
         header .logo a i {
-            color: #f56565;
+            color: #f56565; /* Màu đỏ cho icon phim */
             font-size: 1.2em;
         }
 
@@ -101,7 +99,7 @@
             list-style: none;
             display: flex;
             gap: 20px;
-            padding-left: 0;
+            padding-left: 0; /* Reset default padding */
         }
 
         header nav ul li a {
@@ -115,8 +113,8 @@
         }
 
         header nav ul li a:hover,
-        header nav ul li a.active-header-link {
-            background: #f56565;
+        header nav ul li a.active-header-link { /* Class cho link active trong header dropdown */
+            background: #f56565; /* Màu đỏ */
             color: #fff;
         }
 
@@ -127,8 +125,8 @@
         .user-menu-container {
             position: relative;
         }
-        .user-menu-container > a {
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+        .user-menu-container > a { /* Nút "Chào, Tên" */
+            background: linear-gradient(45deg, #3182ce, #63b3ed); /* Gradient xanh */
             color: #fff;
             padding: 8px 15px;
             text-decoration: none;
@@ -138,7 +136,7 @@
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 8px; /* Khoảng cách giữa icon và text */
         }
         .user-menu-container > a:hover {
             background: linear-gradient(45deg, #2b6cb0, #4299e1);
@@ -146,14 +144,14 @@
         .user-menu-container .dropdown-menu-content {
             display: none;
             position: absolute;
-            top: calc(100% + 5px);
+            top: calc(100% + 5px); /* Cách nút một chút */
             right: 0;
             background: #fff;
             border-radius: 6px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-            z-index: 1001;
+            z-index: 1001; /* Cao hơn header */
             min-width: 200px;
-            padding: 8px 0;
+            padding: 8px 0; /* Padding cho top/bottom của dropdown */
             border: 1px solid #e2e8f0;
         }
         .user-menu-container:hover .dropdown-menu-content {
@@ -166,14 +164,14 @@
             color: #2d3748;
             text-decoration: none;
             font-size: 0.95em;
-            gap: 10px;
+            gap: 10px; /* Khoảng cách icon và text trong dropdown item */
         }
         .user-menu-container .dropdown-menu-content a:hover {
             background-color: #f0f2f5;
         }
         .user-menu-container .dropdown-menu-content a i {
-            color: #718096;
-            width: 16px;
+            color: #718096; /* Màu icon trong dropdown */
+            width: 16px; /* Đảm bảo icon căn đều */
             text-align: center;
         }
 
@@ -186,20 +184,20 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden; /* Quan trọng để bo góc được áp dụng cho con */
-            flex-grow: 1;
+            flex-grow: 1; /* Để chiếm không gian còn lại */
         }
 
         /* --- PROFILE SIDEBAR --- */
         .profile-sidebar {
             width: 280px; /* Tăng nhẹ độ rộng sidebar */
-            background: #2d3748;
-            padding: 25px 0; /* Giảm padding top/bottom một chút */
+            background: #2d3748; /* Màu nền tối cho sidebar */
+            padding: 25px 0; /* Giảm padding top/bottom một chút, không padding trái phải ở đây */
             color: #e2e8f0;
-            flex-shrink: 0;
+            flex-shrink: 0; /* Không co lại khi content lớn */
         }
 
         .profile-sidebar .user-info-section {
-            text-align: left;
+            text-align: left; /* Cho thông tin user căn trái */
             margin-bottom: 25px; /* Giảm margin bottom */
             padding: 0 25px; /* Đồng bộ padding với nav link */
         }
@@ -211,12 +209,13 @@
         }
         .profile-sidebar .user-info-section p {
             font-size: 0.88em;
-            color: #a0aec0;
-            word-break: break-all;
+            color: #a0aec0; /* Màu chữ nhạt hơn cho email */
+            word-break: break-all; /* Tránh email dài làm vỡ layout */
         }
 
         .profile-sidebar nav ul {
             list-style: none;
+            padding-left: 0; /* Reset default padding */
         }
         .profile-sidebar nav ul li a {
             display: flex;
@@ -226,27 +225,27 @@
             text-decoration: none;
             font-size: 0.95em; /* Điều chỉnh font size */
             font-weight: 500;
-            border-left: 4px solid transparent;
+            border-left: 4px solid transparent; /* Border cho active link */
             transition: background-color 0.2s ease, border-left-color 0.2s ease, color 0.2s ease;
         }
         .profile-sidebar nav ul li a i {
             margin-right: 12px; /* Giảm margin */
             font-size: 1.1em; /* Điều chỉnh icon size */
-            width: 20px;
+            width: 20px; /* Đảm bảo icon căn đều */
             text-align: center;
         }
         .profile-sidebar nav ul li a:hover {
-            background-color: #4a5568;
+            background-color: #4a5568; /* Màu nền khi hover */
             color: #fff;
         }
         .profile-sidebar nav ul li a.active {
-            background-color: #1a202c;
-            border-left-color: #f56565;
+            background-color: #1a202c; /* Nền đậm hơn cho active */
+            border-left-color: #f56565; /* Màu đỏ cho border active */
             color: #fff;
             font-weight: 600;
         }
         .profile-sidebar nav ul li a.active i {
-            color: #f56565;
+            color: #f56565; /* Màu đỏ cho icon active */
         }
 
 
@@ -254,24 +253,25 @@
         .profile-content {
             flex-grow: 1;
             padding: 25px 35px; /* Điều chỉnh padding */
-            overflow-y: auto;
+            overflow-y: auto; /* Scroll nếu content dài */
             background-color: #fff; /* Đảm bảo nền trắng cho content */
         }
-        .profile-content-section { display: none; }
-        .profile-content-section.active { display: block; }
+        .profile-content-section { display: none; } /* Mặc định ẩn các section */
+        .profile-content-section.active { display: block; } /* Hiện section active */
+
         .profile-content-section h2 {
             font-size: 1.9em; /* Điều chỉnh font size */
             color: #1a202c;
             font-weight: 600;
             margin-bottom: 25px; /* Điều chỉnh margin */
             padding-bottom: 12px; /* Điều chỉnh padding */
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0; /* Đường gạch chân tiêu đề */
             display: flex;
             align-items: center;
         }
         .profile-content-section h2 i {
             margin-right: 10px; /* Điều chỉnh margin */
-            color: #f56565;
+            color: #f56565; /* Màu đỏ cho icon tiêu đề */
         }
 
         /* Styling cho form trong "Thông tin cá nhân" */
@@ -280,7 +280,10 @@
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Điều chỉnh minmax */
             gap: 20px; /* Điều chỉnh gap */
         }
-        .profile-form .form-group { position: relative; }
+        .profile-form .form-group {
+            position: relative; /* Cho icon và message lỗi */
+            margin-bottom: 5px; /* Giảm khoảng cách nếu có message lỗi bên dưới */
+        }
         .profile-form label {
             display: block;
             font-weight: 500;
@@ -307,7 +310,7 @@
             font-size: 0.92em; /* Điều chỉnh font size */
             color: #2d3748;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            background-color: #f8fafc;
+            background-color: #f8fafc; /* Nền input nhạt */
         }
         .profile-form input[readonly] {
             background-color: #e9ecef; /* Màu xám nhạt hơn */
@@ -315,19 +318,21 @@
             color: #718096;
         }
         .profile-form select {
-            appearance: none;
+            appearance: none; /* Bỏ giao diện mặc định của select */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234A5568' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center; /* Điều chỉnh vị trí icon */
-            padding-right: 35px; /* Điều chỉnh padding */
+            padding-right: 35px; /* Điều chỉnh padding để không che icon */
         }
-        .profile-form select:invalid { color: #718096; }
+        .profile-form select:invalid { /* Style cho option disabled được chọn */
+            color: #718096;
+        }
         .profile-form input:focus,
         .profile-form select:focus {
-            border-color: #3182ce;
+            border-color: #3182ce; /* Màu border khi focus */
             outline: none;
-            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
-            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2); /* Box shadow khi focus */
+            background-color: #fff; /* Nền trắng khi focus */
         }
         .profile-form .symbol-input {
             position: absolute;
@@ -336,18 +341,18 @@
             transform: translateY(-50%);
             color: #718096;
             font-size: 1em;
-            pointer-events: none;
+            pointer-events: none; /* Để click xuyên qua icon */
         }
         .profile-form .form-actions {
-            grid-column: 1 / -1;
+            grid-column: 1 / -1; /* Cho action chiếm full grid */
             margin-top: 25px;
             display: flex;
             gap: 12px; /* Điều chỉnh gap */
-            justify-content: flex-start;
+            justify-content: flex-start; /* Căn trái các nút */
         }
         .profile-form .btn-save,
         .profile-form .btn-change-password {
-            background: linear-gradient(45deg, #e53e3e, #f56565);
+            background: linear-gradient(45deg, #e53e3e, #f56565); /* Gradient đỏ */
             color: #fff;
             padding: 10px 22px; /* Điều chỉnh padding */
             text-decoration: none;
@@ -357,22 +362,26 @@
             transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            display: inline-flex;
+            display: inline-flex; /* Cho icon và text thẳng hàng */
             align-items: center;
             gap: 8px;
         }
         .profile-form .btn-save:hover,
         .profile-form .btn-change-password:hover {
-            background: linear-gradient(45deg, #c53030, #e53e3e);
-            transform: translateY(-2px);
+            background: linear-gradient(45deg, #c53030, #e53e3e); /* Đậm hơn khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nhấc lên */
         }
-        .profile-form .btn-change-password { background: linear-gradient(45deg, #3182ce, #63b3ed); }
-        .profile-form .btn-change-password:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .profile-form .btn-change-password {
+            background: linear-gradient(45deg, #3182ce, #63b3ed); /* Gradient xanh cho nút đổi MK */
+        }
+        .profile-form .btn-change-password:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+        }
 
         /* Styling cho "Lịch sử" và "Mã giảm giá" */
         .history-table, .coupon-list {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse; /* Gộp border */
             margin-top: 15px; /* Điều chỉnh margin */
             font-size: 0.9em;
         }
@@ -384,45 +393,46 @@
             vertical-align: middle;
         }
         .history-table th, .coupon-list th {
-            background-color: #f8fafc;
+            background-color: #f8fafc; /* Nền header bảng */
             font-weight: 600;
             color: #4a5568;
         }
-        .history-table td .status, .coupon-list td .status {
+        .history-table td .status, .coupon-list td .status { /* Styling cho tag status */
             padding: 4px 8px; /* Điều chỉnh padding */
             border-radius: 12px; /* Điều chỉnh bo góc */
             font-size: 0.82em; /* Điều chỉnh font size */
             font-weight: 500;
             color: #fff;
-            white-space: nowrap;
+            white-space: nowrap; /* Tránh xuống dòng */
         }
-        .history-table td .status.completed { background-color: #34d399; }
-        .history-table td .status.pending { background-color: #f59e0b; }
-        .history-table td .status.cancelled { background-color: #ef4444; }
-        .history-table td .status.refunded { background-color: #63b3ed; }
+        .history-table td .status.completed { background-color: #34d399; } /* Xanh lá */
+        .history-table td .status.pending { background-color: #f59e0b; } /* Vàng cam */
+        .history-table td .status.cancelled { background-color: #ef4444; } /* Đỏ */
+        .history-table td .status.refunded { background-color: #63b3ed; } /* Xanh dương */
 
         .coupon-list .coupon-code {
             font-weight: bold;
-            color: #e53e3e;
-            background-color: #fee2e2;
+            color: #e53e3e; /* Màu đỏ cho mã coupon */
+            background-color: #fee2e2; /* Nền nhạt cho mã coupon */
             padding: 3px 8px;
             border-radius: 4px;
             display: inline-block;
             font-size: 0.95em; /* Tăng nhẹ font size */
         }
         .coupon-list .btn-copy-coupon {
-            background: #63b3ed;
+            background: #63b3ed; /* Xanh cho nút copy */
             color: white;
             border: none;
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.85em; /* Điều chỉnh font size */
+            transition: background-color 0.2s ease;
         }
         .coupon-list .btn-copy-coupon:hover { background: #4299e1; }
-        .coupon-list td .status.active { background-color: #34d399; }
-        .coupon-list td .status.expired { background-color: #9ca3af; }
-        .coupon-list td .status.used { background-color: #fbbf24; }
+        .coupon-list td .status.active { background-color: #34d399; } /* Xanh lá */
+        .coupon-list td .status.expired { background-color: #9ca3af; } /* Xám */
+        .coupon-list td .status.used { background-color: #fbbf24; } /* Vàng */
 
 
         .no-data-message {
@@ -435,105 +445,111 @@
             font-size: 2.8em; /* Điều chỉnh icon size */
             display: block;
             margin-bottom: 12px; /* Điều chỉnh margin */
-            color: #cbd5e0;
+            color: #cbd5e0; /* Màu icon nhạt */
         }
 
         /* --- FOOTER --- */
         footer {
-            background: #2c3e50;
-            color: #bdc3c7;
+            background: #2c3e50; /* Màu nền tối cho footer */
+            color: #bdc3c7; /* Màu chữ nhạt */
             text-align: center;
             padding: 25px 0; /* Điều chỉnh padding */
+            margin-top: auto; /* Đẩy footer xuống cuối nếu trang ngắn */
         }
         footer .container { display: flex; flex-direction: column; align-items: center; }
         .footer-nav ul { list-style: none; padding: 0; margin-bottom: 12px; display: flex; flex-wrap: wrap; justify-content: center; gap: 18px;}
         .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.92em; transition: color 0.3s ease; }
-        .footer-nav ul li a:hover { color: #fff; }
+        .footer-nav ul li a:hover { color: #fff; } /* Sáng hơn khi hover */
         .social-media { margin-bottom: 12px; display: flex; justify-content: center; gap: 12px; }
         .social-media a { color: #bdc3c7; font-size: 1.5em; text-decoration: none; transition: color 0.3s ease; }
-        .social-media a:hover { color: #e74c3c; }
+        .social-media a:hover { color: #e74c3c; } /* Màu đỏ khi hover icon social */
         footer p { font-size: 0.88em; line-height: 1.5; }
         footer p:not(:last-child) { margin-bottom: 4px; }
 
 
         /* --- RESPONSIVE DESIGN --- */
-        @media (max-width: 992px) {
-            header .container { justify-content: space-between; } /* Đổi lại để logo và action gần nhau hơn */
+        @media (max-width: 992px) { /* Tablet và mobile ngang */
+            header .container { justify-content: space-between; }
             .logo { order: 1; width: auto; text-align: left; margin-bottom: 0; }
-            header nav { order: 2; width: auto; margin-top: 0; margin-left: 20px; margin-right: 20px; } /* Nav vào giữa */
-            .header-actions { order: 3; margin-left: 0; width: auto; text-align: right; margin-top: 0; }
+            header nav { order: 2; width: auto; margin: 0 15px; }
+            .header-actions { order: 3; width: auto; text-align: right; margin-top: 0; }
 
 
             .profile-page-container {
-                flex-direction: column;
+                flex-direction: column; /* Sidebar trên, content dưới */
             }
             .profile-sidebar {
                 width: 100%;
                 display: flex;
-                flex-direction: column; /* User info trên, nav dưới */
-                align-items: stretch; /* Cho nav full width */
-                padding: 20px; /* Đồng nhất padding */
-                height: auto;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+                height: auto; /* Reset height */
             }
             .profile-sidebar .user-info-section {
                 margin-bottom: 15px;
-                padding: 0;
+                padding: 0; /* Reset padding */
                 text-align: center; /* Căn giữa info trên mobile */
             }
             .profile-sidebar nav { width: 100%; }
             .profile-sidebar nav ul {
                 display: flex;
                 flex-direction: row; /* Nav nằm ngang */
-                justify-content: space-around; /* Hoặc space-between */
+                justify-content: space-around;
                 border-top: 1px solid #4a5568; /* Ngăn cách info và nav */
                 padding-top: 10px;
+                gap: 5px; /* Khoảng cách giữa các item nav */
             }
             .profile-sidebar nav ul li a {
                 padding: 10px 8px; /* Giảm padding cho vừa */
                 font-size: 0.85em; /* Giảm font */
-                border-left: none;
-                border-bottom: 3px solid transparent;
-                justify-content: center;
-                text-align: center; /* Cho chữ trong link nav căn giữa */
+                border-left: none; /* Bỏ border trái */
+                border-bottom: 3px solid transparent; /* Border dưới cho active */
+                justify-content: center; /* Căn giữa nội dung link */
+                text-align: center;
             }
             .profile-sidebar nav ul li a i { margin-right: 5px; font-size: 1em;}
             .profile-sidebar nav ul li a.active {
-                border-bottom-color: #f56565;
-                background-color: transparent;
-                color: #f56565;
+                border-bottom-color: #f56565; /* Màu đỏ cho border active */
+                background-color: transparent; /* Bỏ nền active */
+                color: #f56565; /* Màu chữ active */
             }
             .profile-sidebar nav ul li a.active i { color: #f56565; }
+
             .profile-content { padding: 20px; } /* Giảm padding content */
             .profile-content-section h2 { font-size: 1.6em; margin-bottom: 20px; }
-            .profile-form .form-grid { grid-template-columns: 1fr; gap: 15px; }
+            .profile-form .form-grid { grid-template-columns: 1fr; gap: 15px; } /* 1 cột cho form */
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 768px) { /* Mobile nhỏ hơn */
             header nav ul { gap: 10px; }
             header nav ul li a { padding: 8px 10px; font-size: 0.9em; }
+
             .profile-sidebar nav ul {
-                flex-wrap: wrap;
+                flex-wrap: wrap; /* Cho phép wrap nếu không đủ chỗ */
                 justify-content: center;
             }
             .profile-sidebar nav ul li {
-                flex-basis: calc(50% - 10px);
+                flex-basis: calc(50% - 10px); /* 2 item mỗi hàng, có gap */
                 margin-bottom: 5px;
             }
             .profile-sidebar nav ul li a { width: 100%; }
         }
 
-        @media (max-width: 480px) {
-            header nav { display: none; }
+        @media (max-width: 480px) { /* Mobile rất nhỏ */
+            header nav { display: none; } /* Ẩn nav chính, chỉ còn user menu */
             .user-menu-container > a { padding: 6px 10px; font-size: 0.9em; }
             .user-menu-container .dropdown-menu-content { min-width: 160px;}
             .user-menu-container .dropdown-menu-content a { padding: 8px 15px; font-size: 0.9em;}
+
             .profile-sidebar nav ul li {
-                flex-basis: 100%;
+                flex-basis: 100%; /* 1 item mỗi hàng */
             }
             .profile-content { padding: 15px;}
             .profile-content-section h2 {font-size: 1.4em; margin-bottom: 15px;}
-            .profile-form .form-actions { flex-direction: column; gap: 10px; }
+            .profile-form .form-actions { flex-direction: column; gap: 10px; } /* Nút action xếp dọc */
             .profile-form .btn-save, .profile-form .btn-change-password { width: 100%; justify-content: center;}
+
             .history-table, .coupon-list { font-size: 0.85em; }
             .history-table th, .history-table td,
             .coupon-list th, .coupon-list td { padding: 8px; }
@@ -542,18 +558,18 @@
 
         /* --- CSS CHO MODAL ĐỔI MẬT KHẨU --- */
         .modal-overlay {
-            display: none;
+            display: none; /* Mặc định ẩn */
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            z-index: 1050;
+            background-color: rgba(0, 0, 0, 0.6); /* Nền mờ */
+            z-index: 1050; /* Cao hơn mọi thứ */
             justify-content: center;
             align-items: center;
         }
-        .modal-overlay.active {
+        .modal-overlay.active { /* Class để hiện modal */
             display: flex;
         }
         .modal-container {
@@ -562,9 +578,9 @@
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 480px;
+            max-width: 480px; /* Giới hạn chiều rộng modal */
             position: relative;
-            animation: slideDownModal 0.3s ease-out;
+            animation: slideDownModal 0.3s ease-out; /* Animation khi hiện */
         }
         @keyframes slideDownModal {
             from { transform: translateY(-30px); opacity: 0; }
@@ -591,29 +607,30 @@
             color: #718096;
             cursor: pointer;
             padding: 0;
-            line-height: 1;
+            line-height: 1; /* Căn giữa dấu X */
+            transition: color 0.2s ease;
         }
         .modal-close-btn:hover {
-            color: #f56565;
+            color: #f56565; /* Màu đỏ khi hover nút đóng */
         }
 
         .modal-body .form-group { /* Sử dụng class .form-group của .profile-form */
-            margin-bottom: 20px;
+            margin-bottom: 20px; /* Tăng khoảng cách giữa các trường trong modal */
         }
         /* Input trong modal dùng chung style với .profile-form input[type="password"] đã có */
-        .modal-body input[type="password"] { /* Thêm style này nếu muốn input trong modal khác */
+        /* Tuy nhiên, input password trong modal sẽ không có icon bên trái */
+        .modal-body input[type="password"] {
+            padding-left: 15px !important; /* Override padding-left của .profile-form input */
             font-size: 0.95em;
-            padding: 12px 15px; /* Bỏ padding-left cho icon nếu không dùng icon trong modal password */
-            padding-left: 15px !important; /* Override .profile-form input rule */
         }
 
 
         .modal-footer {
             margin-top: 30px;
-            text-align: right;
+            text-align: right; /* Căn phải các nút footer */
         }
         .modal-footer .btn-modal-save {
-            background: linear-gradient(45deg, #e53e3e, #f56565);
+            background: linear-gradient(45deg, #e53e3e, #f56565); /* Gradient đỏ */
             color: #fff;
             padding: 10px 25px;
             border: none;
@@ -621,13 +638,13 @@
             font-size: 1em;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
         }
         .modal-footer .btn-modal-save:hover {
             background: linear-gradient(45deg, #c53030, #e53e3e);
         }
         .modal-footer .btn-modal-cancel {
-            background-color: #e2e8f0;
+            background-color: #e2e8f0; /* Nền xám cho nút hủy */
             color: #4a5568;
             padding: 10px 20px;
             border: none;
@@ -635,23 +652,42 @@
             font-size: 1em;
             font-weight: 500;
             cursor: pointer;
-            margin-right: 10px;
+            margin-right: 10px; /* Khoảng cách với nút lưu */
             transition: background-color 0.3s ease;
         }
         .modal-footer .btn-modal-cancel:hover {
-            background-color: #cbd5e0;
+            background-color: #cbd5e0; /* Đậm hơn khi hover */
         }
+
+        /* Styling cho message lỗi (cả Thymeleaf và JS) */
         .password-validation-error {
             color: red;
             font-size: 0.85em;
             margin-top: 5px;
-            display: none; /* Initially hidden, JS will show it */
+            display: none; /* Mặc định ẩn, JS hoặc Thymeleaf sẽ hiện */
         }
-        /* Thymeleaf error styling */
-        .error-message {
+        .error-message { /* Class chung cho lỗi từ Thymeleaf field errors */
             color: red;
             font-size: 0.85em;
             margin-top: 5px;
+            display: block; /* Luôn hiển thị nếu có lỗi */
+        }
+        /* CSS cho các div alert thông báo chung */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+        }
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
         }
 
     </style>
@@ -676,12 +712,11 @@
                     <a href="#" id="userProfileLinkToggle">
                         <i class="fas fa-user-circle"></i>
                         <span id="headerUserDisplayName"
-                              th:text="${khachHang != null && khachHang.hoTen != null} ? 'Chào, ' + ${khachHang.hoTen.substring(khachHang.hoTen.lastIndexOf(' ') + 1)} : 'Chào, Khách'"></span>
+                              th:text="${khachHang != null && khachHang.hoTen != null && !khachHang.hoTen.trim().isEmpty()} ? 'Chào, ' + ${khachHang.hoTen.substring(khachHang.hoTen.lastIndexOf(' ') + 1)} : 'Chào, Khách'"></span>
                         <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
                     </a>
                     <div class="dropdown-menu-content">
-                        <a th:href="@{/user/profile}" class="active-header-link">
-                            <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        <a th:href="@{/user/profile}" class="active-header-link"> <i class="fas fa-user-edit"></i>Quản lý tài khoản
                         </a>
                         <a th:href="@{/logout}">
                             <i class="fas fa-sign-out-alt"></i>Đăng xuất
@@ -698,8 +733,8 @@
         <div class="profile-page-container" th:if="${khachHang != null}">
             <aside class="profile-sidebar">
                 <div class="user-info-section">
-                    <h4 id="sidebarUserDisplayName" th:text="${khachHang.hoTen}">Trần Văn Admin</h4>
-                    <p id="sidebarUserEmailDisplay" th:text="${khachHang.email}">admin@phimhay.com</p>
+                    <h4 id="sidebarUserDisplayName" th:text="${khachHang.hoTen ?: 'Chưa cập nhật'}">Trần Văn Admin</h4>
+                    <p id="sidebarUserEmailDisplay" th:text="${khachHang.email ?: 'Chưa cập nhật'}">admin@phimhay.com</p>
                 </div>
                 <nav>
                     <ul>
@@ -715,11 +750,11 @@
                 <section id="info-section" class="profile-content-section active">
                     <h2><i class="fas fa-id-card"></i>Thông tin cá nhân</h2>
                     <form class="profile-form" id="personalInfoForm" th:action="@{/user/profile/update}" th:object="${khachHang}" method="post">
-                        <div th:if="${param.success_update_info != null}" class="alert alert-success" role="alert" style="color: green; margin-bottom: 15px; border: 1px solid green; padding: 10px; border-radius: 5px; background-color: #e6ffed;">
+                        <div th:if="${param.success_update_info != null}" class="alert alert-success" role="alert">
                             Cập nhật thông tin cá nhân thành công!
                         </div>
-                        <div th:if="${param.error_update_info != null}" class="alert alert-danger" role="alert" style="color: red; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 5px; background-color: #ffebeb;">
-                            Cập nhật thông tin cá nhân thất bại! Vui lòng thử lại.
+                        <div th:if="${param.error_update_info != null}" class="alert alert-danger" role="alert"
+                             th:text="${param.error_update_info_message ?: 'Cập nhật thông tin cá nhân thất bại! Vui lòng thử lại.'}">
                         </div>
 
                         <div class="form-grid">
@@ -735,14 +770,14 @@
                                 <label for="ten_dang_nhap">Tên đăng nhập</label>
                                 <div class="input-wrapper">
                                     <span class="symbol-input"><i class='bx bx-user'></i></span>
-                                    <input type="text" id="ten_dang_nhap" name="ten_dang_nhap" th:value="${username}" readonly>
+                                    <input type="text" id="ten_dang_nhap" name="ten_dang_nhap_display" th:value="${khachHang.tkDoiTuongSuDung.tenDangNhap}" readonly>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email_info">Email</label>
                                 <div class="input-wrapper">
                                     <span class="symbol-input"><i class='bx bx-envelope'></i></span>
-                                    <input type="email" id="email" th:field="*{email}" required>
+                                    <input type="email" id="email_info" th:field="*{email}" required>
                                 </div>
                                 <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></small>
                             </div>
@@ -758,7 +793,8 @@
                                 <label for="ngay_sinh">Ngày sinh</label>
                                 <div class="input-wrapper">
                                     <span class="symbol-input"><i class='bx bx-calendar'></i></span>
-                                    <input type="date" id="ngay_sinh" th:field="*{ngaySinh}" th:value="${#dates.format(khachHang.ngaySinh, 'yyyy-MM-dd')}">
+                                    <input type="date" id="ngay_sinh" th:field="*{ngaySinh}"
+                                           th:value="${khachHang != null && khachHang.ngaySinh != null ? #dates.format(khachHang.ngaySinh, 'yyyy-MM-dd') : ''}">
                                 </div>
                                 <small th:if="${#fields.hasErrors('ngaySinh')}" th:errors="*{ngaySinh}" class="error-message"></small>
                             </div>
@@ -768,12 +804,11 @@
                                     <span class="symbol-input"><i class='bx bx-male-female'></i></span>
                                     <select id="gioi_tinh" th:field="*{gioiTinh}">
                                         <option value="" disabled>Chọn giới tính</option>
-                                        <option th:each="gtVal : ${T(com.example.yourproject.model.enums.GioiTinh).values()}"
-                                                th:value="${gtVal}"
-                                                th:text="${gtVal.displayName}"
-                                                th:selected="${gtVal == khachHang.gioiTinh}">
-                                        </option>
+                                        <option value="NAM">Nam</option>
+                                        <option value="NU">Nữ</option>
+                                        <option value="KHAC">Khác</option>
                                     </select>
+
                                 </div>
                                 <small th:if="${#fields.hasErrors('gioiTinh')}" th:errors="*{gioiTinh}" class="error-message"></small>
                             </div>
@@ -787,27 +822,24 @@
 
                 <section id="booking-history-section" class="profile-content-section">
                     <h2><i class="fas fa-ticket-alt"></i>Lịch sử đặt vé</h2>
-                    <div th:if="${#lists.isEmpty(bookingHistories)}">
+                    <div th:if="${khachHang.dsHoaDon == null || #lists.isEmpty(khachHang.dsHoaDon)}">
                         <div class="no-data-message" id="noBookingMessage">
                             <i class="fas fa-film-alt"></i> <p>Bạn chưa có lịch sử đặt vé nào.</p>
                         </div>
                     </div>
-                    <table class="history-table" th:unless="${#lists.isEmpty(bookingHistories)}">
+                    <table class="history-table" th:if="${khachHang.dsHoaDon != null && not #lists.isEmpty(khachHang.dsHoaDon)}">
                         <thead>
                         <tr>
-                            <th>Mã vé</th> <th>Tên phim</th> <th>Rạp</th> <th>Ngày chiếu</th> <th>Suất chiếu</th> <th>SL</th> <th>Tổng tiền</th> <th>Trạng thái</th>
+                            <th>Tên phim</th> <th>Rạp</th> <th>Ngày chiếu</th> <th>SL</th> <th>Tổng tiền</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="booking : ${bookingHistories}">
-                            <td th:text="${booking.maVe}">PHV00123</td>
-                            <td th:text="${booking.tenPhim}">Lật Mặt 7</td>
-                            <td th:text="${booking.rap}">CGV Landmark 81</td>
-                            <td th:text="${#dates.format(booking.ngayChieu, 'dd/MM/yyyy')}">10/05/2025</td>
-                            <td th:text="${booking.suatChieu}">19:30</td>
-                            <td th:text="${booking.soLuong}">2</td>
-                            <td th:text="${booking.tongTienFormatted}">250,000đ</td>
-                            <td><span class="status" th:classappend="${booking.trangThaiCssClass}" th:text="${booking.trangThaiText}">Đã xem</span></td>
+                        <tr th:each="booking : ${khachHang.dsHoaDon}">
+                            <td th:text="${booking.suatChieu.phim.tenPhim}">Lật Mặt 7</td>
+                            <td th:text="${booking.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}">CGV Landmark 81</td>
+                            <td th:text="${booking.suatChieu.ngayGioChieu != null ? #dates.format(booking.suatChieu.ngayGioChieu, 'dd/MM/yyyy') : '-'}">10/05/2025</td>
+                            <td th:text="${booking.soLuongVeXemPhimDaMua()}">2</td>
+                            <td th:text="${booking.tongGiaTien}">250,000đ</td>
                         </tr>
                         </tbody>
                     </table>
@@ -815,25 +847,23 @@
 
                 <section id="refund-history-section" class="profile-content-section">
                     <h2><i class="fas fa-hand-holding-usd"></i>Lịch sử hoàn trả</h2>
-                    <div th:if="${#lists.isEmpty(refundHistories)}">
+                    <div th:if="${khachHang.dsHoanTra == null || #lists.isEmpty(khachHang.dsHoanTra)}">
                         <div class="no-data-message" id="noRefundMessage">
                             <i class="fas fa-file-invoice-dollar"></i> <p>Bạn chưa có lịch sử hoàn trả nào.</p>
                         </div>
                     </div>
-                    <table class="history-table" th:unless="${#lists.isEmpty(refundHistories)}">
+                    <table class="history-table" th:if="${khachHang.dsHoanTra != null && not #lists.isEmpty(khachHang.dsHoanTra)}">
                         <thead>
                         <tr>
-                            <th>Mã hoàn trả</th> <th>Mã vé gốc</th> <th>Tên phim</th> <th>Ngày YC</th> <th>Số tiền</th> <th>Trạng thái</th>
+                            <th>Mã vé gốc</th> <th>Tên phim</th> <th>Ngày YC</th> <th>Lý do hoàn trả</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="refund : ${refundHistories}">
-                            <td th:text="${refund.maHoanTra}">PHT00034</td>
-                            <td th:text="${refund.maVeGoc}">PHV00115</td>
-                            <td th:text="${refund.tenPhim}">Gấu Béo</td>
-                            <td th:text="${#dates.format(refund.ngayYeuCau, 'dd/MM/yyyy')}">02/05/2025</td>
-                            <td th:text="${refund.soTienFormatted}">100,000đ</td>
-                            <td><span class="status" th:classappend="${refund.trangThaiCssClass}" th:text="${refund.trangThaiText}">Đã hoàn</span></td>
+                        <tr th:each="refund : ${khachHang.dsHoanTra}">
+                            <td th:text="${refund.hoaDon.idHoaDon}">PHV00115</td>
+                            <td th:text="${refund.hoaDon.suatChieu.phim.tenPhim}">Gấu Béo</td>
+                            <td th:text="${refund.ngayHoanTra != null ? #dates.format(refund.ngayHoanTra, 'dd/MM/yyyy') : '-'}">02/05/2025</td>
+                            <td th:text="${refund.lyDoHoanTra}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -841,33 +871,52 @@
 
                 <section id="my-coupons-section" class="profile-content-section">
                     <h2><i class="fas fa-tags"></i>Mã giảm giá của tôi</h2>
-                    <div th:if="${#lists.isEmpty(myCoupons)}">
+                    <div th:if="${khachHang == null || khachHang.dsMaGiamGia == null || #lists.isEmpty(khachHang.dsMaGiamGia)}">
                         <div class="no-data-message" id="noCouponMessage">
                             <i class="fas fa-barcode"></i> <p>Bạn chưa có mã giảm giá nào.</p>
                         </div>
                     </div>
-                    <table class="coupon-list" th:unless="${#lists.isEmpty(myCoupons)}">
+
+                    <table class="coupon-list" th:if="${khachHang != null && khachHang.dsMaGiamGia != null && not #lists.isEmpty(khachHang.dsMaGiamGia)}">
                         <thead>
                         <tr>
-                            <th>Mã Code</th> <th>Mô tả</th> <th>Hạn SD</th> <th>Điều kiện</th> <th>Trạng thái</th> <th></th>
-                        </tr>
+                            <th>Mã Code</th>
+                            <th>Mô tả chi tiết</th>
+                            <th>Hạn sử dụng</th>
+                            <th>Điều kiện áp dụng</th>
+                            <th>Trạng thái</th>
+                            <th></th> </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="coupon : ${myCoupons}">
-                            <td><span class="coupon-code" th:text="${coupon.maCode}">WELCOME25</span></td>
-                            <td th:text="${coupon.moTa}">Giảm 25% đơn đầu</td>
-                            <td th:text="${#dates.format(coupon.hanSuDung, 'dd/MM/yyyy')}">31/12/2025</td>
-                            <td th:text="${coupon.dieuKien}">ĐH > 100K</td>
-                            <td><span class="status" th:classappend="${coupon.trangThaiCssClass}" th:text="${coupon.trangThaiText}">Còn hạn</span></td>
-                            <td><button class="btn-copy-coupon" th:attr="data-coupon=${coupon.maCode}"><i class="fas fa-copy"></i></button></td>
+                        <tr th:each="coupon : ${khachHang.dsMaGiamGia}">
+                            <td>
+                                <span class="coupon-code" th:text="${coupon.tenMaGiamGia}">MACODE</span>
+                            </td>
+                            <td th:text="|Giảm ${coupon.phanTramGiamGia}% (tối đa ${#numbers.formatInteger(coupon.giaTriGiamToiDa, 0, 'POINT')} VNĐ)|"></td>
+                            <td th:text="${coupon.ngayKetThucApDung != null ? #temporals.format(coupon.ngayKetThucApDung, 'dd/MM/yyyy HH:mm') : '-'}">
+                                dd/MM/yyyy HH:mm
+                            </td>
+                            <td th:text="|Đơn hàng từ ${#numbers.formatDecimal(coupon.hanMucApDung, 0, 'POINT', 0, 'COMMA')} VNĐ|"></td>
+                            <td>
+                                <span th:with="now=${T(java.time.LocalDateTime).now()}">
+                                    <span th:if="${coupon.ngayKetThucApDung.isBefore(now)}" class="status expired">Hết hạn</span>
+                                    <span th:elseif="${coupon.ngayBatDauApDung.isAfter(now)}" class="status upcoming">Sắp diễn ra</span>
+                                    <span th:elseif="${!coupon.isTrangThaiSuDung()}" class="status used">Đã sử dụng/Vô hiệu</span> <span th:else class="status active">Còn hạn</span>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-copy-coupon" th:attr="data-coupon=${coupon.tenMaGiamGia}" title="Sao chép mã">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
                 </section>
             </main>
         </div>
-        <div th:unless="${khachHang != null}" class="profile-page-container" style="justify-content: center; align-items: center; text-align: center;">
-            <p>Không tìm thấy thông tin người dùng. Vui lòng <a th:href="@{/login}">đăng nhập</a> lại.</p>
+        <div th:unless="${khachHang != null}" class="profile-page-container" style="justify-content: center; align-items: center; text-align: center; padding: 20px;">
+            <p>Không tìm thấy thông tin người dùng. Vui lòng <a th:href="@{/signin}" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> lại.</p>
         </div>
     </div>
 </div>
@@ -879,30 +928,29 @@
             <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
         </div>
         <div class="modal-body">
-            <form class="profile-form" id="changePasswordForm" th:action="@{/user/profile/change-password}" method="post" th:object="${changePasswordFormDto}">
-                <div th:if="${param.success_change_password != null}" class="alert alert-success" role="alert" style="color: green; margin-bottom: 15px; border: 1px solid green; padding: 10px; border-radius: 5px; background-color: #e6ffed;">
-                    Đổi mật khẩu thành công!
+            <form class="profile-form" id="changePasswordForm" th:action="@{/user/profile/change-password}" method="post">
+                <div th:if="${success_change_password_message != null}" class="alert alert-success" role="alert"
+                     th:text="${success_change_password_message}">
                 </div>
-                <div th:if="${param.error_change_password != null}" class="alert alert-danger" role="alert" style="color: red; margin-bottom: 15px; border: 1px solid red; padding: 10px; border-radius: 5px; background-color: #ffebeb;"
-                     th:text="${session.SPRING_SECURITY_LAST_EXCEPTION != null ? session.SPRING_SECURITY_LAST_EXCEPTION.message : 'Mật khẩu hiện tại không đúng hoặc có lỗi xảy ra.'}">
+                <div th:if="${error_change_password_message != null}" class="alert alert-danger" role="alert"
+                     th:text="${error_change_password_message}">
                 </div>
 
-
                 <div class="form-group">
-                    <label for="current_password">Mật khẩu hiện tại (Nếu có)</label>
-                    <input type="password" id="current_password" name="currentPassword" placeholder="Bỏ trống nếu không muốn thay đổi mật khẩu hiện tại qua OTP/Email">
-                    <div th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}" class="password-validation-error" style="display:block"></div>
+                    <label for="current_password_modal">Mật khẩu hiện tại</label>
+                    <input type="password" id="current_password_modal" name="currentPassword" placeholder="Bỏ trống nếu không yêu cầu" th:value="${val_currentPassword}">
+                    <div th:if="${error_currentPassword != null}" class="password-validation-error" style="display:block" th:text="${error_currentPassword}"></div>
                 </div>
                 <div class="form-group">
-                    <label for="new_password">Mật khẩu mới</label>
-                    <input type="password" id="new_password" th:field="*{newPassword}" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required>
-                    <div th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="password-validation-error" style="display:block" id="newPasswordErrorThymeleaf"></div>
-                    <div class="password-validation-error" id="newPasswordError"></div> </div>
+                    <label for="new_password_modal">Mật khẩu mới</label>
+                    <input type="password" id="new_password_modal" name="newPassword" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required th:value="${val_newPassword}">
+                    <div th:if="${error_newPassword != null}" class="password-validation-error" style="display:block" th:text="${error_newPassword}"></div>
+                    <div class="password-validation-error js-error-new-password"></div> </div>
                 <div class="form-group">
-                    <label for="confirm_new_password">Xác nhận mật khẩu mới</label>
-                    <input type="password" id="confirm_new_password" th:field="*{confirmNewPassword}" placeholder="Nhập lại mật khẩu mới" required>
-                    <div th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="password-validation-error" style="display:block" id="confirmPasswordErrorThymeleaf"></div>
-                    <div class="password-validation-error" id="confirmPasswordError"></div> </div>
+                    <label for="confirm_new_password_modal">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirm_new_password_modal" name="confirmNewPassword" placeholder="Nhập lại mật khẩu mới" required>
+                    <div th:if="${error_confirmNewPassword != null}" class="password-validation-error" style="display:block" th:text="${error_confirmNewPassword}"></div>
+                    <div class="password-validation-error js-error-confirm-password"></div> </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -911,7 +959,6 @@
         </div>
     </div>
 </div>
-
 <footer id="pageFooter">
     <div class="container">
         <div class="footer-nav">
@@ -929,111 +976,69 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // Pass success/error flags from query params to JS if needed for modal behavior
-    const urlParams = new URLSearchParams(window.location.search);
-    const successChangePassword = urlParams.get('success_change_password');
-    const errorChangePassword = urlParams.get('error_change_password');
-    const successUpdateInfo = urlParams.get('success_update_info');
+    // Lấy các thông báo và giá trị từ FlashAttributes (nếu có) để JS có thể sử dụng
+    const flash_success_change_password_message = /*[[${success_change_password_message}]]*/ null;
+    const flash_error_change_password_message = /*[[${error_change_password_message}]]*/ null;
+    const flash_error_currentPassword = /*[[${error_currentPassword}]]*/ null;
+    const flash_error_newPassword = /*[[${error_newPassword}]]*/ null;
+    const flash_error_confirmNewPassword = /*[[${error_confirmNewPassword}]]*/ null;
+
+    // Lấy giá trị đã nhập trước đó (nếu có lỗi và backend trả về)
+    const val_currentPassword_js = /*[[${val_currentPassword}]]*/ null;
+    const val_newPassword_js = /*[[${val_newPassword}]]*/ null;
 
 
     document.addEventListener('DOMContentLoaded', () => {
         const pageHeader = document.getElementById('pageHeader');
         const mainContentArea = document.getElementById('mainContentArea');
 
-        function setMainContentPadding() {
-            if (pageHeader && mainContentArea) {
-                const headerHeight = pageHeader.offsetHeight;
-                document.body.style.paddingTop = headerHeight + 'px';
-                mainContentArea.style.paddingTop = '0px'; // Main content starts right after header
-            } else if (mainContentArea) {
-                document.body.style.paddingTop = '0px';
-                mainContentArea.style.paddingTop = '20px'; // Default padding if no header
+        function setBodyPaddingTop() {
+            if (pageHeader) {
+                document.body.style.paddingTop = pageHeader.offsetHeight + 'px';
             }
         }
-
-        setMainContentPadding();
-        window.addEventListener('resize', setMainContentPadding);
+        setBodyPaddingTop(); // Set on initial load
+        window.addEventListener('resize', setBodyPaddingTop); // Adjust on resize
 
         const navLinks = document.querySelectorAll('.profile-nav-link');
         const contentSections = document.querySelectorAll('.profile-content-section');
 
-        // Active tab based on URL hash or default
         function setActiveTabFromHash() {
-            const hash = window.location.hash.substring(1); // Remove #
-            let activeLink = null;
-            let activeSection = null;
+            const hash = window.location.hash.substring(1);
+            let activeLinkFound = false;
 
-            if (hash) {
-                navLinks.forEach(link => {
-                    if (link.dataset.target === hash) {
-                        activeLink = link;
-                    }
-                });
-                const targetSectionElem = document.getElementById(hash);
-                if (targetSectionElem) {
-                    activeSection = targetSectionElem;
+            navLinks.forEach(link => {
+                const target = link.dataset.target;
+                const section = document.getElementById(target);
+                if (target === hash && section) {
+                    link.classList.add('active');
+                    section.classList.add('active');
+                    activeLinkFound = true;
+                } else {
+                    link.classList.remove('active');
+                    if(section) section.classList.remove('active');
+                }
+            });
+
+            if (!activeLinkFound && navLinks.length > 0 && contentSections.length > 0) {
+                navLinks[0].classList.add('active');
+                contentSections[0].classList.add('active');
+                if(history.replaceState) { // Cập nhật hash nếu không có hash hợp lệ
+                    history.replaceState(null, null, '#' + navLinks[0].dataset.target);
                 }
             }
-
-            if (activeLink && activeSection) {
-                navLinks.forEach(nav => nav.classList.remove('active'));
-                contentSections.forEach(section => section.classList.remove('active'));
-                activeLink.classList.add('active');
-                activeSection.classList.add('active');
-            } else {
-                // Default to first tab if no valid hash or element not found
-                if (navLinks.length > 0) navLinks[0].classList.add('active');
-                if (contentSections.length > 0) contentSections[0].classList.add('active');
-            }
         }
+
         setActiveTabFromHash(); // Set on page load
         window.addEventListener('hashchange', setActiveTabFromHash); // Listen for hash changes
-
 
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const targetSectionId = link.dataset.target;
-                window.location.hash = targetSectionId; // This will trigger hashchange event
-                // If hashchange event doesn't automatically re-trigger or for instant feedback:
-                // navLinks.forEach(nav => nav.classList.remove('active'));
-                // contentSections.forEach(section => section.classList.remove('active'));
-                // link.classList.add('active');
-                // const targetSection = document.getElementById(targetSectionId);
-                // if (targetSection) {
-                //     targetSection.classList.add('active');
-                // }
+                // Thay đổi hash sẽ trigger sự kiện 'hashchange' và hàm setActiveTabFromHash
+                window.location.hash = link.dataset.target;
             });
         });
-
-        // const yearSpan = document.getElementById('currentYear'); // Thymeleaf handles this
-        // if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
-
-
-        // Personal info form submission is now standard POST, JS alert is for demo.
-        // For real app, server would redirect or return JSON.
-        // The display name update in header/sidebar is handled by Thymeleaf on page reload.
-        // If using AJAX, you'd update these manually on success.
-        const personalInfoForm = document.getElementById('personalInfoForm');
-        if (personalInfoForm) {
-            personalInfoForm.addEventListener('submit', function(e) {
-                // Client-side validation can be added here before submit if needed
-                // e.g. if (!this.checkValidity()) { e.preventDefault(); return; }
-                // For demo purpose, an alert. In real app, this would be handled by server response.
-                // alert('Thông tin sẽ được gửi lên server để cập nhật!');
-            });
-        }
-        if (successUpdateInfo !== null) {
-            // Optionally show a more persistent success message or scroll to it
-            console.log("Thông tin cá nhân đã được cập nhật thành công (thông báo từ server).");
-            // You can switch to the info tab if not already on it
-            const infoLink = document.querySelector('.profile-nav-link[data-target="info-section"]');
-            if (infoLink) {
-                window.location.hash = "info-section";
-                // infoLink.click(); // this might cause issues if not handled carefully
-            }
-        }
-
 
         // --- JAVASCRIPT CHO MODAL ĐỔI MẬT KHẨU ---
         const btnOpenModal = document.getElementById('btnOpenChangePasswordModal');
@@ -1041,124 +1046,123 @@
         const modalCloseBtn = document.getElementById('modalCloseBtn');
         const modalCancelBtn = document.getElementById('modalCancelBtn');
         const changePasswordForm = document.getElementById('changePasswordForm');
-        const newPasswordInput = document.getElementById('new_password');
-        const confirmNewPasswordInput = document.getElementById('confirm_new_password');
-        const newPasswordErrorJS = document.getElementById('newPasswordError'); // JS error placeholder
-        const confirmPasswordErrorJS = document.getElementById('confirmPasswordError'); // JS error placeholder
-        const currentPasswordInput = document.getElementById('current_password'); // For clearing
 
+        const currentPasswordInputModal = document.getElementById('current_password_modal');
+        const newPasswordInputModal = document.getElementById('new_password_modal');
+        const confirmNewPasswordInputModal = document.getElementById('confirm_new_password_modal');
+
+        // Các div hiển thị lỗi từ JS
+        const jsErrorNewPasswordDiv = modalOverlay.querySelector('.js-error-new-password');
+        const jsErrorConfirmPasswordDiv = modalOverlay.querySelector('.js-error-confirm-password');
+
+        function clearPasswordModalJSErrors() {
+            if(jsErrorNewPasswordDiv) { jsErrorNewPasswordDiv.textContent = ''; jsErrorNewPasswordDiv.style.display = 'none'; }
+            if(jsErrorConfirmPasswordDiv) { jsErrorConfirmPasswordDiv.textContent = ''; jsErrorConfirmPasswordDiv.style.display = 'none'; }
+        }
+
+        function resetAndRepopulatePasswordForm() {
+            if(changePasswordForm) changePasswordForm.reset();
+            // Điền lại giá trị cũ nếu có từ flash attributes (sau khi submit lỗi)
+            if(currentPasswordInputModal && val_currentPassword_js) currentPasswordInputModal.value = val_currentPassword_js;
+            if(newPasswordInputModal && val_newPassword_js) newPasswordInputModal.value = val_newPassword_js;
+            // Confirm password không cần điền lại
+        }
 
         if (btnOpenModal && modalOverlay) {
             btnOpenModal.addEventListener('click', () => {
                 modalOverlay.classList.add('active');
-                // Clear previous Thymeleaf errors if any, because we are re-opening
-                document.querySelectorAll('#changePasswordForm .password-validation-error[id$="Thymeleaf"]').forEach(el => {
-                    el.style.display = 'none';
-                    el.textContent = '';
-                });
-                // Clear JS errors
-                if(newPasswordErrorJS) { newPasswordErrorJS.style.display = 'none'; newPasswordErrorJS.textContent = '';}
-                if(confirmPasswordErrorJS) { confirmPasswordErrorJS.style.display = 'none'; confirmPasswordErrorJS.textContent = '';}
-
-                if(changePasswordForm) changePasswordForm.reset(); // Reset form fields
-                newPasswordInput.focus();
+                clearPasswordModalJSErrors(); // Xóa lỗi JS cũ
+                resetAndRepopulatePasswordForm(); // Reset form và điền lại giá trị cũ (nếu có)
+                // Các lỗi từ Thymeleaf (flash attributes) sẽ tự hiển thị nếu có
+                if(currentPasswordInputModal) currentPasswordInputModal.focus();
             });
         }
 
         function closeModal() {
-            if (modalOverlay) {
-                modalOverlay.classList.remove('active');
-            }
+            if (modalOverlay) modalOverlay.classList.remove('active');
         }
 
         if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
         if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
-
         if (modalOverlay) {
             modalOverlay.addEventListener('click', (event) => {
-                if (event.target === modalOverlay) {
-                    closeModal();
-                }
+                if (event.target === modalOverlay) closeModal(); // Đóng modal khi click ra ngoài
             });
         }
 
         if (changePasswordForm) {
             changePasswordForm.addEventListener('submit', (e) => {
                 let isValid = true;
-                // Clear previous JS errors
-                if(newPasswordErrorJS) { newPasswordErrorJS.style.display = 'none'; newPasswordErrorJS.textContent = '';}
-                if(confirmPasswordErrorJS) { confirmPasswordErrorJS.style.display = 'none'; confirmPasswordErrorJS.textContent = '';}
-                // Clear Thymeleaf errors before JS validation
-                document.querySelectorAll('#changePasswordForm .password-validation-error[id$="Thymeleaf"]').forEach(el => {
-                    el.style.display = 'none';
-                    el.textContent = '';
-                });
+                clearPasswordModalJSErrors(); // Xóa lỗi JS cũ trước khi validate lại
 
-
-                if (newPasswordInput.value.length > 0 && newPasswordInput.value.length < 6) { // Only validate if not empty, backend handles required
-                    if(newPasswordErrorJS) {
-                        newPasswordErrorJS.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
-                        newPasswordErrorJS.style.display = 'block';
+                // Validate Mật khẩu mới
+                if (newPasswordInputModal.value.trim() === '') {
+                    if(jsErrorNewPasswordDiv) {
+                        jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới không được để trống.';
+                        jsErrorNewPasswordDiv.style.display = 'block';
+                    }
+                    isValid = false;
+                } else if (newPasswordInputModal.value.length < 6) {
+                    if(jsErrorNewPasswordDiv) {
+                        jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
+                        jsErrorNewPasswordDiv.style.display = 'block';
                     }
                     isValid = false;
                 }
 
-                if (confirmNewPasswordInput.value === '' && newPasswordInput.value !== '') {
-                    if(confirmPasswordErrorJS) {
-                        confirmPasswordErrorJS.textContent = 'Vui lòng xác nhận mật khẩu mới.';
-                        confirmPasswordErrorJS.style.display = 'block';
+                // Validate Xác nhận mật khẩu mới
+                if (confirmNewPasswordInputModal.value.trim() === '') {
+                    if(jsErrorConfirmPasswordDiv) {
+                        jsErrorConfirmPasswordDiv.textContent = 'Vui lòng xác nhận mật khẩu mới.';
+                        jsErrorConfirmPasswordDiv.style.display = 'block';
                     }
                     isValid = false;
-                } else if (newPasswordInput.value !== confirmNewPasswordInput.value) {
-                    if(confirmPasswordErrorJS) {
-                        confirmPasswordErrorJS.textContent = 'Mật khẩu xác nhận không khớp.';
-                        confirmPasswordErrorJS.style.display = 'block';
+                } else if (newPasswordInputModal.value !== confirmNewPasswordInputModal.value) {
+                    if(jsErrorConfirmPasswordDiv) {
+                        jsErrorConfirmPasswordDiv.textContent = 'Mật khẩu xác nhận không khớp.';
+                        jsErrorConfirmPasswordDiv.style.display = 'block';
                     }
                     isValid = false;
                 }
 
                 if (!isValid) {
-                    e.preventDefault(); // Prevent submission if client-side validation fails
-                } else {
-                    // Client-side validation passed, allow form submission
-                    // Optional: alert('Mật khẩu sẽ được gửi lên server để thay đổi (demo)!');
+                    e.preventDefault(); // Ngăn submit nếu JS validation thất bại
                 }
+                // Nếu hợp lệ, form sẽ được submit bình thường
             });
         }
 
-        // If password change was successful (from server redirect), close modal if it was open
-        // Or if there was an error, keep modal open (or reopen it) to show error
-        if (successChangePassword !== null && modalOverlay.classList.contains('active')) {
+        // Kiểm tra nếu có thông báo lỗi từ redirect (flash messages) thì mở modal
+        const shouldOpenModalDueToFlashError = flash_error_change_password_message ||
+            flash_error_currentPassword ||
+            flash_error_newPassword ||
+            flash_error_confirmNewPassword;
+
+        if (shouldOpenModalDueToFlashError && !modalOverlay.classList.contains('active')) {
+            if (btnOpenModal) btnOpenModal.click(); // Tự động mở modal để hiển thị lỗi từ server
+        }
+
+        // Nếu đổi mật khẩu thành công và có thông báo, đóng modal (nếu đang mở) để user thấy trang chính
+        // Thông báo thành công sẽ được Thymeleaf hiển thị trên trang chính.
+        if (flash_success_change_password_message && modalOverlay.classList.contains('active')) {
             closeModal();
-            // Optionally clear the form again if needed, though server redirect usually means new page load
         }
-        if (errorChangePassword !== null && !modalOverlay.classList.contains('active')) {
-            // If there was an error and modal isn't open, open it to show Thymeleaf errors
-            if (btnOpenModal) btnOpenModal.click();
-        }
-        // --- KẾT THÚC JAVASCRIPT CHO MODAL ---
 
-        // The checkTableEmpty function is replaced by Thymeleaf's th:if/th:unless for initial render.
-        // If tables are dynamically updated via JS later, such a function might be needed.
 
+        // Copy coupon
         document.querySelectorAll('.btn-copy-coupon').forEach(button => {
             button.addEventListener('click', function() {
                 const couponCode = this.dataset.coupon;
                 navigator.clipboard.writeText(couponCode).then(() => {
-                    const icon = this.querySelector('i');
-                    const originalIconHTML = this.innerHTML; // Store original HTML including icon
+                    const originalHTML = this.innerHTML; // Lưu lại icon gốc
                     this.innerHTML = '<i class="fas fa-check" style="color: lightgreen;"></i>&nbsp;Đã&nbsp;chép';
-                    setTimeout(() => {
-                        this.innerHTML = originalIconHTML;
-                    }, 1500);
+                    setTimeout(() => { this.innerHTML = originalHTML; }, 1500);
                 }).catch(err => {
                     console.error('Không thể sao chép: ', err);
-                    alert('Lỗi khi sao chép mã!');
+                    // Có thể thêm thông báo lỗi cho người dùng ở đây nếu muốn
                 });
             });
         });
-
-        // populateUserInfo function is no longer needed for initial load, Thymeleaf handles it.
     });
     /*]]>*/
 </script>

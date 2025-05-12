@@ -27,7 +27,7 @@
 
         .container {
             width: 90%;
-            max-width: 1200px; /* Max-width for movie detail can be slightly different if needed */
+            max-width: 1280px; /* Max-width for movie detail can be slightly different if needed */
             margin: auto;
             padding: 0 20px;
         }
@@ -65,9 +65,9 @@
         header .logo a i { color: #f56565; font-size: 1.2em; }
 
         header nav {
-            flex-grow: 1;
+            flex-grow: 1; /* Đã kích hoạt lại thuộc tính này */
             display: flex;
-            justify-content: center;
+            justify-content: center; /* Giữ nguyên để menu ở giữa */
         }
         header nav ul {
             list-style: none;
@@ -243,7 +243,6 @@
             color: #4a5568;
             text-align: justify;
             line-height: 1.8;
-            /* Removed conflicting styles to ensure full text visibility */
         }
 
         .reviews-section-wrapper {
@@ -474,7 +473,6 @@
             .action-btn-detail { width: 100%; justify-content: center;}
             .movie-meta-info span { width: 100%; gap: 6px; font-size: 0.85em;}
             .movie-meta-info span strong { min-width: 90px;}
-            /* .movie-meta-info span i { font-size: 1em;} /* This was in your original, but there's no <i> in your meta HTML */
             .footer-nav ul { flex-direction: column; align-items: center; gap: 10px; }
             .social-media { gap: 20px; }
             .trailer-modal-content { width: 95%; }
@@ -914,9 +912,41 @@
         const openTrailerModalBtn = document.getElementById('openTrailerModalBtn');
         const closeTrailerModalBtn = document.getElementById('closeTrailerModalBtn');
         const trailerVideoIframe = document.getElementById('trailerVideo');
-        function getYouTubeEmbedUrl(youtubeUrl) { /* ... kept original ... */ }
-        if (openTrailerModalBtn) { /* ... kept original ... */ }
+        function getYouTubeEmbedUrl(youtubeUrl) {
+            if (!youtubeUrl) return '';
+            let videoId;
+            if (youtubeUrl.includes('youtu.be/')) {
+                videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+            } else if (youtubeUrl.includes('youtube.com/watch?v=')) {
+                videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
+            } else if (youtubeUrl.includes('youtube.com/embed/')) {
+                videoId = youtubeUrl.split('embed/')[1].split('?')[0];
+            }
+            return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : '';
+        }
 
+        if (openTrailerModalBtn && trailerModal && closeTrailerModalBtn && trailerVideoIframe) {
+            openTrailerModalBtn.addEventListener('click', () => {
+                const trailerUrl = openTrailerModalBtn.getAttribute('data-trailer-url');
+                const embedUrl = getYouTubeEmbedUrl(trailerUrl);
+                if (embedUrl) {
+                    trailerVideoIframe.src = embedUrl;
+                    trailerModal.style.display = 'flex';
+                } else {
+                    alert('Link trailer không hợp lệ hoặc không được hỗ trợ.');
+                }
+            });
+            closeTrailerModalBtn.addEventListener('click', () => {
+                trailerModal.style.display = 'none';
+                trailerVideoIframe.src = ''; // Stop video
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target === trailerModal) {
+                    trailerModal.style.display = 'none';
+                    trailerVideoIframe.src = ''; // Stop video
+                }
+            });
+        }
     });
 </script>
 </body>

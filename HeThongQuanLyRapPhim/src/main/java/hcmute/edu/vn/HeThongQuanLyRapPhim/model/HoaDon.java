@@ -114,4 +114,8 @@ public class HoaDon implements Serializable {
     public void setDsComBoDaMua(Set<ChiTietComBoBapNuoc> dsComBoDaMua) {
         this.dsComBoDaMua = dsComBoDaMua;
     }
+
+    public int soLuongVeXemPhimDaMua() {
+        return dsVeXemPhimDaMua.size();
+    }
 }

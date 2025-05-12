@@ -1,29 +1,33 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ProfileService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DoiTuongSuDungService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/profile")
+@Controller
+@RequestMapping("/user")
 public class ProfileController {
-    private final ProfileService profileService;
+    private final DoiTuongSuDungService doiTuongSuDungService;
 
     @Autowired
-    public ProfileController(ProfileService profileService) {
-        this.profileService = profileService;
+    public ProfileController(DoiTuongSuDungService profileService) {
+        this.doiTuongSuDungService = profileService;
     }
 
-    // Lấy thông tin cá nhân
-    @GetMapping("/account")
-    private DoiTuongSuDung getMyProfile(@RequestParam Integer id) {
-        return profileService.getDoiTuongSuDung(id);
+    @GetMapping("/profile")
+    public String showMyProfile(Model model, HttpSession session) {
+        int idCustomer = (int) session.getAttribute("idCustomer");
+        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idCustomer);
+        model.addAttribute("khachHang", doiTuongSuDung);
+        return "ProfilePage";
     }
 
-    // Cập nhật thông tin cá nhân
-    @PostMapping("/account")
-    private DoiTuongSuDung updateMyProfile(@ModelAttribute("doiTuongSuDung") DoiTuongSuDung profile) {
-        return profileService.updateProfile(profile);
+    @PostMapping("/profile/update")
+    public String upDateMyProfile(Model model, HttpSession session, @ModelAttribute DoiTuongSuDung doiTuongSuDung) {
+        return "ProfilePage";
     }
 }
