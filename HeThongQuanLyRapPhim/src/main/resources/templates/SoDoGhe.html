@@ -1,177 +1,502 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sơ Đồ Ghế Phòng Chiếu</title>
-    <link rel="stylesheet" href="/css/sodoghe.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            padding: 20px 0;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1000px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .page-title-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .page-title-header h1 {
+            font-size: 2em;
+            color: #1a202c;
+            font-weight: 700;
+        }
+
+        .screen-indicator {
+            width: 80%;
+            max-width: 600px;
+            background-color: #2d3748;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-bottom: 25px;
+            font-weight: 600;
+            letter-spacing: 0.3em;
+            border-radius: 3px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+
+        .seat-selection-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .seat-map {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            width: auto;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .seat-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .seat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .seat-row-name {
+            min-width: 35px;
+            font-weight: 500;
+            color: #4a5568;
+            text-align: center;
+            margin-right: 10px;
+            font-size: 0.9em;
+        }
+
+        .seat-container {
+            display: flex;
+        }
+
+        .seat-box {
+            width: 32px;
+            height: 28px;
+            margin: 3px;
+            border: 1px solid #b0bec5;
+            border-radius: 6px 6px 3px 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            user-select: none;
+            color: #37474f;
+        }
+
+        .seat-box.seat-available {
+            background-color: #cfd8dc;
+        }
+        .seat-box.seat-available:hover {
+            background-color: #b0bec5;
+            transform: translateY(-1px);
+        }
+        .seat-box.seat-occupied {
+            background-color: #78909c;
+            color: #eceff1;
+            cursor: not-allowed;
+            border-color: #546e7a;
+        }
+        .seat-box.seat-selected {
+            background-color: #3182ce;
+            color: #fff;
+            border-color: #2c7ae0;
+            box-shadow: 0 0 8px rgba(49, 130, 206, 0.5);
+        }
+
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            width: auto;
+            max-width: fit-content;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85em;
+        }
+        .legend-seat-box {
+            width: 20px;
+            height: 18px;
+            margin-right: 8px;
+            border-radius: 4px 4px 2px 2px;
+            pointer-events: none;
+        }
+
+        .ticket-container {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .ticket-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #cbd5e0;
+        }
+        .ticket-details .column {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ticket-details .column:first-child {
+            flex-basis: 100%;
+            font-size: 1.3em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .ticket-details .label {
+            font-size: 0.85em;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        .ticket-details .bold {
+            font-weight: 600;
+            font-size: 1em;
+            color: #2d3748;
+        }
+        .ticket-details .bold#total,
+        .ticket-details .bold#total-ve {
+            color: #e53e3e;
+            font-size: 1.1em;
+        }
+
+        #seatForm {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .nav-button.next {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-button.next:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3);
+        }
+        .nav-button.next i {
+            font-size: 1em;
+        }
+
+        @media (max-width: 768px) {
+            .container { width: 98%; }
+            .screen-indicator { width: 95%; letter-spacing: 0.2em; font-size: 0.9em; }
+            .seat-box { width: 28px; height: 24px; margin: 2px; font-size: 0.7em; }
+            .seat-row-name { min-width: 30px; font-size: 0.8em; }
+            .ticket-details { flex-direction: column; gap: 15px; }
+            .ticket-details .column:first-child { font-size: 1.2em; }
+            .ticket-container { padding: 20px; }
+            .nav-button.next { padding: 10px 20px; font-size: 1em; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px 0; }
+            .seat-box { width: 24px; height: 20px; margin: 2px; font-size: 0.65em; border-radius: 4px 4px 1px 1px;}
+            .seat-row-name { min-width: 25px; font-size: 0.75em; margin-right: 5px;}
+            .seat-legend { gap: 10px; padding: 8px 10px;}
+            .legend-item { font-size: 0.75em; }
+            .legend-seat-box { width: 16px; height: 14px;}
+            .ticket-container { padding: 15px; }
+        }
+    </style>
 </head>
 <body>
-<h2>SCREEN</h2>
 
-<!-- hiển thị sơ đồ ghế -->
-<div class="seat-map">
-    <div th:each="dayGhe : ${danhSachDayGhe}" class="seat-row">
-        <b class="seat-row-name" th:text="${dayGhe.tenDayGhe}"></b>
-        <div class="seat-container">
-            <button th:each="ghe : ${dayGhe.dsGhe}"
-                    th:text="${ghe.idGhe}"
-                    th:attr="data-id=${ghe.idGhe},
-                    data-trangthai=${ghe.trangThaiGhe},
-                    data-giave=${dayGhe.giaDayGhe}"
-                    th:class="${ghe.trangThaiGhe} ? 'seat-box seat-occupied' : 'seat-box seat-available'"
-                    onclick="selectSeat(this)">
+<div class="container">
+    <div class="page-title-header">
+        <h1>Chọn Ghế Ngồi</h1>
+    </div>
+
+    <div class="screen-indicator">Màn Hình</div>
+
+    <div class="seat-selection-wrapper">
+        <div class="seat-map">
+            <div th:each="dayGhe : ${danhSachDayGhe}" class="seat-row">
+                <b class="seat-row-name" th:text="${dayGhe.tenDayGhe}">A</b>
+                <div class="seat-container">
+                    <button th:each="ghe : ${dayGhe.dsGhe}"
+                            th:text="${ghe.idGhe}"
+                            th:attr="data-id=${ghe.idGhe},
+                                     data-trangthai=${ghe.trangThaiGhe},
+                                     data-giave=${dayGhe.giaDayGhe}"
+                            class="seat-box"
+                            onclick="selectSeat(this)">
+                    </button>
+                </div>
+            </div>
+            <p th:if="${danhSachDayGhe == null or #lists.isEmpty(danhSachDayGhe)}">Sơ đồ ghế không khả dụng.</p>
+        </div>
+
+        <div class="seat-legend">
+            <div class="legend-item">
+                <span class="legend-seat-box seat-box seat-available"></span> Ghế trống
+            </div>
+            <div class="legend-item">
+                <span class="legend-seat-box seat-box seat-selected"></span> Ghế đang chọn
+            </div>
+            <div class="legend-item">
+                <span class="legend-seat-box seat-box seat-occupied"></span> Ghế đã bán/đặt
+            </div>
+        </div>
+    </div>
+
+    <div class="ticket-container">
+        <div class="ticket-details">
+            <div class="column">
+                <span class="bold" th:text="${session.phim != null ? session.phim.tenPhim : 'Tên Phim'}">Tên Phim Mặc Định</span>
+            </div>
+            <div class="column">
+                <span class="label">Rạp</span>
+                <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.rapPhim?.tenRapPhim ?: 'Tên Rạp'}">CGV Vincom</span>
+                <span class="label">Suất chiếu</span>
+                <span class="bold">
+                    <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm') : 'HH:MM'}">10:30</span>
+                    <br>
+                    <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy') : 'dd/MM/yyyy'}">12/05/2025</span>
+                </span>
+                <span class="label">Phòng chiếu</span>
+                <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.tenPhongChieuPhim ?: 'Tên Phòng'}">Phòng 01</span>
+            </div>
+            <div class="column">
+                <span class="label">Giá vé</span>
+                <span class="bold" id="total-ve">0 ₫</span>
+                <span class="label">Combo</span>
+                <span class="bold" id="total-combo">0 ₫</span>
+                <span class="label">Tổng cộng</span>
+                <span class="bold" id="total">0 ₫</span>
+            </div>
+        </div>
+
+        <form id="seatForm" method="GET" th:action="@{/booking/combo-list}">
+            <input type="hidden" name="danhSachGheDuocChon" id="danhSachGheDuocChon">
+            <input type="hidden" name="tongGiaVe" id="tongGiaVe">
+            <input type="hidden" name="idSuatChieu" th:value="${session.suatChieu?.idSuatChieu}" />
+            <button type="submit" id="continue-button" class="nav-button next" onclick="return validateSelection()">
+                Tiếp Tục <i class="fas fa-arrow-right"></i>
             </button>
-        </div>
+        </form>
     </div>
 </div>
-<div class="ticket-container">
-    <div class="ticket-details">
-        <div class="column">
-            <span class="bold" th:text="${session.phim.tenPhim}"></span>
-        </div>
 
-        <div class="column">
-            <span class="label">Rạp</span>
-            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
-            <span class="label">Suất chiếu</span>
-            <span class="bold">
-                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
-                <br>
-                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
-            </span>
+<script th:inline="javascript">
+    // Hàm mới để khởi tạo trạng thái ghế dựa trên data-trangthai
+    function initializeSeatStates() {
+        const seatButtons = document.querySelectorAll('.seat-map .seat-box'); // Chỉ lấy ghế trong sơ đồ
+        seatButtons.forEach(btn => {
+            // data-trangthai từ Thymeleaf sẽ là chuỗi "true" hoặc "false"
+            const isOccupied = btn.getAttribute('data-trangthai') === 'true';
 
-            <span class="label">Phòng chiếu</span>
-            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
-        </div>
+            if (isOccupied) {
+                btn.classList.add('seat-occupied');
+                btn.classList.remove('seat-available'); // Đảm bảo không có class available
+                btn.disabled = true;
+            } else {
+                btn.classList.add('seat-available');
+                btn.classList.remove('seat-occupied'); // Đảm bảo không có class occupied
+                btn.disabled = false;
+            }
+        });
+    }
 
-        <div class="column">
-            <span class="label">Giá vé</span>
-            <span class="bold" id="total-ve">0 ₫</span>
-            <span class="label">Combo</span>
-            <span class="bold">0 ₫ </span>
-            <span class="label">Tổng</span>
-            <span class="bold" id="total">0 ₫ </span>
-        </div>
-    </div>
-
-    <form id="seatForm" method="POST" action="/booking/combo-list">
-        <input type="hidden" name="danhSachGheDuocChon" id="danhSachGheDuocChon">
-        <input type="hidden" name="tongGiaVe" id="tongGiaVe">
-        <button type="submit" id="continue-button" class="nav-button next" onclick="return validateSelection()">→<br>NEXT</button>
-    </form>
-</div>
-
-</body>
-<script>
-    // Hàm chọn hoặc bỏ chọn ghế
     function selectSeat(btn) {
-        // Nếu ghế đã có trạng thái "occupied" thì không cho chọn
-        if (btn.classList.contains('seat-occupied')) {
+        // Kiểm tra nếu ghế đã bị chiếm (được set bởi initializeSeatStates) hoặc bị disabled
+        if (btn.classList.contains('seat-occupied') || btn.disabled) {
             return;
         }
 
-        // Toggle giữa trạng thái được chọn và chưa chọn
         btn.classList.toggle('seat-selected');
+
+        // Quản lý class 'seat-available' khi chọn/bỏ chọn
+        if (btn.classList.contains('seat-selected')) {
+            btn.classList.remove('seat-available');
+        } else {
+            // Nếu không được chọn VÀ không bị chiếm, nó phải là 'available'
+            if (!btn.classList.contains('seat-occupied')) { // Điều kiện này luôn đúng nếu đã qua check ở đầu hàm
+                btn.classList.add('seat-available');
+            }
+        }
         updateTotalPrice();
     }
 
     function validateSelection() {
-        let isValid = true; // Reset trạng thái hợp lệ
+        let isValid = true;
+        const selectedSeatsElements = document.querySelectorAll('.seat-selected');
 
-        // Lấy tất cả các hàng ghế
+        if (selectedSeatsElements.length === 0) {
+            alert('Vui lòng chọn ít nhất một ghế.');
+            return false;
+        }
+
         const allRows = document.querySelectorAll('.seat-row');
-
         allRows.forEach(row => {
+            if (!isValid) return; // Nếu đã có lỗi thì không kiểm tra tiếp các hàng sau
 
-            const seatButtons = Array.from(row.querySelectorAll('button'));
-            const danhSachGheDuocChon = seatButtons
+            const seatButtons = Array.from(row.querySelectorAll('.seat-container button'));
+            const seatNumbersInRow = seatButtons.map(btn => parseInt(btn.textContent.trim()));
+
+            const selectedSeatsInRow = seatButtons
                 .filter(btn => btn.classList.contains('seat-selected'))
-                .map(btn => parseInt(btn.innerText));
+                .map(btn => parseInt(btn.textContent.trim()))
+                .sort((a, b) => a - b);
 
-            const occupiedSeats = seatButtons
-                .filter(btn => btn.classList.contains('seat-occupied'))
-                .map(btn => parseInt(btn.innerText));
+            const occupiedSeatsInRow = seatButtons
+                .filter(btn => btn.classList.contains('seat-occupied')) // Class này được JS thêm vào
+                .map(btn => parseInt(btn.textContent.trim()));
 
-            const allSeats = seatButtons.map(btn => parseInt(btn.innerText));
-
-            danhSachGheDuocChon.sort((a, b) => a - b);
-
-            // Kiểm tra ghế trống giữa các ghế đã chọn
-            danhSachGheDuocChon.forEach(ghe => {
-                const right1 = ghe + 1;
-                const right2 = ghe + 2;
-
-                if (
-                    allSeats.includes(right1) &&
-                    !danhSachGheDuocChon.includes(right1) &&
-                    !occupiedSeats.includes(right1) &&
-
-                    allSeats.includes(right2) &&
-                    (danhSachGheDuocChon.includes(right2) || occupiedSeats.includes(right2))
-                ) {
-                    isValid = false;
-                    // alert(`Không thể để ghế ${right1} trống giữa ghế ${ghe} và ghế ${right2}.`);
-                    alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
+            for (let i = 0; i < selectedSeatsInRow.length - 1; i++) {
+                const currentSelected = selectedSeatsInRow[i];
+                const nextSelected = selectedSeatsInRow[i+1];
+                for (let seatNum = currentSelected + 1; seatNum < nextSelected; seatNum++) {
+                    if (seatNumbersInRow.includes(seatNum) &&
+                        !selectedSeatsInRow.includes(seatNum) &&
+                        !occupiedSeatsInRow.includes(seatNum)) {
+                        alert(`Bạn không thể để ghế số ${seatNum} (dãy ${row.querySelector('.seat-row-name').textContent}) trống giữa các ghế đã chọn.`);
+                        isValid = false;
+                        return;
+                    }
                 }
-            });
-
-            // Kiểm tra đầu hàng
-            const firstSeat = allSeats[0];
-            const secondSeat = allSeats[1];
-            if (
-                danhSachGheDuocChon.includes(secondSeat) &&
-                !danhSachGheDuocChon.includes(firstSeat) &&
-                !occupiedSeats.includes(firstSeat)
-            ) {
-                isValid = false;
-                alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
             }
+            if (!isValid) return;
 
-            // Kiểm tra cuối hàng
-            const lastSeat = allSeats[allSeats.length - 1];
-            const beforeLastSeat = allSeats[allSeats.length - 2];
-            if (
-                danhSachGheDuocChon.includes(beforeLastSeat) &&
-                !danhSachGheDuocChon.includes(lastSeat) &&
-                !occupiedSeats.includes(lastSeat)
-            ) {
-                isValid = false;
-                alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
+            if (selectedSeatsInRow.length > 0 || occupiedSeatsInRow.length > 0) {
+                const allChosenOrOccupiedInRow = [...new Set([...selectedSeatsInRow, ...occupiedSeatsInRow])].sort((a,b) => a-b);
+                const firstChosenOrOccupied = allChosenOrOccupiedInRow[0];
+                const lastChosenOrOccupied = allChosenOrOccupiedInRow[allChosenOrOccupiedInRow.length - 1];
+
+                if (seatNumbersInRow.includes(firstChosenOrOccupied - 1) &&
+                    !selectedSeatsInRow.includes(firstChosenOrOccupied - 1) &&
+                    !occupiedSeatsInRow.includes(firstChosenOrOccupied - 1)) {
+                    if (!seatNumbersInRow.includes(firstChosenOrOccupied - 2) ||
+                        selectedSeatsInRow.includes(firstChosenOrOccupied - 2) ||
+                        occupiedSeatsInRow.includes(firstChosenOrOccupied - 2)
+                    ) {
+                        alert(`Vui lòng không để ghế số ${firstChosenOrOccupied - 1} (dãy ${row.querySelector('.seat-row-name').textContent}) trống một mình.`);
+                        isValid = false;
+                        return;
+                    }
+                }
+                if (!isValid) return;
+
+                if (seatNumbersInRow.includes(lastChosenOrOccupied + 1) &&
+                    !selectedSeatsInRow.includes(lastChosenOrOccupied + 1) &&
+                    !occupiedSeatsInRow.includes(lastChosenOrOccupied + 1)) {
+                    if (!seatNumbersInRow.includes(lastChosenOrOccupied + 2) ||
+                        selectedSeatsInRow.includes(lastChosenOrOccupied + 2) ||
+                        occupiedSeatsInRow.includes(lastChosenOrOccupied + 2)
+                    ) {
+                        alert(`Vui lòng không để ghế số ${lastChosenOrOccupied + 1} (dãy ${row.querySelector('.seat-row-name').textContent}) trống một mình.`);
+                        isValid = false;
+                        return;
+                    }
+                }
             }
         });
 
-        if (!isValid) {
-            return false; // Ngăn form submit
+        if (!isValid) return false;
+
+        updateTotalPrice();
+        if (document.getElementById('danhSachGheDuocChon').value === "") {
+            alert('Vui lòng chọn ít nhất một ghế.');
+            return false;
         }
-        return true; // Cho phép submit
+        return true;
     }
 
     let danhSachGheDuocChonIds = [];
-    let suatchieu = '';
-    let total = 0;
+    let tongTienVe = 0;
 
     function updateTotalPrice() {
-        const danhSachGheDuocChon = document.querySelectorAll('.seat-selected');
-        total = 0;
+        const danhSachGheDuocChonElements = document.querySelectorAll('.seat-selected');
+        tongTienVe = 0;
         danhSachGheDuocChonIds = [];
 
-        danhSachGheDuocChon.forEach(ghe => {
-            danhSachGheDuocChonIds.push(ghe.innerText);
+        danhSachGheDuocChonElements.forEach(ghe => {
+            danhSachGheDuocChonIds.push(ghe.textContent.trim());
             const giaVe = parseInt(ghe.getAttribute('data-giave')) || 0;
-            total += giaVe;
+            tongTienVe += giaVe;
         });
 
-        document.getElementById('total-ve').innerText = formatCurrency(total);
-        document.getElementById('total').innerText = formatCurrency(total);
+        const tongTienCombo = parseInt(document.getElementById('total-combo').dataset.value || "0") || 0;
+
+        document.getElementById('total-ve').innerText = formatCurrency(tongTienVe);
+        document.getElementById('total').innerText = formatCurrency(tongTienVe + tongTienCombo);
         document.getElementById('danhSachGheDuocChon').value = danhSachGheDuocChonIds.join(',');
-        document.getElementById('tongGiaVe').value = total;
+        document.getElementById('tongGiaVe').value = tongTienVe;
     }
 
     function formatCurrency(number) {
         return number.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
 
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeSeatStates(); // <-- Gọi hàm khởi tạo ở đây
+        updateTotalPrice();
+        // document.getElementById('total-combo').innerText = formatCurrency(0);
+        // document.getElementById('total-combo').dataset.value = "0";
+    });
 </script>
 
+</body>
 </html>

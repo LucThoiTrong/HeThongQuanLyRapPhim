@@ -86,7 +86,7 @@ public class BookingController {
             return "SuatChieu";
         }
     }
-    @PostMapping("/combo-list")
+    @GetMapping("/combo-list")
     public String showComboPage(@RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
                                 @RequestParam("tongGiaVe") int tongGiaVe,
                                 HttpSession session,
