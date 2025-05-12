@@ -111,7 +111,8 @@
                     (danhSachGheDuocChon.includes(right2) || occupiedSeats.includes(right2))
                 ) {
                     isValid = false;
-                    alert(`Không thể để ghế ${right1} trống giữa ghế ${ghe} và ghế ${right2}.`);
+                    // alert(`Không thể để ghế ${right1} trống giữa ghế ${ghe} và ghế ${right2}.`);
+                    alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
                 }
             });
 
@@ -124,7 +125,7 @@
                 !occupiedSeats.includes(firstSeat)
             ) {
                 isValid = false;
-                alert(`Không thể để ghế đầu tiên (${firstSeat}) trống nếu bạn chọn ghế kế tiếp (${secondSeat}).`);
+                alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
             }
 
             // Kiểm tra cuối hàng
@@ -136,12 +137,11 @@
                 !occupiedSeats.includes(lastSeat)
             ) {
                 isValid = false;
-                alert(`Không thể để ghế cuối (${lastSeat}) trống nếu bạn chọn ghế sát cuối (${beforeLastSeat}).`);
+                alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
             }
         });
 
         if (!isValid) {
-            alert('Có lỗi trong việc chọn ghế, vui lòng kiểm tra lại.');
             return false; // Ngăn form submit
         }
         return true; // Cho phép submit

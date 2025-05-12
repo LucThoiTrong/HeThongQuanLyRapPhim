@@ -111,8 +111,8 @@ public class BookingController {
                                      @RequestParam("giaTienCombo") int giaTienCombo,
                                      @RequestParam Map<String, String> tatCaThamSo,
                                      Model model, HttpSession session) {
-        //Mặc định là tổng tiền chưa giảm
-        double tongTienSauGiam = tongComboVaVe;
+        //cai nay de khi load lai khong bi loi
+        double tongTienSauGiam = (double) tongComboVaVe;
         double soTienGiam = Optional.ofNullable((Double) session.getAttribute("soTienGiam")).orElse(0.0);
         //lay danh sach combo duoc chon
         Map<Integer, Integer> comboSoLuong = new HashMap<>();
@@ -140,15 +140,13 @@ public class BookingController {
         session.setAttribute("tongComboVaVe", tongComboVaVe);
         session.setAttribute("giaTienCombo", giaTienCombo);
         session.setAttribute("danhSachComboDuocChon",comboSoLuong);
+        session.setAttribute("tongTienSauGiam",tongTienSauGiam);
 
         //lay đối tượng
         int idcustomer = (int) session.getAttribute("idCustomer");
         DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         session.setAttribute("doiTuongSuDung",customer);
         model.addAttribute("doiTuongSuDung", customer);
-        model.addAttribute("tongTienSauGiam", tongTienSauGiam);
-        model.addAttribute("soTienGiam", soTienGiam);
-        model.addAttribute("tongTienSauGiam", tongTienSauGiam);
         return "ThanhToan";
     }
     @PostMapping("/ap-dung-ma-giam-gia")
@@ -162,50 +160,25 @@ public class BookingController {
         double tongSauGiam = 0.0;
 
         LocalDateTime now = LocalDateTime.now();
-        if (maGiamGia.getNgayBatDauApDung().isBefore(now) &&
-                maGiamGia.getNgayKetThucApDung().isAfter(now) &&
-                !maGiamGia.isTrangThaiSuDung()) {
+        if (maGiamGia.getNgayBatDauApDung().isAfter(now)) {
+            model.addAttribute("error", "Mã giảm giá chưa đến hạn để sử dụng!");
+        } else if (tongHoaDon < maGiamGia.getHanMucApDung()) {
+            model.addAttribute("error", "Chưa đủ điều kiện để sử dụng mã giảm giá!");
+        } else {
+            // Áp dụng giảm giá hợp lệ
             tienDuocGiam = tongHoaDon * maGiamGia.getPhanTramGiamGia() / 100;
             if (tienDuocGiam > maGiamGia.getGiaTriGiamToiDa()) {
                 tienDuocGiam = maGiamGia.getGiaTriGiamToiDa();
             }
-            if (tongHoaDon < maGiamGia.getHanMucApDung()) {
-                tienDuocGiam = 0;
-            }
             tongSauGiam = tongHoaDon - tienDuocGiam;
-            session.setAttribute("tongHoaDonSauGiam", tongSauGiam);
+
+            session.setAttribute("tongTienSauGiam", tongSauGiam);
             session.setAttribute("soTienGiam", tienDuocGiam);
         }
-
-        //lay tat ca du lieu tu session de gui lai trang thanh toan
-        String danhSachGheDuocChon = (String) session.getAttribute("danhSachGheDuocChon");
-        Integer tongVePrice = (Integer) session.getAttribute("tongVePrice");
-        Integer tongComboVaVe = (Integer) session.getAttribute("tongComboVaVe");
-        Integer giaTienCombo = (Integer) session.getAttribute("giaTienCombo");
-        Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
-        Phim phim = (Phim) session.getAttribute("phim");
-        SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
-        int idcustomer = (int) session.getAttribute("idcustomer");
-
-        // kiem tra du lieu
-        if (danhSachGheDuocChon == null || tongVePrice == null || tongComboVaVe == null || giaTienCombo == null) {
-            return "redirect:/error";
-        }
-
+        int idcustomer = (int) session.getAttribute("idCustomer");
         // Lấy đối tượng sử dụng
         DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
-
-        // Thêm vào model
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        model.addAttribute("danhSachComboDuocChon", comboSoLuong);
-        model.addAttribute("phim", phim);
-        model.addAttribute("suatChieu", suatChieu);
-        model.addAttribute("tongTienSauGiam", tongSauGiam);
-        model.addAttribute("soTienGiam", tienDuocGiam);
-        model.addAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
-        model.addAttribute("tongVePrice", tongVePrice);
-        model.addAttribute("tongComboVaVe", tongComboVaVe);
-        model.addAttribute("giaTienCombo", giaTienCombo);
         model.addAttribute("maGiamDaChon", maGiamGia.getIdMaGiamGia());
         return "ThanhToan";
     }
@@ -215,35 +188,17 @@ public class BookingController {
         session.removeAttribute("tongHoaDonSauGiam");
         session.removeAttribute("soTienGiam");
         session.removeAttribute("maGiamDaChon");
+
         // Lấy dữ liệu từ session
-        String danhSachGheDuocChon = (String) session.getAttribute("danhSachGheDuocChon");
-        Integer tongVePrice = (Integer) session.getAttribute("tongVePrice");
         Integer tongComboVaVe = (Integer) session.getAttribute("tongComboVaVe");
-        Integer giaTienCombo = (Integer) session.getAttribute("giaTienCombo");
-        Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
-        Phim phim = (Phim) session.getAttribute("phim");
-        SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
-        int idcustomer = (int) session.getAttribute("idcustomer");
-        if (danhSachGheDuocChon == null || tongVePrice == null || tongComboVaVe == null || giaTienCombo == null) {
-            return "redirect:/error";
-        }
+        int idcustomer = (int) session.getAttribute("idCustomer");
         DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         session.setAttribute("doiTuongSuDung",doiTuongSuDung);
-        //dat lai tong tien sau khi giam va so tien giam gia
-        double tongTienSauGiam = Optional.ofNullable((Double) session.getAttribute("tongHoaDonSauGiam"))
-                .orElse((double) tongComboVaVe);
-        double soTienGiam = Optional.ofNullable((Double) session.getAttribute("soTienGiam")).orElse(0.0);
-        model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        model.addAttribute("danhSachComboDuocChon", comboSoLuong != null ? comboSoLuong : new HashMap<Integer, Integer>());
-        model.addAttribute("phim", phim);
-        model.addAttribute("suatChieu", suatChieu);
-        model.addAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
-        model.addAttribute("tongVePrice", tongVePrice);
-        model.addAttribute("tongComboVaVe", tongComboVaVe);
-        model.addAttribute("giaTienCombo", giaTienCombo);
-        model.addAttribute("tongTienSauGiam", tongTienSauGiam);
-        model.addAttribute("soTienGiam", soTienGiam);
 
+        //dat lai tong tien sau khi giam va so tien giam gia
+        double tongTienSauGiam =tongComboVaVe;
+        double soTienGiam = 0.0;
+        model.addAttribute("doiTuongSuDung", doiTuongSuDung);
         return "ThanhToan";
     }
     //neu het thoi gian giu ghe -> chuyen ve trang chu
