@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mã Giảm Giá - PhimHay (Đồng nhất)</title>
+    <title>Mã Giảm Giá - PhimHay</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,7 +18,7 @@
             line-height: 1.7;
             background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
             color: #2d3748;
-            padding-top: 80px; /* Khoảng đệm cho fixed header */
+            padding-top: 80px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -26,7 +26,7 @@
 
         .container {
             width: 90%;
-            max-width: 1280px; /* ĐÃ ĐƯỢC CẬP NHẬT ĐỂ ĐỒNG NHẤT */
+            max-width: 1280px;
             margin: auto;
             padding: 0 20px;
         }
@@ -35,7 +35,7 @@
             flex-grow: 1;
         }
 
-        /* --- HEADER (Đã tương đồng với Document A) --- */
+        /* --- HEADER (Synchronized) --- */
         header {
             background: linear-gradient(90deg, #1a202c, #2d3748);
             color: #fff;
@@ -47,7 +47,7 @@
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        header .container { /* Sử dụng .container đã được cập nhật max-width ở trên */
+        header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -63,25 +63,72 @@
             gap: 8px;
         }
         header .logo a i { color: #f56565; font-size: 1.2em; }
+
         header nav {
             flex-grow: 1;
             display: flex;
             justify-content: center;
         }
-        header nav ul { list-style: none; display: flex; gap: 20px; padding-left: 0; }
-        header nav ul li a { color: #e2e8f0; text-decoration: none; font-size: 1em; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding-left: 0;
+        }
+        header nav ul li a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
         header nav ul li a:hover,
         header nav ul li a.active { background: #f56565; color: #fff; }
+
         .header-actions {
-            /* margin-left: auto; không cần thiết khi nav có flex-grow: 1 */
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        .header-actions .btn-login { background: linear-gradient(45deg, #3182ce, #63b3ed); color: #fff; padding: 8px 20px; text-decoration: none; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; }
-        .header-actions .btn-login:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .header-actions .btn-login {
+            background: linear-gradient(45deg, #3182ce, #63b3ed);
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .header-actions .btn-login:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+        }
+
+        /* CSS CHO USER MENU DROPDOWN (Synchronized) */
+        .header-actions .user-menu-container { position: relative; display: inline-block; }
+        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
+        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
+        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
+        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+        .header-actions .dropdown-menu-content.show { display: block; }
+        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
+        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
+        /* KẾT THÚC CSS USER MENU */
 
         /* --- PAGE TITLE SECTION --- */
         .page-header {
             background-color: #fff;
             padding: 30px 0;
+            margin-top: 20px;
             margin-bottom: 30px;
             text-align: center;
             border-radius: 8px;
@@ -95,19 +142,11 @@
             align-items: center;
             gap: 10px;
         }
-        .page-header h1 i {
-            color: #f56565;
-        }
+        .page-header h1 i { color: #f56565; }
 
         /* --- DISCOUNT CODES LISTING --- */
-        .discount-codes-container {
-            padding: 0 0 30px 0;
-        }
-        .discount-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
+        .discount-codes-container { padding: 0 0 30px 0; }
+        .discount-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .discount-card { background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
         .discount-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
         .discount-card-header { padding: 20px; border-bottom: 1px dashed #cbd5e0; display: flex; align-items: center; gap: 15px; }
@@ -125,8 +164,31 @@
         .btn-collect-code.collected:hover { background: linear-gradient(45deg, #a0aec0, #cbd5e0); }
         .btn-collect-code i { font-size: 1.1em; }
 
+        .login-prompt {
+            text-align: center;
+            font-size: 1.2em;
+            padding: 40px 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: #4a5568;
+        }
+        .login-prompt i {
+            color: #f56565; /* Màu đỏ cảnh báo */
+            margin-right: 8px;
+        }
+        .login-prompt a {
+            color: #3182ce; /* Màu xanh dương cho link */
+            text-decoration: underline;
+            font-weight: 500;
+        }
+        .login-prompt a:hover {
+            color: #2b6cb0;
+        }
+
+
         /* --- FOOTER --- */
-        footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 0; }
+        footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 0; margin-top: auto; }
         footer .container { display: flex; flex-direction: column; align-items: center; }
         .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
@@ -137,86 +199,42 @@
         footer p { font-size: 0.9em; line-height: 1.5; }
         footer p:not(:last-child) { margin-bottom: 5px; }
 
-        /* --- Responsive CSS for Header (aligning with Doc A) --- */
+        /* --- Responsive CSS --- */
         @media (max-width: 992px) {
-            body { padding-top: 70px; }
-            header .container {
-                justify-content: space-around;
-            }
-            .logo {
-                order: 1;
-                width: 100%;
-                text-align: center;
-                margin-bottom: 10px;
-            }
-            header nav {
-                order: 3;
-                width: 100%;
-                margin-top: 10px;
-            }
-            header nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-            .header-actions {
-                order: 2;
-                margin-left: 0;
-                width: auto;
-                text-align: left;
-                margin-top: 0;
-            }
-            /* Responsive for discount grid (from original Doc B) */
+            body { padding-top: 150px; }
+            header .container { justify-content: space-around; }
+            .logo { order: 1; width: 100%; text-align: center; margin-bottom: 10px; }
+            header nav { order: 3; width: 100%; margin-top: 10px; }
+            header nav ul { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .header-actions { order: 2; margin-left: 0; width: 100%; justify-content: center; margin-top: 0; margin-bottom: 10px; }
             .discount-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
         }
 
         @media (max-width: 768px) {
             body { padding-top: 120px; }
-            header .container {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-            .logo {
-                order: 1;
-                width: auto;
-                text-align: left;
-                margin-bottom: 0;
-            }
-            header nav {
-                order: 3;
-                width: 100%;
-                margin-top: 15px;
-            }
-            .header-actions {
-                order: 2;
-            }
-            /* Responsive for page structure (from original Doc B) */
+            header .container { justify-content: space-between; align-items: center; }
+            .logo { order: 1; width: auto; text-align: left; margin-bottom: 0; }
+            header nav { order: 3; width: 100%; margin-top: 15px; }
+            .header-actions { order: 2; width: auto; margin-top: 0; margin-bottom: 0; justify-content: flex-end; }
             .page-header h1 { font-size: 2em; }
             .discount-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
             body { padding-top: 110px; }
-            /* Styles for header items like Doc A */
-            header nav ul li a {
-                font-size: 0.9em;
-                padding: 6px 12px;
-            }
-            header nav ul li {
-                margin: 5px;
-            }
-            .header-actions .btn-login {
-                padding: 6px 12px;
-                font-size: 0.9em;
-            }
-            /* Responsive for page structure (from original Doc B) */
+            header nav ul { gap: 0; justify-content: center; flex-wrap: wrap; }
+            header nav ul li { margin: 5px; }
+            header nav ul li a { font-size: 0.9em; padding: 6px 12px; }
+            .header-actions .btn-login, .header-actions .user-profile-toggle { padding: 6px 12px; font-size: 0.9em; }
+            .header-actions .dropdown-menu-content { min-width: 180px; }
+            .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
             .page-header h1 { font-size: 1.8em; }
             .discount-card-header { flex-direction: column; align-items: flex-start; gap: 10px; }
             .discount-card-header .code { font-size: 1.3em; }
             .btn-collect-code { width: 100%; justify-content: center; }
             .footer-nav ul { flex-direction: column; align-items: center; gap: 10px; }
             .social-media { gap: 20px; }
+            .login-prompt { font-size: 1em; padding: 30px 15px; }
         }
     </style>
 </head>
@@ -231,11 +249,30 @@
                 <li><a th:href="@{/}">Trang Chủ</a></li>
                 <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
                 <li><a th:href="@{/movies/coming-soon}">Phim Sắp Chiếu</a></li>
-                <li><a th:href="@{/ma-giam-gia}" class="active">Mã Giảm Giá</a></li>
+                <li><a th:href="@{/coupon}" class="active">Mã Giảm Giá</a></li>
             </ul>
         </nav>
         <div class="header-actions">
-            <a th:href="@{/login}" class="btn-login">Đăng Nhập</a>
+            <th:block th:if="${session.user == null}">
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
+            </th:block>
+            <th:block th:if="${session.user != null}">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span id="headerUserDisplayName" th:text="'Chào, ' + ${session.user.hoTen}">Chào, Tên User</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-content" id="userDropdownMenu">
+                        <a th:href="@{/user/profile}" class="dropdown-item">
+                            <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/signout}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
         </div>
     </div>
 </header>
@@ -249,50 +286,56 @@
 
     <div class="container">
         <section class="discount-codes-container">
-            <div th:if="${danhSachMaGiamGia != null and not #lists.isEmpty(danhSachMaGiamGia)}" class="discount-grid">
-                <article class="discount-card" th:each="mgg : ${danhSachMaGiamGia}">
-                    <div class="discount-card-header">
-                        <span class="icon"><i class="fas fa-tags"></i></span>
-                        <span class="code" th:text="${mgg.tenMaGiamGia}">MACODE</span>
-                    </div>
-                    <div class="discount-card-body">
-                        <h3 th:text="${mgg.chienDichGiamGia != null ? mgg.chienDichGiamGia.tenChienDich : 'Ưu đãi: Giảm ' + mgg.phanTramGiamGia + '%'}">
-                            Tiêu đề mã giảm giá
-                        </h3>
-                        <p class="description"
-                           th:text="${mgg.chienDichGiamGia != null and mgg.chienDichGiamGia.moTa != null ? mgg.chienDichGiamGia.moTa : 'Giảm giá đặc biệt cho bạn.'}">
-                            Mô tả chi tiết về mã giảm giá.
-                        </p>
-                        <p class="conditions">
-                            <i class="fas fa-info-circle"></i>
-                            Giảm <span th:text="${mgg.phanTramGiamGia}">xx</span>%.
-                            Đơn tối thiểu: <span th:text="${#numbers.formatDecimal(mgg.hanMucApDung, 0, 'POINT', 0, 'COMMA')}">0</span> VNĐ.
-                            Giảm tối đa: <span th:text="${#numbers.formatInteger(mgg.giaTriGiamToiDa, 0, 'POINT')}">0</span> VNĐ.
-                        </p>
-                        <p class="expiry-date">
-                            <i class="fas fa-calendar-times"></i>
-                            HSD: <span th:text="${#temporals.format(mgg.ngayKetThucApDung, 'dd/MM/yyyy HH:mm')}">dd/MM/yyyy HH:mm</span>
-                        </p>
-                    </div>
-                    <div class="discount-card-footer">
-                        <button class="btn-collect-code"
-                                th:attr="data-code=${mgg.tenMaGiamGia}"
-                                th:classappend="${mgg.daLuu != null and mgg.daLuu} ? 'collected' : ''"
-                                th:disabled="${mgg.daLuu != null and mgg.daLuu}">
-                            <th:block th:if="${mgg.daLuu != null and mgg.daLuu}">
-                                <i class="fas fa-check-circle"></i> Đã lưu
-                            </th:block>
-                            <th:block th:unless="${mgg.daLuu != null and mgg.daLuu}">
-                                <i class="fas fa-save"></i> Lưu mã
-                            </th:block>
-                        </button>
-                    </div>
-                </article>
-            </div>
+            <th:block th:if="${session.user != null}">
+                <div th:if="${danhSachMaGiamGia != null and not #lists.isEmpty(danhSachMaGiamGia)}" class="discount-grid">
+                    <article class="discount-card" th:each="mgg : ${danhSachMaGiamGia}">
+                        <div class="discount-card-header">
+                            <span class="icon"><i class="fas fa-tags"></i></span>
+                            <span class="code" th:text="${mgg.tenMaGiamGia}">MACODE</span>
+                        </div>
+                        <div class="discount-card-body">
+                            <h3 th:text="${mgg.chienDichGiamGia != null ? mgg.chienDichGiamGia.tenChienDich : 'Ưu đãi: Giảm ' + mgg.phanTramGiamGia + '%'}">
+                                Tiêu đề mã giảm giá
+                            </h3>
+                            <p class="conditions">
+                                <i class="fas fa-info-circle"></i>
+                                Giảm <span th:text="${mgg.phanTramGiamGia}">xx</span>%.
+                                Đơn tối thiểu: <span th:text="${#numbers.formatDecimal(mgg.hanMucApDung, 0, 'POINT', 0, 'COMMA')}">0</span> VNĐ.
+                                Giảm tối đa: <span th:text="${#numbers.formatInteger(mgg.giaTriGiamToiDa, 0, 'POINT')}">0</span> VNĐ.
+                            </p>
+                            <p class="expiry-date">
+                                <i class="fas fa-calendar-times"></i>
+                                HSD: <span th:text="${#temporals.format(mgg.ngayKetThucApDung, 'dd/MM/yyyy HH:mm')}">dd/MM/yyyy HH:mm</span>
+                            </p>
+                        </div>
+                        <div class="discount-card-footer">
+                            <form th:action="@{/coupon/{idMaGiamGia}/collect(idMaGiamGia=${mgg.getIdMaGiamGia()})}" method="post" style="display: inline;">
+                                <input type="hidden" name="couponCode" th:value="${mgg.tenMaGiamGia}" />
+                                <button type="submit" class="btn-collect-code"
+                                        th:classappend="${mgg.doiTuongSuDung != null} ? 'collected' : ''"
+                                        th:disabled="${mgg.doiTuongSuDung != null}">
+                                    <th:block th:if="${mgg.doiTuongSuDung != null}">
+                                        <i class="fas fa-check-circle"></i> Đã lưu
+                                    </th:block>
+                                    <th:block th:unless="${mgg.doiTuongSuDung != null}">
+                                        <i class="fas fa-save"></i> Lưu mã
+                                    </th:block>
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
 
-            <div th:if="${danhSachMaGiamGia == null or #lists.isEmpty(danhSachMaGiamGia)}">
-                <p style="text-align: center; font-size: 1.1em; padding: 30px 0;">Hiện tại chưa có mã giảm giá nào. Vui lòng quay lại sau!</p>
-            </div>
+                <div th:if="${danhSachMaGiamGia == null or #lists.isEmpty(danhSachMaGiamGia)}">
+                    <p style="text-align: center; font-size: 1.1em; padding: 30px 0;">Hiện tại chưa có mã giảm giá nào. Vui lòng quay lại sau!</p>
+                </div>
+            </th:block>
+
+            <th:block th:if="${session.user == null}">
+                <div class="login-prompt">
+                    <p><i class="fas fa-exclamation-triangle"></i> Bạn vui lòng <a th:href="@{/signin}">đăng nhập</a> để xem mã giảm giá!</p>
+                </div>
+            </th:block>
         </section>
     </div>
 </div>
@@ -326,18 +369,26 @@
             yearSpan.textContent = new Date().getFullYear();
         }
 
-        const collectButtons = document.querySelectorAll('.btn-collect-code');
-        collectButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                if (!this.classList.contains('collected')) {
-                    const code = this.dataset.code;
-                    this.innerHTML = '<i class="fas fa-check-circle"></i> Đã lưu';
-                    this.classList.add('collected');
-                    this.disabled = true;
-                    alert(`Đã lưu mã "${code}" thành công! (Mô phỏng)`);
+        // JavaScript for User Menu Dropdown
+        const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        if (userProfileLinkToggle && userDropdownMenu) {
+            userProfileLinkToggle.addEventListener('click', function(event) {
+                event.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+                userDropdownMenu.classList.toggle('show');
+                this.classList.toggle('open');
+            });
+            document.addEventListener('click', function(event) {
+                // Kiểm tra xem click có nằm ngoài toggle và menu không
+                const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu.contains(event.target);
+
+                if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    userProfileLinkToggle.classList.remove('open');
                 }
             });
-        });
+        }
     });
 </script>
 </body>

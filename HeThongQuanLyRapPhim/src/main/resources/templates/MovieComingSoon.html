@@ -18,7 +18,8 @@
             line-height: 1.7;
             background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
             color: #2d3748;
-            padding-top: 80px; /* Khoảng đệm cho fixed header */
+            /* Đồng bộ padding-top với trang chủ đã sửa */
+            padding-top: 80px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -31,11 +32,11 @@
             padding: 0 20px;
         }
 
-        .main-content {
+        .main-content { /* Đổi từ .main-content-wrapper để khớp với cấu trúc trang này */
             flex-grow: 1;
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER (Đồng bộ từ trang chủ) --- */
         header {
             background: linear-gradient(90deg, #1a202c, #2d3748);
             color: #fff;
@@ -47,14 +48,12 @@
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
         }
-
         header .logo a {
             color: #fff;
             font-size: 2em;
@@ -64,24 +63,19 @@
             align-items: center;
             gap: 8px;
         }
-        header .logo a i {
-            color: #f56565;
-            font-size: 1.2em;
-        }
+        header .logo a i { color: #f56565; font-size: 1.2em; }
 
         header nav {
             flex-grow: 1;
             display: flex;
             justify-content: center;
         }
-
         header nav ul {
             list-style: none;
             display: flex;
             gap: 20px;
             padding-left: 0;
         }
-
         header nav ul li a {
             color: #e2e8f0;
             text-decoration: none;
@@ -91,15 +85,14 @@
             transition: all 0.3s ease;
             font-weight: 500;
         }
-
         header nav ul li a:hover,
-        header nav ul li a.active {
-            background: #f56565;
-            color: #fff;
+        header nav ul li a.active { background: #f56565; color: #fff; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-
-        /* .header-actions { margin-left: auto; đã được bỏ } */
-
         .header-actions .btn-login {
             background: linear-gradient(45deg, #3182ce, #63b3ed);
             color: #fff;
@@ -114,7 +107,26 @@
             background: linear-gradient(45deg, #2b6cb0, #4299e1);
         }
 
-        /* --- PAGE TITLE SECTION (Giữ nguyên) --- */
+        /* --- CSS CHO USER MENU DROPDOWN (Đồng bộ từ trang chủ) --- */
+        .header-actions .user-menu-container { position: relative; display: inline-block; }
+        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
+        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
+        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
+        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+        .header-actions .dropdown-menu-content.show { display: block; }
+        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
+        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
+        /* --- KẾT THÚC CSS USER MENU --- */
+
+
+        /* --- PAGE TITLE SECTION (Giữ nguyên từ trang "Phim Sắp Chiếu") --- */
         .page-header {
             background-color: #fff;
             padding: 30px 0;
@@ -133,7 +145,7 @@
             gap: 10px;
         }
 
-        /* --- MOVIE LISTING GRID (Giữ nguyên) --- */
+        /* --- MOVIE LISTING GRID (Giữ nguyên từ trang "Phim Sắp Chiếu") --- */
         .movie-listing-container {
             padding: 0 0 30px 0;
             margin-bottom: 30px;
@@ -227,6 +239,7 @@
             color: #bdc3c7;
             text-align: center;
             padding: 30px 0;
+            margin-top: auto; /* Để footer dính xuống dưới nếu nội dung không đủ cao */
         }
         footer .container {
             display: flex;
@@ -274,65 +287,64 @@
             margin-bottom: 5px;
         }
 
-        /* --- Responsive CSS - ĐÃ ĐƯỢC ĐIỀU CHỈNH CHO HEADER --- */
-        @media (max-width: 992px) {
-            body { padding-top: 70px; }
+
+        /* --- RESPONSIVE CSS HEADER (Đồng bộ từ trang chủ đã sửa) --- */
+        @media (max-width: 992px) { /* Tablet Layout */
+            body { padding-top: 150px; } /* Điều chỉnh cho header 3 dòng */
             header .container {
-                justify-content: space-around; /* Giống Doc A */
+                justify-content: space-around;
             }
-            .logo { /* Giống Doc A */
+            .logo {
                 order: 1;
                 width: 100%;
                 text-align: center;
                 margin-bottom: 10px;
             }
-            header nav { /* Giống Doc A */
+            header nav {
                 order: 3;
                 width: 100%;
                 margin-top: 10px;
-                /* flex-grow: 0; đã được loại bỏ khỏi CSS gốc, điều này tốt */
-                /* justify-content: center; đã là style cơ sở */
             }
-            header nav ul { /* Giống Doc A */
+            header nav ul {
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 10px;
             }
-            .header-actions { /* Giống Doc A */
+            .header-actions {
                 order: 2;
                 margin-left: 0;
-                /* Loại bỏ width: 100%, text-align: center, margin-top: 10px từ CSS gốc */
-                width: auto; /* Đảm bảo nó không chiếm full width */
-                text-align: left; /* Reset text-align nếu cần */
-                margin-top: 0; /* Reset margin-top */
+                width: auto;
+                margin-top: 0; /* Reset margin-top, actions sẽ nằm giữa logo và nav */
+                justify-content: center; /* Căn giữa nút login/user menu nếu nó là item duy nhất trong actions */
+                width: 100%; /* Cho actions chiếm full width để dễ căn giữa nội dung */
+                margin-bottom: 10px; /* Tạo khoảng cách với nav */
             }
         }
 
-        @media (max-width: 768px) {
-            body { padding-top: 120px; } /* Giữ nguyên padding-top của body từ code gốc */
-            header .container { /* Giống Doc A */
-                flex-direction: row;
+        @media (max-width: 768px) { /* Mobile Landscape / Small Tablet */
+            body { padding-top: 120px; } /* Điều chỉnh cho header 2 dòng */
+            header .container {
                 justify-content: space-between;
-                align-items: center;
+                /* align-items: center; /* Đã có từ base */
             }
-            .logo { /* Giống Doc A */
-                /* order: 1; kế thừa */
+            .logo {
+                order: 1;
                 width: auto;
                 text-align: left;
                 margin-bottom: 0;
             }
-            header nav { /* Giống Doc A */
-                order: 3; /* Đảm bảo order là 3 */
-                /* width: 100%; kế thừa */
+            header nav {
+                order: 3;
+                width: 100%;
                 margin-top: 15px;
-                /* justify-content: center; kế thừa */
             }
-            .header-actions { /* Giống Doc A */
-                order: 2; /* Đảm bảo order là 2 */
-                /* margin-left: 0; kế thừa */
-                width: auto; /* Đảm bảo không full width */
-                text-align: left; /* Reset căn lề */
-                margin-top: 0; /* Reset margin-top để giống Doc A hơn */
+            .header-actions {
+                order: 2;
+                width: auto;
+                margin-top: 0;
+                margin-bottom: 0; /* Reset margin-bottom từ 992px */
+                justify-content: flex-end; /* Căn phải nút login/user menu */
+                /* width: auto; /* Đã có */
             }
 
             /* Các style khác của trang này ở 768px (giữ nguyên) */
@@ -341,21 +353,30 @@
             .movie-card { min-width: 0; width: 100%; }
         }
 
-        @media (max-width: 480px) {
-            body { padding-top: 110px; } /* Giữ nguyên padding-top của body từ code gốc */
+        @media (max-width: 480px) { /* Mobile Portrait */
+            body { padding-top: 110px; } /* Điều chỉnh cho header 2 dòng */
+            /* header .container, .logo, .header-actions, header nav kế thừa từ 768px và base */
 
-            /* Thêm style cho header items giống Doc A */
-            header nav ul li a {
-                font-size: 0.9em;
-                padding: 6px 12px;
+            header nav ul {
+                gap: 0;
+                justify-content: center;
+                flex-wrap: wrap;
             }
             header nav ul li {
                 margin: 5px;
             }
-            .header-actions .btn-login {
+            header nav ul li a {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+            .header-actions .btn-login,
+            .header-actions .user-profile-toggle { /* Thêm user-profile-toggle để đồng bộ */
                 padding: 6px 12px;
                 font-size: 0.9em;
             }
+            .header-actions .dropdown-menu-content { min-width: 180px; }
+            .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
+
 
             /* Các style khác của trang này ở 480px (giữ nguyên) */
             .page-header h1 { font-size: 1.8em; }
@@ -383,12 +404,29 @@
             <ul>
                 <li><a th:href="@{/}">Trang Chủ</a></li>
                 <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
-                <li><a th:href="@{/movies/coming-soon}" class="active">Phim Sắp Chiếu</a></li>
-                <li><a th:href="@{/coupon}">Mã Giảm Giá</a></li>
+                <li><a th:href="@{/movies/coming-soon}" class="active">Phim Sắp Chiếu</a></li> <li><a th:href="@{/coupon}">Mã Giảm Giá</a></li>
             </ul>
         </nav>
         <div class="header-actions">
-            <a href="/login" class="btn-login">Đăng Nhập</a>
+            <th:block th:if="${session.user == null}">
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
+            </th:block>
+            <th:block th:if="${session.user != null}">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span id="headerUserDisplayName" th:text="'Chào, ' + ${session.user.hoTen}">Chào, Tên User</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-content" id="userDropdownMenu">
+                        <a th:href="@{/user/profile}" class="dropdown-item"> <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/signout}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
         </div>
     </div>
 </header>
@@ -457,6 +495,27 @@
         const yearSpan = document.getElementById('currentYear');
         if (yearSpan) {
             yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // --- JAVASCRIPT CHO USER MENU DROPDOWN (Đồng bộ từ trang chủ) ---
+        const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        if (userProfileLinkToggle && userDropdownMenu) {
+            userProfileLinkToggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                userDropdownMenu.classList.toggle('show');
+                this.classList.toggle('open');
+            });
+            // Click outside to close dropdown
+            document.addEventListener('click', function(event) {
+                const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu.contains(event.target);
+
+                if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    userProfileLinkToggle.classList.remove('open');
+                }
+            });
         }
     });
 </script>

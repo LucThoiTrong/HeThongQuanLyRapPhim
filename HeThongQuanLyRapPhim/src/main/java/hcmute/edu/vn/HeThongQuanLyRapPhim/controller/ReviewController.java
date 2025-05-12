@@ -1,9 +1,11 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DanhGia;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DoiTuongSuDungService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ReviewService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,11 +31,15 @@ public class ReviewController {
     }
 
     @PostMapping("/{movieId}/reviews")
-    public String submitReview(@PathVariable("movieId") Integer movieId, @ModelAttribute("danhGia") DanhGia danhGia, RedirectAttributes redirectAttributes) {
+    public String submitReview(@PathVariable("movieId") Integer movieId, @ModelAttribute("danhGia") DanhGia danhGia, RedirectAttributes redirectAttributes, HttpSession session) {
         // Set thời gian hiện tại và đánh giá này thuộc về phim nào
         danhGia.setThoiGianDanhGia(new Date());
         danhGia.setPhim(movieService.getPhimById(movieId));
-        danhGia.setDoiTuongSuDung(doiTuongSuDungService.getDoiTuongSuDungById(1));
+
+        int idCustomer = (int) session.getAttribute("idCustomer");
+        DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idCustomer);
+
+        danhGia.setDoiTuongSuDung(customer);
         DanhGia kq = reviewService.addReview(danhGia);
         if (kq != null) {
             redirectAttributes.addFlashAttribute("message", "Thêm đánh giá thành công");
@@ -56,7 +62,7 @@ public class ReviewController {
             // Cập nhật thông tin đánh giá
             existingReview.setNoiDungDanhGia(danhGia.getNoiDungDanhGia());
             existingReview.setDiemDanhGia(danhGia.getDiemDanhGia());
-            existingReview.setThoiGianDanhGia(new Date()); // Nếu muốn cập nhật lại thời gian
+            existingReview.setThoiGianDanhGia(new Date());
 
             // Lưu lại đánh giá đã được cập nhật
             DanhGia updatedReview = reviewService.updateReview(existingReview);

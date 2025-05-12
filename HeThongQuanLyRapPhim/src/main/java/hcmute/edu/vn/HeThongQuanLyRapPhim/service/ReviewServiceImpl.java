@@ -26,11 +26,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public DanhGia updateReview(DanhGia danhGia) {
-        DanhGia dg = reviewRepository.findById(danhGia.getIdDanhGia()).orElse(null);
-        if (dg != null) {
-            return reviewRepository.save(danhGia);
-        }
-        return null;
+        return reviewRepository.save(danhGia);
     }
 
     @Override

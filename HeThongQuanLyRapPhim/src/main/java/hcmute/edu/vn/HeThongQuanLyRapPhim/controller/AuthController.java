@@ -26,13 +26,13 @@ public class AuthController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/login")
+    @GetMapping("/signin")
     public String showLoginForm(Model model, @ModelAttribute("taiKhoan") TKDoiTuongSuDung taiKhoan) {
         model.addAttribute("taiKhoan", taiKhoan!=null ? taiKhoan:new TKDoiTuongSuDung());
         return "Login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/signin")
     public String login(@ModelAttribute("taiKhoan") TKDoiTuongSuDung taiKhoan,
                         Model model, RedirectAttributes redirectAttributes,
                         HttpSession session) {
@@ -55,6 +55,12 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("taiKhoan", taiKhoan);
             return "redirect:/login";
         }
+    }
+
+    @GetMapping("/signout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/";
     }
 
 

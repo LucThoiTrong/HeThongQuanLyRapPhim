@@ -203,7 +203,7 @@
     <div th:if="${message}" class="alert" th:classappend="${message_type == 'SUCCESS'} ? 'alert-success' : (${message_type == 'ERROR'} ? 'alert-danger' : 'alert-info')">
         <p th:text="${message}"></p>
     </div>
-    <form class="login-form" th:action="@{/login}" method="POST" th:object="${taiKhoan}">
+    <form class="login-form" th:action="@{/signin}" method="POST" th:object="${taiKhoan}">
         <div class="form-group">
             <label for="username"><i class="fas fa-user"></i> Tên đăng nhập</label>
             <input type="text" id="username" th:field="*{tenDangNhap}" placeholder="Nhập tên đăng nhập của bạn" required>

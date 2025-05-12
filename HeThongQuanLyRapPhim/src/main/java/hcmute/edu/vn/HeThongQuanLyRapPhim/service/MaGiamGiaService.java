@@ -12,4 +12,5 @@ public interface MaGiamGiaService {
     MaGiamGia save(MaGiamGia maGiamGia);
 
     void deleteById(int theId);
+    MaGiamGia updateCustomer(MaGiamGia maGiamGia);
 }

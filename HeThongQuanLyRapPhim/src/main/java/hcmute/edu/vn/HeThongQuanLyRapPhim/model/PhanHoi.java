@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "phan_hoi")
@@ -17,7 +18,7 @@ public class PhanHoi implements Serializable {
     private String noiDungPhanHoi;
 
     @Column(name = "thoi_gian_phan_hoi")
-    private LocalDateTime thoiGianPhanHoi;
+    private Date thoiGianPhanHoi;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_danh_gia")
@@ -30,7 +31,7 @@ public class PhanHoi implements Serializable {
     public PhanHoi() {
     }
 
-    public PhanHoi(String noiDungPhanHoi, LocalDateTime thoiGianPhanHoi, DanhGia danhGia, DoiTuongSuDung doiTuongSuDung) {
+    public PhanHoi(String noiDungPhanHoi, Date thoiGianPhanHoi, DanhGia danhGia, DoiTuongSuDung doiTuongSuDung) {
         this.noiDungPhanHoi = noiDungPhanHoi;
         this.thoiGianPhanHoi = thoiGianPhanHoi;
         this.danhGia = danhGia;
@@ -53,11 +54,11 @@ public class PhanHoi implements Serializable {
         this.noiDungPhanHoi = noiDungPhanHoi;
     }
 
-    public LocalDateTime getThoiGianPhanHoi() {
+    public Date getThoiGianPhanHoi() {
         return thoiGianPhanHoi;
     }
 
-    public void setThoiGianPhanHoi(LocalDateTime thoiGianPhanHoi) {
+    public void setThoiGianPhanHoi(Date thoiGianPhanHoi) {
         this.thoiGianPhanHoi = thoiGianPhanHoi;
     }
 

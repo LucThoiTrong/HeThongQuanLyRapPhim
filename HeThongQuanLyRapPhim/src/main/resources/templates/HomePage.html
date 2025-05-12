@@ -18,6 +18,10 @@
             line-height: 1.7;
             background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
             color: #2d3748;
+            padding-top: 80px; /* Cho fixed header */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .container {
@@ -27,13 +31,19 @@
             padding: 0 20px;
         }
 
+        .main-content-wrapper { /* Để footer dính xuống dưới */
+            flex-grow: 1;
+        }
+
         /* --- HEADER --- */
         header {
             background: linear-gradient(90deg, #1a202c, #2d3748);
             color: #fff;
             padding: 1.2rem 0;
-            position: sticky;
+            position: fixed; /* Đảm bảo fixed */
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -41,7 +51,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Cho phép wrap trên màn hình nhỏ */
+            flex-wrap: wrap; /* Base, cho phép wrap */
         }
         header .logo a {
             color: #fff;
@@ -53,18 +63,36 @@
             gap: 8px;
         }
         header .logo a i { color: #f56565; font-size: 1.2em; }
-        header nav { flex-grow: 1; display: flex; justify-content: center; }
-        header nav ul { list-style: none; display: flex; gap: 20px; padding-left: 0; }
-        header nav ul li a { color: #e2e8f0; text-decoration: none; font-size: 1em; padding: 8px 16px; border-radius: 6px; transition: all 0.3s ease; font-weight: 500; }
+
+        /* Base style cho nav (quan trọng cho responsive) */
+        header nav {
+            flex-grow: 1; /* Cho phép nav chiếm không gian */
+            display: flex;
+            justify-content: center; /* Căn giữa ul bên trong */
+        }
+        header nav ul {
+            list-style: none;
+            display: flex; /* Cho các li nằm ngang */
+            gap: 20px; /* Khoảng cách mặc định */
+            padding-left: 0;
+        }
+        header nav ul li a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
         header nav ul li a:hover,
         header nav ul li a.active { background: #f56565; color: #fff; }
 
-        .header-actions { /* Thêm display: flex để các item con nằm ngang */
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px; /* Khoảng cách giữa các nút/menu nếu có nhiều */
+            gap: 15px;
         }
-
         .header-actions .btn-login {
             background: linear-gradient(45deg, #3182ce, #63b3ed);
             color: #fff;
@@ -79,187 +107,38 @@
             background: linear-gradient(45deg, #2b6cb0, #4299e1);
         }
 
-        /* --- CSS CHO USER MENU DROPDOWN (BẮT ĐẦU) --- */
-        .header-actions .user-menu-container {
-            position: relative;
-            display: inline-block;
-        }
-
-        .header-actions .user-profile-toggle {
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            text-decoration: none;
-            color: #fff;
-            background-color: transparent;
-            border-radius: 6px;
-            font-size: 1em;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            gap: 8px;
-            cursor: pointer; /* Thêm con trỏ chuột */
-        }
-
-        .header-actions .user-profile-toggle:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
-        }
-
-        .header-actions .user-profile-toggle .user-icon {
-            font-size: 1.3em;
-        }
-
-        .header-actions .user-profile-toggle #headerUserDisplayName {
-            font-weight: 500;
-        }
-
-        .header-actions .user-profile-toggle .dropdown-arrow {
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-            margin-left: 5px; /* Khoảng cách nhỏ với tên user */
-        }
-
-        .header-actions .user-profile-toggle.open .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .header-actions .dropdown-menu-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 5px);
-            background-color: #fff;
-            min-width: 220px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 6px;
-            z-index: 1001;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            padding: 8px 0;
-        }
-
-        .header-actions .dropdown-menu-content.show {
-            display: block;
-        }
-
-        .header-actions .dropdown-menu-content .dropdown-item {
-            color: #2d3748;
-            padding: 10px 20px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-size: 0.95em;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            gap: 10px;
-        }
-
-        .header-actions .dropdown-menu-content .dropdown-item i {
-            width: 16px;
-            text-align: center;
-            color: #718096;
-        }
-
-        .header-actions .dropdown-menu-content .dropdown-item:hover {
-            background-color: #f0f2f5;
-            color: #1a202c;
-        }
-
+        /* --- CSS CHO USER MENU DROPDOWN --- */
+        .header-actions .user-menu-container { position: relative; display: inline-block; }
+        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
+        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
+        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
+        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+        .header-actions .dropdown-menu-content.show { display: block; }
+        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
+        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
         .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover {
-            background-color: #e9ecef;
-            color: #3182ce;
-            font-weight: 500;
-        }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i {
-            color: #3182ce;
-        }
-        /* --- CSS CHO USER MENU DROPDOWN (KẾT THÚC) --- */
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
+        /* --- KẾT THÚC CSS USER MENU --- */
 
-
-        /* --- HERO SECTION (SLIDESHOW) --- */
-        /* ... (CSS còn lại của bạn giữ nguyên) ... */
-        .hero {
-            height: 80vh;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 50px;
-        }
-
-        .hero-slides-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .hero-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            z-index: 1;
-        }
-        .hero-slide.active {
-            opacity: 1;
-            z-index: 2;
-        }
-
-        .hero-slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: #fff;
-            height: 100%;
-            padding: 0 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        /* --- HERO SECTION --- */
+        .hero { height: 80vh; position: relative; overflow: hidden; margin-bottom: 50px; }
+        .hero-slides-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        .hero-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center center; opacity: 0; transition: opacity 1s ease-in-out; z-index: 1; }
+        .hero-slide.active { opacity: 1; z-index: 2; }
+        .hero-slide::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)); }
+        .hero-content { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; height: 100%; padding: 0 20px; max-width: 800px; margin: 0 auto; }
         .hero h1 { font-size: 3.8em; margin-bottom: 20px; line-height: 1.2; font-weight: 700; text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); }
         .hero p { font-size: 1.4em; margin-bottom: 30px; font-weight: 300; text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7); }
         .hero .btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(45deg, #e53e3e, #f56565); color: #fff; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
         .hero .btn:hover { background: linear-gradient(45deg, #c53030, #e53e3e); transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); }
-
-        .hero-dots {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 4;
-        }
-        .hero-dot {
-            width: 12px;
-            height: 12px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .hero-dot.active {
-            background-color: #fff;
-        }
-
+        .hero-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 4; }
+        .hero-dot { width: 12px; height: 12px; background-color: rgba(255, 255, 255, 0.5); border-radius: 50%; cursor: pointer; transition: background-color 0.3s ease; }
+        .hero-dot.active { background-color: #fff; }
 
         /* --- MOVIE SECTIONS (CAROUSEL) --- */
         .movie-section-wrapper { padding: 50px 0; background: #fff; margin-bottom: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
@@ -287,21 +166,46 @@
         /* --- FOOTER --- */
         footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 0; margin-top: 40px; }
         footer .container { display: flex; flex-direction: column; align-items: center; }
-        .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-direction: row; gap: 20px; }
+        .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
         .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
         .footer-nav ul li a:hover { color: #fff; }
-        .social-media { margin-bottom: 15px; display: flex; gap: 15px; }
+        .social-media { margin-bottom: 15px; display: flex; justify-content: center; gap: 15px; }
         .social-media a { color: #bdc3c7; margin: 0; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
         .social-media a:hover { color: #e74c3c; }
-        footer p { font-size: 0.9em; margin-top: 0; }
+        footer p { font-size: 0.9em; margin-top: 0; line-height: 1.5; }
+        footer p:not(:last-child) { margin-bottom: 5px; }
         footer p:last-of-type { margin-top: 5px; }
 
-        /* --- RESPONSIVE DESIGN --- */
-        @media (max-width: 992px) {
-            header .container { /* flex-wrap: wrap; */ /* Bỏ wrap để nav và action luôn cùng hàng với logo nếu đủ chỗ */ justify-content: space-between; }
-            header nav { order: 2; flex-grow: 0; /* Không cho nav chiếm hết không gian */ margin: 0 15px; /* Khoảng cách nav với logo và actions */ }
-            .header-actions { order: 3; margin-left: 0; }
-            .logo { order: 1; /* width: auto; text-align: left; margin-bottom: 0; */ }
+        /* --- RESPONSIVE DESIGN - ĐỒNG BỘ VỚI TRANG PHIM ĐANG CHIẾU --- */
+        @media (max-width: 992px) { /* Tablet Layout */
+            body { padding-top: 70px; }
+            header .container {
+                /* Giữ justify-content: space-between; nếu muốn logo và actions ở hai bên khi nav ở hàng mới
+                   Hoặc dùng space-around nếu muốn các items (logo, actions, nav) được sắp xếp dàn đều khi wrap */
+                justify-content: space-around; /* Theo code gốc của bạn */
+            }
+            .logo {
+                order: 1;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            header nav {
+                order: 3;
+                width: 100%;
+                margin-top: 10px;
+            }
+            header nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .header-actions {
+                order: 2;
+                margin-left: 0;
+                width: auto;
+                margin-top: 0;
+            }
 
             .hero h1 { font-size: 3em; }
             .hero p { font-size: 1.2em; }
@@ -310,12 +214,32 @@
             .movie-card { min-width: 220px; width: 220px; }
             .movie-card img { height: 300px; }
         }
-        @media (max-width: 768px) {
-            header .container { flex-wrap: wrap; justify-content: space-between; } /* Cho phép wrap khi không đủ chỗ */
-            header nav { order: 3; width: 100%; margin-top: 15px; justify-content: center; margin-left:0; margin-right:0;} /* Nav xuống hàng và căn giữa */
-            header nav ul { justify-content: center;}
-            .logo { order: 1; /* margin-bottom: 10px; */ /* Nếu nav xuống hàng thì có thể cần margin bottom cho logo */ }
-            .header-actions { order: 2; }
+
+        @media (max-width: 768px) { /* Mobile Landscape / Small Tablet */
+            body { padding-top: 120px; } /* Điều chỉnh padding-top để header không che nội dung */
+            header .container {
+                /* Đảm bảo các items được đẩy ra xa nhau */
+                justify-content: space-between;
+                align-items: center;
+            }
+            .logo {
+                order: 1;
+                width: auto; /* Logo co lại theo nội dung */
+                text-align: left; /* Căn trái text logo */
+                margin-bottom: 0; /* Reset margin nếu trước đó có */
+            }
+            header nav {
+                order: 3; /* Nav xuống dưới cùng */
+                width: 100%; /* Nav chiếm toàn bộ chiều rộng */
+                margin-top: 15px; /* Khoảng cách với hàng trên (logo/actions) */
+                justify-content: center; /* Căn giữa các mục nav */
+            }
+            /* header nav ul đã có justify-content: center từ base của nav hoặc ul tự căn giữa li khi wrap */
+            .header-actions {
+                order: 2; /* Actions nằm cùng hàng với Logo, bên phải */
+                width: auto; /* Actions co lại theo nội dung */
+                margin-top: 0; /* Reset margin nếu trước đó có */
+            }
 
             .hero { height: 70vh; }
             .hero h1 { font-size: 2.4em; }
@@ -326,16 +250,42 @@
             .movie-card h3 { font-size: 1.2em; }
             .carousel-btn { width: 40px; height: 40px; font-size: 1.2em; }
         }
-        @media (max-width: 480px) {
-            /* header nav { display: none; } // Có thể ẩn nav nếu quá chật */
-            header nav ul { gap: 5px; } /* Giảm gap cho nav items */
-            header nav ul li a { font-size: 0.85em; padding: 6px 8px; }
 
+        @media (max-width: 480px) { /* Mobile Portrait */
+            body { padding-top: 110px; } /* Điều chỉnh padding-top */
+            header .container {
+                /* Đảm bảo các items được đẩy ra xa nhau */
+                justify-content: space-between;
+                align-items: center;
+            }
+            /* .logo và .header-actions sẽ kế thừa style từ 768px (width: auto, order)
+               và justify-content: space-between trên .container sẽ hoạt động */
+
+            header nav {
+                order: 3; /* Nav vẫn ở dưới cùng */
+                width: 100%;
+                margin-top: 10px; /* Giảm margin-top một chút nếu cần */
+                /* justify-content: center; đã có */
+            }
+            header nav ul {
+                gap: 0; /* Bỏ gap, dùng margin cho li */
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            header nav ul li {
+                margin: 5px; /* Khoảng cách giữa các mục nav */
+            }
+            header nav ul li a {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
             .header-actions .btn-login,
-            .header-actions .user-profile-toggle { padding: 6px 12px; font-size: 0.9em; }
+            .header-actions .user-profile-toggle {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
             .header-actions .dropdown-menu-content { min-width: 180px; }
             .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
-
 
             .hero { height: 60vh; }
             .hero h1 { font-size: 1.8em; }
@@ -369,9 +319,8 @@
         </nav>
         <div class="header-actions">
             <th:block th:if="${session.user == null}">
-                <a th:href="@{/login}" class="btn-login">Đăng Nhập</a>
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
             </th:block>
-
             <th:block th:if="${session.user != null}">
                 <div class="user-menu-container">
                     <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
@@ -383,7 +332,7 @@
                         <a th:href="@{/user/profile}" class="dropdown-item active-header-link">
                             <i class="fas fa-user-edit"></i>Quản lý tài khoản
                         </a>
-                        <a th:href="@{/logout}" class="dropdown-item">
+                        <a th:href="@{/signout}" class="dropdown-item">
                             <i class="fas fa-sign-out-alt"></i>Đăng xuất
                         </a>
                     </div>
@@ -393,90 +342,76 @@
     </div>
 </header>
 
-<section class="hero">
-    <div class="hero-slides-container">
-        <div class="hero-slide active" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+1');"></div>
-        <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+2');"></div>
-        <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+3');"></div>
-        <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+4');"></div>
-    </div>
-    <div class="hero-content">
-        <h1>Khám Phá Thế Giới Điện Ảnh</h1>
-        <p>Những bộ phim bom tấn mới nhất, những câu chuyện hấp dẫn đang chờ bạn.</p>
-        <a href="#now-showing-section" class="btn"><i class="fas fa-play"></i> Xem Phim Ngay</a>
-    </div>
-    <div class="hero-dots">
-    </div>
-</section>
+<div class="main-content-wrapper">
+    <section class="hero">
+        <div class="hero-slides-container">
+            <div class="hero-slide active" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+1');"></div>
+            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+2');"></div>
+            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+3');"></div>
+            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+4');"></div>
+        </div>
+        <div class="hero-content">
+            <h1>Khám Phá Thế Giới Điện Ảnh</h1>
+            <p>Những bộ phim bom tấn mới nhất, những câu chuyện hấp dẫn đang chờ bạn.</p>
+            <a href="#now-showing-section" class="btn"><i class="fas fa-play"></i> Xem Phim Ngay</a>
+        </div>
+        <div class="hero-dots"></div>
+    </section>
 
-<section id="now-showing-section" class="movie-section-wrapper">
-    <div class="container">
-        <h2><i class="fas fa-video"></i> Phim Đang Chiếu</h2>
-    </div>
-    <div class="carousel-container" role="region" aria-label="Phim Đang Chiếu Carousel">
-        <button class="carousel-btn prev" data-carousel="now-showing-carousel" aria-label="Phim trước"><i class="fas fa-chevron-left"></i></button>
-        <div class="carousel-viewport">
-            <div class="movie-grid-carousel" id="now-showing-carousel">
-                <article class="movie-card" th:each="phim : ${danhSachPhimDangChieu}">
-                    <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}">
-                        <img th:src="${phim.linkAnh}" th:alt="${phim.tenPhim}" />
-                    </a>
-
-                    <div class="movie-card-content">
-                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" style="text-decoration:none;">
-                            <h3 th:text="${phim.tenPhim}">Tên Phim Mặc Định</h3>
+    <section id="now-showing-section" class="movie-section-wrapper">
+        <div class="container">
+            <h2><i class="fas fa-video"></i> Phim Đang Chiếu</h2>
+        </div>
+        <div class="carousel-container" role="region" aria-label="Phim Đang Chiếu Carousel">
+            <button class="carousel-btn prev" data-carousel="now-showing-carousel" aria-label="Phim trước"><i class="fas fa-chevron-left"></i></button>
+            <div class="carousel-viewport">
+                <div class="movie-grid-carousel" id="now-showing-carousel">
+                    <article class="movie-card" th:each="phim : ${danhSachPhimDangChieu}">
+                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}">
+                            <img th:src="${phim.linkAnh}" th:alt="${phim.tenPhim}" />
                         </a>
-                        <p class="genre">
-                            <i class="fas fa-tag"></i>
-                            <span th:text="${phim.theLoai}">Thể loại mẫu</span>
-                        </p>
-                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" class="btn-detail">
-                            <i class="fas fa-info-circle"></i> Xem Chi Tiết
-                        </a>
-                    </div>
-                </article>
-                <div th:if="${danhSachPhimDangChieu == null or #lists.isEmpty(danhSachPhimDangChieu)}">
-                    <p>Hiện chưa có phim nào đang chiếu.</p>
+                        <div class="movie-card-content">
+                            <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" style="text-decoration:none;">
+                                <h3 th:text="${phim.tenPhim}">Tên Phim Mặc Định</h3>
+                            </a>
+                            <p class="genre"><i class="fas fa-tag"></i> <span th:text="${phim.theLoai}">Thể loại mẫu</span></p>
+                            <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" class="btn-detail"><i class="fas fa-info-circle"></i> Xem Chi Tiết</a>
+                        </div>
+                    </article>
+                    <div th:if="${danhSachPhimDangChieu == null or #lists.isEmpty(danhSachPhimDangChieu)}"><p>Hiện chưa có phim nào đang chiếu.</p></div>
                 </div>
             </div>
+            <button class="carousel-btn next" data-carousel="now-showing-carousel" aria-label="Phim tiếp theo"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <button class="carousel-btn next" data-carousel="now-showing-carousel" aria-label="Phim tiếp theo"><i class="fas fa-chevron-right"></i></button>
-    </div>
-</section>
+    </section>
 
-<section id="coming-soon-section" class="movie-section-wrapper">
-    <div class="container">
-        <h2><i class="fas fa-hourglass-half"></i> Phim Sắp Chiếu</h2>
-    </div>
-    <div class="carousel-container" role="region" aria-label="Phim Sắp Chiếu Carousel">
-        <button class="carousel-btn prev" data-carousel="coming-soon-carousel" aria-label="Phim trước"><i class="fas fa-chevron-left"></i></button>
-        <div class="carousel-viewport">
-            <div class="movie-grid-carousel" id="coming-soon-carousel">
-                <article class="movie-card" th:each="phim : ${danhSachPhimSapChieu}">
-                    <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}">
-                        <img th:src="${phim.linkAnh}" th:alt="${phim.tenPhim}" />
-                    </a>
-                    <div class="movie-card-content">
-                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" style="text-decoration:none;">
-                            <h3 th:text="${phim.tenPhim}">Tên Phim Sắp Chiếu</h3>
+    <section id="coming-soon-section" class="movie-section-wrapper">
+        <div class="container">
+            <h2><i class="fas fa-hourglass-half"></i> Phim Sắp Chiếu</h2>
+        </div>
+        <div class="carousel-container" role="region" aria-label="Phim Sắp Chiếu Carousel">
+            <button class="carousel-btn prev" data-carousel="coming-soon-carousel" aria-label="Phim trước"><i class="fas fa-chevron-left"></i></button>
+            <div class="carousel-viewport">
+                <div class="movie-grid-carousel" id="coming-soon-carousel">
+                    <article class="movie-card" th:each="phim : ${danhSachPhimSapChieu}">
+                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}">
+                            <img th:src="${phim.linkAnh}" th:alt="${phim.tenPhim}" />
                         </a>
-                        <p class="genre">
-                            <i class="fas fa-tag"></i>
-                            <span th:text="${phim.theLoai}">Thể loại mẫu</span>
-                        </p>
-                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" class="btn-detail">
-                            <i class="fas fa-info-circle"></i> Xem Chi Tiết
-                        </a>
-                    </div>
-                </article>
-                <div th:if="${danhSachPhimSapChieu == null or #lists.isEmpty(danhSachPhimSapChieu)}">
-                    <p>Hiện chưa có thông tin phim sắp chiếu.</p>
+                        <div class="movie-card-content">
+                            <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" style="text-decoration:none;">
+                                <h3 th:text="${phim.tenPhim}">Tên Phim Sắp Chiếu</h3>
+                            </a>
+                            <p class="genre"><i class="fas fa-tag"></i> <span th:text="${phim.theLoai}">Thể loại mẫu</span></p>
+                            <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" class="btn-detail"><i class="fas fa-info-circle"></i> Xem Chi Tiết</a>
+                        </div>
+                    </article>
+                    <div th:if="${danhSachPhimSapChieu == null or #lists.isEmpty(danhSachPhimSapChieu)}"><p>Hiện chưa có thông tin phim sắp chiếu.</p></div>
                 </div>
             </div>
+            <button class="carousel-btn next" data-carousel="coming-soon-carousel" aria-label="Phim tiếp theo"><i class="fas fa-chevron-right"></i></button>
         </div>
-        <button class="carousel-btn next" data-carousel="coming-soon-carousel" aria-label="Phim tiếp theo"><i class="fas fa-chevron-right"></i></button>
-    </div>
-</section>
+    </section>
+</div>
 
 <footer>
     <div class="container">
@@ -502,28 +437,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- JAVASCRIPT CHO USER MENU DROPDOWN (BẮT ĐẦU) ---
+        // --- JAVASCRIPT CHO USER MENU DROPDOWN ---
         const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
-
         if (userProfileLinkToggle && userDropdownMenu) {
             userProfileLinkToggle.addEventListener('click', function(event) {
                 event.preventDefault();
                 userDropdownMenu.classList.toggle('show');
                 this.classList.toggle('open');
             });
-
             document.addEventListener('click', function(event) {
-                const isClickInsideMenuContainer = userProfileLinkToggle.contains(event.target) || userDropdownMenu.contains(event.target);
-
-                if (!isClickInsideMenuContainer && userDropdownMenu.classList.contains('show')) {
+                const isClickInsideToggle = userProfileLinkToggle && userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu && userDropdownMenu.contains(event.target);
+                const isClickInsideMenuContainer = isClickInsideToggle || isClickInsideMenu;
+                if (!isClickInsideMenuContainer && userDropdownMenu && userDropdownMenu.classList.contains('show')) {
                     userDropdownMenu.classList.remove('show');
-                    userProfileLinkToggle.classList.remove('open');
+                    if (userProfileLinkToggle) { userProfileLinkToggle.classList.remove('open'); }
                 }
             });
         }
-        // --- JAVASCRIPT CHO USER MENU DROPDOWN (KẾT THÚC) ---
-
 
         // HERO SLIDESHOW
         const heroSlidesContainer = document.querySelector('.hero-slides-container');
@@ -532,51 +464,35 @@
             const heroDotsContainer = document.querySelector('.hero-dots');
             let currentHeroSlide = 0;
             let heroInterval;
-
             if (heroSlides.length > 0 && heroDotsContainer) {
                 heroSlides.forEach((slide, index) => {
                     const dot = document.createElement('div');
                     dot.classList.add('hero-dot');
                     if (index === 0) dot.classList.add('active');
-                    dot.addEventListener('click', () => {
-                        goToHeroSlide(index);
-                        resetHeroInterval();
-                    });
+                    dot.addEventListener('click', () => { goToHeroSlide(index); resetHeroInterval(); });
                     heroDotsContainer.appendChild(dot);
                 });
                 const heroDots = heroDotsContainer.querySelectorAll('.hero-dot');
-
                 function goToHeroSlide(index) {
-                    if (heroSlides.length === 0) return; // Thêm kiểm tra
+                    if (heroSlides.length === 0) return;
                     if (heroSlides[currentHeroSlide]) heroSlides[currentHeroSlide].classList.remove('active');
                     if (heroDots[currentHeroSlide]) heroDots[currentHeroSlide].classList.remove('active');
                     currentHeroSlide = index;
                     if (heroSlides[currentHeroSlide]) heroSlides[currentHeroSlide].classList.add('active');
                     if (heroDots[currentHeroSlide]) heroDots[currentHeroSlide].classList.add('active');
                 }
-
                 function nextHeroSlide() {
-                    if (heroSlides.length === 0) return; // Thêm kiểm tra
+                    if (heroSlides.length === 0) return;
                     let nextIndex = (currentHeroSlide + 1) % heroSlides.length;
                     goToHeroSlide(nextIndex);
                 }
-
-                function startHeroInterval() {
-                    if (heroSlides.length <=1) return; // Không tự chạy nếu chỉ có 1 slide hoặc không có slide
-                    heroInterval = setInterval(nextHeroSlide, 5000);
-                }
-
-                function resetHeroInterval() {
-                    clearInterval(heroInterval);
-                    startHeroInterval();
-                }
+                function startHeroInterval() { if (heroSlides.length <=1) return; heroInterval = setInterval(nextHeroSlide, 5000); }
+                function resetHeroInterval() { clearInterval(heroInterval); startHeroInterval(); }
                 startHeroInterval();
             }
         }
 
-
         // MOVIE CAROUSELS
-        // ... (JavaScript cho carousel giữ nguyên như bạn đã cung cấp) ...
         const carousels = document.querySelectorAll('.carousel-container');
         carousels.forEach(container => {
             const nextButton = container.querySelector('.carousel-btn.next');
@@ -589,63 +505,39 @@
             const carousel = document.getElementById(carouselId);
             const viewport = container.querySelector('.carousel-viewport');
             const prevButton = container.querySelector('.carousel-btn.prev');
-
             if (!carousel || !viewport || !prevButton) {
                 if(prevButton) prevButton.style.display = 'none';
                 if(nextButton) nextButton.style.display = 'none';
                 return;
             }
             const movieCards = carousel.querySelectorAll('.movie-card');
-
             if (movieCards.length === 0) {
                 prevButton.style.display = 'none';
                 nextButton.style.display = 'none';
                 return;
             }
-
-            let cardWidth;
-            let currentPosition = 0;
-            let cardsInView;
-            let isDragging = false;
-            let startX, scrollLeft;
-
+            let cardWidth, currentPosition = 0, cardsInView, isDragging = false, startX, scrollLeft;
             function calculateDimensions() {
                 if (movieCards.length > 0) {
                     const cardStyle = getComputedStyle(movieCards[0]);
                     const gapStyle = getComputedStyle(carousel);
                     cardWidth = movieCards[0].offsetWidth + parseInt(gapStyle.gap || '0px');
                     cardsInView = Math.floor(viewport.offsetWidth / cardWidth);
-                } else {
-                    cardWidth = 0;
-                    cardsInView = 0;
-                }
+                } else { cardWidth = 0; cardsInView = 0; }
                 updateButtonStates();
             }
-
             function updateButtonStates() {
-                if (movieCards.length === 0) {
-                    prevButton.style.display = 'none';
-                    nextButton.style.display = 'none';
-                    return;
+                if (movieCards.length === 0 || (movieCards.length <= cardsInView && carousel.scrollWidth <= viewport.offsetWidth)) {
+                    prevButton.style.display = 'none'; nextButton.style.display = 'none';
+                    if(prevButton) prevButton.disabled = true; if(nextButton) nextButton.disabled = true; return;
                 }
-                if (movieCards.length <= cardsInView || carousel.scrollWidth <= viewport.offsetWidth) {
-                    prevButton.style.display = 'none';
-                    nextButton.style.display = 'none';
-                    prevButton.disabled = true;
-                    nextButton.disabled = true;
-                    return;
-                }
-
-                prevButton.style.display = 'flex';
-                nextButton.style.display = 'flex';
+                prevButton.style.display = 'flex'; nextButton.style.display = 'flex';
                 prevButton.disabled = currentPosition >= 0;
                 const maxScroll = carousel.scrollWidth > viewport.offsetWidth ? -(carousel.scrollWidth - viewport.offsetWidth) : 0;
-                nextButton.disabled = currentPosition <= (maxScroll + 5);
-
+                nextButton.disabled = currentPosition <= (maxScroll + 5); // Thêm một chút lề để nút next không bị disable quá sớm
                 prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
                 nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
             }
-
             function snapToNearestCard() {
                 if (cardWidth === 0) return;
                 const nearestCardIndex = Math.round(-currentPosition / cardWidth);
@@ -655,107 +547,74 @@
                 carousel.style.transform = `translateX(${currentPosition}px)`;
                 updateButtonStates();
             }
-
             prevButton.addEventListener('click', () => {
                 if (!prevButton.disabled) {
-                    currentPosition += cardWidth * Math.floor(viewport.offsetWidth / cardWidth);
+                    currentPosition += cardWidth * Math.max(1, Math.floor(viewport.offsetWidth / cardWidth));
                     currentPosition = Math.min(currentPosition, 0);
-                    carousel.style.transform = `translateX(${currentPosition}px)`;
-                    updateButtonStates();
+                    carousel.style.transform = `translateX(${currentPosition}px)`; updateButtonStates();
                 }
             });
-
             nextButton.addEventListener('click', () => {
                 if (!nextButton.disabled) {
-                    currentPosition -= cardWidth * Math.floor(viewport.offsetWidth / cardWidth);
+                    currentPosition -= cardWidth * Math.max(1, Math.floor(viewport.offsetWidth / cardWidth));
                     const maxScroll = carousel.scrollWidth > viewport.offsetWidth ? -(carousel.scrollWidth - viewport.offsetWidth) : 0;
                     currentPosition = Math.max(currentPosition, maxScroll);
-                    carousel.style.transform = `translateX(${currentPosition}px)`;
-                    updateButtonStates();
+                    carousel.style.transform = `translateX(${currentPosition}px)`; updateButtonStates();
                 }
             });
-
             const startDrag = (e) => {
-                if (carousel.scrollWidth <= viewport.offsetWidth) return;
-                isDragging = true;
-                startX = (e.pageX || e.touches[0].pageX);
-                scrollLeft = currentPosition;
-                carousel.style.transition = 'none';
-                viewport.style.cursor = 'grabbing';
+                if (carousel.scrollWidth <= viewport.offsetWidth) return; // Không cho kéo nếu không scroll được
+                isDragging = true; startX = (e.pageX || e.touches[0].pageX); scrollLeft = currentPosition;
+                carousel.style.transition = 'none'; viewport.style.cursor = 'grabbing';
             };
-
             const drag = (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
-                const x = (e.pageX || e.touches[0].pageX);
-                const walk = (x - startX) * 1.5;
+                if (!isDragging) return; e.preventDefault();
+                const x = (e.pageX || e.touches[0].pageX); const walk = (x - startX) * 1.5; // Nhân 1.5 để kéo nhanh hơn
                 currentPosition = scrollLeft + walk;
+                // Giới hạn overdrag
                 const maxOverdrag = cardWidth / 3;
-                const maxScroll = carousel.scrollWidth > viewport.offsetWidth ? -(carousel.scrollWidth - viewport.offsetWidth) : 0;
-                currentPosition = Math.min(maxOverdrag, Math.max(currentPosition, maxScroll - maxOverdrag));
+                const maxScrollTotal = carousel.scrollWidth > viewport.offsetWidth ? -(carousel.scrollWidth - viewport.offsetWidth) : 0;
+                currentPosition = Math.min(maxOverdrag, Math.max(currentPosition, maxScrollTotal - maxOverdrag));
                 carousel.style.transform = `translateX(${currentPosition}px)`;
             };
-
             const endDrag = () => {
-                if (!isDragging) return;
-                isDragging = false;
-                carousel.style.transition = 'transform 0.5s ease-in-out';
-                viewport.style.cursor = 'grab';
+                if (!isDragging) return; isDragging = false;
+                carousel.style.transition = 'transform 0.5s ease-in-out'; viewport.style.cursor = 'grab';
                 snapToNearestCard();
             };
-
-            viewport.addEventListener('mousedown', startDrag);
-            viewport.addEventListener('mousemove', drag);
-            viewport.addEventListener('mouseup', endDrag);
-            viewport.addEventListener('mouseleave', endDrag);
-
-            viewport.addEventListener('touchstart', startDrag, { passive: true });
-            viewport.addEventListener('touchmove', drag, { passive: false });
+            viewport.addEventListener('mousedown', startDrag); viewport.addEventListener('mousemove', drag);
+            viewport.addEventListener('mouseup', endDrag); viewport.addEventListener('mouseleave', endDrag); // Xử lý khi chuột rời khỏi viewport
+            viewport.addEventListener('touchstart', startDrag, { passive: true }); // passive:true để cải thiện hiệu năng scroll
+            viewport.addEventListener('touchmove', drag, { passive: false }); // passive:false vì có e.preventDefault()
             viewport.addEventListener('touchend', endDrag);
 
-            container.setAttribute('tabindex', '0');
+            // ARIA and Keyboard Navigation for Carousel
+            container.setAttribute('tabindex', '0'); // Cho phép focus vào container
             container.addEventListener('keydown', (e) => {
-                if (document.activeElement === container) {
-                    if (e.key === 'ArrowLeft' && !prevButton.disabled) {
-                        e.preventDefault();
-                        prevButton.click();
-                    } else if (e.key === 'ArrowRight' && !nextButton.disabled) {
-                        e.preventDefault();
-                        nextButton.click();
-                    }
+                if (document.activeElement === container) { // Chỉ xử lý khi container được focus
+                    if (e.key === 'ArrowLeft' && !prevButton.disabled) { e.preventDefault(); prevButton.click(); }
+                    else if (e.key === 'ArrowRight' && !nextButton.disabled) { e.preventDefault(); nextButton.click(); }
                 }
             });
 
-            window.addEventListener('resize', () => {
-                calculateDimensions();
-                currentPosition = 0;
-                carousel.style.transform = `translateX(${currentPosition}px)`;
-                snapToNearestCard();
-            });
-
-            calculateDimensions();
-            setTimeout(() => {
-                calculateDimensions();
-                snapToNearestCard();
-            }, 100);
+            window.addEventListener('resize', () => { calculateDimensions(); currentPosition = 0; carousel.style.transform = `translateX(${currentPosition}px)`; snapToNearestCard(); });
+            calculateDimensions(); // Initial calculation
+            // Đảm bảo calculateDimensions chạy sau khi mọi thứ đã render xong, đặc biệt là ảnh
+            setTimeout(() => { calculateDimensions(); snapToNearestCard(); }, 100); // Có thể tăng timeout nếu cần
         });
 
-
+        // SMOOTH SCROLL
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = anchor.getAttribute('href');
+                e.preventDefault(); const targetId = anchor.getAttribute('href');
                 const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
+                if (targetElement) { targetElement.scrollIntoView({ behavior: 'smooth' }); }
             });
         });
 
+        // CURRENT YEAR
         const yearSpan = document.getElementById('currentYear');
-        if (yearSpan) {
-            yearSpan.textContent = new Date().getFullYear();
-        }
+        if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
     });
 </script>
 </body>

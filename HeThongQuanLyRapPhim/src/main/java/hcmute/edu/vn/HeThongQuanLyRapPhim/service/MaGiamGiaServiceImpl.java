@@ -44,4 +44,9 @@ public class MaGiamGiaServiceImpl implements MaGiamGiaService {
     public void deleteById(int theId) {
         maGiamGiaRepository.deleteById(theId);
     }
+
+    @Override
+    public MaGiamGia updateCustomer(MaGiamGia maGiamGia) {
+        return maGiamGiaRepository.save(maGiamGia);
+    }
 }

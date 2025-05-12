@@ -48,6 +48,7 @@ public class MovieController {
         Phim phim = movieService.getPhimById(id);
         model.addAttribute("phim", phim);
         model.addAttribute("danhGia", new DanhGia());
+        model.addAttribute("phanHoi", new PhanHoi());
         return "MovieDetail";
     }
 }
