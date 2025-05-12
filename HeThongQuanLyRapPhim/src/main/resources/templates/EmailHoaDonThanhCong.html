@@ -1,39 +1,97 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<body style="font-family: Arial, sans-serif;">
-<h2>Hóa Đơn Thanh Toán</h2>
-<p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa Đơn Thanh Toán</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            padding: 30px;
+            color: #333;
+        }
 
-<h3>Thông Tin Hóa Đơn</h3>
-<p><strong>Mã Hóa Đơn:</strong> <span th:text="${hoaDon.idHoaDon}"></span></p>
-<p><strong>Ngày Thanh Toán:</strong>
-    <span th:text="${#temporals.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></span>
-</p>
-<p><strong>Khách Hàng:</strong> <span th:text="${hoaDon.doiTuongSuDung.hoTen}"></span></p>
+        .invoice-container {
+            background-color: #fff;
+            padding: 25px 35px;
+            border-radius: 8px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
 
-<h3>Chi Tiết Vé Xem Phim</h3>
-<p><strong>Phim:</strong> <span th:text="${hoaDon.suatChieu.phim.tenPhim}"></span></p>
-<p><strong>Thời Gian Chiếu:</strong>
-    <span th:text="${#temporals.format(hoaDon.suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}"></span>
-</p>
-<p><strong>Phòng Chiếu:</strong> <span th:text="${hoaDon.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span></p>
-<p><strong>Ghế:</strong>
-    <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}" th:remove="tag">
-        <span th:text="${ve.ghe.dayGhe.tenDayGhe + ve.ghe.idGhe}" th:remove="tag"></span>
-        <span th:if="${!stat.last}" th:remove="tag">, </span>
-    </span>
-</p>
+        h2, h3 {
+            color: #005792;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
 
+        p {
+            margin: 8px 0;
+        }
 
-<h3 th:if="${!hoaDon.dsComBoDaMua.isEmpty()}">Combo Bắp Nước</h3>
-<p th:each="combo : ${hoaDon.dsComBoDaMua}">
-    <span th:text="${combo.comboBapNuoc.tenCombo + ' x ' + combo.soLuong}"></span>
-</p>
+        .section {
+            margin-top: 20px;
+        }
 
-<h3>Tổng Tiền:</h3>
-<p><strong th:text="${hoaDon.tongGiaTien + ' VNĐ'}"></strong></p>
+        .bold {
+            font-weight: bold;
+        }
 
-<p>Vui lòng giữ email này để quét mã lấy vé khi đến rạp chiếu phim.</p>
-<p>Trân trọng,<br>Hệ Thống Quản Lý Rạp Phim</p>
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+<div class="invoice-container">
+    <h2>Hóa Đơn Thanh Toán</h2>
+    <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+
+    <div class="section">
+        <h3>Thông Tin Hóa Đơn</h3>
+        <p><span class="bold">Mã Hóa Đơn:</span> <span th:text="${hoaDon.idHoaDon}"></span></p>
+        <p><span class="bold">Ngày Thanh Toán:</span>
+            <span th:text="${#temporals.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+        <p><span class="bold">Khách Hàng:</span> <span th:text="${hoaDon.doiTuongSuDung.hoTen}"></span></p>
+    </div>
+
+    <div class="section">
+        <h3>Chi Tiết Vé Xem Phim</h3>
+        <p><span class="bold">Phim:</span> <span th:text="${hoaDon.suatChieu.phim.tenPhim}"></span></p>
+        <p><span class="bold">Thời Gian Chiếu:</span>
+            <span th:text="${#temporals.format(hoaDon.suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+        <p><span class="bold">Phòng Chiếu:</span> <span th:text="${hoaDon.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span></p>
+        <p><span class="bold">Ghế:</span>
+            <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}" th:remove="tag">
+                <span th:text="${ve.ghe.dayGhe.tenDayGhe + ve.ghe.idGhe}" th:remove="tag"></span>
+                <span th:if="${!stat.last}" th:remove="tag">, </span>
+            </span>
+        </p>
+    </div>
+
+    <div class="section" th:if="${!hoaDon.dsComBoDaMua.isEmpty()}">
+        <h3>Combo Bắp Nước</h3>
+        <ul>
+            <li th:each="combo : ${hoaDon.dsComBoDaMua}">
+                <span th:text="${combo.comboBapNuoc.tenCombo + ' x ' + combo.soLuong}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h3>Tổng Tiền:</h3>
+        <p class="total" th:text="${hoaDon.tongGiaTien + ' VNĐ'}"></p>
+    </div>
+
+    <div class="section">
+        <p>Vui lòng giữ email này để quét mã lấy vé khi đến rạp chiếu phim.</p>
+        <p>Trân trọng,<br><strong>Hệ Thống Quản Lý Rạp Phim</strong></p>
+    </div>
+</div>
 </body>
 </html>
