@@ -1,94 +1,348 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt vé xem phim</title>
-    <link rel="stylesheet" th:href="@{/css/SuatChieu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px; /* Điều chỉnh max-width cho phù hợp với nội dung đặt vé */
+            margin: auto;
+        }
+
+        .page-main-title {
+            font-size: 2.2em;
+            color: #1a202c;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            position: relative;
+        }
+        .page-main-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100px;
+            height: 4px;
+            background: #f56565; /* Accent color from homepage */
+            border-radius: 2px;
+        }
+
+        .booking-section {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e2e8f0;
+            margin: 30px 0;
+        }
+
+        /* Date Selection */
+        .date-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .date-cell {
+            background-color: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 100px; /* Ensure consistent width */
+            text-align: left;
+            color: #4a5568;
+        }
+        .date-cell:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .date-cell.selected {
+            background-color: #3182ce; /* Blue accent for selection */
+            border-color: #3182ce;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+        }
+        .date-cell .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 12px;
+            border-right: 1px dashed #cbd5e0;
+        }
+        .date-cell.selected .left {
+            border-right: 1px dashed #a0aec0;
+        }
+        .date-cell .month {
+            font-size: 0.75em;
+            font-weight: 500;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        .date-cell .day {
+            font-size: 0.85em;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .date-cell .date {
+            font-size: 1.8em;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .date-cell.selected .month,
+        .date-cell.selected .day,
+        .date-cell.selected .date {
+            color: #fff;
+        }
+
+        /* Format Selection */
+        .format-container {
+            margin-top: 10px;
+        }
+        .format-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .format-box .btn { /* Nút hình thức chiếu */
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            padding: 10px 20px;
+            border-radius: 20px; /* Pill shape */
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .format-box .btn:hover {
+            border-color: #cbd5e0;
+            background-color: #edf2f7;
+        }
+        .format-box.selected .btn {
+            background-color: #3182ce;
+            border-color: #3182ce;
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(49, 130, 206, 0.25);
+        }
+
+        /* Screening List */
+        .screening-list {
+            list-style: none;
+            padding: 0;
+        }
+        .screening-list > li { /* Từng rạp */
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fdfdfe;
+            border: 1px solid #e9edf1;
+            border-radius: 8px;
+        }
+        .cinema-name { /* Tên rạp */
+            font-size: 1.3em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cinema-name i {
+            color: #f56565; /* Red icon color */
+        }
+
+        .screening-row { /* Chứa các nút giờ chiếu */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .screening-row form { /* Form cho từng suất chiếu */
+            display: inline-block; /* Để các form nằm cạnh nhau */
+        }
+        .time-default { /* Nút giờ chiếu */
+            background-color: #48bb78; /* Green for available times */
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .time-default:hover {
+            background-color: #38a169; /* Darker green on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-main-title { font-size: 1.8em; margin-bottom: 20px; }
+            .section-title { font-size: 1.3em; }
+            .booking-section { padding: 20px; }
+            .date-grid, .format-row, .screening-row { gap: 10px; }
+            .date-cell { min-width: 90px; padding: 10px; gap: 8px; }
+            .date-cell .left { padding-right: 8px;}
+            .date-cell .date { font-size: 1.5em; }
+            .format-box .btn, .time-default { padding: 8px 15px; font-size: 0.9em; }
+        }
+        @media (max-width: 480px) {
+            body { padding-top: 15px; padding-bottom: 20px;}
+            .container { width: 95%; }
+            .page-main-title { font-size: 1.6em; }
+            .section-title { font-size: 1.2em; }
+            .booking-section { padding: 15px; }
+            .date-grid { flex-direction: column; align-items: stretch; } /* Stack dates vertically */
+            .date-cell { flex-direction: row; justify-content: space-between; width: 100%;} /* Make date cell full width */
+            .date-cell .left { border-right: none; padding-right: 0; flex-direction: row; gap: 8px; align-items: baseline;}
+            .date-cell .date { margin-left: auto;}
+            .format-row { justify-content: flex-start;} /* Align format buttons to start */
+            .screening-row { justify-content: flex-start;} /* Align time buttons to start */
+        }
+
+    </style>
 </head>
 <body>
 
-<!-- Header -->
-<h2 th:text="'Đặt vé cho ' + ${session.phim.tenPhim}"></h2>
-<hr>
-<form th:action="@{/booking/{idPhim}(idPhim=${session.phim.idPhim})}" method="get" id="mainForm">
-    <!-- Hidden inputs -->
-    <input type="hidden" name="ngayChieu" id="ngayChieuInput" th:value="${ngayChieu}">
-    <input type="hidden" name="hinhThucChieu" id="hinhThucInput" th:value="${hinhThucChieu}">
+<div class="container">
+    <h1 class="page-main-title" th:text="'Đặt vé cho ' + ${session.phim.tenPhim}">Đặt vé cho Tên Phim</h1>
 
-    <!-- Chọn ngày chiếu -->
-    <h3>Chọn ngày chiếu</h3>
-    <div class="date-grid">
-        <div th:each="ngay : ${danhSachNgay}">
-            <button type="button"
-                    class="date-cell"
-                    th:classappend="${ngay == ngayChieu} ? ' selected' : ''"
-                    th:attr="data-ngay=${ngay}">
-                <div class="left">
-                    <div class="month" th:text="${#temporals.format(ngay, 'MM')}"></div>
-                    <div class="day" th:text="${#temporals.format(ngay, 'EEE')}"></div>
-                </div>
-                <div class="date" th:text="${#temporals.format(ngay, 'dd')}"></div>
-            </button>
-        </div>
-    </div>
+    <form th:action="@{/booking/{idPhim}(idPhim=${session.phim.idPhim})}" method="get" id="mainForm">
+        <input type="hidden" name="ngayChieu" id="ngayChieuInput" th:value="${ngayChieu}">
+        <input type="hidden" name="hinhThucChieu" id="hinhThucInput" th:value="${hinhThucChieu}">
 
-    <hr>
-    <!-- Chọn hình thức chiếu -->
-    <h3>Chọn hình thức chiếu</h3>
-    <div class="format-container">
-        <div class="format-row">
-            <div th:each="ht : ${danhSachHinhThuc}" class="format-box"
-                 th:classappend="${ht == hinhThucChieu} ? ' selected'">
-                <button type="button"
-                        class="btn"
-                        th:text="${ht.moTa}"
-                        th:attr="data-ht=${ht.name()}">
-                </button>
+        <div class="booking-section">
+            <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Chọn ngày chiếu</h2>
+            <div class="date-grid">
+                <th:block th:each="ngay : ${danhSachNgay}">
+                    <button type="button"
+                            class="date-cell"
+                            th:classappend="${ngay.isEqual(ngayChieu)} ? ' selected' : ''"
+                            th:attr="data-ngay=${ngay.toString()}">
+                        <div class="left">
+                            <div class="month" th:text="${#temporals.format(ngay, 'MMM')}">Th</div> <div class="day" th:text="${#strings.capitalize(#temporals.format(ngay, 'EEE'))}">Thứ</div> </div>
+                        <div class="date" th:text="${#temporals.format(ngay, 'dd')}">01</div>
+                    </button>
+                </th:block>
+                <p th:if="${danhSachNgay == null or #lists.isEmpty(danhSachNgay)}">Không có ngày chiếu khả dụng.</p>
             </div>
         </div>
-    </div>
 
-</form>
-<hr>
-<h3>Danh sách rạp & giờ chiếu</h3>
-
-<ul>
-    <li th:each="entry : ${groupedByRap}">
-        <!-- Tên rạp -->
-        <h3 th:text="${entry.key}"></h3>
-        <div class="screening-row">
-            <form th:each="suat : ${entry.value}" th:action="@{/so-do-ghe/chon-ghe}" method="get">
-                <input type="hidden" name="idSuatChieu" th:value="${suat.idSuatChieu}">
-                <button
-                        type="submit"
-                        name="gioChieu"
-                        th:value="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}"
-                        th:text="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}"
-                        class="time-default">
-                </button>
-            </form>
+        <div class="booking-section">
+            <h2 class="section-title"><i class="fas fa-film"></i> Chọn hình thức chiếu</h2>
+            <div class="format-container">
+                <div class="format-row">
+                    <th:block th:each="ht : ${danhSachHinhThuc}">
+                        <div class="format-box"
+                             th:classappend="${ht.name() == hinhThucChieu?.name()} ? ' selected' : ''">
+                            <button type="button"
+                                    class="btn"
+                                    th:text="${ht.moTa}"
+                                    th:attr="data-ht=${ht.name()}">
+                                2D Phụ đề
+                            </button>
+                        </div>
+                    </th:block>
+                    <p th:if="${danhSachHinhThuc == null or #lists.isEmpty(danhSachHinhThuc)}">Không có hình thức chiếu khả dụng cho ngày đã chọn.</p>
+                </div>
+            </div>
         </div>
-    </li>
-</ul>
+    </form> <div class="booking-section">
+    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Danh sách rạp &amp; giờ chiếu</h2>
+    <ul class="screening-list">
+        <th:block th:if="${groupedByRap != null and not #maps.isEmpty(groupedByRap)}">
+            <li th:each="entry : ${groupedByRap}">
+                <h3 class="cinema-name"><i class="fas fa-video"></i> <span th:text="${entry.key}">Tên Rạp Chiếu</span></h3>
+                <div class="screening-row">
+                    <form th:each="suat : ${entry.value}" th:action="@{/so-do-ghe/chon-ghe}" method="get">
+                        <input type="hidden" name="idSuatChieu" th:value="${suat.idSuatChieu}">
+                        <button
+                                type="submit"
+                                class="time-default"
+                                th:text="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}">
+                            10:00
+                        </button>
+                    </form>
+                    <p th:if="${#lists.isEmpty(entry.value)}">Rạp này hiện không có suất chiếu cho lựa chọn của bạn.</p>
+                </div>
+            </li>
+        </th:block>
+        <li th:if="${groupedByRap == null or #maps.isEmpty(groupedByRap)}">
+            <p>Không có suất chiếu nào phù hợp với lựa chọn của bạn. Vui lòng thử ngày hoặc hình thức chiếu khác.</p>
+        </li>
+    </ul>
+</div>
 
-
-</body>
-
-<script>
-    // Chọn ngày
-    document.querySelectorAll('.date-cell').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('ngayChieuInput').value = btn.getAttribute('data-ngay');
-            document.getElementById('mainForm').submit();
+</div> <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Chọn ngày
+        document.querySelectorAll('.date-cell').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                // Ngăn chặn hành vi submit mặc định nếu button nằm trong form
+                event.preventDefault();
+                document.getElementById('ngayChieuInput').value = btn.getAttribute('data-ngay');
+                document.getElementById('mainForm').submit();
+            });
         });
-    });
 
-    // Chọn hình thức
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('hinhThucInput').value = btn.getAttribute('data-ht');
-            document.getElementById('mainForm').submit();
+        // Chọn hình thức
+        // Cần đảm bảo các button này nằm trong .format-box
+        document.querySelectorAll('.format-box .btn').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                // Ngăn chặn hành vi submit mặc định nếu button nằm trong form
+                event.preventDefault();
+                document.getElementById('hinhThucInput').value = btn.getAttribute('data-ht');
+                document.getElementById('mainForm').submit();
+            });
         });
     });
 </script>
 
+</body>
 </html>

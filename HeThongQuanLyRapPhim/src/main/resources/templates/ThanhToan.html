@@ -1,148 +1,545 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Thanh Toán</title>
+    <title>Thanh Toán - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/TrangThanhToan.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            padding-top: 30px;
+            padding-bottom: 180px; /* Add padding for fixed bottom ticket container */
+        }
+
+        .main-container { /* Replaces Bootstrap's .container for more control if needed, or keep .container */
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .section-title {
+            font-size: 2.4em;
+            color: #1a202c;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 15px;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100px;
+            height: 4px;
+            background: #f56565; /* Red accent */
+            border-radius: 2px;
+        }
+
+        .card-style {
+            background-color: #fff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(45, 55, 72, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .step-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .step-title .btn-link {
+            font-size: 0.85em;
+            color: #3182ce;
+            font-weight: 500;
+        }
+        .step-title .btn-link:hover {
+            color: #2b6cb0;
+        }
+
+
+        /* Custom Radio Button Styling */
+        .discount-list, .payment-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .discount-option label, .payment-option label {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #f8f9fa;
+        }
+        .discount-option label:hover, .payment-option label:hover {
+            border-color: #a0aec0;
+            background-color: #fff;
+        }
+        .discount-option input[type="radio"],
+        .payment-option input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            top: -1px; /* Align better with text */
+            transition: all 0.2s ease;
+        }
+        .discount-option input[type="radio"]:checked,
+        .payment-option input[type="radio"]:checked {
+            border-color: #f56565; /* Red accent */
+            background-color: #f56565;
+        }
+        .discount-option input[type="radio"]:checked::before,
+        .payment-option input[type="radio"]:checked::before {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .discount-option label span, .payment-option label span {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .btn-apply-discount {
+            background: linear-gradient(45deg, #3182ce, #63b3ed);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-apply-discount:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            transform: translateY(-2px);
+        }
+
+        /* Custom Checkbox */
+        .form-check {
+            padding-left: 0; /* Reset bootstrap padding */
+        }
+        .form-check .form-check-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .form-check .form-check-input {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            margin-right: 10px;
+            position: relative;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .form-check .form-check-input:checked {
+            background-color: #f56565; /* Red accent */
+            border-color: #f56565;
+        }
+        .form-check .form-check-input:checked::before {
+            content: '\f00c'; /* Font Awesome check icon */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            font-size: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+
+        .summary-total {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        .summary-total .label {
+            color: #718096;
+        }
+        .summary-total .value,
+        .summary-total span.bold { /* Ensure span.bold is also targeted for amounts */
+            font-weight: 600;
+            font-size: 1.2em;
+            color: #1a202c;
+        }
+        .summary-total .value.promotion,
+        .summary-total span.bold.promotion {
+            color: #38a169; /* Green for promotion */
+        }
+        .summary-total .value.final-total,
+        .summary-total span.bold.final-total{
+            color: #e53e3e; /* Red for final total */
+            font-size: 1.4em;
+        }
+
+
+        .clock-box {
+            text-align: center;
+        }
+        .clock-box p {
+            font-size: 1.1em;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .countdown {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #e53e3e; /* Red accent */
+        }
+        .countdown span {
+            display: inline-block;
+            min-width: 60px; /* Give more space */
+        }
+
+
+        /* Ticket Container - Bottom Bar */
+        .ticket-container-wrapper { /* New wrapper for positioning */
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 -4px 20px rgba(45, 55, 72, 0.1);
+            z-index: 999;
+            padding: 20px 0;
+            border-top: 1px solid #e2e8f0;
+        }
+        .ticket-container { /* Inner container for content */
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .ticket-details {
+            display: flex;
+            gap: 20px; /* Gap between columns */
+            flex-grow: 1; /* Allow details to take space */
+            align-items: center;
+            margin-right: 20px; /* Space before payment button */
+        }
+        .ticket-details .column {
+            display: flex;
+            flex-direction: column;
+            gap: 4px; /* Smaller gap within a column */
+            min-width: 150px; /* Prevent columns from becoming too narrow */
+        }
+        .ticket-details .column:first-child { /* Movie title */
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1a202c;
+            flex-basis: 25%; /* Give more space to movie title */
+        }
+        .ticket-details .label {
+            font-size: 0.8em;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        .ticket-details .bold {
+            font-weight: 500;
+            font-size: 0.95em;
+            color: #2d3748;
+        }
+        .ticket-details .bold#final-price-summary { /* Different ID if needed from main page total */
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .payment-action-area { /* Wrapper for the form and button */
+            min-width: 200px; /* Ensure button doesn't get too squished */
+        }
+        #continue-button.nav-button.next {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Make button full width of its container */
+            justify-content: center;
+        }
+        #continue-button.nav-button.next:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 62, 62, 0.2);
+        }
+        #continue-button.nav-button.next:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 991px) {
+            .ticket-details {
+                flex-basis: 100%; /* Stack details above button */
+                margin-right: 0;
+                margin-bottom: 20px;
+                justify-content: space-around; /* Better spacing for detail columns */
+            }
+            .ticket-details .column:first-child { flex-basis: 100%; text-align: center; margin-bottom:10px;}
+            .payment-action-area {
+                width: 100%;
+            }
+            .ticket-container {
+                flex-direction: column;
+            }
+        }
+        @media (max-width: 767px) {
+            body { padding-bottom: 250px; } /* More padding if ticket container wraps more */
+            .section-title { font-size: 2em; margin-bottom: 30px;}
+            .card-style { padding: 20px; }
+            .step-title { font-size: 1.15em; }
+            .discount-option label, .payment-option label { padding: 10px 15px; }
+
+            .ticket-details {
+                flex-direction: column; /* Stack detail columns */
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .ticket-details .column { min-width: 100%; }
+        }
+
+    </style>
 </head>
 <body>
-<div class="container">
-    <div class="section-title">THANH TOÁN</div>
+<div class="main-container"> <div class="section-title">THANH TOÁN</div>
     <div class="row mt-3">
-        <!-- Cột bên trái -->
-        <div class="col-md-8">
-            <!-- Bước 1: Giảm Giá -->
-            <div class="step-title mt-3">Bước 1: GIẢM GIÁ
-                <span class="float-end">
-                    <form th:action="@{/booking/dat-lai-ma-giam-gia}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-link p-0" style="text-decoration: none;">Đặt lại</button>
-                    </form>
-                </span>
+        <div class="col-lg-8">
+            <div class="card-style">
+                <div class="step-title">Bước 1: GIẢM GIÁ
+                    <span class="float-end">
+                        <form th:action="@{/booking/dat-lai-ma-giam-gia}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-link p-0" style="text-decoration: none;">Đặt lại</button>
+                        </form>
+                    </span>
+                </div>
+                <form action="/booking/ap-dung-ma-giam-gia" method="POST" id="mainForm">
+                    <div class="discount-list mb-3">
+                        <div class="discount-option" th:each="ma : ${doiTuongSuDung.dsMaGiamGia}" th:if="${!ma.trangThaiSuDung}">
+                            <label>
+                                <input type="radio" name="maGiamGia" th:value="${ma.idMaGiamGia}" />
+                                <span th:text="${ma.tenMaGiamGia + ' - ' + ma.phanTramGiamGia + '%'}"></span>
+                            </label>
+                        </div>
+                        <div th:if="${#lists.isEmpty(doiTuongSuDung.dsMaGiamGia)}">
+                            <p class="text-muted">Không có mã giảm giá nào khả dụng.</p>
+                        </div>
+                    </div>
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <input type="hidden" name="tongComboVaVe" th:value="${session.tongComboVaVe}" />
+                    <button type="submit" class="btn btn-apply-discount mt-2" id="ap-dung">Áp dụng</button>
+                </form>
             </div>
-            <form action="/booking/ap-dung-ma-giam-gia" method="POST" id="mainForm">
-                <div class="discount-list">
-                    <div class="discount-option" th:each="ma : ${doiTuongSuDung.dsMaGiamGia}" th:if="${!ma.trangThaiSuDung}">
+
+            <div class="card-style">
+                <div class="step-title">Bước 2: HÌNH THỨC THANH TOÁN</div>
+                <div class="payment-options-list">
+                    <div class="payment-option">
                         <label>
-                            <input type="radio" name="maGiamGia" th:value="${ma.idMaGiamGia}" />
-                            <span th:text="${ma.tenMaGiamGia + ' - ' + ma.phanTramGiamGia + '%'}"></span>
+                            <input type="radio" name="paymentMethod" value="vnpay" checked> <span><i class="fas fa-credit-card"></i> VNPAY</span>
                         </label>
                     </div>
                 </div>
-                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <!-- tong tien truoc khi giam-->
-                <input type="hidden" name="tongComboVaVe" th:value="${session.tongComboVaVe}" />
-                <button type="submit" class="btn btn-primary mt-2" id="ap-dung">Áp dụng</button>
-            </form>
-
-            <!-- Bước 2: Hình thức thanh toán -->
-            <div class="step-title mt-3">Bước 2: HÌNH THỨC THANH TOÁN</div>
-            <div class="option-box">
-                <input type="radio" name="payment" value="vnpay"> VNPAY
             </div>
-            <!-- Checkbox đồng ý -->
-            <div class="form-check mt-3">
+            <div class="form-check mt-3 mb-4 card-style p-3"> <label class="form-check-label" for="agree">
                 <input class="form-check-input" type="checkbox" id="agree">
-                <label class="form-check-label" for="agree">
-                    Tôi đồng ý với điều khoản sử dụng và mua vé cho người có độ tuổi phù hợp
-                </label>
+                Tôi đồng ý với điều khoản sử dụng và mua vé cho người có độ tuổi phù hợp
+            </label>
             </div>
         </div>
 
-        <!-- Cột bên phải -->
-        <div class="col-md-4">
-            <!-- Tổng kết và đồng hồ -->
-            <div class="summary-total">
-                Khuyến mãi:<br>
-                <span class="bold" th:text="${session.soTienGiam} + ' ₫'"></span><br>
-                Tổng hóa đơn:<br>
-                <span class="bold" th:text="${session.tongTienSauGiam} + ' ₫'"></span>
+        <div class="col-lg-4">
+            <div class="card-style summary-total">
+                <h5 class="mb-3" style="font-weight: 600; color: #1a202c;">Tóm tắt đơn hàng</h5>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="label">Tiền vé:</span>
+                    <span class="value" th:text="${session.tongVePrice != null ? #numbers.formatDecimal(session.tongVePrice, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="label">Tiền Combo:</span>
+                    <span class="value" th:text="${session.giaTienCombo != null ? #numbers.formatDecimal(session.giaTienCombo, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="label">Tạm tính:</span>
+                    <span class="value" th:text="${session.tongComboVaVe != null ? #numbers.formatDecimal(session.tongComboVaVe, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="label">Khuyến mãi:</span>
+                    <span class="value promotion" th:text="${session.soTienGiam != null ? #numbers.formatDecimal(session.soTienGiam, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                </div>
+                <hr style="border-style: dashed;">
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="label" style="font-size: 1.2em; font-weight:600;">TỔNG CỘNG:</span>
+                    <span class="value final-total" th:text="${session.tongTienSauGiam != null ? #numbers.formatDecimal(session.tongTienSauGiam, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                </div>
             </div>
 
-            <div class="clock-box mt-4">
-                <p class="text-center fw-bold">Countdown Clock</p>
+            <div class="clock-box card-style mt-4">
+                <p class="text-center fw-bold"><i class="fas fa-stopwatch"></i> Thời gian giữ vé</p>
                 <div class="countdown">
-                    <span id="minutes">5</span> Minutes <br>
-                    <span id="seconds">00</span> Seconds
+                    <span id="minutes">5</span> Phút
+                    <span id="seconds">00</span> Giây
                 </div>
             </div>
         </div>
     </div>
-
-
 </div>
 
-<div class="ticket-container">
-    <div class="ticket-details">
-        <div class="column">
-            <span class="bold" th:text="${session.phim.tenPhim}"></span>
+<div class="ticket-container-wrapper">
+    <div class="ticket-container">
+        <div class="ticket-details">
+            <div class="column">
+                <span th:text="${session.phim?.tenPhim ?: 'Tên Phim'}"></span>
+            </div>
+            <div class="column">
+                <span class="label">Rạp</span>
+                <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.rapPhim?.tenRapPhim ?: 'Tên Rạp'}"></span>
+            </div>
+            <div class="column">
+                <span class="label">Suất chiếu</span>
+                <span class="bold">
+                    <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm') : ''}"></span> |
+                    <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yy') : ''}"></span>
+                </span>
+            </div>
+            <div class="column">
+                <span class="label">Ghế</span>
+                <span class="bold" th:text="${session.danhSachGheDuocChon ?: 'N/A'}"></span>
+            </div>
+            <div class="column">
+                <span class="label">Tổng Tiền</span>
+                <span class="bold final-total" th:text="${session.tongTienSauGiam != null ? #numbers.formatDecimal(session.tongTienSauGiam, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+            </div>
         </div>
-
-        <div class="column">
-            <span class="label">Rạp</span>
-            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
-            <span class="label">Suất chiếu</span>
-            <span class="bold">
-                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm')}" ></span>
-                <br>
-                <span th:text="${#temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy')}" ></span>
-            </span>
-
-            <span class="label">Phòng chiếu</span>
-            <span class="bold" th:text="${session.suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
-            <span class="label">Số ghế</span>
-            <span class="bold" th:text="${session.danhSachGheDuocChon}"></span>
-        </div>
-
-        <div class="column">
-            <span class="label">Giá vé</span>
-            <span class = "bold" th:text="${session.tongVePrice} + ' ₫'"></span></p>
-            <span class="label">Combo</span>
-            <span class = "bold" th:text="${session.giaTienCombo} + ' ₫'"></span></p>
-
-            <span class="label">Tổng</span>
-            <span class="bold" id="final-price" th:text="${session.tongComboVaVe} + ' ₫'"></span>
-
+        <div class="payment-action-area">
+            <form id="paymentForm" method="POST" action="/payment/vnpay">
+                <input type="hidden" name="idCustomer" th:value="${session.doiTuongSuDung?.idDoiTuongSuDung}">
+                <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
+                <input type="hidden" name="tongTienSauGiam" th:value="${session.tongTienSauGiam}">
+                <input type="hidden" name="suatChieu" th:value="${session.suatChieu?.idSuatChieu}">
+                <input type="hidden" name="paymentMethod" value="vnpay" id="hiddenPaymentMethod"> <button type="submit" id="continue-button" class="nav-button next"><i class="fas fa-shield-alt"></i> TIẾN HÀNH THANH TOÁN</button>
+            </form>
         </div>
     </div>
-
-    <form id="seatForm" method="POST" action="/payment/vnpay">
-        <!--  gui thong tin de thanh toan va tao hoa don
-              id khach, dscombo, so tien, dsve(ghe) -->
-        <input type="hidden" name="idCustomer" th:value="${session.doiTuongSuDung.idDoiTuongSuDung}">
-        <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
-        <input type="hidden" name="tongTienSauGiam" th:value="${session.tongTienSauGiam}">
-        <input type="hidden" name="suatChieu" th:value="${session.suatChieu.idSuatChieu}">
-        <button type="submit" id="continue-button" class="nav-button next" onclick="">→PAYMENT</button>
-    </form>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    let timeLeft = 300; // 5 phút = 300 giây
+    document.addEventListener("DOMContentLoaded", function() {
+        let timeLeft = 300; // 5 phút = 300 giây
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const continueButton = document.getElementById('continue-button');
+        const agreeCheckbox = document.getElementById('agree');
+        const paymentForm = document.getElementById('paymentForm');
+        const hiddenPaymentMethodInput = document.getElementById('hiddenPaymentMethod');
 
-    function updateCountdown() {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
+        function updateCountdown() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
 
-        document.getElementById('minutes').textContent = minutes;
-        document.getElementById('seconds').textContent = seconds < 10 ? '0' + seconds : seconds;
+            if (minutesEl) minutesEl.textContent = minutes;
+            if (secondsEl) secondsEl.textContent = seconds < 10 ? '0' + seconds : seconds;
 
-        if (timeLeft > 0) {
-            timeLeft--;
-        } else {
-            clearInterval(timer);
-            alert("Hết thời gian giữ ghế! Vui lòng chọn lại.");
-            // chuyen ve trang chu de dang nhap lai/...
-            // window.location.href = "/booking";
+            if (timeLeft > 0) {
+                timeLeft--;
+            } else {
+                clearInterval(timer);
+                if(continueButton) continueButton.disabled = true;
+                alert("Hết thời gian giữ vé! Vui lòng thực hiện lại quá trình đặt vé.");
+                // Redirect to homepage or booking start page
+                window.location.href = /*[[@{/}]]*/ "/";
+            }
         }
-    }
 
-    const timer = setInterval(updateCountdown, 1000);
+        if (minutesEl && secondsEl) {
+            const timer = setInterval(updateCountdown, 1000);
+            updateCountdown(); // Initial call
+        }
+
+
+        // Agree checkbox logic
+        function togglePaymentButton() {
+            if (agreeCheckbox && continueButton) {
+                continueButton.disabled = !agreeCheckbox.checked;
+            }
+        }
+
+        if (agreeCheckbox) {
+            agreeCheckbox.addEventListener('change', togglePaymentButton);
+            togglePaymentButton(); // Initial state
+        }
+
+        // Update hidden payment method when radio changes
+        const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+        paymentMethodRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.checked && hiddenPaymentMethodInput) {
+                    hiddenPaymentMethodInput.value = this.value;
+                }
+            });
+        });
+        // Set initial value for hidden payment method if one is checked by default
+        const checkedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        if (checkedPaymentMethod && hiddenPaymentMethodInput) {
+            hiddenPaymentMethodInput.value = checkedPaymentMethod.value;
+        }
+
+
+    });
 </script>
 
 </body>
