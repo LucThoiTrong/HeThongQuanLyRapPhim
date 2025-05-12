@@ -29,6 +29,10 @@
                         </label>
                     </div>
                 </div>
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 <!-- tong tien truoc khi giam-->
                 <input type="hidden" name="tongComboVaVe" th:value="${session.tongComboVaVe}" />
                 <button type="submit" class="btn btn-primary mt-2" id="ap-dung">Áp dụng</button>
@@ -53,9 +57,9 @@
             <!-- Tổng kết và đồng hồ -->
             <div class="summary-total">
                 Khuyến mãi:<br>
-                <span class="bold" th:text="${soTienGiam} + ' ₫'"></span><br>
+                <span class="bold" th:text="${session.soTienGiam} + ' ₫'"></span><br>
                 Tổng hóa đơn:<br>
-                <span class="bold" th:text="${tongTienSauGiam} + ' ₫'"></span>
+                <span class="bold" th:text="${session.tongTienSauGiam} + ' ₫'"></span>
             </div>
 
             <div class="clock-box mt-4">
@@ -110,7 +114,7 @@
               id khach, dscombo, so tien, dsve(ghe) -->
         <input type="hidden" name="idCustomer" th:value="${session.doiTuongSuDung.idDoiTuongSuDung}">
         <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
-        <input type="hidden" name="tongTienSauGiam" th:value="${tongTienSauGiam}">
+        <input type="hidden" name="tongTienSauGiam" th:value="${session.tongTienSauGiam}">
         <input type="hidden" name="suatChieu" th:value="${session.suatChieu.idSuatChieu}">
         <button type="submit" id="continue-button" class="nav-button next" onclick="">→PAYMENT</button>
     </form>
@@ -133,7 +137,7 @@
         } else {
             clearInterval(timer);
             alert("Hết thời gian giữ ghế! Vui lòng chọn lại.");
-            // Tùy bạn, có thể redirect về trang khác
+            // chuyen ve trang chu de dang nhap lai/...
             // window.location.href = "/booking";
         }
     }

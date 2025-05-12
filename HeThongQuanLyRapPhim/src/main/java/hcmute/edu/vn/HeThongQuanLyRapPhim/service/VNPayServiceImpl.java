@@ -84,7 +84,7 @@ public class VNPayServiceImpl implements VNPayService {
         if ("00".equals(responseCode)) {
             return "Thanh toán thành công!";
         } else {
-            return "Thanh toán thất bại! Mã lỗi: " + responseCode;
+            return "Thanh toán thất bại!";
         }
     }
 }
