@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa phòng chiếu</title>
+    <style>
+        :root {
+            --primary-color: #0a3d62;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .container {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .alert-success {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            max-width: 800px;
+            margin: 15px auto;
+        }
+        .alert-danger {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            max-width: 800px;
+            margin: 15px auto;
+        }
+
+        .btn-quanlykhac {
+            background-color: #5e20c9;
+            color: #fff;
+        }
+
+        form {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px 24px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25);
+            outline: none;
+        }
+
+        .button-group {
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #ffffff;
+            margin-left: 10px;
+            border: none;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            opacity: 0.9;
+        }
+
+        button.btn {
+            background-color: var(--primary-color);
+        }
+
+        a.btn {
+            background-color: #6c757d;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            background-color: #f8d7da;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .error {
+            border-color: #dc3545 !important;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Sửa phòng chiếu</h1>
+</header>
+
+<div th:if="${message}"
+     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}"
+     id="flash-message">
+</div>
+
+<div class="container">
+    <form th:action="@{/rooms/update/{id}(id=${phongChieuPhim.idPhongChieuPhim},idRapPhim=${idRapPhim})}"
+          th:object="${phongChieuPhim}" method="post" id="roomForm" onsubmit="return validateForm(event)">
+        <input type="hidden" th:field="*{idPhongChieuPhim}"/>
+        <input type="hidden" th:field="*{rapPhim.idRapPhim}" th:value="${idRapPhim}"/>
+        <div class="form-group">
+            <label for="tenPhongChieuPhim">Tên phòng chiếu</label>
+            <input type="text" id="tenPhongChieuPhim" th:field="*{tenPhongChieuPhim}" required>
+            <span id="tenPhongChieuPhimError" class="error-message" th:text="${tenPhongChieuPhimError}"></span>
+        </div>
+        <div class="form-group">
+            <label for="kichThuocPhong">Kích thước phòng</label>
+            <select id="kichThuocPhong" th:field="*{kichThuocPhong}" required>
+                <option value="">--Chọn kích thước--</option>
+                <option th:each="kichThuoc : ${kichThuocPhongList}" th:value="${kichThuoc}" th:text="${kichThuoc.moTa}"></option>
+            </select>
+            <span id="kichThuocPhongError" class="error-message" th:text="${kichThuocPhongError}"></span>
+        </div>
+        <div class="button-group">
+            <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}" class="btn btn-quanlykhac">Quản lý dãy ghế</a>
+            <button type="submit" class="btn">Sửa phòng chiếu</button>
+            <a th:href="@{/rooms/{id}(id=${idRapPhim})}" class="btn">Quay lại</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function validateForm(event) {
+        event.preventDefault();
+        let isValid = true;
+
+        // Reset error messages
+        const errorElements = document.querySelectorAll('.error-message');
+        const inputElements = document.querySelectorAll('input, select');
+        errorElements.forEach(el => el.style.display = 'none');
+        inputElements.forEach(el => el.classList.remove('error'));
+
+        const tenPhongChieuPhim = document.getElementById('tenPhongChieuPhim').value.trim();
+        const kichThuocPhong = document.getElementById('kichThuocPhong').value;
+
+        if (!tenPhongChieuPhim) {
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu không được để trống.');
+            isValid = false;
+        } else if (tenPhongChieuPhim.length < 3 || tenPhongChieuPhim.length > 50) {
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu phải từ 3 đến 50 ký tự.');
+            isValid = false;
+        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-]+$/.test(tenPhongChieuPhim)) {
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu chỉ được chứa chữ, số và khoảng trắng.');
+            isValid = false;
+        }
+
+        if (!kichThuocPhong) {
+            showError('kichThuocPhong', 'Vui lòng chọn kích thước phòng.');
+            isValid = false;
+        }
+
+        if (isValid) {
+            document.getElementById('roomForm').submit();
+        }
+
+        return isValid;
+    }
+
+    function showError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(fieldId + 'Error');
+        field.classList.add('error');
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+    }
+
+    window.onload = function() {
+        const tenPhongChieuPhimError = document.getElementById('tenPhongChieuPhimError');
+        const kichThuocPhongError = document.getElementById('kichThuocPhongError');
+        if (tenPhongChieuPhimError.textContent) {
+            tenPhongChieuPhimError.style.display = 'block';
+            document.getElementById('tenPhongChieuPhim').classList.add('error');
+        }
+        if (kichThuocPhongError.textContent) {
+            kichThuocPhongError.style.display = 'block';
+            document.getElementById('kichThuocPhong').add('error');
+        }
+
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(() => {
+                flashMessage.style.opacity = '0';
+                setTimeout(() => flashMessage.remove(), 500);
+            }, 3000);
+        }
+    };
+</script>
+</body>
+</html>

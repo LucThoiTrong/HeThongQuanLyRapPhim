@@ -4,215 +4,189 @@
     <meta charset="UTF-8">
     <title>Danh Sách Combo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #0a3d62;
-            --danger-color: #dc3545;
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --danger-gradient: linear-gradient(135deg, #ef4444, #f87171);
+            --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom right, #e0e7ff, #f3e8ff);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
 
         header {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 1rem 2rem;
-            box-shadow: var(--card-shadow);
+            background: var(--primary-gradient);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             position: sticky;
             top: 0;
             z-index: 1000;
+            animation: slideDown 0.5s ease-out;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin: 1rem 0;
-        }
-
-        .container {
-            padding: 2rem;
-            flex: 1;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-align: center;
-            white-space: nowrap;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #ffffff;
-            background-color: var(--primary-color);
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--card-shadow);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        .btn-sm {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.85rem;
-        }
-
-        .btn-outline-info {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-        }
-
-        .btn-outline-info:hover {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .btn-outline-danger {
-            background-color: transparent;
-            color: var(--danger-color);
-            border: 1px solid var(--danger-color);
-        }
-
-        .btn-outline-danger:hover {
-            background-color: var(--danger-color);
-            color: #fff;
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
         }
 
         .card {
-            background: #fff;
-            border-radius: 10px;
+            background: #ffffff;
+            border-radius: 20px;
             box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
             overflow: hidden;
         }
 
-        .card-header {
-            background-color: #ffffff;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .card-body {
-            padding: 0;
-        }
-
-        table {
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
         }
 
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
+        .card:hover::before {
+            opacity: 0.05;
         }
 
-        th {
-            background-color: #e0f2f7;
-            color: #0a3d62;
-            font-weight: 600;
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            z-index: 1;
         }
 
-        tr:nth-child(even) {
-            background-color: #ffffff;
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        tr {
+            transition: var(--transition);
         }
 
         tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-end {
-            text-align: right;
-        }
-
-        .text-muted {
-            color: #888;
+            transform: scale(1.02);
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            background-color: #e6f3e6;
-            color: #2e7d32;
-            border: 1px solid #c3e6cb;
-            transition: opacity 0.5s ease-out;
+            animation: slideInRight 0.5s ease-out;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        #flash-message {
-            margin-top: 15px;
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        form {
-            display: inline;
+        .fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tilt {
+            transition: transform 0.2s ease;
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Danh Sách Combo Bắp Nước</h1>
+<header class="py-6 px-8">
+    <h1 class="text-4xl font-bold text-white tracking-tight">Danh Sách Combo Bắp Nước</h1>
 </header>
 
-<div class="container">
-    <div th:if="${message}" class="alert" th:text="${message}" id="flash-message"></div>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div th:if="${message}" class="alert bg-green-100 border-l-4 border-green-500 text-green-700 p-5 rounded-lg mb-8" th:text="${message}" id="flash-message"></div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2 class="mb-0">Danh sách Combo</h2>
-            <a th:href="@{/combos/new}" class="btn">➕ Thêm Combo</a>
+    <div class="card bg-white rounded-2xl overflow-hidden tilt">
+        <div class="card-header flex justify-between items-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800">Danh sách Combo</h2>
+            <a th:href="@{/combos/new}" class="btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2.5 rounded-xl hover:from-blue-600 hover:to-purple-700 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Thêm Combo
+            </a>
         </div>
         <div class="card-body">
-            <table>
-                <thead>
-                <tr class="text-center">
-                    <th style="width: 25%;">Tên Combo</th>
-                    <th style="width: 35%;">Mô Tả</th>
-                    <th style="width: 15%;">Giá Tiền (VNĐ)</th>
-                    <th style="width: 25%;">Thao Tác</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="temp : ${comboBapNuocs}">
-                    <td th:text="${temp.tenCombo}"></td>
-                    <td th:text="${temp.moTaCombo}"></td>
-                    <td th:text="${#numbers.formatDecimal(temp.giaTien, 0, 'COMMA', 0, 'POINT')}" class="text-end"></td>
-                    <td class="text-center">
-                        <form th:action="@{/combos/update/{id}(id=${temp.idComboBapNuoc})}" method="get">
-                            <button type="submit" class="btn btn-sm btn-outline-info me-1">✏️ Cập nhật</button>
-                        </form>
-                        <form th:action="@{/combos/delete/{id}(id=${temp.idComboBapNuoc})}" method="post">
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-button" th:attr="data-combo-name=${temp.tenCombo}">🗑️ Xóa</button>
-                        </form>
-                    </td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(comboBapNuocs)}">
-                    <td colspan="4" class="text-center text-muted">Không có combo nào.</td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-900 text-sm uppercase tracking-wider">
+                        <th class="py-5 px-6 text-center w-1/4">Tên Combo</th>
+                        <th class="py-5 px-6 text-center w-1/3">Mô Tả</th>
+                        <th class="py-5 px-6 text-right w-1/6">Giá Tiền (VNĐ)</th>
+                        <th class="py-5 px-6 text-center w-1/4">Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="temp : ${comboBapNuocs}" class="border-b border-gray-200">
+                        <td class="py-5 px-6 text-gray-800 font-medium" th:text="${temp.tenCombo}"></td>
+                        <td class="py-5 px-6 text-gray-600" th:text="${temp.moTaCombo}"></td>
+                        <td class="py-5 px-6 text-gray-800 font-medium text-right" th:text="${#numbers.formatDecimal(temp.giaTien, 0, 'COMMA', 0, 'POINT')}"></td>
+                        <td class="py-5 px-6 text-center">
+                            <div class="flex justify-center space-x-3">
+                                <form th:action="@{/combos/update/{id}(id=${temp.idComboBapNuoc})}" method="get" class="inline">
+                                    <button type="submit" class="btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700">
+                                        <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Cập nhật
+                                    </button>
+                                </form>
+                                <form th:action="@{/combos/delete/{id}(id=${temp.idComboBapNuoc})}" method="post" class="inline">
+                                    <button type="button" class="btn bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 delete-button" th:attr="data-combo-name=${temp.tenCombo}">
+                                        <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M9 7v12m6-12v12"></path></svg>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(comboBapNuocs)}">
+                        <td colspan="4" class="py-8 text-center text-gray-500 text-lg">Không có combo nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -240,12 +214,29 @@
         const flashMessage = document.getElementById('flash-message');
         if (flashMessage) {
             setTimeout(function() {
-                flashMessage.style.opacity = '0';
+                flashMessage.classList.add('fade-out');
                 setTimeout(function() {
                     flashMessage.style.display = 'none';
                 }, 500);
             }, 3000);
         }
+
+        // 3D Tilt Effect cho card
+        const card = document.querySelector('.tilt');
+        card.addEventListener('mousemove', function(e) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 50;
+            const rotateY = (centerX - x) / 50;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
     });
 </script>
 </body>

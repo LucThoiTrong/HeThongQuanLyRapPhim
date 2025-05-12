@@ -3,29 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh Sách Khách Hàng</title>
+    <!-- Font Awesome cho biểu tượng -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 cho thông báo -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts (Poppins) -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- GSAP cho animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <!-- Tippy.js cho tooltip -->
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <!-- Lottie Player -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <!-- Hover.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css">
     <style>
         :root {
-            --primary-color: #0a3d62; /* Màu xanh đậm chủ đạo */
-            --secondary-color: #6c757d; /* Màu xám cho nút phụ */
-            --danger-color: #dc3545; /* Màu đỏ cho nút xóa */
-            --success-color: #28a745; /* Màu xanh lá cho thông báo thành công */
-            --info-color: #17a2b8; /* Màu xanh dương cho thông báo thông tin */
-            --warning-color: #ffc107; /* Màu vàng cho cảnh báo/trạng thái không xác định */
-            --light-gray-color: #f8f9fa; /* Màu xám rất nhạt cho nền */
-
-            --background-light: #f0f4f8; /* Màu nền sáng */
-            --card-background: #ffffff; /* Màu nền thẻ */
-            --text-dark: #343a40; /* Màu chữ đậm */
-            --text-light: #ffffff; /* Màu chữ sáng */
-            --text-muted: #6c757d; /* Màu chữ mờ */
-
-            --border-color: #dee2e6; /* Màu viền */
-            --table-header-background: #e0f2f7; /* Màu nền header bảng */
-            --table-hover-background: #f1f1f1; /* Màu nền khi hover dòng bảng */
-
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --primary-color: #0a3d62;
+            --secondary-color: #6c757d;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --light-gray-color: #f8f9fa;
+            --background-light: #f0f4f8;
+            --card-background: #ffffff;
+            --text-dark: #343a40;
+            --text-light: #ffffff;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --table-header-background: #e0f2f7;
+            --table-hover-background: #f1f1f1;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --neon-glow: 0 0 10px rgba(10, 61, 98, 0.8), 0 0 20px rgba(10, 61, 98, 0.6), 0 0 30px rgba(10, 61, 98, 0.4);
             --transition: all 0.3s ease;
-            --border-radius: 8px;
+            --border-radius: 10px;
         }
 
         * {
@@ -35,109 +49,220 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--background-light);
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 50% 50%, #d9e2ec, #f0f4f8);
             color: var(--text-dark);
             margin: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .ambient-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(10, 61, 98, 0.2), transparent 70%);
+            animation: ambientMove 15s infinite alternate;
+            z-index: -2;
+            pointer-events: none;
         }
 
         header {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, #0a3d62, #1e6091);
             color: var(--text-light);
-            padding: 1.25rem 2rem;
+            padding: 1.5rem 2rem;
             box-shadow: var(--card-shadow);
             position: sticky;
             top: 0;
-            z-index: 1000; /* Giữ header ở trên */
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        h1 {
-            color: var(--text-light);
-            font-size: 1.8rem;
-            font-weight: 600;
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        header .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        header .logo i {
+            animation: neonPulse 1.5s infinite;
         }
 
         .container {
-            padding: 2rem;
+            padding: 3rem 2rem;
             flex: 1;
             max-width: 1200px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
             width: 100%;
         }
 
         .button-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             display: flex;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            font-size: 0.95rem;
-            font-weight: 500;
-            line-height: 1.5;
+            padding: 0.8rem 1.5rem;
+            width: 180px;
+            font-size: 1rem;
+            font-weight: 600;
             text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
             cursor: pointer;
             border-radius: var(--border-radius);
             text-decoration: none;
             color: var(--text-light);
-            background-color: var(--primary-color);
-            border: 1px solid transparent;
+            background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62);
+            background-size: 200% 100%;
+            border: 2px solid transparent;
             transition: var(--transition);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .btn svg {
-            width: 1em;
-            height: 1em;
-            fill: currentColor;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+            animation: gradientFlow 3s ease infinite;
         }
 
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease;
+            opacity: 0;
+        }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-            opacity: 0.9;
+            transform: perspective(600px) rotateX(8deg) rotateY(8deg) translateY(-4px);
+            box-shadow: var(--neon-glow);
+            filter: brightness(1.2);
+            border: 2px solid #1e6091;
+        }
+
+        .btn:hover::before {
+            left: 150%;
+        }
+
+        .btn:hover i {
+            transform: scale(1.3) rotate(10deg);
+        }
+
+        .btn:active {
+            transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(0.92);
+            box-shadow: var(--card-shadow);
+        }
+
+        .btn:active::after {
+            width: 200px;
+            height: 200px;
+            opacity: 1;
+            transition: width 0.3s ease, height 0.3s ease, opacity 0.1s ease;
+        }
+
+        .btn i {
+            font-size: 1rem;
+            transition: transform 0.3s ease;
         }
 
         .btn-secondary {
-            background-color: var(--secondary-color);
-            border-color: var(--secondary-color);
+            background: linear-gradient(45deg, #6c757d, #adb5bd, #6c757d);
+            background-size: 200% 100%;
         }
 
         .btn-danger {
-            background-color: var(--danger-color);
-            border-color: var(--danger-color);
+            background: linear-gradient(45deg, #dc3545, #ff6b6b, #dc3545);
+            background-size: 200% 100%;
         }
 
         .btn-edit {
-            background-color: var(--info-color);
-            border-color: var(--info-color);
+            background: linear-gradient(45deg, #17a2b8, #48dbfb, #17a2b8);
+            background-size: 200% 100%;
         }
 
         .btn-success {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-            color: var(--text-light);
+            background: linear-gradient(45deg, #28a745, #2ecc71, #28a745);
+            background-size: 200% 100%;
         }
 
         .btn-warning {
-            background-color: var(--warning-color);
-            border-color: var(--warning-color);
+            background: linear-gradient(45deg, #ffc107, #ffd60a, #ffc107);
+            background-size: 200% 100%;
             color: var(--text-dark);
+        }
+
+        .btn-sm {
+            padding: 0.6rem 0.8rem;
+            width: 100px;
+            font-size: 0.85rem;
+        }
+
+        .btn-sm i {
+            font-size: 0.85rem;
+        }
+
+        .actions-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+        }
+
+        .actions-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .actions-row.history-buttons {
+            margin-top: 0.5rem;
         }
 
         table {
@@ -148,21 +273,24 @@
             border-radius: var(--border-radius);
             overflow: hidden;
             background-color: var(--card-background);
+            position: relative;
         }
 
         th, td {
             border: 1px solid var(--border-color);
-            padding: 0.9rem 1rem;
+            padding: 1rem;
             text-align: center;
             vertical-align: middle;
         }
 
         th {
-            background-color: var(--table-header-background);
-            color: var(--primary-color);
+            background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62);
+            background-size: 200% 100%;
+            color: var(--text-light);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             text-transform: uppercase;
+            animation: gradientFlow 3s ease infinite;
         }
 
         tr:nth-child(even) {
@@ -171,16 +299,23 @@
 
         tr:hover {
             background-color: var(--table-hover-background);
+            box-shadow: 0 0 15px rgba(10, 61, 98, 0.3);
+            transform: scale(1.01);
+            transition: var(--transition);
         }
 
         .alert {
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
+            padding: 1rem;
+            margin-bottom: 20px;
             border-radius: var(--border-radius);
             border: 1px solid transparent;
-            opacity: 1;
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out, visibility 0.5s;
-            visibility: visible;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
         }
 
         .alert-success {
@@ -194,6 +329,7 @@
             color: #0c5460;
             border-color: #bee5eb;
         }
+
         .alert-danger {
             background-color: #f8d7da;
             color: #721c24;
@@ -202,89 +338,78 @@
 
         .alert-hidden {
             opacity: 0;
-            visibility: hidden;
             transform: translateY(-20px);
-        }
-
-        #flash-message {
-            margin-top: 1rem;
-        }
-
-        form {
-            margin: 0;
-            padding: 0;
-            display: inline;
-        }
-
-        .actions-cell {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            visibility: hidden;
         }
 
         .status-badge {
-            padding: 0.3em 0.65em;
-            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
             font-weight: 600;
             border-radius: var(--border-radius);
             line-height: 1;
             text-align: center;
             white-space: nowrap;
-            vertical-align: baseline;
             border: 1px solid transparent;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .status-active {
             color: var(--success-color);
             background-color: #d4edda;
             border-color: #c3e6cb;
+            animation: badgePulse 2s infinite;
         }
+
         .status-inactive {
             color: var(--danger-color);
             background-color: #f8d7da;
             border-color: #f5c6cb;
         }
-        .status-unknown {
-            color: var(--text-dark);
-            background-color: #e9ecef;
-            border-color: var(--border-color);
-        }
+
         .status-disabled {
             color: var(--text-muted);
             background-color: var(--light-gray-color);
             border-color: var(--border-color);
         }
 
-        .btn-sm {
-            padding: 0.35rem 0.7rem;
-            font-size: 0.8rem;
-        }
-
-        /* === DIALOG STYLES (Vẫn giữ lại) === */
         .dialog-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .dialog-overlay.show {
+            display: flex;
+            opacity: 1;
         }
 
         .dialog-box {
             background-color: var(--card-background);
-            padding: 20px;
+            padding: 1.5rem;
             border-radius: var(--border-radius);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            width: 80%;
+            box-shadow: var(--neon-glow);
+            width: 90%;
             max-width: 700px;
             max-height: 80vh;
             display: flex;
             flex-direction: column;
+            transform: scale(0.7);
+            opacity: 0;
+            border: 2px solid transparent;
+            background: linear-gradient(var(--card-background), var(--card-background)) padding-box,
+            linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62) border-box;
+            background-size: 200% 100%;
+            animation: gradientFlow 3s ease infinite;
         }
 
         .dialog-header {
@@ -298,8 +423,9 @@
 
         .dialog-header h3 {
             margin: 0;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--primary-color);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .dialog-close-btn {
@@ -311,15 +437,20 @@
             cursor: pointer;
             padding: 0 5px;
             line-height: 1;
+            transition: var(--transition);
         }
+
         .dialog-close-btn:hover {
             color: var(--danger-color);
+            transform: scale(1.2);
         }
 
         .dialog-content {
             overflow-y: auto;
             flex-grow: 1;
+            padding-right: 10px;
         }
+
         .dialog-content .loading-spinner,
         .dialog-content .no-data,
         .dialog-content .error-message {
@@ -331,71 +462,147 @@
             color: var(--text-muted);
             min-height: 100px;
         }
+
         .dialog-content .error-message {
             color: var(--danger-color);
         }
-
 
         .history-list {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .history-list li {
-            padding: 8px 0;
+            padding: 10px 0;
             border-bottom: 1px dotted var(--border-color);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateX(-20px);
         }
+
+        .history-list li:hover {
+            background-color: var(--table-hover-background);
+            box-shadow: 0 0 10px rgba(10, 61, 98, 0.2);
+        }
+
         .history-list li:last-child {
             border-bottom: none;
         }
+
         .history-item-date {
             font-weight: bold;
             color: var(--primary-color);
             margin-right: 10px;
         }
-        /* ======================== */
 
-        /* Responsive adjustments */
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes neonPulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
+            50% {
+                transform: scale(1.2);
+                text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            }
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        @keyframes badgePulse {
+            0% {
+                box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(40, 167, 69, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            }
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes dialogFadeIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes ambientMove {
+            0% {
+                background-position: 20% 20%;
+            }
+            100% {
+                background-position: 80% 80%;
+            }
+        }
+
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
                 align-items: flex-start;
                 padding: 1rem;
             }
-            h1 {
-                font-size: 1.5rem;
-                margin-bottom: 0.5rem;
+
+            header h1 {
+                font-size: 1.8rem;
             }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
             .button-group {
                 flex-direction: column;
                 align-items: stretch;
             }
+
             .btn {
                 width: 100%;
-                margin-bottom: 0.5rem;
-                justify-content: center;
             }
-            .btn:last-child {
-                margin-bottom: 0;
-            }
-            .container {
-                padding: 1rem;
-            }
+
             table, thead, tbody, th, td, tr {
                 display: block;
             }
+
             thead tr {
                 position: absolute;
                 top: -9999px;
                 left: -9999px;
             }
+
             tr {
                 margin-bottom: 1rem;
                 border: 1px solid var(--border-color);
                 border-radius: var(--border-radius);
-                box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+                box-shadow: var(--card-shadow);
                 background-color: var(--card-background);
+                opacity: 0;
+                transform: translateY(20px);
+                animation: slideIn 0.5s forwards;
             }
+
             td {
                 border: none;
                 border-bottom: 1px solid #eee;
@@ -407,6 +614,7 @@
                 justify-content: flex-end;
                 align-items: center;
             }
+
             td:before {
                 position: absolute;
                 top: 50%;
@@ -422,47 +630,56 @@
                 color: var(--primary-color);
                 content: attr(data-label);
             }
+
             .actions-cell {
-                justify-content: flex-end;
+                flex-direction: column;
+                align-items: flex-end;
                 padding-top: 0.75rem;
                 padding-bottom: 0.75rem;
             }
-            .actions-cell .btn {
-                width: auto;
-                margin-bottom: 0.25rem;
+
+            .actions-row {
+                justify-content: flex-end;
+                gap: 0.5rem;
             }
-            .actions-cell .btn:last-child {
-                margin-bottom: 0;
+
+            .actions-row .btn-sm {
+                width: 80px;
             }
-            td:last-child {
-                border-bottom: 0;
-            }
+
             .dialog-box {
-                width: 90%;
+                width: 95%;
                 max-height: 85vh;
             }
         }
     </style>
 </head>
 <body>
+<!-- Hiệu ứng ánh sáng môi trường -->
+<div class="ambient-light"></div>
+<!-- Hiệu ứng hạt động cho nền -->
+<canvas id="particles"></canvas>
+
 <header>
+    <div class="logo">
+        <i class="fa-solid fa-film"></i> Cinema Admin
+    </div>
     <h1>Quản Lý Khách Hàng</h1>
 </header>
+
 <div class="container">
     <div th:if="${message}"
          th:classappend="${messageType == 'success' ? 'alert-success' : (messageType == 'info' ? 'alert-info' : (messageType == 'danger' ? 'alert-danger' : 'alert-info'))}"
          class="alert"
          id="flash-message"
          role="alert">
+        <i th:class="${messageType == 'success' ? 'fa-solid fa-check-circle' : 'fa-solid fa-exclamation-circle'}"></i>
         <span th:text="${message}"></span>
     </div>
 
     <div class="button-group">
-        <a th:href="@{/manage/}" class="btn btn-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-            </svg>
-            Quay lại
+        <a th:href="@{/manage/}" class="btn btn-secondary hvr-pulse-grow" data-tippy-content="Quay lại trang quản lý">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
         </a>
     </div>
 
@@ -480,56 +697,44 @@
         <tr th:if="${danhSachKhachHang == null or #lists.isEmpty(danhSachKhachHang)}">
             <td colspan="5" style="text-align: center; padding: 1rem;">Không có dữ liệu khách hàng nào để hiển thị.</td>
         </tr>
-        <tr th:each="customer : ${danhSachKhachHang}">
+        <tr th:each="customer, iterStat : ${danhSachKhachHang}">
             <td data-label="Họ Tên:" th:text="${customer.hoTen}"></td>
             <td data-label="Email:" th:text="${customer.email}"></td>
             <td data-label="SĐT:" th:text="${customer.soDienThoai}"></td>
             <td data-label="Trạng thái hoạt động:">
                 <span th:if="${customer.tkDoiTuongSuDung != null}">
-                    <span th:if="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-active">Đang hoạt động</span>
-                    <span th:unless="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-inactive">Không hoạt động</span>
+                    <span th:if="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-active" data-tippy-content="Tài khoản đang hoạt động">Đang hoạt động</span>
+                    <span th:unless="${customer.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-badge status-inactive" data-tippy-content="Tài khoản không hoạt động">Không hoạt động</span>
                 </span>
-                <span th:if="${customer.tkDoiTuongSuDung == null}" class="status-badge status-disabled">
-                        Chưa có tài khoản
-                </span>
+                <span th:if="${customer.tkDoiTuongSuDung == null}" class="status-badge status-disabled" data-tippy-content="Khách hàng chưa có tài khoản">Chưa có tài khoản</span>
             </td>
             <td data-label="Hành Động:" class="actions-cell">
-                <a th:href="@{/customers/update/{id}(id=${customer.idDoiTuongSuDung})}" class="btn btn-edit btn-sm" title="Sửa thông tin khách hàng">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                    </svg>
-                    Sửa
-                </a>
-                <form th:action="@{/customers/delete/{id}(id=${customer.idDoiTuongSuDung})}" method="post" class="delete-form" style="display: inline;" th:if="${customer.idDoiTuongSuDung != null}">
-                    <button type="button" class="btn btn-danger btn-sm delete-button"
-                            th:attr="data-customer-name=${customer.hoTen}, data-customer-id=${customer.idDoiTuongSuDung}"
-                            title="Xóa khách hàng">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                            <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m3.5.5a.5.5 0 0 0-1 0v8.5a.5.5 0 0 0 1 0zM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 .5.5a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5"/>
-                        </svg>
-                        Xóa
-                    </button>
-                </form>
-                <a href="#" class="btn btn-success btn-sm history-btn"
-                   th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
-                   data-history-type="purchase"
-                   title="Xem lịch sử mua hàng">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                        <path d="M1.92.506a.5.5 0 0 1 .434.14L3 1.293l.646-.647a.5.5 0 0 1 .708 0L5 1.293l.646-.647a.5.5 0 0 1 .708 0L7 1.293l.646-.647a.5.5 0 0 1 .708 0L9 1.293l.646-.647a.5.5 0 0 1 .708 0L11 1.293l.646-.647a.5.5 0 0 1 .708 0L13 1.293l.646-.647a.5.5 0 0 1 .708 0L15 1.293l.646-.647a.5.5 0 0 1 .434-.14L16 1.5V15a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1.5l.006-.066a.5.5 0 0 1 .03-.111ZM2.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-11Z"/>
-                    </svg>
-                    LS Mua
-                </a>
-                <a href="#" class="btn btn-warning btn-sm history-btn"
-                   th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
-                   data-history-type="return"
-                   title="Xem lịch sử hoàn trả">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.5A5.002 5.002 0 0 0 8 3M3.5 13A5.002 5.002 0 0 0 8 15c1.552 0 2.94-.707 3.857-1.818a.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.5a5.002 5.002 0 0 0 0 4"/>
-                    </svg>
-                    LS Trả
-                </a>
+                <div class="actions-row">
+                    <a th:href="@{/customers/update/{id}(id=${customer.idDoiTuongSuDung})}" class="btn btn-edit btn-sm hvr-pulse-grow" data-tippy-content="Sửa thông tin khách hàng">
+                        <i class="fa-solid fa-edit"></i> Sửa
+                    </a>
+                    <form th:action="@{/customers/delete/{id}(id=${customer.idDoiTuongSuDung})}" method="post" class="delete-form" style="display: inline;" th:if="${customer.idDoiTuongSuDung != null}">
+                        <button type="button" class="btn btn-danger btn-sm delete-button hvr-pulse-grow"
+                                th:attr="data-customer-name=${customer.hoTen}, data-customer-id=${customer.idDoiTuongSuDung}"
+                                data-tippy-content="Xóa khách hàng">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </div>
+                <div class="actions-row history-buttons">
+                    <a href="#" class="btn btn-success btn-sm history-btn hvr-pulse-grow"
+                       th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
+                       data-history-type="purchase"
+                       data-tippy-content="Xem lịch sử mua hàng">
+                        <i class="fa-solid fa-shopping-cart"></i> LS Mua
+                    </a>
+                    <a href="#" class="btn btn-warning btn-sm history-btn hvr-pulse-grow"
+                       th:attr="data-customer-id=${customer.idDoiTuongSuDung}, data-customer-name=${customer.hoTen}"
+                       data-history-type="return"
+                       data-tippy-content="Xem lịch sử hoàn trả">
+                        <i class="fa-solid fa-undo"></i> LS Trả
+                    </a>
+                </div>
             </td>
         </tr>
         </tbody>
@@ -540,7 +745,7 @@
     <div class="dialog-box">
         <div class="dialog-header">
             <h3 id="dialogTitleEl">Lịch sử Khách Hàng</h3>
-            <button id="closeDialogBtn" class="dialog-close-btn" title="Đóng">&times;</button>
+            <button id="closeDialogBtn" class="dialog-close-btn" title="Đóng">×</button>
         </div>
         <div class="dialog-content" id="dialogContentEl">
             <p class="loading-spinner">Đang tải dữ liệu...</p>
@@ -550,7 +755,49 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Logic cho nút Xóa (giữ nguyên) ---
+        // Tự động ẩn thông báo flash message
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            gsap.to(flashMessage, {
+                opacity: 0,
+                y: -20,
+                duration: 0.5,
+                delay: 3,
+                onComplete: () => {
+                    if (flashMessage.parentNode) {
+                        flashMessage.remove();
+                    }
+                }
+            });
+        }
+
+        // Khởi tạo Tippy.js cho tooltip
+        tippy('[data-tippy-content]', {
+            theme: 'light',
+            animation: 'scale',
+            duration: 200,
+        });
+
+        // Hiệu ứng xuất hiện các dòng bảng
+        gsap.from('tbody tr', {
+            opacity: 0,
+            y: 30,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power2.out'
+        });
+
+        // Hiệu ứng ánh sáng quét qua bảng
+        gsap.to('tbody tr', {
+            boxShadow: '0 0 15px rgba(10, 61, 98, 0.5)',
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            stagger: 0.2
+        });
+
+        // Logic cho nút Xóa với SweetAlert2
         const deleteButtons = document.querySelectorAll('.delete-button');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function(event) {
@@ -558,41 +805,74 @@
                 event.stopPropagation();
                 const customerName = button.dataset.customerName;
                 const customerId = button.dataset.customerId;
-                const confirmationMessage = `Bạn có chắc chắn muốn xóa khách hàng "${customerName}" (ID: ${customerId})? Hành động này không thể hoàn tác.`;
-                if (confirm(confirmationMessage)) {
-                    const form = button.closest('form');
-                    if (form) {
-                        form.submit();
-                    } else {
-                        console.error("Không tìm thấy form cha để submit cho nút:", button);
+                Swal.fire({
+                    title: 'Xác nhận xóa',
+                    html: `Bạn có chắc chắn muốn xóa khách hàng <strong>${customerName}</strong> (ID: ${customerId})?<br>Hành động này không thể hoàn tác.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fa-solid fa-trash"></i> Xóa',
+                    cancelButtonText: '<i class="fa-solid fa-times"></i> Hủy',
+                    animation: true,
+                    showClass: {
+                        popup: 'animate__animated animate__zoomIn'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__zoomOut'
                     }
-                }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = button.closest('form');
+                        if (form) {
+                            form.submit();
+                        } else {
+                            console.error("Không tìm thấy form cha để submit cho nút:", button);
+                        }
+                    }
+                });
             });
         });
 
-        // --- Logic cho Flash Message (giữ nguyên) ---
-        const flashMessage = document.getElementById('flash-message');
-        if (flashMessage) {
-            setTimeout(function() {
-                flashMessage.classList.add('alert-hidden');
-            }, 5000);
-        }
-
-        // --- Logic cho History Dialog (Vẫn giữ lại các biến và hàm, nhưng bỏ sự kiện cho nút history) ---
+        // Logic cho History Dialog
         const historyDialog = document.getElementById('historyDialog');
         const dialogTitleEl = document.getElementById('dialogTitleEl');
         const dialogContentEl = document.getElementById('dialogContentEl');
         const closeDialogBtn = document.getElementById('closeDialogBtn');
-        // const historyButtons = document.querySelectorAll('.history-btn'); // Bỏ dòng này hoặc comment lại
+        const historyButtons = document.querySelectorAll('.history-btn');
 
         function openDialog() {
-            if (historyDialog) historyDialog.style.display = 'flex';
+            if (historyDialog) {
+                historyDialog.classList.add('show');
+                gsap.to('.dialog-box', {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: 'back.out(1.7)'
+                });
+                gsap.from('.history-list li', {
+                    opacity: 0,
+                    x: -20,
+                    duration: 0.5,
+                    stagger: 0.1,
+                    ease: 'power2.out',
+                    delay: 0.3
+                });
+            }
         }
 
         function closeDialog() {
             if (historyDialog) {
-                historyDialog.style.display = 'none';
-                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+                gsap.to('.dialog-box', {
+                    scale: 0.7,
+                    opacity: 0,
+                    duration: 0.3,
+                    ease: 'power2.in',
+                    onComplete: () => {
+                        historyDialog.classList.remove('show');
+                        dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+                    }
+                });
             }
         }
 
@@ -608,29 +888,17 @@
             });
         }
 
-        /* // === BỎ HOẶC COMMENT LẠI KHỐI GẮN SỰ KIỆN CHO NÚT LỊCH SỬ ===
-        historyButtons.forEach(button => { // Nếu đã comment dòng const historyButtons thì khối này cũng sẽ không chạy
+        historyButtons.forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
-
                 const customerId = this.dataset.customerId;
                 const customerName = this.dataset.customerName;
                 const historyType = this.dataset.historyType;
-
-                let titleText = "";
-                if (historyType === 'purchase') {
-                    titleText = `Lịch sử mua hàng của ${customerName}`;
-                } else if (historyType === 'return') {
-                    titleText = `Lịch sử hoàn trả của ${customerName}`;
-                } else {
-                    titleText = `Lịch sử của ${customerName}`;
-                }
+                let titleText = historyType === 'purchase' ? `Lịch sử mua hàng của ${customerName}` : `Lịch sử hoàn trả của ${customerName}`;
                 dialogTitleEl.textContent = titleText;
                 dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
                 openDialog();
-
                 const fragmentUrl = `/customers/${customerId}/history-fragment?type=${historyType}`;
-
                 fetch(fragmentUrl)
                     .then(response => {
                         if (!response.ok) {
@@ -640,6 +908,13 @@
                     })
                     .then(htmlFragment => {
                         dialogContentEl.innerHTML = htmlFragment;
+                        gsap.from('.history-list li', {
+                            opacity: 0,
+                            x: -20,
+                            duration: 0.5,
+                            stagger: 0.1,
+                            ease: 'power2.out'
+                        });
                     })
                     .catch(error => {
                         console.error('Lỗi khi tải fragment lịch sử:', error);
@@ -647,7 +922,106 @@
                     });
             });
         });
-        */ // === KẾT THÚC KHỐI COMMENT ===
+
+        // Thêm hiệu ứng Lottie khi click nút
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const lottieContainer = document.createElement('div');
+                lottieContainer.style.position = 'absolute';
+                lottieContainer.style.top = `${e.offsetY}px`;
+                lottieContainer.style.left = `${e.offsetX}px`;
+                lottieContainer.style.pointerEvents = 'none';
+                lottieContainer.style.zIndex = '10';
+                button.appendChild(lottieContainer);
+                const lottiePlayer = document.createElement('lottie-player');
+                lottiePlayer.setAttribute('src', 'https://assets10.lottiefiles.com/packages/lf20_khzniaya.json');
+                lottiePlayer.setAttribute('background', 'transparent');
+                lottiePlayer.setAttribute('speed', '1');
+                lottiePlayer.setAttribute('style', 'width: 100px; height: 100px;');
+                lottiePlayer.setAttribute('play', '');
+                lottieContainer.appendChild(lottiePlayer);
+                setTimeout(() => {
+                    lottieContainer.remove();
+                }, 1000);
+            });
+        });
+
+        // Hiệu ứng hạt động cho nền (tương tác với chuột)
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        const numberOfParticles = 80;
+        let mouse = { x: null, y: null };
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 4 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = `hsl(${Math.random() * 60 + 200}, 70%, 50%)`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.05;
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 100) {
+                    this.speedX += dx / 1000;
+                    this.speedY += dy / 1000;
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function handleParticles() {
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                if (particlesArray[i].size <= 0.2) {
+                    particlesArray.splice(i, 1);
+                    i--;
+                    particlesArray.push(new Particle());
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            handleParticles();
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     });
 </script>
 </body>
