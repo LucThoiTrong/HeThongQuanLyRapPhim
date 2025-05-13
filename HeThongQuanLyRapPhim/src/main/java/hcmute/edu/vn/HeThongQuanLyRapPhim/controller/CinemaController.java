@@ -52,7 +52,7 @@ public class CinemaController {
         RapPhim existingCinema = cinemaService.findCinemaByName(rapPhim.getTenRapPhim());
         if (existingCinema != null) {
             redirectAttributes.addFlashAttribute("tenRapPhimError", "Tên rạp phim đã tồn tại, vui lòng chọn tên khác!");
-            redirectAttributes.addFlashAttribute("rapPhim", rapPhim); // Giữ lại dữ liệu đã nhập
+            redirectAttributes.addFlashAttribute("rapPhim", rapPhim);
             return "redirect:/cinemas/new";
         }
         RapPhim rp = cinemaService.createCinema(rapPhim);
@@ -65,7 +65,7 @@ public class CinemaController {
     }
 
     @GetMapping("/update/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session) {
+    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         @SuppressWarnings("unchecked")
         List<RapPhim> dsRapPhim = (List<RapPhim>) session.getAttribute("cinemas");
         RapPhim rapPhim;
@@ -77,7 +77,11 @@ public class CinemaController {
                     .findFirst().orElse(null);
         }
 
-        assert rapPhim != null;
+        if (rapPhim == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy rạp phim");
+            return "redirect:/cinemas/";
+        }
+
         List<DoiTuongSuDung> nhanVienList = getNhanVienListChoRap(rapPhim);
 
         model.addAttribute("rapPhim", rapPhim);
@@ -87,18 +91,29 @@ public class CinemaController {
     }
 
     @PostMapping("/update/{id}")
-    public String updateRapPhim(@ModelAttribute("rapPhim") RapPhim rapPhim, @PathVariable int id, RedirectAttributes redirectAttributes) {
-        RapPhim existingCinema = cinemaService.findCinemaByName(rapPhim.getTenRapPhim());
+    public String updateRapPhim(@ModelAttribute("rapPhim") RapPhim rapPhimMoi, @PathVariable int id, RedirectAttributes redirectAttributes) {
+        RapPhim existingCinema = cinemaService.findCinemaByName(rapPhimMoi.getTenRapPhim());
         if (existingCinema != null && existingCinema.getIdRapPhim() != id) {
             redirectAttributes.addFlashAttribute("tenRapPhimError", "Tên rạp phim đã tồn tại, vui lòng chọn tên khác!");
-            redirectAttributes.addFlashAttribute("rapPhim", rapPhim); // Giữ lại dữ liệu đã nhập
+            redirectAttributes.addFlashAttribute("rapPhim", rapPhimMoi);
             return "redirect:/cinemas/update/" + id;
         }
-        RapPhim rp = cinemaService.updateCinema(id, rapPhim);
-        if (rp != null) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thành công");
+
+        RapPhim rapPhimCu = cinemaService.getCinemaById(id);
+        if (rapPhimCu != null) {
+            // Cập nhật các trường trong controller
+            rapPhimCu.setTenRapPhim(rapPhimMoi.getTenRapPhim());
+            rapPhimCu.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
+            rapPhimCu.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
+            rapPhimCu.setNhanVien(rapPhimMoi.getNhanVien());
+            RapPhim rp = cinemaService.updateCinema(id, rapPhimCu); // Gọi updateCinema với object đã chỉnh sửa
+            if (rp != null) {
+                redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thành công");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Cập nhật rạp phim thất bại");
+            }
         } else {
-            redirectAttributes.addFlashAttribute("error", "Cập nhật rạp phim thất bại");
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy rạp phim để cập nhật");
         }
         return "redirect:/cinemas/";
     }

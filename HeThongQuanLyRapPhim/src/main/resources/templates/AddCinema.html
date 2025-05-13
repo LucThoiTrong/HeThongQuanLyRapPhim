@@ -34,6 +34,15 @@
       --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
+    [data-theme="dark"] .toast.bg-danger {
+      background: #991b1b !important;
+      color: #fff;
+    }
+
+    [data-theme="dark"] .toast-body {
+      color: #e5e7eb;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -174,24 +183,24 @@
       background: var(--primary-gradient);
       border: none;
       border-radius: 50%;
-      width: 48px; /* Tăng kích thước để nổi bật */
+      width: 48px;
       height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5); /* Thêm hiệu ứng phát sáng */
-      z-index: 2000; /* Đảm bảo nút luôn nằm trên cùng */
+      box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+      z-index: 2000;
       transition: transform 0.5s ease, box-shadow 0.5s ease;
     }
 
     .theme-toggle:hover {
-      transform: scale(1.1) rotate(360deg); /* Thêm scale để nổi bật hơn */
-      box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7); /* Tăng cường hiệu ứng sáng */
+      transform: scale(1.1) rotate(360deg);
+      box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
     }
 
     .theme-toggle i {
-      font-size: 1.2rem; /* Tăng kích thước icon */
+      font-size: 1.2rem;
       color: #fff;
     }
 
@@ -240,6 +249,7 @@
     <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.1s">
       <label for="tenRapPhim">Tên Rạp Phim:</label>
       <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+      <div th:if="${tenRapPhimError}" class="text-danger mt-1" th:text="${tenRapPhimError}"></div>
     </div>
 
     <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.2s">
@@ -281,6 +291,20 @@
   <i class="fas fa-moon"></i>
 </button>
 
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+  <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 animate__animated animate__fadeInUp" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:if="${tenRapPhimError}" th:text="${tenRapPhimError}"></span>
+        <span th:unless="${tenRapPhimError}">Tên rạp phim đã tồn tại. Vui lòng chọn tên khác.</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -289,6 +313,18 @@
   document.addEventListener('DOMContentLoaded', function() {
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Kích hoạt toast nếu có lỗi
+    const errorToast = document.getElementById('errorToast');
+    const errorMessage = /*[[${tenRapPhimError}]]*/ '';
+    console.log('tenRapPhimError:', errorMessage); // Debug giá trị
+    if (errorMessage) {
+      const toast = new bootstrap.Toast(errorToast, {
+        autohide: true,
+        delay: 5000
+      });
+      toast.show();
+    }
   });
 
   // Chuyển đổi chủ đề sáng/tối

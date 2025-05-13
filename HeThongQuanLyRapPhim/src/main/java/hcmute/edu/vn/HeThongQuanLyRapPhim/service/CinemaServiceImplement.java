@@ -39,16 +39,8 @@ public class CinemaServiceImplement implements CinemaService {
     }
 
     @Override
-    public RapPhim updateCinema(int id, RapPhim rapPhimMoi) {
-        RapPhim rapPhimCu = cinemaRepository.findById(id).orElse(null);
-        if (rapPhimCu != null) {
-            rapPhimCu.setTenRapPhim(rapPhimMoi.getTenRapPhim());
-            rapPhimCu.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
-            rapPhimCu.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
-            rapPhimCu.setNhanVien(rapPhimMoi.getNhanVien());
-            return cinemaRepository.save(rapPhimCu);
-        }
-        return null;
+    public RapPhim updateCinema(int id, RapPhim rapPhim) {
+        return cinemaRepository.save(rapPhim); // Chỉ lưu trực tiếp, không xử lý logic
     }
 
     @Override
