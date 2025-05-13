@@ -39,7 +39,7 @@ public class RoomController {
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
         model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
-        return "AddEditRoom";
+        return "AddRoom";
     }
 
     @PostMapping("/new")
@@ -82,7 +82,7 @@ public class RoomController {
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
         model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
-        return "AddEditRoom";
+        return "EditRoom";
     }
 
     @PostMapping("/update/{id}")

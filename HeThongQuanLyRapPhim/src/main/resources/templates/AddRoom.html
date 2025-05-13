@@ -2,12 +2,24 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm phòng chiếu</title>
+    <title>Thêm Phòng Chiếu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #0a3d62;
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
+            --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            --text-color: #333;
+            --bg-color: #f0f4f8;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -17,163 +29,230 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: all 0.3s ease;
         }
 
         header {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            padding: 1rem 2rem;
-            box-shadow: var(--card-shadow);
+            background: var(--primary-gradient);
+            color: #fff;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 1000;
+            text-align: center;
         }
 
         h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
+            font-size: 2rem;
+            font-weight: 800;
             margin: 0;
+            letter-spacing: 1px;
         }
 
-        .container {
+        .container { /* Đây là khung form của bạn */
+            max-width: 600px;
+            width: 100%; /* Đảm bảo responsive trên màn hình nhỏ */
+            margin: 2rem auto; /* Căn giữa ngang, tạo khoảng cách trên dưới */
             padding: 2rem;
-            flex: 1;
-            display: flex;
-            justify-content: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.5s ease;
+            /* flex: 1; */ /* ĐÃ BỎ/COMMENT DÒNG NÀY */
         }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 2rem; /* Sẽ đẩy form xuống nếu alert hiển thị TRÊN form */
+            /* Nếu alert nằm ngoài .container và ở trên cùng, nó sẽ đẩy .container xuống */
+            border-radius: 10px;
+            text-align: center;
+            transition: opacity 0.5s ease-out;
+            /* Để alert cũng căn giữa và có max-width nếu nó nằm ngoài .container */
+            max-width: 600px; /* Giống .container */
+            /* margin-left: auto; /* Để căn giữa nếu nó là block và ngoài container */
+            /* margin-right: auto; */
+        }
+        /* Nếu alert nằm trong .page-container và .page-container có align-items: center thì không cần margin auto */
+
 
         .alert-success {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            max-width: 800px;
-            margin: 15px auto;
-        }
-        .alert-danger {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            max-width: 800px;
-            margin: 15px auto;
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+            border: 1px solid rgba(34, 197, 94, 0.3);
         }
 
-        form {
-            max-width: 600px;
-            width: 100%;
-            padding: 20px 24px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: var(--card-shadow);
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #b91c1c;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 1.5rem;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
             font-weight: 600;
-            color: #555;
+            color: var(--text-color);
         }
 
         input[type="text"],
         select {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none; /* Xem xét lại: có thể cần một border mờ để dễ nhìn hơn trên --card-bg */
+            border-radius: 25px;
+            background: rgba(227, 232, 239, 0.6); /* Màu nền input hơi đục hơn một chút so với card-bg */
+            color: var(--text-color);
+            /* box-shadow: var(--shadow);  Có thể bỏ shadow này nếu input đã có nền rõ ràng */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Shadow nhẹ hơn cho input */
+            transition: all 0.3s ease;
+            font-size: 1rem;
         }
 
         input[type="text"]:focus,
         select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25);
             outline: none;
+            background: rgba(255, 255, 255, 0.5); /* Sáng hơn khi focus */
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
         }
 
-        .button-group {
-            margin-top: 30px;
-            text-align: right;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            line-height: 1.5;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: middle;
-            cursor: pointer;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #ffffff;
-            margin-left: 10px;
-            border: none;
-            transition: var(--transition);
-            box-shadow: var(--card-shadow);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-            opacity: 0.9;
-        }
-
-        button.btn {
-            background-color: var(--primary-color);
-        }
-
-        a.btn {
-            background-color: #6c757d;
+        .error { /* Áp dụng cho input/select có lỗi */
+            box-shadow: 0 0 0 2px #ef4444 !important;
+            /* border: 1px solid #ef4444 !important; /* Nếu bạn quyết định dùng border */
         }
 
         .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin-top: 5px;
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
             display: none;
-            background-color: #f8d7da;
-            padding: 5px 10px;
+            padding: 0.5rem;
             border-radius: 4px;
+            background: rgba(239, 68, 68, 0.1);
         }
 
-        .error {
-            border-color: #dc3545 !important;
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #fff;
+            background: var(--primary-gradient);
+            border: none;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+            z-index: 2000;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+        }
+
+        .home-button i {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem; /* Giảm margin trên mobile */
+                padding: 1.5rem; /* Giảm padding trên mobile */
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .btn {
+                width: 100%;
+            }
+            .home-button {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+            input[type="text"],
+            select {
+                padding: 10px 12px; /* Giảm padding input trên mobile */
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Thêm phòng chiếu</h1>
+<header class="animate__animated animate__fadeInDown">
+    <h1>Thêm Phòng Chiếu</h1>
 </header>
 
-<div th:if="${message}"
-     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
-     th:text="${message}"
-     id="flash-message">
+<div th:if="${message}" class="alert animate__animated animate__fadeIn"
+     th:classappend="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}" id="flash-message"
+     style="margin-left: auto; margin-right: auto;">
 </div>
 
-<div class="container">
-    <form th:action="@{/rooms/new(idRapPhim=${idRapPhim})}"
-          th:object="${phongChieuPhim}" method="post" id="roomForm" onsubmit="return validateForm(event)">
+
+<div class="container animate__animated animate__fadeIn">
+    <form th:action="@{/rooms/new(idRapPhim=${idRapPhim})}" th:object="${phongChieuPhim}" method="post" id="roomForm" onsubmit="return validateForm(event)">
         <input type="hidden" th:field="*{rapPhim.idRapPhim}" th:value="${idRapPhim}"/>
         <div class="form-group">
             <label for="tenPhongChieuPhim">Tên phòng chiếu</label>
@@ -189,20 +268,66 @@
             <span id="kichThuocPhongError" class="error-message" th:text="${kichThuocPhongError}"></span>
         </div>
         <div class="button-group">
-            <button type="submit" class="btn">Thêm phòng chiếu</button>
-            <a th:href="@{/rooms/{id}(id=${idRapPhim})}" class="btn">Quay lại</a>
+            <button type="submit" class="btn" data-bs-toggle="tooltip" title="Thêm phòng chiếu mới">
+                <i class="fas fa-plus"></i> Thêm phòng chiếu
+            </button>
+            <a th:href="@{/rooms/{id}(id=${idRapPhim})}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại danh sách phòng chiếu">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
         </div>
     </form>
 </div>
 
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+    <i class="fas fa-home"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    // Kích hoạt tooltip của Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        // Tự động ẩn thông báo flash
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage && flashMessage.textContent.trim() !== "") { // Kiểm tra cả textContent
+            // flashMessage.style.display = 'block'; // Alert nên đã có display phù hợp
+            setTimeout(function() {
+                flashMessage.style.opacity = '0';
+                setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
+            }, 3000);
+        } else if (flashMessage) {
+            flashMessage.style.display = 'none'; // Ẩn nếu không có nội dung
+        }
+
+
+        // Hiển thị lỗi từ server nếu có
+        const tenPhongChieuPhimError = document.getElementById('tenPhongChieuPhimError');
+        const kichThuocPhongError = document.getElementById('kichThuocPhongError');
+
+        // Chỉ hiển thị lỗi nếu span có text và input tương ứng tồn tại
+        if (tenPhongChieuPhimError && tenPhongChieuPhimError.textContent && tenPhongChieuPhimError.textContent.trim() !== "") {
+            const tenPhongInput = document.getElementById('tenPhongChieuPhim');
+            if (tenPhongInput) tenPhongInput.classList.add('error');
+            tenPhongChieuPhimError.style.display = 'block';
+        }
+        if (kichThuocPhongError && kichThuocPhongError.textContent && kichThuocPhongError.textContent.trim() !== "") {
+            const kichThuocSelect = document.getElementById('kichThuocPhong');
+            if (kichThuocSelect) kichThuocSelect.classList.add('error');
+            kichThuocPhongError.style.display = 'block';
+        }
+    });
+
+    // Xác thực form
     function validateForm(event) {
-        event.preventDefault();
+        // event.preventDefault(); // Sẽ gọi ở dưới nếu không hợp lệ
         let isValid = true;
 
-        // Reset error messages
+        // Reset thông báo lỗi
         const errorElements = document.querySelectorAll('.error-message');
-        const inputElements = document.querySelectorAll('input, select');
+        const inputElements = document.querySelectorAll('input[type="text"], select'); // Chính xác hơn
         errorElements.forEach(el => el.style.display = 'none');
         inputElements.forEach(el => el.classList.remove('error'));
 
@@ -215,8 +340,8 @@
         } else if (tenPhongChieuPhim.length < 3 || tenPhongChieuPhim.length > 50) {
             showError('tenPhongChieuPhim', 'Tên phòng chiếu phải từ 3 đến 50 ký tự.');
             isValid = false;
-        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-]+$/.test(tenPhongChieuPhim)) {
-            showError('tenPhongChieuPhim', 'Tên phòng chiếu chỉ được chứa chữ, số và khoảng trắng.');
+        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-']+$/.test(tenPhongChieuPhim)) { // Cho phép dấu nháy đơn
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu chỉ được chứa chữ, số, khoảng trắng, dấu gạch nối và dấu nháy đơn.');
             isValid = false;
         }
 
@@ -225,41 +350,27 @@
             isValid = false;
         }
 
-        if (isValid) {
-            document.getElementById('roomForm').submit();
+        if (!isValid) {
+            event.preventDefault(); // Ngăn submit nếu không hợp lệ
         }
-
-        return isValid;
+        // Nếu isValid là true, form sẽ tự submit do không có event.preventDefault()
+        return isValid; // Trả về trạng thái validation
     }
 
     function showError(fieldId, message) {
         const field = document.getElementById(fieldId);
         const errorElement = document.getElementById(fieldId + 'Error');
-        field.classList.add('error');
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
+        if (field) field.classList.add('error'); // Kiểm tra field tồn tại
+        if (errorElement) { // Kiểm tra errorElement tồn tại
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
     }
 
-    window.onload = function() {
-        const tenPhongChieuPhimError = document.getElementById('tenPhongChieuPhimError');
-        const kichThuocPhongError = document.getElementById('kichThuocPhongError');
-        if (tenPhongChieuPhimError.textContent) {
-            tenPhongChieuPhimError.style.display = 'block';
-            document.getElementById('tenPhongChieuPhim').classList.add('error');
-        }
-        if (kichThuocPhongError.textContent) {
-            kichThuocPhongError.style.display = 'block';
-            document.getElementById('kichThuocPhong').classList.add('error');
-        }
-
-        const flashMessage = document.getElementById('flash-message');
-        if (flashMessage) {
-            setTimeout(() => {
-                flashMessage.style.opacity = '0';
-                setTimeout(() => flashMessage.remove(), 500);
-            }, 3000);
-        }
-    };
+    // Điều hướng về trang chủ
+    function goToHome() {
+        window.location.href = '/manage/'; // Hoặc URL trang chủ của bạn
+    }
 </script>
 </body>
 </html>
