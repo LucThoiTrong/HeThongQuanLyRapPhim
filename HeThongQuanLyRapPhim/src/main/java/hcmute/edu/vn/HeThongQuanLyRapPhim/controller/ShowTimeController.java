@@ -45,7 +45,7 @@ public class ShowTimeController {
     @GetMapping("/")
     public String showList(Model model, HttpSession session) {
         List<SuatChieu> dsSuatChieu = showTimeService.getAllShowTimes();
-        session.setAttribute("showtimes", dsSuatChieu);
+//        session.setAttribute("showtimes", dsSuatChieu);
         model.addAttribute("showtimes", dsSuatChieu);
         return "ShowTimeListPage";
     }

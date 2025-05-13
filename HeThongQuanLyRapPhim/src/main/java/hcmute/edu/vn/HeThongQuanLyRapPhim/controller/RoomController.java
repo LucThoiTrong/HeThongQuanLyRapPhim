@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.KichThuocPhong;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.RoomService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class RoomController {
 
     @Autowired
     private RoomService roomService;
+    @Autowired
+    private CinemaService cinemaService;
 
     @GetMapping("/{id}")
     public String getAll(Model model, @PathVariable("id") int idRapPhim) {
@@ -57,8 +60,9 @@ public class RoomController {
             redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
             return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
         }
-        RapPhim rapPhim = new RapPhim();
-        rapPhim.setIdRapPhim(idRapPhim);
+//        RapPhim rapPhim = new RapPhim();
+//        rapPhim.setIdRapPhim(idRapPhim);
+        RapPhim rapPhim = cinemaService.getCinemaById(idRapPhim);
         phongChieuPhim.setRapPhim(rapPhim);
         PhongChieuPhim existingRoom = roomService.findRoomByNameAndCinemaId(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
         if (existingRoom != null) {
