@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý ghế</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --secondary-color: #6c757d;
+      --success-color: #28a745;
+      --danger-color: #dc3545;
+      --warning-color: #ffc107;
+      --info-color: #17a2b8;
+      --light-color: #f8f9fa;
+      --neutral-color: #e9ecef;
+      --text-color: #212529;
+      --border-color: #dee2e6;
+      --background-gradient: linear-gradient(135deg, #eef2f7, #e6f0fa);
+      --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      --border-radius: 0.5rem;
+      --transition-speed: 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background-gradient);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 80px;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: #fff;
+      padding: 15px 20px;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      margin: 0;
+      color: #fff;
+    }
+
+    .header .btn-back {
+      background-color: #fff;
+      color: var(--primary-color);
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition-speed);
+    }
+
+    .header .btn-back:hover {
+      background-color: var(--light-color);
+      transform: translateY(-1px);
+    }
+
+    /* Container */
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: var(--shadow);
+      margin: 20px auto;
+      animation: fadeIn 0.5s ease-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* Screen */
+    .screen {
+      width: 100%;
+      height: 50px;
+      background: linear-gradient(180deg, #212529, #343a40);
+      border-radius: var(--border-radius);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-weight: 600;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    }
+
+    /* Seating Chart */
+    .row-section {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 15px;
+      padding: 10px 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto 30px auto;
+      align-items: center;
+    }
+
+    .row-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-right: 5px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .chair-row {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 45px;
+      align-items: center;
+    }
+
+    .chair-btn {
+      height: 45px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-width: 45px;
+      width: 45px;
+      color: #fff;
+      user-select: none;
+    }
+
+    .chair-btn:not(.chair-unavailable):not(.chair-unavailable-doi):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .chair-btn:hover::after {
+      content: attr(aria-label);
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      z-index: 10;
+      opacity: 0;
+      animation: fadeInTooltip 0.2s ease forwards;
+    }
+
+    @keyframes fadeInTooltip {
+      to { opacity: 1; }
+    }
+
+    .chair-btn.selected {
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .chair-thuong {
+      background: linear-gradient(145deg, #6c757d, #5a6268);
+    }
+    .chair-vip {
+      background: linear-gradient(145deg, #ffc107, #e0a800);
+      color: var(--text-color);
+    }
+    .chair-doi {
+      background: linear-gradient(145deg, #17a2b8, #138496);
+      min-width: 98px;
+      width: 98px;
+    }
+    .chair-unavailable, .chair-unavailable-doi {
+      background: linear-gradient(145deg, #e9ecef, #dee2e6);
+      border-color: #ced4da;
+      color: var(--secondary-color);
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+    .chair-unavailable-doi {
+      min-width: 98px;
+      width: 98px;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--text-color);
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+    }
+
+    /* Form Section */
+    .form-section {
+      background: #fff;
+      padding: 25px;
+      border-radius: var(--border-radius);
+      margin-top: 0;
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .selected-chair {
+      padding: 12px 15px;
+      background: var(--neutral-color);
+      border: 1px solid #ced4da;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      display: none;
+      color: var(--text-color);
+    }
+
+    .selected-chair span {
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-left: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-color);
+      font-size: 0.9rem;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      background-color: #fff;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px 12px;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    small.form-text {
+      font-size: 0.8rem;
+      color: var(--secondary-color);
+      margin-top: 5px;
+      display: block;
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      color: #fff;
+      text-decoration: none;
+      transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .btn-save {
+      background-color: var(--primary-color);
+    }
+
+    .btn-save:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-save:disabled {
+      background-color: var(--secondary-color);
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-cancel {
+      background-color: var(--secondary-color);
+    }
+
+    .btn-cancel:hover {
+      background-color: #5a6268;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success-color);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      z-index: 1001;
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideInToast 0.5s ease forwards, slideOutToast 0.5s ease 3s forwards;
+    }
+
+    .toast.error {
+      background: var(--danger-color);
+    }
+
+    @keyframes slideInToast {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slideOutToast {
+      to { opacity: 0; transform: translateX(100%); }
+    }
+
+    /* No Data Message */
+    .no-data {
+      text-align: center;
+      color: var(--secondary-color);
+      font-size: 1rem;
+      margin: 20px 0;
+      font-style: italic;
+      width: 100%;
+      padding: 15px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+      border: 1px dashed var(--border-color);
+    }
+
+    /* Footer Button Group */
+    .container > .button-group {
+      margin-top: 30px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body { padding: 15px; padding-top: 70px; }
+      .container { padding: 20px; max-width: 100%; }
+      h1 { font-size: 1.5rem; }
+      .row-section { gap: 8px 10px; }
+      .form-section { max-width: 100%; padding: 20px; }
+      .chair-btn {
+        height: 40px;
+        font-size: 0.75rem;
+        min-width: 40px;
+        width: 40px;
+      }
+      .chair-doi, .chair-unavailable-doi {
+        min-width: 86px;
+        width: 86px;
+      }
+      .chair-row { gap: 6px; }
+      .row-label { font-size: 0.8rem; padding-right: 5px; }
+      select { padding: 8px 10px; font-size: 0.9rem; }
+      .btn { padding: 8px 16px; font-size: 0.9rem; }
+      .chair-btn:hover::after { display: none; }
+      .toast { width: 90%; right: 5%; }
+    }
+
+    @media (max-width: 480px) {
+      .chair-btn {
+        height: 36px;
+        min-width: 36px;
+        width: 36px;
+        font-size: 0.7rem;
+      }
+      .chair-doi, .chair-unavailable-doi {
+        min-width: 78px;
+        width: 78px;
+      }
+      .row-label { font-size: 0.75rem; }
+      .row-section { gap: 5px 8px; }
+      .chair-row { gap: 4px; }
+    }
+
+    /* Keyframes for shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1 th:text="${phongChieuPhim != null ? phongChieuPhim.tenPhongChieuPhim : 'Tên phòng'}"></h1>
+  <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim ?: 'defaultRap'}, idPhongChieuPhim=${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : 'defaultPhong'})}" class="btn-back">Quay lại</a>
+</div>
+
+<div th:if="${message}" class="toast" th:classappend="${message.contains('thành công') ? '' : 'error'}" th:text="${message}" id="toast-message" style="display: none;"></div>
+
+<div class="container">
+  <h1 style="font-weight: bold">Quản lý ghế</h1>
+  <div class="screen"><span>Màn hình chiếu</span></div>
+
+  <div th:if="${dsDayGhe != null and not #lists.isEmpty(dsDayGhe)}">
+    <div class="row-section" th:each="dayGhe : ${dsDayGhe}">
+      <div class="row-label" th:text="${dayGhe.tenDayGhe}">A</div>
+      <div class="chair-row">
+        <th:block th:if="${dayGhe.dsGhe != null and not #sets.isEmpty(dayGhe.dsGhe)}">
+          <th:block th:each="ghe, iterStat : ${dayGhe.dsGhe}">
+            <th:block th:if="${dayGhe.loaiGhe == null or dayGhe.loaiGhe.name() != 'DOI' or iterStat.index < 10}">
+              <th:block th:with="loai=${dayGhe.loaiGhe != null ? dayGhe.loaiGhe.name() : 'THUONG'}">
+                <button type="button"
+                        th:id="'chair-' + ${ghe.idGhe}"
+                        class="chair-btn"
+                        th:classappend="${!ghe.trangThaiGhe ? (loai == 'DOI' ? 'chair-unavailable-doi' : 'chair-unavailable') :
+                                            (loai == 'THUONG' ? 'chair-thuong' :
+                                            (loai == 'VIP' ? 'chair-vip' :
+                                            (loai == 'DOI' ? 'chair-doi' : '')))}"
+                        th:text="${loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count}"
+                        th:attr="data-id-ghe=${ghe.idGhe},
+                                   data-chair-label=${dayGhe.tenDayGhe + (loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count)},
+                                   data-trang-thai=${ghe.trangThaiGhe}"
+                        th:disabled="${loai == 'DOI' and !ghe.trangThaiGhe}"
+                        th:onclick="${!ghe.trangThaiGhe and loai != 'DOI'} ? null : 'selectChair(this)'"
+                        th:aria-label="${ghe.trangThaiGhe ? 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Khả dụng' : 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Không khả dụng'}">
+                </button>
+                <th:block th:if="${loai == 'DOI' and iterStat.count % 2 == 1}">
+                  <script th:inline="javascript"></script>
+                </th:block>
+              </th:block>
+            </th:block>
+          </th:block>
+        </th:block>
+        <div th:if="${dayGhe.dsGhe == null or #sets.isEmpty(dayGhe.dsGhe)}" style="padding: 5px 0; margin: 0; font-size: 0.9rem; color: var(--secondary-color); font-style: italic; align-self: center;">
+          (Không có ghế)
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="legend-color chair-thuong"></span> Ghế thường
+      </div>
+      <div class="legend-item">
+        <span class="legend-color chair-vip"></span> Ghế VIP
+      </div>
+      <div class="legend-item">
+        <span class="legend-color chair-doi"></span> Ghế đôi
+      </div>
+      <div class="legend-item">
+        <span class="legend-color chair-unavailable"></span> Không khả dụng
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="selected-chair" id="selected-chair">
+        <p>Đang chỉnh sửa ghế: <span id="chairLabel">N/A</span></p>
+      </div>
+      <form id="chairForm" th:action="@{/seats/update}" method="post">
+        <input type="hidden" name="idGhe" id="idGhe">
+        <input type="hidden" name="idRapPhim" th:value="${idRapPhim}">
+        <input type="hidden" name="idPhongChieuPhim" th:value="${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : ''}">
+        <div class="form-group">
+          <label for="trangThaiGhe">Trạng thái ghế</label>
+          <select id="trangThaiGhe" name="trangThaiGhe" class="form-control" aria-describedby="trangThaiGheHelp">
+            <option value="true">Khả dụng</option>
+            <option value="false">Không khả dụng</option>
+          </select>
+          <small id="trangThaiGheHelp" class="form-text">Chọn trạng thái ghế để cập nhật.</small>
+        </div>
+        <div class="button-group">
+          <button type="submit" class="btn btn-save" id="saveButton" disabled>Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div th:if="${dsDayGhe == null or #lists.isEmpty(dsDayGhe)}" class="no-data">
+    Không có dãy ghế nào được cấu hình cho phòng này.
+  </div>
+
+  <div class="button-group">
+    <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim ?: 'defaultRap'}, idPhongChieuPhim=${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : 'defaultPhong'})}" class="btn btn-cancel">Quay lại</a>
+  </div>
+</div>
+
+<script>
+  let currentSelectedButton = null;
+
+  function selectChair(button) {
+    const isUnavailableSingle = button.classList.contains('chair-unavailable');
+    if (isUnavailableSingle) {
+      button.style.animation = 'shake 0.5s';
+      setTimeout(() => { if(button) button.style.animation = ''; }, 500);
+      return;
+    }
+
+    const idGhe = button.getAttribute('data-id-ghe');
+    const chairLabel = button.getAttribute('data-chair-label');
+    const trangThaiGhe = button.getAttribute('data-trang-thai');
+
+    if (currentSelectedButton && currentSelectedButton !== button) {
+      currentSelectedButton.classList.remove('selected');
+    }
+
+    if (button.classList.contains('selected')) {
+      button.classList.remove('selected');
+      currentSelectedButton = null;
+      document.getElementById('selected-chair').style.display = 'none';
+      document.getElementById('saveButton').disabled = true;
+      document.getElementById('idGhe').value = '';
+      return;
+    } else {
+      button.classList.add('selected');
+      currentSelectedButton = button;
+    }
+
+    const selectedChairDiv = document.getElementById('selected-chair');
+    const chairLabelSpan = document.getElementById('chairLabel');
+    const saveButton = document.getElementById('saveButton');
+    const trangThaiSelect = document.getElementById('trangThaiGhe');
+    const idGheInput = document.getElementById('idGhe');
+
+    idGheInput.value = idGhe;
+    chairLabelSpan.textContent = chairLabel;
+    trangThaiSelect.value = trangThaiGhe;
+
+    selectedChairDiv.style.display = 'block';
+    selectedChairDiv.style.animation = 'none';
+    void selectedChairDiv.offsetWidth;
+    selectedChairDiv.style.animation = 'popIn 0.3s ease-out forwards';
+
+    saveButton.disabled = false;
+  }
+
+  window.onload = function () {
+    const toastMessage = document.getElementById('toast-message');
+    if (toastMessage && toastMessage.textContent && toastMessage.textContent.trim() !== '') {
+      toastMessage.style.display = 'block';
+      setTimeout(() => {
+        if (toastMessage) {
+          toastMessage.style.display = 'none';
+        }
+      }, 3500);
+    }
+
+    document.querySelectorAll('.chair-btn').forEach(button => {
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!button.classList.contains('chair-unavailable')) {
+            selectChair(button);
+          } else {
+            button.style.animation = 'shake 0.5s';
+            setTimeout(() => { if(button) button.style.animation = ''; }, 500);
+          }
+        }
+      });
+
+      if (!button.hasAttribute('onclick')) {
+        button.addEventListener('click', function() {
+          if (!button.classList.contains('chair-unavailable')) {
+            selectChair(this);
+          } else {
+            button.style.animation = 'shake 0.5s';
+            setTimeout(() => { if(button) button.style.animation = ''; }, 500);
+          }
+        });
+      } else {
+        if (button.classList.contains('chair-unavailable') && !button.classList.contains('chair-unavailable-doi')) {
+          button.removeAttribute('onclick');
+        }
+      }
+    });
+
+    document.addEventListener('click', function(event) {
+      const container = document.querySelector('.container');
+      const toastMsg = document.getElementById('toast-message');
+      if (container && !container.contains(event.target) && (!toastMsg || !toastMsg.contains(event.target)) && event.target.tagName !== 'HTML') {
+        if (event.target === document.body) {
+          if (currentSelectedButton) {
+            currentSelectedButton.classList.remove('selected');
+            currentSelectedButton = null;
+            document.getElementById('selected-chair').style.display = 'none';
+            document.getElementById('saveButton').disabled = true;
+            document.getElementById('idGhe').value = '';
+          }
+        }
+      }
+    });
+  };
+</script>
+</body>
+</html>

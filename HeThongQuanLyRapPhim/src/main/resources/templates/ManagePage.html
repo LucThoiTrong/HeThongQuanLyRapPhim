@@ -14,10 +14,70 @@
     <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Map container styling */
+        #cinema-map {
+            height: 500px;
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .map-container {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+        .map-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .legend {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        /* Custom marker animation */
+        .custom-marker {
+            width: 48px;
+            height: 48px;
+            background: #dc2626; /* red-600 */
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
 
+        .custom-marker i {
+            color: white;
+            font-size: 20px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -27,22 +87,23 @@
                                     aria-label="Hide Sidebar"></a>
     <!-- Navbar Right Menu-->
     <ul class="app-nav">
-
-
-        <!-- User Menu-->
-        <li><a class="app-nav__item" href="/index.html"><i class='bx bx-log-out bx-rotate-180'></i> </a>
-
+        <!-- User Menu -->
+        <li>
+            <a class="app-nav__item" th:href="@{/signin}">
+                <i class='bx bx-log-out bx-rotate-180'></i>
+            </a>
+        </li>
         </li>
     </ul>
 </header>
 <!-- Sidebar menu-->
 <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
 <aside class="app-sidebar">
-    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="/images/AvatarAdmin.png" width="3000"
+    <div class="app-sidebar__user"><img class="app-sidebar__user" src="/images/Logo.png" width="1000"
                                         alt="User Image">
         <div>
-            <p class="app-sidebar__user-name"><b>Võ Trường</b></p>
-            <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+            <p class="app-sidebar__user-name"><b>ADMIN</b></p>
+            <p class="app-sidebar__user-designation" STYLE="font-weight: bold">Chào mừng bạn trở lại!</p>
         </div>
     </div>
     <hr>
@@ -79,184 +140,21 @@
             </div>
         </div>
     </div>
+    <!-- Map Section -->
     <div class="row">
-        <!--Left-->
-        <div class="col-md-12 col-lg-6">
-            <div class="row">
-                <!-- col-6 -->
-                <div class="col-md-6">
-                    <div class="widget-small primary coloured-icon"><i class='icon bx bxs-user-account fa-3x'></i>
-                        <div class="info">
-                            <h4>Tổng khách hàng</h4>
-                            <p><b>56 khách hàng</b></p>
-                            <p class="info-tong">Tổng số khách hàng được quản lý.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- col-6 -->
-                <div class="col-md-6">
-                    <div class="widget-small info coloured-icon"><i class='icon bx bxs-data fa-3x'></i>
-                        <div class="info">
-                            <h4>Tổng sản phẩm</h4>
-                            <p><b>1850 sản phẩm</b></p>
-                            <p class="info-tong">Tổng số sản phẩm được quản lý.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- col-6 -->
-                <div class="col-md-6">
-                    <div class="widget-small warning coloured-icon"><i class='icon bx bxs-shopping-bags fa-3x'></i>
-                        <div class="info">
-                            <h4>Tổng đơn hàng</h4>
-                            <p><b>247 đơn hàng</b></p>
-                            <p class="info-tong">Tổng số hóa đơn bán hàng trong tháng.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- col-6 -->
-                <div class="col-md-6">
-                    <div class="widget-small danger coloured-icon"><i class='icon bx bxs-error-alt fa-3x'></i>
-                        <div class="info">
-                            <h4>Sắp hết hàng</h4>
-                            <p><b>4 sản phẩm</b></p>
-                            <p class="info-tong">Số sản phẩm cảnh báo hết cần nhập thêm.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- col-12 -->
-                <div class="col-md-12">
-                    <div class="tile">
-                        <h3 class="tile-title">Tình trạng đơn hàng</h3>
-                        <div>
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>ID đơn hàng</th>
-                                    <th>Tên khách hàng</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Trạng thái</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>AL3947</td>
-                                    <td>Phạm Thị Ngọc</td>
-                                    <td>
-                                        19.770.000 đ
-                                    </td>
-                                    <td><span class="badge bg-info">Chờ xử lý</span></td>
-                                </tr>
-                                <tr>
-                                    <td>ER3835</td>
-                                    <td>Nguyễn Thị Mỹ Yến</td>
-                                    <td>
-                                        16.770.000 đ
-                                    </td>
-                                    <td><span class="badge bg-warning">Đang vận chuyển</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MD0837</td>
-                                    <td>Triệu Thanh Phú</td>
-                                    <td>
-                                        9.400.000 đ
-                                    </td>
-                                    <td><span class="badge bg-success">Đã hoàn thành</span></td>
-                                </tr>
-                                <tr>
-                                    <td>MT9835</td>
-                                    <td>Đặng Hoàng Phúc	</td>
-                                    <td>
-                                        40.650.000 đ
-                                    </td>
-                                    <td><span class="badge bg-danger">Đã hủy	</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- / div trống-->
-                    </div>
-                </div>
-                <!-- / col-12 -->
-                <!-- col-12 -->
-                <div class="col-md-12">
-                    <div class="tile">
-                        <h3 class="tile-title">Khách hàng mới</h3>
-                        <div>
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Tên khách hàng</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Số điện thoại</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>#183</td>
-                                    <td>Hột vịt muối</td>
-                                    <td>21/7/1992</td>
-                                    <td><span class="tag tag-success">0921387221</span></td>
-                                </tr>
-                                <tr>
-                                    <td>#219</td>
-                                    <td>Bánh tráng trộn</td>
-                                    <td>30/4/1975</td>
-                                    <td><span class="tag tag-warning">0912376352</span></td>
-                                </tr>
-                                <tr>
-                                    <td>#627</td>
-                                    <td>Cút rang bơ</td>
-                                    <td>12/3/1999</td>
-                                    <td><span class="tag tag-primary">01287326654</span></td>
-                                </tr>
-                                <tr>
-                                    <td>#175</td>
-                                    <td>Hủ tiếu nam vang</td>
-                                    <td>4/12/20000</td>
-                                    <td><span class="tag tag-danger">0912376763</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
-                </div>
-                <!-- / col-12 -->
+        <div class="col-md-12">
+            <div class="map-container">
+                <h2 class="map-title">Vị Trí Các Chi Nhánh Rạp Phim</h2>
+                <div id="cinema-map"></div>
             </div>
         </div>
-        <!--END left-->
-        <!--Right-->
-        <div class="col-md-12 col-lg-6">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="tile">
-                        <h3 class="tile-title">Dữ liệu 6 tháng đầu vào</h3>
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <canvas class="embed-responsive-item" id="lineChartDemo"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="tile">
-                        <h3 class="tile-title">Thống kê 6 tháng doanh thu</h3>
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <canvas class="embed-responsive-item" id="barChartDemo"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <!--END right-->
     </div>
-
-
+    <!-- Footer -->
     <div class="text-center" style="font-size: 13px">
         <p><b>Copyright
             <script type="text/javascript">
                 document.write(new Date().getFullYear());
-            </script> Phần mềm quản lý bán hàng | Dev By Trường
+            </script> Phần mềm quản lý bán hàng | Dev By Nhóm 1 - HCMUTE
         </b></p>
     </div>
 </main>
@@ -273,36 +171,64 @@
 <!--===============================================================================================-->
 <script type="text/javascript" src="/js/plugins/chart.js"></script>
 <!--===============================================================================================-->
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+<!-- Map Initialization Script -->
 <script type="text/javascript">
-    var data = {
-        labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
-        datasets: [{
-            label: "Dữ liệu đầu tiên",
-            fillColor: "rgba(255, 213, 59, 0.767), 212, 59)",
-            strokeColor: "rgb(255, 212, 59)",
-            pointColor: "rgb(255, 212, 59)",
-            pointStrokeColor: "rgb(255, 212, 59)",
-            pointHighlightFill: "rgb(255, 212, 59)",
-            pointHighlightStroke: "rgb(255, 212, 59)",
-            data: [20, 59, 90, 51, 56, 100]
-        },
-            {
-                label: "Dữ liệu kế tiếp",
-                fillColor: "rgba(9, 109, 239, 0.651)  ",
-                pointColor: "rgb(9, 109, 239)",
-                strokeColor: "rgb(9, 109, 239)",
-                pointStrokeColor: "rgb(9, 109, 239)",
-                pointHighlightFill: "rgb(9, 109, 239)",
-                pointHighlightStroke: "rgb(9, 109, 239)",
-                data: [48, 48, 49, 39, 86, 10]
-            }
-        ]
-    };
-    var ctxl = $("#lineChartDemo").get(0).getContext("2d");
-    var lineChart = new Chart(ctxl).Line(data);
+    // Initialize the map
+    var map = L.map('cinema-map').setView([10.7769, 106.7009], 12); // Centered on Ho Chi Minh City
 
-    var ctxb = $("#barChartDemo").get(0).getContext("2d");
-    var barChart = new Chart(ctxb).Bar(data);
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18
+    }).addTo(map);
+
+    // Custom marker icon (movie reel icon)
+    var cinemaIcon = L.divIcon({
+        className: '',
+        html: '<div class="custom-marker"><i class="fas fa-film"></i></div>',
+        iconSize: [48, 48],
+        iconAnchor: [24, 48],
+        popupAnchor: [0, -50]
+    });
+
+    // Sample cinema branch locations
+    var branches = [
+        {
+            name: "Cinema Thủ Đức",
+            address: "123 Võ Văn Ngân, Thủ Đức, TP.HCM",
+            coords: [10.8503, 106.7719]
+        },
+        {
+            name: "Cinema Quận 1",
+            address: "45 Lê Lợi, Quận 1, TP.HCM",
+            coords: [10.7750, 106.7000]
+        },
+        {
+            name: "Cinema Quận 7",
+            address: "789 Nguyễn Văn Linh, Quận 7, TP.HCM",
+            coords: [10.7298, 106.7215]
+        }
+    ];
+
+    // Add markers for each branch
+    branches.forEach(function(branch) {
+        L.marker(branch.coords, { icon: cinemaIcon })
+            .addTo(map)
+            .bindPopup('<b class="text-lg font-semibold">' + branch.name + '</b><br>' + branch.address);
+    });
+
+    // Add a legend
+    var legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function(map) {
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML = '<b>Chú thích</b><br><i class="fas fa-film text-red-600"></i> Chi nhánh rạp phim';
+        return div;
+    };
+    legend.addTo(map);
 </script>
 <script type="text/javascript">
     //Thời Gian

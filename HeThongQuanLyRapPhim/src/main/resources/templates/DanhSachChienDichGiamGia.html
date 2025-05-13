@@ -258,10 +258,10 @@
             transform: translateY(-3px);
         }
 
-        .theme-toggle {
+        .home-button {
             position: fixed;
-            top: 30px;
-            right: 30px;
+            top: 20px;
+            right: 20px;
             background: var(--primary-gradient);
             border: none;
             border-radius: 50%;
@@ -271,15 +271,19 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: all 0.4s ease;
-            z-index: 1000;
-            pointer-events: auto;
+            box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+            z-index: 2000;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
         }
 
-        .theme-toggle:hover {
-            transform: rotate(360deg);
-            box-shadow: var(--glow);
+        .home-button:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+        }
+
+        .home-button i {
+            font-size: 1.3rem;
+            color: #fff;
         }
 
         @keyframes slideIn {
@@ -351,9 +355,9 @@
     </div>
 </div>
 
-<!-- Theme Toggle Button -->
-<button class="theme-toggle" onclick="toggleTheme()">
-    <i class="fas fa-moon"></i>
+<!-- Home Button -->
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+    <i class="fas fa-home"></i>
 </button>
 
 <!-- Bootstrap JS -->
@@ -386,19 +390,14 @@
         // Attach searchGrid to window for global access
         window.searchGrid = searchGrid;
     });
-
-    // Theme toggle
-    function toggleTheme() {
-        const body = document.body;
-        const currentTheme = body.getAttribute('data-theme');
-        if (currentTheme === 'dark') {
-            body.removeAttribute('data-theme');
-            document.querySelector('.theme-toggle i').classList.replace('fa-sun', 'fa-moon');
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
-        }
-    }
+</script>
+</script>
+// Điều hướng về trang chủ
+<script th:inline="javascript">
+    function goToHome() {
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/manage/}]]*/ '/manage/'}
+    /*]]>*/
 </script>
 </body>
 </html>

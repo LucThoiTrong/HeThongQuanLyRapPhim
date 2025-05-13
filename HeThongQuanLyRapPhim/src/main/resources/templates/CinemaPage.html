@@ -2,118 +2,308 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Chọn Rạp Để Xem Doanh Thu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Rạp Để Xem Thống Kê</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Sử dụng font chữ hiện đại, dễ đọc */
-            margin: 0; /* Loại bỏ margin mặc định của body */
-            padding: 30px 20px; /* Thêm khoảng đệm cho body, nhiều hơn ở trên và dưới */
-            background-color: #f0f2f5; /* Một màu nền xám nhạt cho trang */
-            display: flex; /* Sử dụng Flexbox để căn giữa nội dung chính */
-            justify-content: center; /* Căn giữa theo chiều ngang */
-            align-items: flex-start; /* Căn trên nếu nội dung ít hơn chiều cao màn hình */
-            min-height: calc(100vh - 60px); /* Chiều cao tối thiểu để đảm bảo nội dung được căn giữa ngay cả khi ít */
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
         }
 
         .main-content-wrapper {
             width: 100%;
-            max-width: 650px; /* Giới hạn chiều rộng tối đa của khu vực nội dung */
+            max-width: 1200px;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         .page-title {
-            color: #2c3e50; /* Màu tiêu đề đậm hơn */
+            color: #2c3e50;
             text-align: center;
-            margin-bottom: 35px; /* Tăng khoảng cách dưới tiêu đề */
-            font-size: 2.2em; /* Tăng kích thước font tiêu đề */
+            font-size: 2.8em;
             font-weight: 600;
+            margin-bottom: 40px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f0f0f0;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background 0.3s, transform 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .back-button i {
+            font-size: 1.2em;
+        }
+
+        .back-button:hover {
+            background: #e0e0e0;
+            transform: translateX(-3px);
+        }
+
+        .cinema-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .cinema-card {
-            background-color: #ffffff; /* Nền trắng cho card */
-            border-radius: 12px; /* Bo góc mềm mại hơn */
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Độ bóng tinh tế hơn */
-            padding: 30px; /* Tăng padding bên trong card */
-            margin-bottom: 25px; /* Khoảng cách giữa các card */
-            text-align: center; /* Căn giữa nội dung trong card (như nút bấm) */
-            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Hiệu ứng chuyển động mượt mà */
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-height: 80px; /* Đảm bảo chiều cao đồng đều */
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .cinema-card:hover {
-            transform: translateY(-8px); /* Hiệu ứng nhấc card lên khi hover */
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* Tăng độ bóng khi hover */
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
         }
 
-        .cinema-card .cinema-name {
-            font-size: 1.6em; /* Kích thước tên rạp */
-            font-weight: 600;
-            color: #34495e; /* Màu cho tên rạp */
-            margin-bottom: 20px; /* Khoảng cách giữa tên rạp và nút */
+        .cinema-icon {
+            font-size: 1.8em;
+            color: #e74c3c;
+            flex: 0 0 40px; /* Đảm bảo icon có kích thước cố định */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .cinema-card form {
-            display: block; /* Form chiếm toàn bộ chiều rộng còn lại của card content */
-        }
-
-        .cinema-card button {
-            background-color: #3498db; /* Màu xanh dương hiện đại, thân thiện */
-            color: white;
-            padding: 14px 30px; /* Kích thước nút lớn hơn */
-            border: none;
-            border-radius: 8px; /* Bo góc nút */
-            cursor: pointer;
-            font-size: 1.05em; /* Kích thước chữ trên nút */
+        .cinema-name {
+            font-size: 1.3em;
             font-weight: 500;
-            text-transform: uppercase; /* Viết hoa chữ trên nút (tùy chọn) */
-            letter-spacing: 0.5px; /* Khoảng cách chữ (tùy chọn) */
-            transition: background-color 0.25s ease, transform 0.1s ease; /* Hiệu ứng cho nút */
-            width: auto; /* Nút tự động co giãn theo nội dung */
-            min-width: 220px; /* Chiều rộng tối thiểu cho nút */
-            display: inline-block; /* Để nút không chiếm toàn bộ dòng nếu không cần */
+            color: #2c3e50;
+            flex: 1; /* Chiếm không gian còn lại */
+            display: flex;
+            align-items: center;
         }
 
-        .cinema-card button:hover {
-            background-color: #2980b9; /* Màu đậm hơn khi hover */
-            transform: scale(1.03); /* Phóng to nhẹ nút khi hover */
+        .action-container {
+            position: relative;
+            flex: 0 0 160px; /* Đảm bảo nút hành động có kích thước cố định */
         }
 
-        .cinema-card button:active {
-            transform: scale(0.98); /* Thu nhỏ nhẹ nút khi nhấn */
+        .action-button {
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%; /* Đảm bảo nút chiếm toàn bộ chiều rộng container */
+            height: 40px; /* Chiều cao cố định để đồng đều */
+            transition: background 0.3s, transform 0.2s;
         }
 
+        .action-button i {
+            font-size: 0.9em;
+        }
+
+        .action-button:hover {
+            background: linear-gradient(45deg, #2980b9, #27ae60);
+            transform: scale(1.05);
+        }
+
+        .action-button:active {
+            transform: scale(0.95);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: #fff;
+            min-width: 200px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            z-index: 100;
+            padding: 8px 0;
+        }
+
+        .dropdown-menu a {
+            color: #333;
+            padding: 12px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95em;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f4f4f4;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+            animation: slideDown 0.3s ease-in-out;
+        }
 
         .empty-state-container {
             text-align: center;
-            padding: 50px 30px; /* Tăng padding */
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            padding: 60px 30px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             margin-top: 30px;
         }
 
+        .empty-state-container i {
+            font-size: 3em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
         .empty-state-container p {
-            font-size: 1.25em; /* Kích thước chữ lớn hơn */
-            color: #7f8c8d; /* Màu chữ xám hơn */
+            font-size: 1.3em;
+            color: #7f8c8d;
             line-height: 1.6;
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .cinema-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2.2em;
+            }
+
+            .cinema-card {
+                gap: 10px;
+            }
+
+            .cinema-icon {
+                flex: 0 0 30px;
+                font-size: 1.5em;
+            }
+
+            .cinema-name {
+                font-size: 1.2em;
+            }
+
+            .action-button {
+                font-size: 0.9em;
+                padding: 8px 16px;
+                height: 36px;
+            }
+
+            .action-container {
+                flex: 0 0 140px;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="main-content-wrapper">
+    <!-- Nút quay lại -->
+    <a href="javascript:history.back()" class="back-button">
+        <i class="fas fa-arrow-left"></i> Quay lại
+    </a>
+
     <div th:if="${not #lists.isEmpty(dsRapPhim)}">
-        <h1 class="page-title">Chọn Rạp Để Xem Doanh Thu</h1>
-        <div th:each="rap : ${dsRapPhim}" class="cinema-card">
-            <div class="cinema-name" th:text="${rap.tenRapPhim}">Tên Rạp Phim</div>
-            <form th:action="@{/revenue/{id}/{nam}(id=${rap.idRapPhim}, nam = ${#dates.year(#dates.createNow())})}" method="post">
-                <button type="submit">Xem Doanh Thu</button>
-            </form>
+        <h1 class="page-title">Chọn Rạp Để Xem Thống Kê</h1>
+
+        <div class="cinema-grid">
+            <th:block th:with="currentYear=${#dates.year(#dates.createNow())}, currentMonth=${#dates.month(#dates.createNow())}">
+                <div th:each="rap : ${dsRapPhim}" class="cinema-card">
+                    <i class="fas fa-film cinema-icon"></i>
+                    <div class="cinema-name" th:text="${rap.tenRapPhim}">Tên Rạp Phim</div>
+                    <div class="action-container">
+                        <button type="button" class="action-button" th:attr="onclick=|toggleMenu('menu-${rap.idRapPhim}')|">
+                            Xem thống kê
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu" th:id="'menu-' + ${rap.idRapPhim}">
+                            <a th:href="@{/revenue/{idRapPhim}/{nam}(idRapPhim=${rap.idRapPhim}, nam=${currentYear})}">
+                                <i class="fas fa-calendar-alt fa-fw"></i> Xem theo năm
+                            </a>
+                            <a th:href="@{/revenue/{idRapPhim}/{nam}/{thang}(idRapPhim=${rap.idRapPhim}, nam=${currentYear}, thang=${currentMonth})}">
+                                <i class="fas fa-calendar-day fa-fw"></i> Xem theo tháng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </th:block>
         </div>
     </div>
 
     <div th:if="${#lists.isEmpty(dsRapPhim)}" class="empty-state-container">
+        <i class="fas fa-theater-masks"></i>
         <p>Hiện tại không có thông tin rạp chiếu phim nào để hiển thị. <br>Vui lòng quay lại sau!</p>
     </div>
 </div>
+
+<script>
+    function toggleMenu(menuId) {
+        closeAllMenus(menuId);
+        const menu = document.getElementById(menuId);
+        if (menu) {
+            menu.classList.toggle('show');
+        }
+    }
+
+    function closeAllMenus(exceptMenuId = null) {
+        const dropdowns = document.querySelectorAll('.dropdown-menu.show');
+        dropdowns.forEach(menu => {
+            if (menu.id !== exceptMenuId) {
+                menu.classList.remove('show');
+            }
+        });
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.closest('.action-container')) {
+            closeAllMenus();
+        }
+    }
+</script>
 
 </body>
 </html>

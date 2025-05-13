@@ -9,20 +9,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Google Fonts (Poppins) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- GSAP cho animation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     <!-- Tippy.js cho tooltip -->
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <!-- Lottie Player -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <!-- Hover.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css">
     <style>
         :root {
             --primary-color: #0a3d62;
-            --secondary-color: #6c757d;
+            --secondary-color: #1bff00;
             --danger-color: #dc3545;
             --success-color: #28a745;
             --info-color: #17a2b8;
@@ -59,28 +55,6 @@
             line-height: 1.6;
             position: relative;
             overflow-x: hidden;
-        }
-
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .ambient-light {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 20%, rgba(10, 61, 98, 0.2), transparent 70%);
-            animation: ambientMove 15s infinite alternate;
-            z-index: -2;
-            pointer-events: none;
         }
 
         header {
@@ -150,7 +124,6 @@
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
-            transform: perspective(600px) rotateX(0deg) rotateY(0deg);
             animation: gradientFlow 3s ease infinite;
         }
 
@@ -274,6 +247,7 @@
             overflow: hidden;
             background-color: var(--card-background);
             position: relative;
+            z-index: 10;
         }
 
         th, td {
@@ -313,9 +287,6 @@
             align-items: center;
             gap: 10px;
             box-shadow: var(--card-shadow);
-            transform: translateY(-20px);
-            opacity: 0;
-            animation: slideIn 0.5s forwards;
         }
 
         .alert-success {
@@ -334,12 +305,6 @@
             background-color: #f8d7da;
             color: #721c24;
             border-color: #f5c6cb;
-        }
-
-        .alert-hidden {
-            opacity: 0;
-            transform: translateY(-20px);
-            visibility: hidden;
         }
 
         .status-badge {
@@ -384,13 +349,10 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            opacity: 0;
-            transition: opacity 0.4s ease;
         }
 
         .dialog-overlay.show {
             display: flex;
-            opacity: 1;
         }
 
         .dialog-box {
@@ -403,8 +365,6 @@
             max-height: 80vh;
             display: flex;
             flex-direction: column;
-            transform: scale(0.7);
-            opacity: 0;
             border: 2px solid transparent;
             background: linear-gradient(var(--card-background), var(--card-background)) padding-box,
             linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62) border-box;
@@ -477,8 +437,6 @@
             padding: 10px 0;
             border-bottom: 1px dotted var(--border-color);
             transition: var(--transition);
-            opacity: 0;
-            transform: translateX(-20px);
         }
 
         .history-list li:hover {
@@ -497,65 +455,21 @@
         }
 
         @keyframes gradientFlow {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         @keyframes neonPulse {
-            0% {
-                transform: scale(1);
-                text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            }
-            50% {
-                transform: scale(1.2);
-                text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            }
-            100% {
-                transform: scale(1);
-                text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            }
+            0% { transform: scale(1); text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+            50% { transform: scale(1.2); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+            100% { transform: scale(1); text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
         }
 
         @keyframes badgePulse {
-            0% {
-                box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 15px rgba(40, 167, 69, 0.8);
-            }
-            100% {
-                box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
-            }
-        }
-
-        @keyframes slideIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes dialogFadeIn {
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        @keyframes ambientMove {
-            0% {
-                background-position: 20% 20%;
-            }
-            100% {
-                background-position: 80% 80%;
-            }
+            0% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(40, 167, 69, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
         }
 
         @media (max-width: 768px) {
@@ -582,14 +496,12 @@
                 width: 100%;
             }
 
-            table, thead, tbody, th, td, tr {
+            table, tbody, td, tr {
                 display: block;
             }
 
-            thead tr {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
+            thead {
+                display: none;
             }
 
             tr {
@@ -598,9 +510,6 @@
                 border-radius: var(--border-radius);
                 box-shadow: var(--card-shadow);
                 background-color: var(--card-background);
-                opacity: 0;
-                transform: translateY(20px);
-                animation: slideIn 0.5s forwards;
             }
 
             td {
@@ -655,11 +564,6 @@
     </style>
 </head>
 <body>
-<!-- Hiệu ứng ánh sáng môi trường -->
-<div class="ambient-light"></div>
-<!-- Hiệu ứng hạt động cho nền -->
-<canvas id="particles"></canvas>
-
 <header>
     <div class="logo">
         <i class="fa-solid fa-film"></i> Cinema Admin
@@ -697,7 +601,8 @@
         <tr th:if="${danhSachKhachHang == null or #lists.isEmpty(danhSachKhachHang)}">
             <td colspan="5" style="text-align: center; padding: 1rem;">Không có dữ liệu khách hàng nào để hiển thị.</td>
         </tr>
-        <tr th:each="customer, iterStat : ${danhSachKhachHang}">
+        <tr th:each="customer, iterStat : ${danhSachKhachHang}"
+            th:if="${customer != null and customer.hoTen != null}">
             <td data-label="Họ Tên:" th:text="${customer.hoTen}"></td>
             <td data-label="Email:" th:text="${customer.email}"></td>
             <td data-label="SĐT:" th:text="${customer.soDienThoai}"></td>
@@ -755,46 +660,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Tự động ẩn thông báo flash message
+        // Tự động ẩn thông báo flash message sau 3 giây
         const flashMessage = document.getElementById('flash-message');
         if (flashMessage) {
-            gsap.to(flashMessage, {
-                opacity: 0,
-                y: -20,
-                duration: 0.5,
-                delay: 3,
-                onComplete: () => {
-                    if (flashMessage.parentNode) {
-                        flashMessage.remove();
-                    }
-                }
-            });
+            setTimeout(() => {
+                flashMessage.style.display = 'none';
+            }, 3000);
         }
 
         // Khởi tạo Tippy.js cho tooltip
         tippy('[data-tippy-content]', {
             theme: 'light',
-            animation: 'scale',
             duration: 200,
-        });
-
-        // Hiệu ứng xuất hiện các dòng bảng
-        gsap.from('tbody tr', {
-            opacity: 0,
-            y: 30,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'power2.out'
-        });
-
-        // Hiệu ứng ánh sáng quét qua bảng
-        gsap.to('tbody tr', {
-            boxShadow: '0 0 15px rgba(10, 61, 98, 0.5)',
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut',
-            stagger: 0.2
         });
 
         // Logic cho nút Xóa với SweetAlert2
@@ -813,14 +690,7 @@
                     confirmButtonColor: '#dc3545',
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: '<i class="fa-solid fa-trash"></i> Xóa',
-                    cancelButtonText: '<i class="fa-solid fa-times"></i> Hủy',
-                    animation: true,
-                    showClass: {
-                        popup: 'animate__animated animate__zoomIn'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__zoomOut'
-                    }
+                    cancelButtonText: '<i class="fa-solid fa-times"></i> Hủy'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const form = button.closest('form');
@@ -844,35 +714,13 @@
         function openDialog() {
             if (historyDialog) {
                 historyDialog.classList.add('show');
-                gsap.to('.dialog-box', {
-                    scale: 1,
-                    opacity: 1,
-                    duration: 0.5,
-                    ease: 'back.out(1.7)'
-                });
-                gsap.from('.history-list li', {
-                    opacity: 0,
-                    x: -20,
-                    duration: 0.5,
-                    stagger: 0.1,
-                    ease: 'power2.out',
-                    delay: 0.3
-                });
             }
         }
 
         function closeDialog() {
             if (historyDialog) {
-                gsap.to('.dialog-box', {
-                    scale: 0.7,
-                    opacity: 0,
-                    duration: 0.3,
-                    ease: 'power2.in',
-                    onComplete: () => {
-                        historyDialog.classList.remove('show');
-                        dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
-                    }
-                });
+                historyDialog.classList.remove('show');
+                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
             }
         }
 
@@ -908,119 +756,12 @@
                     })
                     .then(htmlFragment => {
                         dialogContentEl.innerHTML = htmlFragment;
-                        gsap.from('.history-list li', {
-                            opacity: 0,
-                            x: -20,
-                            duration: 0.5,
-                            stagger: 0.1,
-                            ease: 'power2.out'
-                        });
                     })
                     .catch(error => {
                         console.error('Lỗi khi tải fragment lịch sử:', error);
                         dialogContentEl.innerHTML = `<p class="error-message">Không thể tải lịch sử. Vui lòng thử lại sau. (${error.message})</p>`;
                     });
             });
-        });
-
-        // Thêm hiệu ứng Lottie khi click nút
-        const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                const lottieContainer = document.createElement('div');
-                lottieContainer.style.position = 'absolute';
-                lottieContainer.style.top = `${e.offsetY}px`;
-                lottieContainer.style.left = `${e.offsetX}px`;
-                lottieContainer.style.pointerEvents = 'none';
-                lottieContainer.style.zIndex = '10';
-                button.appendChild(lottieContainer);
-                const lottiePlayer = document.createElement('lottie-player');
-                lottiePlayer.setAttribute('src', 'https://assets10.lottiefiles.com/packages/lf20_khzniaya.json');
-                lottiePlayer.setAttribute('background', 'transparent');
-                lottiePlayer.setAttribute('speed', '1');
-                lottiePlayer.setAttribute('style', 'width: 100px; height: 100px;');
-                lottiePlayer.setAttribute('play', '');
-                lottieContainer.appendChild(lottiePlayer);
-                setTimeout(() => {
-                    lottieContainer.remove();
-                }, 1000);
-            });
-        });
-
-        // Hiệu ứng hạt động cho nền (tương tác với chuột)
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particlesArray = [];
-        const numberOfParticles = 80;
-        let mouse = { x: null, y: null };
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 4 + 1;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-                this.color = `hsl(${Math.random() * 60 + 200}, 70%, 50%)`;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.size > 0.2) this.size -= 0.05;
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 100) {
-                    this.speedX += dx / 1000;
-                    this.speedY += dy / 1000;
-                }
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        function handleParticles() {
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-                if (particlesArray[i].size <= 0.2) {
-                    particlesArray.splice(i, 1);
-                    i--;
-                    particlesArray.push(new Particle());
-                }
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            handleParticles();
-            requestAnimationFrame(animateParticles);
-        }
-
-        initParticles();
-        animateParticles();
-
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        });
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
         });
     });
 </script>
