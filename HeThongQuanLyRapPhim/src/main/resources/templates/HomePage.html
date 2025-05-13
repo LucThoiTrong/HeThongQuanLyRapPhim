@@ -16,9 +16,9 @@
         body {
             font-family: 'Inter', Arial, sans-serif;
             line-height: 1.7;
-            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
-            color: #2d3748;
-            padding-top: 80px; /* Cho fixed header */
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee); /* Nền xám nhạt cho body */
+            color: #2d3748; /* Màu chữ mặc định cho body */
+            padding-top: 80px; /* Cho fixed header, điều chỉnh nếu chiều cao header thay đổi */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -35,26 +35,26 @@
             flex-grow: 1;
         }
 
-        /* --- HEADER --- */
+        /* --- HEADER (LIGHT THEME) --- */
         header {
-            background: linear-gradient(90deg, #1a202c, #2d3748);
-            color: #fff;
+            background: #fff; /* Nền trắng cho header */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
             padding: 1.2rem 0;
-            position: fixed; /* Đảm bảo fixed */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
         }
         header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap; /* Base, cho phép wrap */
+            flex-wrap: wrap;
         }
         header .logo a {
-            color: #fff;
+            color: #1a202c; /* Màu chữ logo tối */
             font-size: 2em;
             font-weight: 700;
             text-decoration: none;
@@ -62,22 +62,21 @@
             align-items: center;
             gap: 8px;
         }
-        header .logo a i { color: #f56565; font-size: 1.2em; }
+        header .logo a i { color: #f56565; font-size: 1.2em; } /* Màu nhấn đỏ/san hô cho icon logo */
 
-        /* Base style cho nav (quan trọng cho responsive) */
         header nav {
-            flex-grow: 1; /* Cho phép nav chiếm không gian */
+            flex-grow: 1;
             display: flex;
-            justify-content: center; /* Căn giữa ul bên trong */
+            justify-content: center;
         }
         header nav ul {
             list-style: none;
-            display: flex; /* Cho các li nằm ngang */
-            gap: 20px; /* Khoảng cách mặc định */
+            display: flex;
+            gap: 20px;
             padding-left: 0;
         }
         header nav ul li a {
-            color: #e2e8f0;
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
             text-decoration: none;
             font-size: 1em;
             padding: 8px 16px;
@@ -86,15 +85,18 @@
             font-weight: 500;
         }
         header nav ul li a:hover,
-        header nav ul li a.active { background: #f56565; color: #fff; }
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .header-actions .btn-login {
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+        .header-actions .btn-login { /* Nút CTA chính giữ màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
             color: #fff;
             padding: 8px 20px;
             text-decoration: none;
@@ -104,26 +106,59 @@
             transition: all 0.3s ease;
         }
         .header-actions .btn-login:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        /* --- CSS CHO USER MENU DROPDOWN --- */
         .header-actions .user-menu-container { position: relative; display: inline-block; }
-        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
-        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
-        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #1a202c; /* Màu chữ tối cho tên user */
+            background-color: transparent;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt khi hover */
+            color: #c53030; /* Màu chữ nhấn khi hover */
+        }
+        .header-actions .user-profile-toggle .user-icon {
+            font-size: 1.3em;
+            color: #1a202c; /* Màu icon user theo màu chữ */
+        }
         .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
         .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
         .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
-        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+
+        .header-actions .dropdown-menu-content { /* Dropdown menu vẫn giữ nền trắng chữ tối */
+            display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff;
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px;
+            z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0;
+        }
         .header-actions .dropdown-menu-content.show { display: block; }
-        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex;
+            align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px;
+        }
         .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
         .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
         .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
-        /* --- KẾT THÚC CSS USER MENU --- */
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover {
+            background-color: #fef2f2; /* Nền đỏ rất nhạt cho active link */
+            color: #e53e3e; /* Màu chữ nhấn cho active link */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i {
+            color: #e53e3e; /* Icon màu nhấn cho active link */
+        }
+        /* --- KẾT THÚC CSS HEADER --- */
+
 
         /* --- HERO SECTION --- */
         .hero { height: 80vh; position: relative; overflow: hidden; margin-bottom: 50px; }
@@ -132,8 +167,8 @@
         .hero-slide.active { opacity: 1; z-index: 2; }
         .hero-slide::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4)); }
         .hero-content { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; height: 100%; padding: 0 20px; max-width: 800px; margin: 0 auto; }
-        .hero h1 { font-size: 3.8em; margin-bottom: 20px; line-height: 1.2; font-weight: 700; text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); }
-        .hero p { font-size: 1.4em; margin-bottom: 30px; font-weight: 300; text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7); }
+        .hero h1 { font-size: 3em; margin-bottom: 20px; line-height: 1.2; font-weight: 700; text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); }
+        .hero p { font-size: 1.2em; margin-bottom: 30px; font-weight: 300; text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7); }
         .hero .btn { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(45deg, #e53e3e, #f56565); color: #fff; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-size: 1.2em; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
         .hero .btn:hover { background: linear-gradient(45deg, #c53030, #e53e3e); transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); }
         .hero-dots { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 4; }
@@ -155,34 +190,65 @@
         .movie-card-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .movie-card h3 { font-size: 1.3em; margin-bottom: 15px; color: #1a202c; font-weight: 600; min-height: 2.6em; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
         .movie-card p.genre { font-size: 0.9em; color: #718096; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
-        .movie-card .btn-detail { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(45deg, #3182ce, #63b3ed); color: #fff; padding: 10px 16px; text-decoration: none; border-radius: 6px; text-align: center; font-size: 0.95em; font-weight: 500; margin-top: auto; transition: all 0.3s ease; }
-        .movie-card .btn-detail:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
+        .movie-card .btn-detail {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(45deg, #e53e3e, #f56565); /* Nút chi tiết màu nhấn */
+            color: #fff; padding: 10px 16px; text-decoration: none;
+            border-radius: 6px; text-align: center; font-size: 0.95em;
+            font-weight: 500; margin-top: auto; transition: all 0.3s ease;
+        }
+        .movie-card .btn-detail:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
         .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(26, 32, 44, 0.8); color: #fff; border: none; padding: 12px; border-radius: 50%; cursor: pointer; z-index: 10; font-size: 1.5em; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
         .carousel-btn:hover { background: #f56565; }
         .carousel-btn.prev { left: -24px; }
         .carousel-btn.next { right: -24px; }
         .carousel-btn:disabled { background: rgba(26, 32, 44, 0.4); cursor: not-allowed; }
 
-        /* --- FOOTER --- */
-        footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 0; margin-top: 40px; }
+
+        /* --- FOOTER (LIGHT THEME) --- */
+        footer {
+            background: #f8f9fa; /* Nền xám rất nhạt cho footer */
+            color: #495057; /* Màu chữ mặc định tối cho footer */
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 40px; /* Đảm bảo có khoảng cách với content */
+            border-top: 1px solid #e0e0e0; /* Đường kẻ mỏng phía trên footer */
+        }
         footer .container { display: flex; flex-direction: column; align-items: center; }
         .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
-        .footer-nav ul li a:hover { color: #fff; }
+        .footer-nav ul li a {
+            color: #495057; /* Màu chữ tối cho link footer */
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+        .footer-nav ul li a:hover {
+            color: #e53e3e; /* Màu chữ nhấn khi hover link footer */
+        }
         .social-media { margin-bottom: 15px; display: flex; justify-content: center; gap: 15px; }
-        .social-media a { color: #bdc3c7; margin: 0; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
-        .social-media a:hover { color: #e74c3c; }
+        .social-media a {
+            color: #495057; /* Màu icon social tối */
+            margin: 0;
+            font-size: 1.6em;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .social-media a:hover {
+            color: #e53e3e; /* Màu icon nhấn khi hover */
+        }
         footer p { font-size: 0.9em; margin-top: 0; line-height: 1.5; }
         footer p:not(:last-child) { margin-bottom: 5px; }
         footer p:last-of-type { margin-top: 5px; }
+        /* --- KẾT THÚC CSS FOOTER --- */
 
-        /* --- RESPONSIVE DESIGN - ĐỒNG BỘ VỚI TRANG PHIM ĐANG CHIẾU --- */
+
+        /* --- RESPONSIVE DESIGN --- */
         @media (max-width: 992px) { /* Tablet Layout */
-            body { padding-top: 70px; }
+            body { padding-top: 70px; } /* Điều chỉnh nếu chiều cao header thay đổi */
             header .container {
-                /* Giữ justify-content: space-between; nếu muốn logo và actions ở hai bên khi nav ở hàng mới
-                   Hoặc dùng space-around nếu muốn các items (logo, actions, nav) được sắp xếp dàn đều khi wrap */
-                justify-content: space-around; /* Theo code gốc của bạn */
+                justify-content: space-around;
             }
             .logo {
                 order: 1;
@@ -216,29 +282,30 @@
         }
 
         @media (max-width: 768px) { /* Mobile Landscape / Small Tablet */
-            body { padding-top: 120px; } /* Điều chỉnh padding-top để header không che nội dung */
+            /* Điều chỉnh padding-top cho body nếu header có chiều cao khác nhau ở các breakpoint */
+            /* Giả sử header light không thay đổi chiều cao đáng kể so với header dark trước đó */
+            body { padding-top: 120px; } /* Cần kiểm tra lại giá trị này nếu header wrap khác đi */
+
             header .container {
-                /* Đảm bảo các items được đẩy ra xa nhau */
                 justify-content: space-between;
                 align-items: center;
             }
             .logo {
                 order: 1;
-                width: auto; /* Logo co lại theo nội dung */
-                text-align: left; /* Căn trái text logo */
-                margin-bottom: 0; /* Reset margin nếu trước đó có */
+                width: auto;
+                text-align: left;
+                margin-bottom: 0;
             }
             header nav {
-                order: 3; /* Nav xuống dưới cùng */
-                width: 100%; /* Nav chiếm toàn bộ chiều rộng */
-                margin-top: 15px; /* Khoảng cách với hàng trên (logo/actions) */
-                justify-content: center; /* Căn giữa các mục nav */
+                order: 3;
+                width: 100%;
+                margin-top: 15px;
+                justify-content: center;
             }
-            /* header nav ul đã có justify-content: center từ base của nav hoặc ul tự căn giữa li khi wrap */
             .header-actions {
-                order: 2; /* Actions nằm cùng hàng với Logo, bên phải */
-                width: auto; /* Actions co lại theo nội dung */
-                margin-top: 0; /* Reset margin nếu trước đó có */
+                order: 2;
+                width: auto;
+                margin-top: 0;
             }
 
             .hero { height: 70vh; }
@@ -252,28 +319,24 @@
         }
 
         @media (max-width: 480px) { /* Mobile Portrait */
-            body { padding-top: 110px; } /* Điều chỉnh padding-top */
+            body { padding-top: 110px; } /* Cần kiểm tra lại giá trị này */
+
             header .container {
-                /* Đảm bảo các items được đẩy ra xa nhau */
                 justify-content: space-between;
                 align-items: center;
             }
-            /* .logo và .header-actions sẽ kế thừa style từ 768px (width: auto, order)
-               và justify-content: space-between trên .container sẽ hoạt động */
-
             header nav {
-                order: 3; /* Nav vẫn ở dưới cùng */
+                order: 3;
                 width: 100%;
-                margin-top: 10px; /* Giảm margin-top một chút nếu cần */
-                /* justify-content: center; đã có */
+                margin-top: 10px;
             }
             header nav ul {
-                gap: 0; /* Bỏ gap, dùng margin cho li */
+                gap: 0;
                 justify-content: center;
                 flex-wrap: wrap;
             }
             header nav ul li {
-                margin: 5px; /* Khoảng cách giữa các mục nav */
+                margin: 5px;
             }
             header nav ul li a {
                 font-size: 0.9em;
@@ -345,11 +408,12 @@
 <div class="main-content-wrapper">
     <section class="hero">
         <div class="hero-slides-container">
-            <div class="hero-slide active" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+1');"></div>
-            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+2');"></div>
-            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+3');"></div>
-            <div class="hero-slide" style="background-image: url('https://via.placeholder.com/1920x1080.png?text=Banner+Phim+4');"></div>
+            <div class="hero-slide active" th:style="|background-image: url('@{/images/anh1.jpg}')|"></div>
+            <div class="hero-slide" th:style="|background-image: url('@{/images/anh2.jpg}')|"></div>
+            <div class="hero-slide" th:style="|background-image: url('@{/images/anh3.jpg}')|"></div>
+            <div class="hero-slide" th:style="|background-image: url('@{/images/anh4.jpg}')|"></div>
         </div>
+
         <div class="hero-content">
             <h1>Khám Phá Thế Giới Điện Ảnh</h1>
             <p>Những bộ phim bom tấn mới nhất, những câu chuyện hấp dẫn đang chờ bạn.</p>
@@ -431,7 +495,6 @@
             <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
         <p>&copy; <span id="currentYear">2024</span> PhimHay. All rights reserved.</p>
-        <p>Giao diện được xây dựng bởi AI.</p>
     </div>
 </footer>
 

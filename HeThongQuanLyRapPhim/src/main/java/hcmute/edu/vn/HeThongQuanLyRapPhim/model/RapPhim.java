@@ -18,7 +18,7 @@ public class RapPhim implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rap_phim")
-    private Integer idRapPhim;
+    private int idRapPhim;
 
     @Column(name = "ten_rap_phim", nullable = false)
     private String tenRapPhim;
@@ -48,11 +48,11 @@ public class RapPhim implements Serializable {
         dsPhongChieuPhim = new HashSet<>();
     }
 
-    public Integer getIdRapPhim() {
+    public int getIdRapPhim() {
         return idRapPhim;
     }
 
-    public void setIdRapPhim(Integer idRapPhim) {
+    public void setIdRapPhim(int idRapPhim) {
         this.idRapPhim = idRapPhim;
     }
 

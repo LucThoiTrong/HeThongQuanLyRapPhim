@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|Thống Kê ${rapPhim.tenRapPhim} - Tháng ${selectedMonth}/${nam}|">Thống Kê Rạp</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e90ff;
+            --secondary-color: #ffffff;
+            --text-color: #2d3748;
+            --accent-color: #ff6b6b;
+            --background-color: #f7fafc;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            background: linear-gradient(90deg, var(--primary-color), #4dabf7);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .cinema-name {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .date-selectors {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .selector-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .selector-group label {
+            font-size: 1.0em;
+            color: var(--secondary-color);
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .selector-group select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            font-size: 0.9em;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 80px;
+        }
+
+        .selector-group select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .selector-group select:focus {
+            outline: none;
+            border: 2px solid var(--accent-color);
+        }
+
+        .charts-area {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            min-width: 300px;
+            max-width: calc(50% - 15px);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chart-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        .chart-container {
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary-color), #f1f5f9);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow-x: auto;
+            transition: transform 0.3s ease;
+            min-height: 450px;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+        }
+
+        canvas {
+            max-width: 100%;
+            min-height: 380px;
+        }
+
+        .button-container {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .export-button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-button:hover {
+            background-color: #1871cc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 992px) {
+            .chart-wrapper {
+                max-width: 100%;
+            }
+            .charts-area {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            .cinema-name {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            .date-selectors {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 15px;
+            }
+            .selector-group {
+                flex-grow: 1;
+            }
+            .selector-group select {
+                width: 100%;
+            }
+            .chart-container {
+                padding: 20px;
+                min-height: 350px;
+            }
+            canvas {
+                min-height: 300px;
+            }
+            .chart-title {
+                font-size: 1.3em;
+            }
+            .button-container {
+                justify-content: center;
+            }
+            .export-button {
+                width: auto;
+                max-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1 class="cinema-name" th:text="${rapPhim.tenRapPhim}">Tên Rạp: Placeholder</h1>
+    <div class="date-selectors">
+        <div class="selector-group">
+            <label for="month-select">Tháng:</label>
+            <select id="month-select" name="month">
+                <option th:each="monthOpt : ${#numbers.sequence(1, 12)}"
+                        th:value="${monthOpt}"
+                        th:text="${'Tháng ' + monthOpt}"
+                        th:selected="${monthOpt == selectedMonth}">Tháng 1</option>
+            </select>
+        </div>
+        <div class="selector-group">
+            <label for="year-select">Năm:</label>
+            <select id="year-select" name="year">
+                <option th:each="yearOpt : ${#numbers.sequence(2020, 2025)}"
+                        th:value="${yearOpt}"
+                        th:text="${yearOpt}"
+                        th:selected="${yearOpt == nam}">2023</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="charts-area">
+    <div class="chart-wrapper">
+        <h2 class="chart-title" th:text="|Số Lượng Combo Bán Ra (Tháng ${selectedMonth}/${nam})|">Số Lượng Combo Bán Ra</h2>
+        <div class="chart-container">
+            <canvas id="comboChart"></canvas>
+        </div>
+        <div class="button-container">
+            <button class="export-button" onclick="saveComboChartAsImage()">Lưu Biểu Đồ (PNG)</button>
+            <button class="export-button" onclick="exportComboDataToExcel()">Tải Excel</button>
+        </div>
+    </div>
+
+    <div class="chart-wrapper">
+        <h2 class="chart-title" th:text="|Doanh Thu Theo Phim (Tháng ${selectedMonth}/${nam})|">Doanh Thu Theo Phim</h2>
+        <div class="chart-container">
+            <canvas id="movieRevenueChart"></canvas>
+        </div>
+        <div class="button-container">
+            <button class="export-button" onclick="saveMovieChartAsImage()">Lưu Biểu Đồ (PNG)</button>
+            <button class="export-button" onclick="exportMovieDataToExcel()">Tải Excel</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Data from backend
+    const comboSalesData = /*[[${soLuongMuaTungCombo}]]*/ {};
+    const movieRevenueData = /*[[${tongDoanhThuTungPhim}]]*/ {};
+    // Lấy ID rạp phim từ model attribute rapPhim.idRapPhim
+    const cinemaId = /*[[${rapPhim.idRapPhim}]]*/ '0';
+    const currentYear = /*[[${nam}]]*/ 2023; // Năm ban đầu được tải
+    const currentMonth = /*[[${selectedMonth}]]*/ 1; // Tháng ban đầu được tải
+    const cinemaName = /*[[${rapPhim.tenRapPhim}]]*/ 'Unknown Cinema';
+
+    // Process data for charts
+    const comboLabels = Object.keys(comboSalesData);
+    const comboQuantities = Object.values(comboSalesData);
+    const movieLabels = Object.keys(movieRevenueData);
+    const movieRevenues = Object.values(movieRevenueData);
+
+    // Initialize charts (Giữ nguyên phần khởi tạo biểu đồ)
+    let comboChartInstance = null;
+    let movieChartInstance = null;
+    function generatePastelColors(count) { /* ... code ... */
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            const hue = Math.floor(Math.random() * 360);
+            const saturation = 70 + Math.random() * 10;
+            const lightness = 75 + Math.random() * 10;
+            colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.8)`);
+        }
+        return colors;
+    }
+    const chartOptionsBase = { /* ... code ... */
+        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { font: { size: 13, family: 'Poppins', weight: '600' }, color: 'var(--text-color)' } }, tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { family: 'Poppins', size: 14, weight: '600' }, bodyFont: { family: 'Poppins', size: 12 }, callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) label += ': '; let value = context.parsed.y; if (context.chart.canvas.id === 'movieRevenueChart') { if (value !== null) { label += value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }); } } else { if (value !== null) { label += value.toLocaleString('vi-VN'); } } return label; } } } }, scales: { y: { beginAtZero: true, title: { display: true, font: { family: 'Poppins', size: 14, weight: '600' }, color: 'var(--text-color)' }, ticks: { font: { family: 'Poppins', size: 12 }, color: 'var(--text-color)' } }, x: { title: { display: true, font: { family: 'Poppins', size: 14, weight: '600' }, color: 'var(--text-color)' }, ticks: { font: { family: 'Poppins', size: 12 }, color: 'var(--text-color)' } } }, animation: { duration: 1000, easing: 'easeOutQuad' }
+    };
+    const ctxCombo = document.getElementById('comboChart')?.getContext('2d');
+    if (ctxCombo) { /* ... code khởi tạo combo chart ... */
+        const comboChartOptions = JSON.parse(JSON.stringify(chartOptionsBase));
+        comboChartOptions.plugins.legend.display = false;
+        comboChartOptions.scales.y.title.text = 'Số Lượng Bán';
+        comboChartOptions.scales.x.title.text = 'Loại Combo';
+        comboChartOptions.scales.y.ticks.callback = function(value) { return value.toLocaleString('vi-VN'); };
+
+        comboChartInstance = new Chart(ctxCombo, {
+            type: 'bar',
+            data: {
+                labels: comboLabels,
+                datasets: [{
+                    label: 'Số Lượng',
+                    data: comboQuantities,
+                    backgroundColor: generatePastelColors(comboLabels.length),
+                    borderColor: generatePastelColors(comboLabels.length).map(c => c.replace('0.8', '1')),
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: comboChartOptions
+        });
+    } else { console.error("Canvas element with ID 'comboChart' not found."); }
+    const ctxMovie = document.getElementById('movieRevenueChart')?.getContext('2d');
+    if (ctxMovie) { /* ... code khởi tạo movie chart ... */
+        const movieChartOptions = JSON.parse(JSON.stringify(chartOptionsBase));
+        movieChartOptions.plugins.legend.display = false;
+        movieChartOptions.scales.y.title.text = 'Doanh Thu (VNĐ)';
+        movieChartOptions.scales.x.title.text = 'Tên Phim';
+        movieChartOptions.scales.y.ticks.callback = function(value) {
+            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
+        };
+
+        movieChartInstance = new Chart(ctxMovie, {
+            type: 'bar',
+            data: {
+                labels: movieLabels,
+                datasets: [{
+                    label: 'Doanh Thu',
+                    data: movieRevenues,
+                    backgroundColor: 'rgba(255, 107, 107, 0.8)',
+                    borderColor: 'rgba(255, 107, 107, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: movieChartOptions
+        });
+    } else { console.error("Canvas element with ID 'movieRevenueChart' not found."); }
+
+
+    // --- BỔ SUNG/CẬP NHẬT PHẦN XỬ LÝ SỰ KIỆN ---
+    const yearSelect = document.getElementById('year-select');
+    const monthSelect = document.getElementById('month-select');
+
+    /**
+     * Hàm xử lý khi người dùng thay đổi tháng hoặc năm.
+     * Sẽ điều hướng trang đến URL mới với các giá trị đã chọn.
+     */
+    function handleDateChange() {
+        // Lấy giá trị năm và tháng đang được chọn trong dropdown
+        const selectedYear = yearSelect.value;
+        const selectedMonth = monthSelect.value;
+
+        // Kiểm tra xem các giá trị có hợp lệ không (đề phòng trường hợp lỗi)
+        if (!selectedYear || !selectedMonth) {
+            console.error("Không thể lấy giá trị tháng hoặc năm đã chọn.");
+            return;
+        }
+
+        // Xây dựng URL mới theo định dạng yêu cầu: /revenue/{idRapPhim}/{nam}/{thang}
+        // Sử dụng biến `cinemaId` đã được lấy từ Thymeleaf ở trên
+        const newUrl = `/revenue/${cinemaId}/${selectedYear}/${selectedMonth}`;
+
+        // Điều hướng trang đến URL mới
+        window.location.href = newUrl;
+    }
+
+    // Gắn hàm xử lý sự kiện 'change' cho cả hai dropdown
+    // Kiểm tra sự tồn tại của element trước khi gắn listener
+    if (yearSelect) {
+        yearSelect.addEventListener('change', handleDateChange);
+    } else {
+        console.error("Không tìm thấy element #year-select");
+    }
+
+    if (monthSelect) {
+        monthSelect.addEventListener('change', handleDateChange);
+    } else {
+        console.error("Không tìm thấy element #month-select");
+    }
+
+    // --- HÀM EXPORT (Giữ nguyên) ---
+    function saveComboChartAsImage() { /* ... code ... */
+        if (comboChartInstance) {
+            const link = document.createElement('a');
+            link.href = comboChartInstance.toBase64Image();
+            link.download = `ComboSales_${cinemaName}_${currentMonth}-${currentYear}.png`;
+            link.click();
+        } else {
+            alert("Không thể lưu biểu đồ Combo.");
+        }
+    }
+    function exportComboDataToExcel() { /* ... code ... */
+        if (comboLabels.length === 0) {
+            alert("Không có dữ liệu Combo để xuất.");
+            return;
+        }
+        const data = comboLabels.map((label, index) => ({
+            'Loại Combo': label,
+            'Số Lượng Bán': comboQuantities[index] || 0
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Combo Sales');
+        worksheet['!cols'] = [ { wch: 30 }, { wch: 15, z: '#,##0' } ];
+        XLSX.writeFile(workbook, `ComboSales_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
+    }
+    function saveMovieChartAsImage() { /* ... code ... */
+        if (movieChartInstance) {
+            const link = document.createElement('a');
+            link.href = movieChartInstance.toBase64Image();
+            link.download = `MovieRevenue_${cinemaName}_${currentMonth}-${currentYear}.png`;
+            link.click();
+        } else {
+            alert("Không thể lưu biểu đồ Doanh thu Phim.");
+        }
+    }
+    function exportMovieDataToExcel() { /* ... code ... */
+        if (movieLabels.length === 0) {
+            alert("Không có dữ liệu Doanh thu Phim để xuất.");
+            return;
+        }
+        const data = movieLabels.map((label, index) => ({
+            'Tên Phim': label,
+            'Doanh Thu (VNĐ)': movieRevenues[index] || 0
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Movie Revenue');
+        worksheet['!cols'] = [ { wch: 40 }, { wch: 20, z: '#,##0 "VNĐ"' } ];
+        XLSX.writeFile(workbook, `MovieRevenue_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

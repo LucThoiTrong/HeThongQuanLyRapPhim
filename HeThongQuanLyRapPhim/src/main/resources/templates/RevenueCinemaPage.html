@@ -213,10 +213,16 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
+    // Lắng nghe sự kiện 'change' trên thẻ select có id là 'year-select'
     document.getElementById('year-select').addEventListener('change', function() {
+        // Lấy giá trị năm vừa được chọn
         const selectedYear = this.value;
+        // Lấy ID của rạp phim từ biến Thymeleaf (đã được truyền từ backend)
         const cinemaId = /*[[${rapPhim.idRapPhim}]]*/ '0';
-        window.location.href = `/revenue/${cinemaId}/${selectedYear}`;
+        // Xây dựng URL mới theo định dạng /revenue/{idRapPhim}/{nam}
+        const newUrl = `/revenue/${cinemaId}/${selectedYear}`;
+        // Điều hướng trang đến URL mới để tải dữ liệu cho năm đã chọn
+        window.location.href = newUrl;
     });
     /*]]>*/
 </script>

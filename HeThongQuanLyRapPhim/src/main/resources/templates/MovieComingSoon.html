@@ -16,10 +16,9 @@
         body {
             font-family: 'Inter', Arial, sans-serif;
             line-height: 1.7;
-            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
-            color: #2d3748;
-            /* Đồng bộ padding-top với trang chủ đã sửa */
-            padding-top: 80px;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee); /* Nền xám nhạt chung */
+            color: #2d3748; /* Màu chữ mặc định */
+            padding-top: 80px; /* Khoảng đệm cho fixed header */
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -32,30 +31,32 @@
             padding: 0 20px;
         }
 
-        .main-content { /* Đổi từ .main-content-wrapper để khớp với cấu trúc trang này */
+        .main-content {
             flex-grow: 1;
         }
 
-        /* --- HEADER (Đồng bộ từ trang chủ) --- */
+        /* --- HEADER (LIGHT THEME) --- */
         header {
-            background: linear-gradient(90deg, #1a202c, #2d3748);
-            color: #fff;
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
             padding: 1.2rem 0;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
         }
+
         header .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
         }
+
         header .logo a {
-            color: #fff;
+            color: #1a202c; /* Màu chữ logo tối */
             font-size: 2em;
             font-weight: 700;
             text-decoration: none;
@@ -63,21 +64,26 @@
             align-items: center;
             gap: 8px;
         }
-        header .logo a i { color: #f56565; font-size: 1.2em; }
+        header .logo a i {
+            color: #f56565; /* Màu nhấn đỏ/san hô cho icon logo */
+            font-size: 1.2em;
+        }
 
         header nav {
             flex-grow: 1;
             display: flex;
             justify-content: center;
         }
+
         header nav ul {
             list-style: none;
             display: flex;
             gap: 20px;
             padding-left: 0;
         }
+
         header nav ul li a {
-            color: #e2e8f0;
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
             text-decoration: none;
             font-size: 1em;
             padding: 8px 16px;
@@ -85,16 +91,21 @@
             transition: all 0.3s ease;
             font-weight: 500;
         }
+
         header nav ul li a:hover,
-        header nav ul li a.active { background: #f56565; color: #fff; }
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .header-actions .btn-login {
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
             color: #fff;
             padding: 8px 20px;
             text-decoration: none;
@@ -104,31 +115,110 @@
             transition: all 0.3s ease;
         }
         .header-actions .btn-login:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        /* --- CSS CHO USER MENU DROPDOWN (Đồng bộ từ trang chủ) --- */
-        .header-actions .user-menu-container { position: relative; display: inline-block; }
-        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
-        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
-        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
-        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
-        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
-        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
-        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
-        .header-actions .dropdown-menu-content.show { display: block; }
-        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
-        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
-        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
-        /* --- KẾT THÚC CSS USER MENU --- */
+        /* --- CSS CHO USER MENU DROPDOWN --- */
+        .header-actions .user-menu-container {
+            position: relative;
+            display: inline-block;
+        }
 
+        .header-actions .user-profile-toggle {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #1a202c; /* Màu chữ tối cho tên user */
+            background-color: transparent;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 8px;
+            cursor: pointer;
+        }
 
-        /* --- PAGE TITLE SECTION (Giữ nguyên từ trang "Phim Sắp Chiếu") --- */
-        .page-header {
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt khi hover */
+            color: #c53030; /* Màu chữ nhấn khi hover */
+        }
+
+        .header-actions .user-profile-toggle .user-icon {
+            font-size: 1.3em;
+            color: #1a202c; /* Màu icon user theo màu chữ */
+        }
+
+        .header-actions .user-profile-toggle #headerUserDisplayName {
+            font-weight: 500;
+        }
+
+        .header-actions .user-profile-toggle .dropdown-arrow {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .header-actions .user-profile-toggle.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .header-actions .dropdown-menu-content { /* Dropdown menu vẫn giữ nền trắng chữ tối */
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 5px);
             background-color: #fff;
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 6px;
+            z-index: 1001;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            padding: 8px 0;
+        }
+
+        .header-actions .dropdown-menu-content.show {
+            display: block;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            gap: 10px;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #718096;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #1a202c;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover {
+            background-color: #fef2f2; /* Nền đỏ rất nhạt cho active link */
+            color: #e53e3e; /* Màu chữ nhấn cho active link */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i {
+            color: #e53e3e; /* Icon màu nhấn cho active link */
+        }
+        /* --- KẾT THÚC CSS CHO USER MENU DROPDOWN --- */
+
+
+        /* --- PAGE TITLE SECTION --- */
+        .page-header {
+            background-color: #fff; /* Nền trắng cho tiêu đề trang */
             padding: 30px 0;
             margin-top: 20px;
             margin-bottom: 30px;
@@ -138,14 +228,18 @@
         }
         .page-header h1 {
             font-size: 2.5em;
-            color: #1a202c;
+            color: #1a202c; /* Chữ tối */
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 10px;
         }
+        .page-header h1 i { /* Thêm màu nhấn cho icon tiêu đề */
+            color: #f56565;
+        }
 
-        /* --- MOVIE LISTING GRID (Giữ nguyên từ trang "Phim Sắp Chiếu") --- */
+
+        /* --- MOVIE LISTING GRID --- */
         .movie-listing-container {
             padding: 0 0 30px 0;
             margin-bottom: 30px;
@@ -156,7 +250,7 @@
             gap: 30px;
         }
         .movie-card {
-            background: #fff;
+            background: #fff; /* Nền trắng cho thẻ phim */
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -174,7 +268,7 @@
             height: 320px;
             object-fit: cover;
         }
-        .movie-card .rating-badge {
+        .movie-card .rating-badge { /* Giữ nguyên màu cam cho rating */
             position: absolute;
             top: 10px;
             right: 10px;
@@ -195,7 +289,7 @@
         .movie-card h3 {
             font-size: 1.3em;
             margin-bottom: 8px;
-            color: #1a202c;
+            color: #1a202c; /* Chữ tối */
             font-weight: 600;
             min-height: 2.6em;
             line-height: 1.3;
@@ -207,18 +301,18 @@
         }
         .movie-card p.genre {
             font-size: 0.9em;
-            color: #718096;
+            color: #718096; /* Chữ xám cho thể loại */
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 6px;
             min-height: 1.8em;
         }
-        .movie-card .btn-detail {
+        .movie-card .btn-detail { /* Nút chi tiết màu nhấn */
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+            background: linear-gradient(45deg, #e53e3e, #f56565);
             color: #fff;
             padding: 10px 16px;
             text-decoration: none;
@@ -230,16 +324,17 @@
             transition: all 0.3s ease;
         }
         .movie-card .btn-detail:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        /* --- FOOTER (Giữ nguyên) --- */
+        /* --- FOOTER (LIGHT THEME) --- */
         footer {
-            background: #2c3e50;
-            color: #bdc3c7;
+            background: #f8f9fa; /* Nền xám rất nhạt cho footer */
+            color: #495057; /* Màu chữ mặc định tối cho footer */
             text-align: center;
             padding: 30px 0;
-            margin-top: auto; /* Để footer dính xuống dưới nếu nội dung không đủ cao */
+            margin-top: auto; /* Đảm bảo footer dính xuống dưới nếu nội dung không đủ cao */
+            border-top: 1px solid #e0e0e0; /* Đường kẻ mỏng phía trên footer */
         }
         footer .container {
             display: flex;
@@ -256,13 +351,13 @@
             gap: 20px;
         }
         .footer-nav ul li a {
-            color: #bdc3c7;
+            color: #495057; /* Màu chữ tối cho link footer */
             text-decoration: none;
             font-size: 0.95em;
             transition: color 0.3s ease;
         }
         .footer-nav ul li a:hover {
-            color: #fff;
+            color: #e53e3e; /* Màu chữ nhấn khi hover link footer */
         }
         .social-media {
             margin-bottom: 15px;
@@ -271,13 +366,13 @@
             gap: 15px;
         }
         .social-media a {
-            color: #bdc3c7;
+            color: #495057; /* Màu icon social tối */
             font-size: 1.6em;
             text-decoration: none;
             transition: color 0.3s ease;
         }
         .social-media a:hover {
-            color: #e74c3c;
+            color: #e53e3e; /* Màu icon nhấn khi hover */
         }
         footer p {
             font-size: 0.9em;
@@ -286,13 +381,20 @@
         footer p:not(:last-child) {
             margin-bottom: 5px;
         }
+        /* --- KẾT THÚC CSS FOOTER --- */
 
 
-        /* --- RESPONSIVE CSS HEADER (Đồng bộ từ trang chủ đã sửa) --- */
-        @media (max-width: 992px) { /* Tablet Layout */
-            body { padding-top: 150px; } /* Điều chỉnh cho header 3 dòng */
+        /* --- RESPONSIVE CSS HEADER --- */
+        /* Lưu ý: Các giá trị padding-top cho body ở các breakpoint cần được kiểm tra và điều chỉnh
+           cẩn thận dựa trên chiều cao thực tế của header khi nó wrap trên các kích thước màn hình khác nhau.
+           Các giá trị dưới đây là dựa trên cấu trúc responsive bạn đã cung cấp.
+        */
+        @media (max-width: 992px) {
+            /* Điều chỉnh padding-top nếu header thay đổi chiều cao đáng kể.
+               Giá trị '150px' từ code gốc có vẻ lớn, có thể giảm bớt nếu header light theme gọn hơn. */
+            body { padding-top: 120px; } /* Giảm ví dụ, cần test thực tế */
             header .container {
-                justify-content: space-around;
+                justify-content: space-around; /* Cho phép các item dàn đều khi wrap */
             }
             .logo {
                 order: 1;
@@ -301,7 +403,7 @@
                 margin-bottom: 10px;
             }
             header nav {
-                order: 3;
+                order: 3; /* Nav xuống dưới cùng */
                 width: 100%;
                 margin-top: 10px;
             }
@@ -311,66 +413,63 @@
                 gap: 10px;
             }
             .header-actions {
-                order: 2;
-                margin-left: 0;
-                width: auto;
-                margin-top: 0; /* Reset margin-top, actions sẽ nằm giữa logo và nav */
-                justify-content: center; /* Căn giữa nút login/user menu nếu nó là item duy nhất trong actions */
-                width: 100%; /* Cho actions chiếm full width để dễ căn giữa nội dung */
-                margin-bottom: 10px; /* Tạo khoảng cách với nav */
+                order: 2; /* Actions nằm giữa logo và nav */
+                width: 100%; /* Chiếm full width để dễ căn giữa */
+                justify-content: center; /* Căn giữa nội dung của actions (ví dụ: nút login) */
+                margin-top: 0;
+                margin-bottom: 10px; /* Khoảng cách với nav */
             }
         }
 
-        @media (max-width: 768px) { /* Mobile Landscape / Small Tablet */
-            body { padding-top: 120px; } /* Điều chỉnh cho header 2 dòng */
+        @media (max-width: 768px) {
+            /* padding-top cho body ở 768px, ví dụ 120px nếu header wrap thành khoảng 2-3 dòng */
+            body { padding-top: 120px; } /* Giữ nguyên hoặc điều chỉnh nếu cần */
             header .container {
-                justify-content: space-between;
-                /* align-items: center; /* Đã có từ base */
+                /* flex-direction: row; là mặc định */
+                justify-content: space-between; /* Logo bên trái, actions bên phải */
+                align-items: center;
             }
             .logo {
                 order: 1;
-                width: auto;
+                width: auto; /* Co lại theo nội dung */
                 text-align: left;
                 margin-bottom: 0;
             }
             header nav {
-                order: 3;
+                order: 3; /* Nav vẫn ở dưới cùng */
                 width: 100%;
-                margin-top: 15px;
+                margin-top: 15px; /* Khoảng cách với hàng trên */
             }
             .header-actions {
-                order: 2;
-                width: auto;
+                order: 2; /* Actions ở cùng hàng với logo */
+                width: auto; /* Co lại theo nội dung */
                 margin-top: 0;
-                margin-bottom: 0; /* Reset margin-bottom từ 992px */
-                justify-content: flex-end; /* Căn phải nút login/user menu */
-                /* width: auto; /* Đã có */
+                margin-bottom: 0; /* Reset margin bottom từ 992px */
+                justify-content: flex-end; /* Căn phải actions */
             }
 
-            /* Các style khác của trang này ở 768px (giữ nguyên) */
+            /* Các style khác của trang này ở 768px */
             .page-header h1 { font-size: 2em; }
             .movie-list-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
             .movie-card { min-width: 0; width: 100%; }
         }
 
-        @media (max-width: 480px) { /* Mobile Portrait */
-            body { padding-top: 110px; } /* Điều chỉnh cho header 2 dòng */
-            /* header .container, .logo, .header-actions, header nav kế thừa từ 768px và base */
+        @media (max-width: 480px) {
+            /* padding-top cho body ở 480px, ví dụ 110px */
+            body { padding-top: 110px; } /* Giữ nguyên hoặc điều chỉnh */
 
             header nav ul {
-                gap: 0;
-                justify-content: center;
-                flex-wrap: wrap;
+                gap: 0; /* Bỏ gap, dùng margin cho li nếu cần */
             }
             header nav ul li {
-                margin: 5px;
+                margin: 5px; /* Khoảng cách giữa các mục nav */
             }
             header nav ul li a {
                 font-size: 0.9em;
                 padding: 6px 12px;
             }
             .header-actions .btn-login,
-            .header-actions .user-profile-toggle { /* Thêm user-profile-toggle để đồng bộ */
+            .header-actions .user-profile-toggle {
                 padding: 6px 12px;
                 font-size: 0.9em;
             }
@@ -378,7 +477,7 @@
             .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
 
 
-            /* Các style khác của trang này ở 480px (giữ nguyên) */
+            /* Các style khác của trang này ở 480px */
             .page-header h1 { font-size: 1.8em; }
             .movie-list-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
             .movie-card img { height: 240px;}
@@ -486,7 +585,6 @@
             <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
         <p>&copy; <span id="currentYear">2024</span> PhimHay. All rights reserved.</p>
-        <p>Giao diện được xây dựng bởi AI.</p>
     </div>
 </footer>
 

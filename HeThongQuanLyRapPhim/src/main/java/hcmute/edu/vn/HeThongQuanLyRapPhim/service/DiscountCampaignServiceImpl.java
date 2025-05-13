@@ -1,6 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChienDichMaGiamGiaRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountCampaignRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,23 +9,23 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ChienDichMaGiamGiaServiceImpl implements ChienDichMaGiamGiaService {
-    private final ChienDichMaGiamGiaRepository chienDichMaGiamGiaRepository;
+public class DiscountCampaignServiceImpl implements DiscountCampaignService {
+    private final DiscountCampaignRepository discountCampaignRepository;
 
     @Autowired
-    public ChienDichMaGiamGiaServiceImpl(ChienDichMaGiamGiaRepository chienDichMaGiamGiaRepository) {
-        this.chienDichMaGiamGiaRepository = chienDichMaGiamGiaRepository;
+    public DiscountCampaignServiceImpl(DiscountCampaignRepository discountCampaignRepository) {
+        this.discountCampaignRepository = discountCampaignRepository;
     }
 
     @Override
     public List<ChienDichGiamGia> findAll() {
-        return chienDichMaGiamGiaRepository.findAll();
+        return discountCampaignRepository.findAll();
     }
 
     @Override
     public ChienDichGiamGia findById(int theId) {
 //        Kiểu dữ liệu Optional giúp xử lý trường hợp dữ liệu có thể null một cách an toàn.
-        Optional<ChienDichGiamGia> result = chienDichMaGiamGiaRepository.findById(theId);
+        Optional<ChienDichGiamGia> result = discountCampaignRepository.findById(theId);
         ChienDichGiamGia chienDichGiamGia = null;
         if (result.isPresent()) {
             chienDichGiamGia = result.get();
@@ -40,11 +40,11 @@ public class ChienDichMaGiamGiaServiceImpl implements ChienDichMaGiamGiaService 
 
     @Override
     public ChienDichGiamGia save(ChienDichGiamGia chienDichGiamGia) {
-        return chienDichMaGiamGiaRepository.save(chienDichGiamGia);
+        return discountCampaignRepository.save(chienDichGiamGia);
     }
 
     @Override
     public void deleteById(int theId) {
-        chienDichMaGiamGiaRepository.deleteById(theId);
+        discountCampaignRepository.deleteById(theId);
     }
 }

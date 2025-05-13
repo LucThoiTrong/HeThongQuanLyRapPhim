@@ -8,7 +8,7 @@ public interface DoiTuongSuDungService {
     List<DoiTuongSuDung> getAllDoiTuongSuDung();
     DoiTuongSuDung getDoiTuongSuDungById(int id);
     DoiTuongSuDung createDoiTuongSuDung(DoiTuongSuDung doiTuongSuDung);
-    DoiTuongSuDung updateDoiTuongSuDung(int id, DoiTuongSuDung doiTuongSuDung);
+    DoiTuongSuDung updateDoiTuongSuDung(DoiTuongSuDung doiTuongSuDung);
     boolean deleteDoiTuongSuDung(int id);
     List<DoiTuongSuDung> getNhanVienChuaCoRap();
 }

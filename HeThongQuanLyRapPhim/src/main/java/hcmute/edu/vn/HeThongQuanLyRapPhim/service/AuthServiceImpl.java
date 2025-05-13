@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password) throws Exception {
+    public TKDoiTuongSuDung register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password) throws Exception {
         if (tkDoiTuongSuDungRepository.findByTenDangNhap(tenDangNhap).isPresent()) {
             throw new Exception("Tên đăng nhập đã được sử dụng");
         }
@@ -49,7 +49,8 @@ public class AuthServiceImpl implements AuthService {
 
         TKDoiTuongSuDung savedTk = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
 
-//        sendVerificationEmail(doiTuongSuDung.getEmail(), savedTk.getIdTKDoiTuongSuDung());
+        return savedTk;
+
     }
 
     @Override
@@ -98,7 +99,18 @@ public class AuthServiceImpl implements AuthService {
         tkDoiTuongSuDungRepository.save(tk);
     }
 
-//    private void sendVerificationEmail(String email, int id) throws MessagingException {
+    @Override
+    public DoiTuongSuDung getDoiTuongSuDungByEmail(String email) {
+        return doiTuongSuDungRepository.getDoiTuongSuDungByEmail(email);
+    }
+
+    @Override
+    public void resetPassword(int id, String newPassword) {
+        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findById(id).orElse(null);
+        tk.setMatKhau(passwordEncoder.encode(newPassword));
+        tkDoiTuongSuDungRepository.save(tk);
+    }
+    //    private void sendVerificationEmail(String email, int id) throws MessagingException {
 //        MimeMessage message = mailSender.createMimeMessage();
 //        MimeMessageHelper helper = new MimeMessageHelper(message, true);
 //

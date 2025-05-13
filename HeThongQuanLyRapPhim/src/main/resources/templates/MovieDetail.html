@@ -35,17 +35,17 @@
             flex-grow: 1;
         }
 
-        /* --- HEADER (Synchronized) --- */
+        /* --- HEADER (LIGHT THEME APPLIED) --- */
         header {
-            background: linear-gradient(90deg, #1a202c, #2d3748);
-            color: #fff;
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
             padding: 1.2rem 0;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
         }
         header .container {
             display: flex;
@@ -54,7 +54,7 @@
             flex-wrap: wrap;
         }
         header .logo a {
-            color: #fff;
+            color: #1a202c; /* Màu chữ logo tối */
             font-size: 2em;
             font-weight: 700;
             text-decoration: none;
@@ -62,12 +62,12 @@
             align-items: center;
             gap: 8px;
         }
-        header .logo a i { color: #f56565; font-size: 1.2em; }
+        header .logo a i { color: #f56565; font-size: 1.2em; } /* Màu nhấn đỏ/san hô cho icon logo */
 
         header nav {
-            flex-grow: 1; /* Đã kích hoạt lại thuộc tính này */
+            flex-grow: 1;
             display: flex;
-            justify-content: center; /* Giữ nguyên để menu ở giữa */
+            justify-content: center;
         }
         header nav ul {
             list-style: none;
@@ -76,7 +76,7 @@
             padding-left: 0;
         }
         header nav ul li a {
-            color: #e2e8f0;
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
             text-decoration: none;
             font-size: 1em;
             padding: 8px 16px;
@@ -85,15 +85,18 @@
             font-weight: 500;
         }
         header nav ul li a:hover,
-        header nav ul li a.active { background: #f56565; color: #fff; }
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .header-actions .btn-login {
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
             color: #fff;
             padding: 8px 20px;
             text-decoration: none;
@@ -103,28 +106,48 @@
             transition: all 0.3s ease;
         }
         .header-actions .btn-login:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        /* CSS CHO USER MENU DROPDOWN (Synchronized) */
+        /* CSS CHO USER MENU DROPDOWN (LIGHT THEME APPLIED) */
         .header-actions .user-menu-container { position: relative; display: inline-block; }
-        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
-        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
-        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle {
+            display: flex; align-items: center; padding: 8px 15px; text-decoration: none;
+            color: #1a202c; /* Màu chữ tối */
+            background-color: transparent; border-radius: 6px; font-size: 1em;
+            font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer;
+        }
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt */
+            color: #c53030; /* Màu chữ nhấn */
+        }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; color: #1a202c; } /* Màu icon theo text */
         .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
         .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
         .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
-        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+        .header-actions .dropdown-menu-content { /* Nền dropdown giữ trắng */
+            display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff;
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px;
+            z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0;
+        }
         .header-actions .dropdown-menu-content.show { display: block; }
-        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex;
+            align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px;
+        }
         .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
         .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
         .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
-        /* KẾT THÚC CSS USER MENU */
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { /* Style cho active link (nếu có class này) */
+            background-color: #fef2f2; /* Nền đỏ rất nhạt */
+            color: #e53e3e; /* Màu chữ nhấn */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #e53e3e; }
+        /* KẾT THÚC CSS HEADER */
 
-        /* --- MAIN CONTENT STYLES FOR MOVIE DETAIL PAGE (Kept from original) --- */
+
+        /* --- MAIN CONTENT STYLES FOR MOVIE DETAIL PAGE (KEPT FROM ORIGINAL AS REQUESTED) --- */
         .movie-detail-wrapper {
             padding: 40px 0;
             background-color: #ffffff;
@@ -215,14 +238,14 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
-        .trailer-btn-detail {
+        .trailer-btn-detail { /* Giữ nguyên màu đỏ như trong code gốc của bạn */
             background: linear-gradient(45deg, #e53e3e, #f56565);
         }
         .trailer-btn-detail:hover {
             background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        .book-ticket-btn-detail {
+        .book-ticket-btn-detail { /* Giữ nguyên màu xanh như trong code gốc của bạn */
             background: linear-gradient(45deg, #3182ce, #63b3ed);
         }
         .book-ticket-btn-detail:hover {
@@ -237,7 +260,12 @@
             margin-bottom: 15px;
             padding-bottom: 8px;
             border-bottom: 2px solid #e2e8f0;
+            /* Thêm để icon và text cùng hàng nếu cần */
+            /* display: inline-flex; align-items: center; gap: 8px; */
         }
+        /* Nếu muốn icon trong .movie-description h3 có màu nhấn: */
+        /* .movie-description h3 i { color: #f56565; } */
+
         .movie-description p {
             margin-bottom: 20px;
             color: #4a5568;
@@ -260,13 +288,19 @@
             font-weight: 600;
             position: relative;
             padding-bottom: 12px;
+            /* Thêm để icon và text cùng hàng nếu cần */
+            /* display: inline-flex; align-items: center; gap: 10px; */
+            /* left: 50%; transform: translateX(-50%); */
         }
-        .reviews-section-wrapper h2::after {
+        /* Nếu muốn icon trong .reviews-section-wrapper h2 có màu nhấn: */
+        /* .reviews-section-wrapper h2 i { color: #f56565; } */
+
+        .reviews-section-wrapper h2::after { /* Gạch chân màu nhấn giữ nguyên */
             content: '';
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 0;
+            bottom: 0; /* Đã có, điều chỉnh nếu cần */
             width: 100px;
             height: 4px;
             background: #f56565;
@@ -292,36 +326,44 @@
         .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568; }
         .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 1em; min-height: 100px; transition: border-color 0.3s ease; }
         .edit-reply-form-container .form-group textarea { min-height: 70px; font-size: 0.95em; }
-        .form-group textarea:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3); }
+        .form-group textarea:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3); } /* Giữ nguyên focus xanh dương theo code gốc */
 
         .star-rating-form { display: flex; align-items: center; gap: 5px; flex-direction: row-reverse; justify-content: flex-end; margin-bottom: 20px; }
         .star-rating-form .star-input { display: none; }
         .star-rating-form .star-label { font-size: 2em; color: #cbd5e0; cursor: pointer; transition: color 0.2s ease; }
         .star-rating-form .star-input:checked ~ .star-label,
         .star-rating-form .star-label:hover,
-        .star-rating-form .star-label:hover ~ .star-label { color: #f6ad55 !important; }
+        .star-rating-form .star-label:hover ~ .star-label { color: #f6ad55 !important; } /* Giữ nguyên màu cam cho sao */
 
         .submit-review-btn { display: inline-flex; align-items: center; gap: 10px; color: #fff; padding: 10px 24px; text-decoration: none; border-radius: 8px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); border: none; cursor: pointer; }
         .submit-review-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2); }
+        /* Giữ nguyên màu xanh lá và vàng cho các nút submit cụ thể này theo code gốc */
         #movie-review-form .submit-review-btn { background: linear-gradient(45deg, #48bb78, #81e6d9); }
         #movie-review-form .submit-review-btn:hover { background: linear-gradient(45deg, #38a169, #4fd1c5); }
+
+        /* Nút "Lưu thay đổi" của edit-reply-form-container và edit-review-form-actual (nếu không có style riêng) sẽ có style mặc định của .submit-review-btn (nếu bạn thêm class này)
+           Hoặc giữ nguyên style inline như trong HTML của bạn cho nút Lưu Thay Đổi của edit-review-form: style="background: linear-gradient(45deg, #ffc107, #ff9800);"
+           và nút Gửi của reply-form: style="background: linear-gradient(45deg, #38a169, #81e6d9);"
+        */
         .edit-reply-form-container .submit-review-btn, .edit-reply-form-container .cancel-edit-reply-btn { padding: 8px 18px; font-size: 0.95em; }
         .edit-reply-form-container .cancel-edit-reply-btn { background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
         .edit-reply-form-container .cancel-edit-reply-btn:hover { background-color: #5a6268; transform: translateY(-1px); }
 
+
         .review-list { margin-top: 30px; }
-        .review-item { background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #63b3ed; }
+        .review-item { background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #63b3ed; } /* Giữ nguyên border xanh */
         .review-item:last-child { margin-bottom: 0; }
 
         .reviewer-info-detail { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .reviewer-name { font-weight: 600; color: #2d3748; font-size: 1.1em; }
         .review-date { font-size: 0.85em; color: #718096; }
-        .review-rating-display { margin-bottom: 10px; font-size: 1.1em; color: #f6ad55; }
+        .review-rating-display { margin-bottom: 10px; font-size: 1.1em; color: #f6ad55; } /* Giữ nguyên màu cam cho sao */
         .review-text { line-height: 1.6; color: #4a5568; margin-bottom: 15px; word-wrap: break-word; }
 
         .review-actions { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
         .review-action-btn { background: none; border: none; cursor: pointer; font-size: 0.9em; font-weight: 500; padding: 5px; transition: color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 5px; }
-        .review-action-btn:hover { transform: translateY(-1px); }
+        .review-action-btn:hover { transform: translateY(-1px); /* text-decoration: underline; Bỏ underline chung, để từng nút tự quyết định */ }
+        /* Giữ nguyên màu các nút action theo code gốc */
         .review-action-btn.reply-btn-detail { color: #3182ce; }
         .review-action-btn.reply-btn-detail:hover { color: #2b6cb0; text-decoration: underline; }
         .review-action-btn.edit-action { color: #fab005; }
@@ -339,21 +381,22 @@
         .reply-item .review-actions { margin-top: 8px; gap: 10px; }
 
 
-        /* --- FOOTER (Synchronized, ensuring margin-top: auto for sticky footer effect) --- */
+        /* --- FOOTER (LIGHT THEME APPLIED) --- */
         footer {
-            background: #2c3e50;
-            color: #bdc3c7;
+            background: #f8f9fa; /* Nền xám rất nhạt */
+            color: #495057; /* Màu chữ tối */
             text-align: center;
             padding: 30px 0;
-            margin-top: auto; /* Changed from fixed 50px to auto */
+            margin-top: auto;
+            border-top: 1px solid #e0e0e0; /* Đường kẻ mỏng */
         }
         footer .container { display: flex; flex-direction: column; align-items: center; }
         .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
-        .footer-nav ul li a:hover { color: #fff; }
+        .footer-nav ul li a { color: #495057; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
+        .footer-nav ul li a:hover { color: #e53e3e; } /* Màu nhấn khi hover */
         .social-media { margin-bottom: 15px; display: flex; justify-content: center; gap: 15px; }
-        .social-media a { color: #bdc3c7; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
-        .social-media a:hover { color: #e74c3c; }
+        .social-media a { color: #495057; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
+        .social-media a:hover { color: #e53e3e; } /* Màu nhấn khi hover (thay vì #e74c3c) */
         footer p { font-size: 0.9em; line-height: 1.5; }
         footer p:not(:last-child) { margin-bottom: 5px; }
 
@@ -369,70 +412,30 @@
 
 
         /* --- RESPONSIVE CSS (Header parts synchronized, content parts kept original or adjusted for new header) --- */
-        @media (max-width: 992px) { /* Tablet Layout */
-            body { padding-top: 150px; } /* Synchronized */
-            /* Header styles from synchronized version */
-            header .container {
-                justify-content: space-around;
-            }
-            .logo {
-                order: 1;
-                width: 100%;
-                text-align: center;
-                margin-bottom: 10px;
-            }
-            header nav {
-                order: 3;
-                width: 100%;
-                margin-top: 10px;
-            }
-            header nav ul {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
-            }
-            .header-actions {
-                order: 2;
-                margin-left: 0;
-                width: 100%; /* Occupy full width to center content */
-                justify-content: center; /* Center the login button/user menu */
-                margin-top: 0; /* Reset margin-top */
-                margin-bottom: 10px; /* Space before nav */
-            }
+        /* Các giá trị padding-top cho body trong media queries cần được kiểm tra và điều chỉnh
+           nếu chiều cao header thay đổi khi responsive với theme sáng.
+           Giữ nguyên các giá trị padding-top gốc của bạn, nhưng hãy lưu ý kiểm tra.
+        */
+        @media (max-width: 992px) {
+            body { padding-top: 150px; }
+            header .container { justify-content: space-around; }
+            .logo { order: 1; width: 100%; text-align: center; margin-bottom: 10px; }
+            header nav { order: 3; width: 100%; margin-top: 10px; }
+            header nav ul { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .header-actions { order: 2; margin-left: 0; width: 100%; justify-content: center; margin-top: 0; margin-bottom: 10px; }
 
-            /* Original content responsive for this page */
             .movie-presentation { flex-direction: column; }
             .movie-poster-detail { width: 100%; max-width: 350px; margin: 0 auto 30px auto; }
             .movie-info-detail h1 { font-size: 2.4em; }
         }
 
-        @media (max-width: 768px) { /* Mobile Landscape / Small Tablet */
-            body { padding-top: 120px; } /* Synchronized */
-            /* Header styles from synchronized version */
-            header .container {
-                justify-content: space-between;
-                align-items: center; /* Kept from base */
-            }
-            .logo {
-                order: 1;
-                width: auto; /* Co-opt to content */
-                text-align: left;
-                margin-bottom: 0; /* Reset for single line with actions */
-            }
-            header nav {
-                order: 3;
-                width: 100%;
-                margin-top: 15px; /* Space from logo/actions row */
-            }
-            .header-actions {
-                order: 2; /* Same row as logo */
-                width: auto; /* Co-opt to content */
-                margin-top: 0;
-                margin-bottom: 0; /* Reset from 992px */
-                justify-content: flex-end; /* Align to the right */
-            }
+        @media (max-width: 768px) {
+            body { padding-top: 120px; }
+            header .container { justify-content: space-between; align-items: center; }
+            .logo { order: 1; width: auto; text-align: left; margin-bottom: 0; }
+            header nav { order: 3; width: 100%; margin-top: 15px; }
+            .header-actions { order: 2; width: auto; margin-top: 0; margin-bottom: 0; justify-content: flex-end; }
 
-            /* Original content responsive for this page */
             .movie-info-detail h1 { font-size: 2em; }
             .action-btn-detail { padding: 10px 20px; font-size: 1em; }
             .movie-meta-info { font-size: 0.9em; }
@@ -443,31 +446,16 @@
             .review-actions { flex-wrap: wrap; }
         }
 
-        @media (max-width: 480px) { /* Mobile Portrait */
-            body { padding-top: 110px; } /* Synchronized */
-            /* Header styles from 768px breakpoint and base will largely apply and work */
-            /* Specific adjustments for smaller nav/actions items */
-            header nav ul {
-                gap: 0;
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-            header nav ul li {
-                margin: 5px;
-            }
-            header nav ul li a {
-                font-size: 0.9em;
-                padding: 6px 12px;
-            }
+        @media (max-width: 480px) {
+            body { padding-top: 110px; }
+            header nav ul { gap: 0; }
+            header nav ul li { margin: 5px; }
+            header nav ul li a { font-size: 0.9em; padding: 6px 12px; }
             .header-actions .btn-login,
-            .header-actions .user-profile-toggle {
-                padding: 6px 12px;
-                font-size: 0.9em;
-            }
+            .header-actions .user-profile-toggle { padding: 6px 12px; font-size: 0.9em; }
             .header-actions .dropdown-menu-content { min-width: 180px; }
             .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
 
-            /* Original content responsive for this page */
             .movie-info-detail h1 { font-size: 1.8em; }
             .movie-actions-detail { flex-direction: column; gap: 15px; }
             .action-btn-detail { width: 100%; justify-content: center;}
@@ -724,7 +712,6 @@
             <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
         <p>© <span id="currentYear">2024</span> PhimHay. All rights reserved.</p>
-        <p>Giao diện được xây dựng bởi AI.</p>
     </div>
 </footer>
 
@@ -734,6 +721,11 @@
         if (yearSpan) {
             yearSpan.textContent = new Date().getFullYear();
         }
+
+        // --- Lấy ID người dùng hiện tại ---
+        const currentUserIdElement = document.getElementById('currentUserId');
+        const currentUserId = currentUserIdElement ? (currentUserIdElement.value || '').trim() : null;
+        const isLoggedIn = currentUserId && currentUserId !== ''; // Biến kiểm tra đăng nhập
 
         // Synchronized JavaScript for User Menu Dropdown
         const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
@@ -754,18 +746,42 @@
             });
         }
 
+        // --- Ẩn/Hiện các thành phần dựa trên trạng thái đăng nhập ---
+        const reviewFormDiv = document.querySelector('.review-form');
+        if (reviewFormDiv) {
+            if (!isLoggedIn) {
+                reviewFormDiv.style.display = 'none'; // Ẩn form đánh giá chính
+                // Optional: Thêm thông báo yêu cầu đăng nhập
+                const loginPrompt = document.createElement('p');
+                loginPrompt.innerHTML = 'Vui lòng <a href="/signin" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> để để lại đánh giá.';
+                loginPrompt.style.textAlign = 'center';
+                loginPrompt.style.marginTop = '20px';
+                reviewFormDiv.parentNode.insertBefore(loginPrompt, reviewFormDiv.nextSibling); // Chèn sau reviewFormDiv
+            } else {
+                reviewFormDiv.style.display = 'block';
+            }
+        }
 
-        // Original scripts for review section and trailer modal
-        const currentUserIdElement = document.getElementById('currentUserId');
-        const currentUserId = currentUserIdElement ? (currentUserIdElement.value || '').trim() : null;
+        document.querySelectorAll('.reply-btn-detail').forEach(button => {
+            if (!isLoggedIn) {
+                button.style.display = 'none'; // Ẩn nút Phản hồi
+            } else {
+                button.style.display = 'inline-flex'; // Hiện nếu đã đăng nhập
+            }
+        });
 
+
+        // --- Logic hiển thị nút Sửa/Xóa (giữ nguyên logic cũ nhưng bổ sung isLoggedIn) ---
         function toggleActionButtons() {
-            if (!currentUserId || currentUserId === '') {
+            // Ẩn tất cả trước nếu chưa đăng nhập
+            if (!isLoggedIn) {
                 document.querySelectorAll('.review-item .review-actions .edit-btn-trigger, .review-item .review-actions form[method="post"], .reply-item .review-actions .edit-reply-btn-trigger, .reply-item .review-actions form[method="post"]').forEach(el => {
                     el.style.display = 'none';
                 });
-                return;
+                return; // Không cần làm gì thêm nếu chưa đăng nhập
             }
+
+            // Nếu đã đăng nhập, kiểm tra quyền sở hữu
             document.querySelectorAll('.review-item').forEach(reviewItem => {
                 const reviewerId = (reviewItem.dataset.reviewerId || '').trim();
                 const editButton = reviewItem.querySelector('.review-actions .edit-btn-trigger');
@@ -791,22 +807,35 @@
                 }
             });
         }
-        toggleActionButtons();
+        toggleActionButtons(); // Gọi hàm này để áp dụng logic
 
+        // --- Logic ẩn/hiện mục đánh giá dựa trên trạng thái phim (giữ nguyên) ---
         const pageContentWrapper = document.querySelector('.page-content-wrapper');
         const reviewsSection = document.querySelector('.reviews-section-wrapper');
         if (pageContentWrapper && reviewsSection) {
             const trangThaiPhim = pageContentWrapper.getAttribute('data-trang-thai-phim');
-            if (trangThaiPhim === 'DANG_CHIEU') {
+            // Hiển thị đánh giá cho cả phim đang chiếu và đã chiếu
+            if (trangThaiPhim === 'DANG_CHIEU' || trangThaiPhim === 'DA_CHIEU') {
                 reviewsSection.style.display = 'block';
             } else {
                 reviewsSection.style.display = 'none';
             }
         }
 
+        // --- THÊM KIỂM TRA ĐĂNG NHẬP VÀO CÁC FORM SUBMIT HANDLER ---
+
+        // Form đánh giá chính
         const mainReviewForm = document.getElementById('movie-review-form');
         if (mainReviewForm) {
             mainReviewForm.addEventListener('submit', (event) => {
+                // Kiểm tra đăng nhập trước tiên
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để gửi đánh giá.');
+                    event.preventDefault();
+                    window.location.href = '/signin'; // Chuyển hướng đến trang đăng nhập
+                    return;
+                }
+                // Các kiểm tra khác (rating, content)
                 const ratingElement = mainReviewForm.querySelector('input[name="diemDanhGia"]:checked');
                 const reviewContent = mainReviewForm.querySelector('#review-content').value;
                 if (mainReviewForm.querySelector('input[name="diemDanhGia"]') && !ratingElement) {
@@ -820,28 +849,74 @@
             });
         }
 
-        document.querySelectorAll('.reply-btn-detail').forEach(button => {
-            button.addEventListener('click', () => {
-                const reviewId = button.dataset.reviewId;
-                const replyFormContainer = document.getElementById(`reply-form-container-${reviewId}`);
-                if (replyFormContainer) {
-                    document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
-                        if (form.id !== `reply-form-container-${reviewId}`) form.style.display = 'none';
-                    });
-                    const isHidden = replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '';
-                    replyFormContainer.style.display = isHidden ? 'block' : 'none';
-                    if (isHidden) replyFormContainer.querySelector('textarea')?.focus();
-                }
-            });
-        });
-
+        // Các form phản hồi mới
         document.querySelectorAll('form[th\\:action*="/replies/new"]').forEach(form => {
             form.addEventListener('submit', (event) => {
+                // Kiểm tra đăng nhập trước tiên
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để gửi phản hồi.');
+                    event.preventDefault();
+                    window.location.href = '/signin'; // Chuyển hướng đến trang đăng nhập
+                    return;
+                }
+                // Kiểm tra nội dung
                 const replyContentArea = form.querySelector('textarea');
                 if (replyContentArea && !replyContentArea.value.trim()) {
                     alert('Vui lòng nhập nội dung phản hồi.'); event.preventDefault();
                 }
             });
+        });
+
+        // Các form chỉnh sửa đánh giá
+        document.querySelectorAll('.edit-review-form-actual').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                // Kiểm tra đăng nhập trước tiên (dù nút sửa chỉ hiện khi đúng user, nhưng kiểm tra lại cho chắc)
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để chỉnh sửa đánh giá.');
+                    event.preventDefault();
+                    window.location.href = '/signin';
+                    return;
+                }
+                // Các kiểm tra khác
+                const ratingElement = form.querySelector('input[name="diemDanhGia"]:checked');
+                const reviewContent = form.querySelector('textarea[name="noiDungDanhGia"]').value;
+                if (!ratingElement) { alert('Vui lòng chọn điểm đánh giá khi chỉnh sửa.'); event.preventDefault(); return; }
+                if (!reviewContent.trim()) { alert('Vui lòng nhập nội dung cảm nghĩ khi chỉnh sửa.'); event.preventDefault(); return; }
+            });
+        });
+
+        // Các form chỉnh sửa phản hồi
+        document.querySelectorAll('.edit-reply-form-actual').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                // Kiểm tra đăng nhập trước tiên
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để chỉnh sửa phản hồi.');
+                    event.preventDefault();
+                    window.location.href = '/signin';
+                    return;
+                }
+                // Kiểm tra nội dung
+                const replyContentArea = form.querySelector('textarea[name="noiDungPhanHoi"]');
+                if (replyContentArea && !replyContentArea.value.trim()) { alert('Vui lòng nhập nội dung phản hồi khi chỉnh sửa.'); event.preventDefault(); }
+            });
+        });
+
+        // --- Logic mở/đóng form phản hồi/chỉnh sửa (giữ nguyên logic cũ) ---
+        document.querySelectorAll('.reply-btn-detail').forEach(button => {
+            if (isLoggedIn) { // Chỉ gán sự kiện nếu đã đăng nhập
+                button.addEventListener('click', () => {
+                    const reviewId = button.dataset.reviewId;
+                    const replyFormContainer = document.getElementById(`reply-form-container-${reviewId}`);
+                    if (replyFormContainer) {
+                        document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
+                            if (form.id !== `reply-form-container-${reviewId}`) form.style.display = 'none';
+                        });
+                        const isHidden = replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '';
+                        replyFormContainer.style.display = isHidden ? 'block' : 'none';
+                        if (isHidden) replyFormContainer.querySelector('textarea')?.focus();
+                    }
+                });
+            }
         });
 
         document.querySelectorAll('.edit-btn-trigger').forEach(button => {
@@ -866,14 +941,6 @@
                 const reviewId = button.dataset.reviewId;
                 const editFormContainer = document.getElementById(`edit-review-form-container-${reviewId}`);
                 if (editFormContainer) editFormContainer.style.display = 'none';
-            });
-        });
-        document.querySelectorAll('.edit-review-form-actual').forEach(form => {
-            form.addEventListener('submit', (event) => {
-                const ratingElement = form.querySelector('input[name="diemDanhGia"]:checked');
-                const reviewContent = form.querySelector('textarea[name="noiDungDanhGia"]').value;
-                if (!ratingElement) { alert('Vui lòng chọn điểm đánh giá khi chỉnh sửa.'); event.preventDefault(); return; }
-                if (!reviewContent.trim()) { alert('Vui lòng nhập nội dung cảm nghĩ khi chỉnh sửa.'); event.preventDefault(); return; }
             });
         });
 
@@ -901,28 +968,45 @@
                 if (editReplyFormContainer) editReplyFormContainer.style.display = 'none';
             });
         });
-        document.querySelectorAll('.edit-reply-form-actual').forEach(form => {
-            form.addEventListener('submit', (event) => {
-                const replyContentArea = form.querySelector('textarea[name="noiDungPhanHoi"]');
-                if (replyContentArea && !replyContentArea.value.trim()) { alert('Vui lòng nhập nội dung phản hồi khi chỉnh sửa.'); event.preventDefault(); }
-            });
-        });
 
+
+        // --- Logic Trailer Modal (giữ nguyên) ---
         const trailerModal = document.getElementById('trailerModal');
         const openTrailerModalBtn = document.getElementById('openTrailerModalBtn');
         const closeTrailerModalBtn = document.getElementById('closeTrailerModalBtn');
         const trailerVideoIframe = document.getElementById('trailerVideo');
+        // --- CẬP NHẬT HÀM getYouTubeEmbedUrl ĐỂ XỬ LÝ LINK TRAILER ĐA DẠNG HƠN ---
         function getYouTubeEmbedUrl(youtubeUrl) {
             if (!youtubeUrl) return '';
-            let videoId;
-            if (youtubeUrl.includes('youtu.be/')) {
-                videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
-            } else if (youtubeUrl.includes('youtube.com/watch?v=')) {
-                videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
-            } else if (youtubeUrl.includes('youtube.com/embed/')) {
-                videoId = youtubeUrl.split('embed/')[1].split('?')[0];
+            let videoId = null;
+            try {
+                const url = new URL(youtubeUrl);
+                // Trường hợp 1: youtube.com/watch?v=VIDEO_ID
+                if (url.hostname === 'youtube.com' || url.hostname === 'www.youtube.com') {
+                    videoId = url.searchParams.get('v');
+                }
+                // Trường hợp 2: youtu.be/VIDEO_ID
+                else if (url.hostname === 'youtu.be') {
+                    videoId = url.pathname.substring(1); // Bỏ dấu / ở đầu
+                }
+                // Trường hợp 3: youtube.com/embed/VIDEO_ID (ít gặp hơn cho link trailer gốc)
+                else if ((url.hostname === 'youtube.com' || url.hostname === 'www.youtube.com') && url.pathname.startsWith('/embed/')) {
+                    videoId = url.pathname.split('/embed/')[1];
+                }
+                // (Bỏ qua các trường hợp googleusercontent.com vì đó thường là link đã qua xử lý, link gốc từ DB nên là youtube.com hoặc youtu.be)
+
+            } catch (e) {
+                console.error("Invalid trailer URL format:", youtubeUrl);
+                return ''; // URL không hợp lệ
             }
-            return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : '';
+
+            // Loại bỏ các tham số khác nếu có trong videoId
+            if (videoId) {
+                videoId = videoId.split('&')[0].split('?')[0];
+                // Trả về URL embed chuẩn, thêm autoplay
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            }
+            return ''; // Không tìm thấy videoId
         }
 
         if (openTrailerModalBtn && trailerModal && closeTrailerModalBtn && trailerVideoIframe) {

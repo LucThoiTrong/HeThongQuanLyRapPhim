@@ -252,7 +252,7 @@
             <div class="form-group">
                 <label for="rapPhim">Vị trí (Rạp phim)</label>
                 <select id="rapPhim" class="form-select" th:field="*{rapPhim}">
-                    <option value="">-- Chọn vị trí/rạp phim --</option>
+                    <option value="-1">-- Chọn vị trí/rạp phim --</option>
                     <option th:each="cinema : ${dsCinema}"
                             th:value="${cinema.idRapPhim}" th:text="${cinema.tenRapPhim}"> </option>
                 </select>

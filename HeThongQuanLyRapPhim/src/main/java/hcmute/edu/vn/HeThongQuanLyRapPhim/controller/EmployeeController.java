@@ -83,7 +83,7 @@ public class EmployeeController {
 
     // Thực hiện update
     @PostMapping("/update/{id}")
-    public String updateEmployee(@PathVariable int id, @ModelAttribute DoiTuongSuDung nhanVien, @RequestParam("rapPhim") Integer rapPhimId, RedirectAttributes redirectAttributes) {
+    public String updateEmployee(@PathVariable int id, @ModelAttribute DoiTuongSuDung nhanVien, @RequestParam("rapPhim") int rapPhimId, RedirectAttributes redirectAttributes) {
         DoiTuongSuDung nv = employeeService.updateEmployee(id, nhanVien, rapPhimId);
         if(nv != null) {
             redirectAttributes.addFlashAttribute("message", "Cập nhật thành công");

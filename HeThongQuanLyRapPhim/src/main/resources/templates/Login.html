@@ -133,6 +133,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
+            margin-bottom: 15px; /* Thêm margin để tạo khoảng cách với nút quên mật khẩu */
         }
 
         .btn-login-submit:hover {
@@ -155,6 +156,23 @@
 
         .login-footer a:hover {
             color: #e53e3e;
+            text-decoration: underline;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .forgot-password a {
+            color: #718096;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: #f56565;
             text-decoration: underline;
         }
 
@@ -181,6 +199,9 @@
             }
             .alert { /* Điều chỉnh padding cho message trên mobile */
                 padding: 10px;
+            }
+            .forgot-password {
+                text-align: left; /* Căn trái nút quên mật khẩu trên mobile nếu cần */
             }
         }
     </style>
@@ -211,6 +232,9 @@
         <div class="form-group">
             <label for="password"><i class="fas fa-lock"></i> Mật khẩu</label>
             <input type="password" id="password" th:field="*{matKhau}" placeholder="Nhập mật khẩu của bạn" required>
+        </div>
+        <div class="forgot-password">
+            <a th:href="@{/forgot-password}">Quên mật khẩu?</a>
         </div>
         <button type="submit" class="btn-login-submit">
             <i class="fas fa-sign-in-alt"></i> Đăng Nhập

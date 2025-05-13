@@ -4,7 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
 
 import java.util.List;
 
-public interface MaGiamGiaService {
+public interface DiscountService {
     List<MaGiamGia> findAll();
 
     MaGiamGia findById(int theId);

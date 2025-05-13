@@ -83,12 +83,12 @@ public class AuthController {
 
         doiTuongSuDung.setLoaiDoiTuongSuDung(LoaiDoiTuongSuDung.KHACH_HANG);
         try {
-            authService.register(doiTuongSuDung, taiKhoan.getTenDangNhap(), taiKhoan.getMatKhau());
-            emailService.sendVerificationEmail(doiTuongSuDung.getEmail(),doiTuongSuDung.getIdDoiTuongSuDung());
+            TKDoiTuongSuDung savedTK =  authService.register(doiTuongSuDung, taiKhoan.getTenDangNhap(), taiKhoan.getMatKhau());
+            emailService.sendVerificationEmail(doiTuongSuDung.getEmail(), savedTK.getIdTKDoiTuongSuDung());
             redirectAttributes.addFlashAttribute("message", "Đăng ký tài khoản thành công vui lòng kiểm tra email để kích hoạt tài khoản");
             redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
             // Điều hướng qua 1 UI khác thông báo
-            return "redirect:/login";
+            return "redirect:/signin";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("signupErrorMessage", e.getMessage());
             redirectAttributes.addFlashAttribute("taiKhoan", taiKhoan);
@@ -103,33 +103,43 @@ public class AuthController {
         try {
             authService.verifyAccount(id);
             model.addAttribute("message", "Tài khoản đã được xác thực! Vui lòng đăng nhập.");
-            return "redirect:/login";
+            return "redirect:/signin";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
-            return "Login";
+            return "redirect:/signin";
         }
     }
-
-    @GetMapping("/change-password")
-    public String showChangePasswordForm(Model model) {
-        model.addAttribute("error", "");
-        return "Change-Password";
+    //nhan vao la ra trang nhap dia chi email
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "ForgotPasswordPage";
+    }
+    @PostMapping("/submit-email")
+    public String submitEmail(String email){
+        DoiTuongSuDung doiTuongSuDung = authService.getDoiTuongSuDungByEmail(email);
+        TKDoiTuongSuDung tk = doiTuongSuDung.getTkDoiTuongSuDung();
+        if(doiTuongSuDung!=null){
+            try {
+                emailService.sendResetPasswordEmail(email,tk.getIdTKDoiTuongSuDung());
+            } catch (Exception e) {
+                System.err.println("Lỗi gửi email " + e.getMessage());
+            }
+        }
+        return "NotificationForgotPassword";
+    }
+    //de show form
+    @GetMapping("/reset-password")
+    public String showResetPasswordForm(@RequestParam("id") int id, Model model) {
+        model.addAttribute("id", id); // Truyền id cho form
+        return "ResetPasswordPage";
     }
 
-    @PostMapping("/change-password")
-    public String changePassword(
-            @RequestParam String username,
-            @RequestParam String oldPassword,
-            @RequestParam String newPassword,
-            @RequestParam String confirmNewPassword,
-            Model model) {
-        try {
-            authService.changePassword(username, oldPassword, newPassword, confirmNewPassword);
-            model.addAttribute("message", "Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
-            return "Login";
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "Change-Password";
-        }
+    //submit pass moi
+    @PostMapping("/reset-password")
+    public String resetPassword(
+            @RequestParam("newpassword") String newPassword,
+            @RequestParam("id") int id) {
+        authService.resetPassword(id, newPassword);
+        return "redirect:/signin";
     }
 }

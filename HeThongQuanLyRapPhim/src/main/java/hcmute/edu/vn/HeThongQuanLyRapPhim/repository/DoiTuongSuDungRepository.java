@@ -16,4 +16,6 @@ public interface DoiTuongSuDungRepository extends JpaRepository<DoiTuongSuDung, 
             "(SELECT r.nhanVien.idDoiTuongSuDung FROM RapPhim r WHERE r.nhanVien IS NOT NULL)")
     List<DoiTuongSuDung> findByLoaiDoiTuongSuDungAndRapPhimIsNull(LoaiDoiTuongSuDung loaiDoiTuongSuDung);
     boolean existsByEmail(String email);
+
+    DoiTuongSuDung getDoiTuongSuDungByEmail(String email);
 }

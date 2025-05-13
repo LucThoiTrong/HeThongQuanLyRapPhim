@@ -44,7 +44,7 @@ public class MovieController {
 
     // xem trang chi tiết phim đang chiếu
     @GetMapping("/movie-detail/{id}")
-    public String getNowShowingDetail(Model model, @PathVariable int id) {
+    public String getShowingDetail(Model model, @PathVariable int id) {
         Phim phim = movieService.getPhimById(id);
         model.addAttribute("phim", phim);
         model.addAttribute("danhGia", new DanhGia());

@@ -4,7 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 
 import java.util.List;
 
-public interface ChienDichMaGiamGiaService {
+public interface DiscountCampaignService {
     List<ChienDichGiamGia> findAll();
 
     ChienDichGiamGia findById(int theId);

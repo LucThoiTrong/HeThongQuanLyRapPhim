@@ -54,9 +54,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                 cinemaRepository.save(employee.getRapPhim());
             }
 
-            assert rapPhim != null;
-            rapPhim.setNhanVien(employee);
-            cinemaRepository.save(rapPhim);
+            if(rapPhim != null) {
+                rapPhim.setNhanVien(employee);
+                cinemaRepository.save(rapPhim);
+            }
 
             return employeeRepository.save(employee);
         }

@@ -2,138 +2,193 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản lý ghế</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      margin: 40px;
-      background-color: #f5f7fa;
-      color: #333;
-      line-height: 1.6;
+    :root {
+      --primary-color: #007bff; /* Primary Blue */
+      --secondary-color: #6c757d; /* Gray */
+      --success-color: #28a745; /* Green */
+      --danger-color: #dc3545; /* Red */
+      --warning-color: #ffc107; /* Yellow for VIP */
+      --info-color: #17a2b8;    /* Teal for Couple (DOI) */
+      --light-color: #f8f9fa;
+      --neutral-color: #e9ecef; /* Lighter gray */
+      --text-color: #212529;
+      --border-color: #dee2e6;
+      --background-gradient: linear-gradient(135deg, #eef2f7, #e6f0fa); /* Softer gradient */
+      --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      --border-radius: 0.5rem; /* 8px */
+      --transition-speed: 0.2s ease;
     }
 
-    h1 {
-      color: #2c3e50;
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 28px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--background-gradient);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align container to top */
+      padding-top: 40px; /* Add padding top */
     }
 
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: #ffffff;
+      max-width: 900px; /* Width adjusted */
+      width: 100%;
+      background: #fff;
+      border-radius: var(--border-radius);
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: var(--shadow);
+      margin: 20px auto;
+      animation: fadeIn 0.5s ease-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .row-section {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-align: center;
       margin-bottom: 30px;
     }
 
-    .tenDayGhe {
-      width: 500px;
+    /* Seating Chart Section - Updated to use Grid */
+    .row-section {
+      display: grid; /* CHANGED to grid */
+      grid-template-columns: auto 1fr; /* Col 1 for label (auto width), Col 2 for chairs (rest of space) */
+      gap: 10px 15px; /* Row gap, Column gap */
+      padding: 10px 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto 30px auto;
+      align-items: center; /* Vertically align label and chair row within grid row */
     }
 
+    /* REMOVED .chair-row-wrapper styles */
+
     .row-label {
+      /* Styles for grid item */
+      font-size: 0.9rem;
       font-weight: 600;
-      font-size: 20px;
-      color: #2c3e50;
-      margin-bottom: 10px;
+      color: var(--secondary-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-right: 5px;
+      text-align: right;
+      white-space: nowrap; /* Prevent label itself from wrapping */
     }
 
     .chair-row {
+      /* Styles for grid item (column 2), still uses flex for internal items */
       display: flex;
-      gap: 6px;
-      flex-wrap: nowrap;
-      justify-content: flex-start;
+      flex-direction: row;
+      gap: 8px;
+      flex-wrap: wrap; /* Allow chairs inside to wrap */
+      min-height: 45px; /* Match button height for alignment */
+      align-items: center; /* Align wrapped chairs vertically */
     }
 
     .chair-btn {
-      height: 60px;
-      font-size: 16px;
-      font-weight: 600;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
+      height: 45px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid transparent;
+      border-radius: 6px;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed), background-color var(--transition-speed);
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
+      min-width: 45px;
+      width: 45px;
+      color: #fff;
+      user-select: none;
     }
 
-    .chair-btn:hover {
+    .chair-btn:not(.chair-unavailable):not(.chair-unavailable-doi):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Selected state */
+    .chair-btn.selected {
+      border: 2px solid var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
       transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .chair-thuong {
-      background-color: #007bff !important;
-      color: white !important;
-      border-color: #0069d9 !important;
-      min-width: 80px;
-      width: 80px;
-    }
-
-    .chair-vip {
-      background-color: #28a745 !important;
-      border-color: #218838 !important;
-      color: white !important;
-      min-width: 80px;
-      width: 80px;
-    }
-
+    /* Seat Type Colors */
+    .chair-thuong { background-color: var(--secondary-color); border-color: var(--secondary-color); }
+    .chair-vip { background-color: var(--warning-color); border-color: var(--warning-color); color: var(--text-color); }
     .chair-doi {
-      background-color: #e10073 !important;
-      border-color: #ae055a !important;
-      color: white !important;
-      min-width: 160px;
-      width: 166px;
+      background-color: var(--info-color);
+      border-color: var(--info-color);
+      min-width: 98px; /* 45px * 2 + 8px gap */
+      width: 98px;
     }
 
-    .chair-unavailable {
-      background-color: #cccccc !important;
-      border-color: #b3b3b3 !important;
-      color: #666 !important;
+    /* Unavailable State */
+    .chair-unavailable, .chair-unavailable-doi {
+      background-color: var(--neutral-color);
+      border-color: #ced4da;
+      color: var(--secondary-color);
       cursor: not-allowed;
-      min-width: 80px;
-      width: 80px;
+      opacity: 0.8;
+    }
+    .chair-unavailable:hover, .chair-unavailable-doi:hover {
+      transform: none;
+      box-shadow: none;
     }
 
     .chair-unavailable-doi {
-      background-color: #cccccc !important;
-      border-color: #b3b3b3 !important;
-      color: #666 !important;
-      cursor: not-allowed;
-      min-width: 160px;
-      width: 166px;
+      min-width: 98px;
+      width: 98px;
     }
 
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
+    /* Form Section */
     .form-section {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 30px;
-      border: 1px solid #e0e0e0;
+      background: #fff;
+      padding: 25px;
+      border-radius: var(--border-radius);
+      margin-top: 0;
+      border: 1px solid var(--border-color);
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
     .selected-chair {
+      padding: 12px 15px;
+      background: var(--neutral-color);
+      border: 1px solid #ced4da;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
       margin-bottom: 20px;
-      padding: 15px;
-      background-color: #e9ecef;
-      border-radius: 8px;
-      font-size: 16px;
+      display: none;
+      color: var(--text-color);
     }
 
     .selected-chair span {
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--primary-color);
+      margin-left: 5px;
     }
 
     .form-group {
@@ -142,20 +197,42 @@
 
     label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #2c3e50;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--text-color);
+      font-size: 0.9rem;
     }
 
     select {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
-      background: #fff;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      background-color: #fff;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px 12px;
+      cursor: pointer;
     }
 
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    small.form-text {
+      font-size: 0.8rem;
+      color: var(--secondary-color);
+      margin-top: 5px;
+      display: block;
+    }
+
+    /* Button Group */
     .button-group {
       display: flex;
       justify-content: flex-end;
@@ -164,188 +241,380 @@
     }
 
     .btn {
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 500;
       border: none;
-      border-radius: 6px;
+      border-radius: var(--border-radius);
       cursor: pointer;
-      color: white;
+      color: #fff;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .btn-save {
-      background-color: #007bff;
+      background-color: var(--primary-color);
+    }
+    .btn-save:hover {
+      background-color: #0056b3;
+    }
+    .btn-save:disabled {
+      background-color: var(--secondary-color);
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .btn-cancel {
-      background-color: #6c757d;
+      background-color: var(--secondary-color);
+    }
+    .btn-cancel:hover {
+      background-color: #5a6268;
     }
 
-    .btn:hover {
-      opacity: 0.85;
+
+    /* Alerts */
+    .alert-success, .alert-danger {
+      padding: 0.8rem 1rem;
+      margin: -10px auto 20px auto;
+      border-radius: var(--border-radius);
+      font-size: 0.9rem;
+      animation: popIn 0.4s ease-out forwards, fadeOut 0.4s ease-out 3s forwards;
+      width: 100%;
+      max-width: 900px; /* Match container */
+      border: 1px solid transparent;
+      opacity: 0;
+      transform: translateY(-10px);
     }
+
+    /* Ensure alerts positioned correctly */
+    .container > .alert-success,
+    .container > .alert-danger {
+      margin: -15px auto 20px auto;
+    }
+
 
     .alert-success {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      transition: opacity 0.5s ease-out;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      color: #0f5132;
+      background-color: #d1e7dd;
+      border-color: #badbcc;
     }
 
     .alert-danger {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      transition: opacity 0.5s ease-out;
+      color: #842029;
       background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      border-color: #f5c2c7;
     }
 
+    @keyframes popIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: translateY(0); }
+      80% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-10px); display: none; }
+    }
+
+
+    /* No Data Message */
     .no-data {
       text-align: center;
-      color: #666;
-      font-size: 18px;
-      margin: 30px 0;
+      color: var(--secondary-color);
+      font-size: 1rem;
+      margin: 20px 0;
+      font-style: italic;
+      width: 100%;
+      padding: 15px;
+      background-color: var(--light-color);
+      border-radius: var(--border-radius);
+      border: 1px dashed var(--border-color);
+    }
+
+    /* Footer Button Group */
+    .container > .button-group {
+      margin-top: 30px;
+      justify-content: center;
+      width: 100%;
+    }
+
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body { padding: 15px; padding-top: 20px;}
+      .container {
+        padding: 20px;
+        max-width: 100%;
+      }
+      .alert-success, .alert-danger { max-width: 100%; }
+
+      h1 { font-size: 1.5rem; }
+
+      .row-section {
+        max-width: 100%;
+        /* Adjust grid gap for mobile */
+        gap: 8px 10px;
+      }
+      .form-section { max-width: 100%; padding: 20px; }
+
+
+      .chair-btn {
+        height: 40px;
+        font-size: 0.75rem;
+        min-width: 40px;
+        width: 40px;
+      }
+
+      .chair-doi, .chair-unavailable-doi {
+        min-width: 86px; /* 40*2 + 6 gap */
+        width: 86px;
+      }
+      .chair-row { gap: 6px; }
+
+
+      .row-label {
+        font-size: 0.8rem;
+        /* width: 25px; /* Auto width */
+        padding-right: 5px; /* Ensure some space */
+      }
+
+      select { padding: 8px 10px; font-size: 0.9rem;}
+      .btn { padding: 8px 16px; font-size: 0.9rem; }
+
+    }
+    @media (max-width: 480px) {
+      .chair-btn {
+        height: 36px;
+        min-width: 36px;
+        width: 36px;
+        font-size: 0.7rem;
+      }
+      .chair-doi, .chair-unavailable-doi {
+        min-width: 78px; /* 36*2 + 6 */
+        width: 78px;
+      }
+      .row-label { font-size: 0.75rem; }
+      .row-section { gap: 5px 8px; } /* Further reduce gap */
+      .chair-row { gap: 4px; } /* Further reduce gap */
+    }
+
+    /* Keyframes for shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
     }
   </style>
 </head>
 <body>
 <div th:if="${message}"
-     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:classappend="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
      th:text="${message}"
-     id="flash-message">
+     id="flash-message"
+     style="width: 100%; max-width: 900px; margin: 0 auto 15px auto; text-align: center; position: sticky; top: 10px; z-index: 1000;"
+>
 </div>
 
 <div class="container">
-  <h1>Quản lý ghế - <span th:text="${phongChieuPhim.tenPhongChieuPhim}"></span></h1>
+
+  <h1>Quản lý ghế - <span th:text="${phongChieuPhim != null ? phongChieuPhim.tenPhongChieuPhim : 'Tên phòng'}"></span></h1>
 
   <div th:if="${dsDayGhe != null and not #lists.isEmpty(dsDayGhe)}">
-    <div th:each="dayGhe : ${dsDayGhe}" class="row-section">
-      <div class="chair-row-wrapper" style="display: flex; align-items: center; gap: 8px;">
-        <div class="row-label" th:text="${dayGhe.tenDayGhe}" style="width: 80px; font-weight: bold;"></div>
-        <div class="chair-row" th:if="${dayGhe.dsGhe != null and not #sets.isEmpty(dayGhe.dsGhe)}" style="display: flex; gap: 6px;">
-          <th:block th:each="ghe, iterStat : ${dayGhe.dsGhe}">
-            <!-- Chỉ xử lý nếu không phải 'DOI' hoặc index < 5 -->
-            <th:block th:if="${dayGhe.loaiGhe.name() != 'DOI' || iterStat.index < 5}">
-              <th:block th:with="loai=${dayGhe.loaiGhe.name()}">
-                <!-- Ghế không khả dụng, không phải ghế đôi -->
-                <button th:if="${not ghe.trangThaiGhe and loai != 'DOI'}"
+    <div class="row-section">
+      <th:block th:each="dayGhe : ${dsDayGhe}">
+
+        <div class="row-label" th:text="${dayGhe.tenDayGhe}">A</div>
+
+        <div class="chair-row">
+          <th:block th:if="${dayGhe.dsGhe != null and not #sets.isEmpty(dayGhe.dsGhe)}">
+            <th:block th:each="ghe, iterStat : ${dayGhe.dsGhe}">
+              <th:block th:if="${dayGhe.loaiGhe == null or dayGhe.loaiGhe.name() != 'DOI' or iterStat.index < 10}"> <th:block th:with="loai=${dayGhe.loaiGhe != null ? dayGhe.loaiGhe.name() : 'THUONG'}">
+                <button type="button"
                         th:id="'chair-' + ${ghe.idGhe}"
-                        th:class="'chair-btn chair-unavailable'"
-                        th:text="${dayGhe.tenDayGhe + iterStat.count}"
+                        class="chair-btn"
+                        th:classappend="${!ghe.trangThaiGhe ? (loai == 'DOI' ? 'chair-unavailable-doi' : 'chair-unavailable') :
+                                                  (loai == 'THUONG' ? 'chair-thuong' :
+                                                  (loai == 'VIP' ? 'chair-vip' :
+                                                  (loai == 'DOI' ? 'chair-doi' : '')))}"
+                        th:text="${loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count}"
                         th:attr="data-id-ghe=${ghe.idGhe},
-                               data-chair-label=${dayGhe.tenDayGhe + iterStat.count},
-                               data-trang-thai=${ghe.trangThaiGhe}"
-                        onclick="selectChair(this)">
+                                         data-chair-label=${dayGhe.tenDayGhe + (loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count)},
+                                         data-trang-thai=${ghe.trangThaiGhe}"
+                        th:disabled="${loai == 'DOI' and !ghe.trangThaiGhe}"
+                        th:onclick="${!ghe.trangThaiGhe and loai != 'DOI'} ? null : 'selectChair(this)'"
+                        th:aria-label="${ghe.trangThaiGhe ? 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Khả dụng' : 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Không khả dụng'}">
                 </button>
-                <!-- Ghế không khả dụng, ghế đôi -->
-                <button th:if="${not ghe.trangThaiGhe and loai == 'DOI'}"
-                        th:id="'chair-' + ${ghe.idGhe}"
-                        th:class="'chair-btn chair-unavailable-doi'"
-                        th:text="${dayGhe.tenDayGhe + iterStat.count}"
-                        th:attr="data-id-ghe=${ghe.idGhe},
-                               data-chair-label=${dayGhe.tenDayGhe + iterStat.count},
-                               data-trang-thai=${ghe.trangThaiGhe}"
-                        onclick="selectChair(this)">
-                </button>
-                <!-- Ghế khả dụng, loại DOI -->
-                <button th:if="${ghe.trangThaiGhe and loai == 'DOI'}"
-                        th:id="'chair-' + ${ghe.idGhe}"
-                        th:class="'chair-btn chair-doi'"
-                        th:text="${dayGhe.tenDayGhe + iterStat.count}"
-                        th:attr="data-id-ghe=${ghe.idGhe},
-                               data-chair-label=${dayGhe.tenDayGhe + iterStat.count},
-                               data-trang-thai=${ghe.trangThaiGhe}"
-                        onclick="selectChair(this)">
-                </button>
-                <!-- Ghế khả dụng, loại VIP -->
-                <button th:if="${ghe.trangThaiGhe and loai == 'VIP'}"
-                        th:id="'chair-' + ${ghe.idGhe}"
-                        th:class="'chair-btn chair-vip'"
-                        th:text="${dayGhe.tenDayGhe + iterStat.count}"
-                        th:attr="data-id-ghe=${ghe.idGhe},
-                               data-chair-label=${dayGhe.tenDayGhe + iterStat.count},
-                               data-trang-thai=${ghe.trangThaiGhe}"
-                        onclick="selectChair(this)">
-                </button>
-                <!-- Ghế khả dụng, loại THUONG -->
-                <button th:if="${ghe.trangThaiGhe and loai == 'THUONG'}"
-                        th:id="'chair-' + ${ghe.idGhe}"
-                        th:class="'chair-btn chair-thuong'"
-                        th:text="${dayGhe.tenDayGhe + iterStat.count}"
-                        th:attr="data-id-ghe=${ghe.idGhe},
-                               data-chair-label=${dayGhe.tenDayGhe + iterStat.count},
-                               data-trang-thai=${ghe.trangThaiGhe}"
-                        onclick="selectChair(this)">
-                </button>
+                <th:block th:if="${loai == 'DOI' and iterStat.count % 2 == 1}">
+                  <script th:inline="javascript"> /* Potential skip logic */ </script>
+                </th:block>
+              </th:block>
               </th:block>
             </th:block>
           </th:block>
-        </div>
-      </div>
-      <div th:if="${dayGhe.dsGhe == null or #sets.isEmpty(dayGhe.dsGhe)}" class="no-data">
-        Không có ghế nào trong dãy này.
-      </div>
+          <div th:if="${dayGhe.dsGhe == null or #sets.isEmpty(dayGhe.dsGhe)}" style="padding: 5px 0; margin: 0; font-size: 0.9rem; color: var(--secondary-color); font-style: italic; align-self: center;">
+            (Không có ghế)
+          </div>
+        </div> </th:block> </div> <div class="form-section">
+    <div class="selected-chair" id="selected-chair">
+      <p>Đang chỉnh sửa ghế: <span id="chairLabel">N/A</span></p>
     </div>
+    <form id="chairForm" th:action="@{/seats/update}" method="post">
+      <input type="hidden" name="idGhe" id="idGhe">
+      <input type="hidden" name="idRapPhim" th:value="${idRapPhim}">
+      <input type="hidden" name="idPhongChieuPhim" th:value="${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : ''}">
 
-    <div class="form-section">
-      <div class="selected-chair" id="selected-chair" style="display: none;">
-        <p>Đang chỉnh sửa ghế: <span id="chairLabel"></span></p>
+      <div class="form-group">
+        <label for="trangThaiGhe">Trạng thái ghế</label>
+        <select id="trangThaiGhe" name="trangThaiGhe" class="form-control" aria-describedby="trangThaiGheHelp">
+          <option value="true">Khả dụng</option>
+          <option value="false">Không khả dụng</option>
+        </select>
+        <small id="trangThaiGheHelp" class="form-text">Chọn trạng thái ghế để cập nhật.</small>
       </div>
-      <form id="chairForm" th:action="@{/seats/update}" method="post">
-        <input type="hidden" name="idGhe" id="idGhe">
-        <input type="hidden" name="idRapPhim" th:value="${idRapPhim}">
-        <input type="hidden" name="idPhongChieuPhim" th:value="${phongChieuPhim.idPhongChieuPhim}">
-        <div class="form-group">
-          <label for="trangThaiGhe">Trạng thái ghế</label>
-          <select id="trangThaiGhe" name="trangThaiGhe">
-            <option value="true">Khả dụng</option>
-            <option value="false">Không khả dụng</option>
-          </select>
-        </div>
-        <div class="button-group">
-          <button type="submit" class="btn btn-save" id="saveButton" disabled>Lưu</button>
-        </div>
-      </form>
-    </div>
+
+      <div class="button-group">
+        <button type="submit" class="btn btn-save" id="saveButton" disabled>Lưu thay đổi</button>
+      </div>
+    </form>
+  </div>
   </div>
 
   <div th:if="${dsDayGhe == null or #lists.isEmpty(dsDayGhe)}" class="no-data">
-    Không có dãy ghế nào được cấu hình.
+    Không có dãy ghế nào được cấu hình cho phòng này.
   </div>
 
   <div class="button-group">
-    <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim},idPhongChieuPhim=${phongChieuPhim.idPhongChieuPhim})}" class="btn btn-cancel">Quay lại</a>
+    <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim ?: 'defaultRap'}, idPhongChieuPhim=${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : 'defaultPhong'})}" class="btn btn-cancel">Quay lại</a>
   </div>
 </div>
 
 <script>
+  let currentSelectedButton = null; // Keep track of the selected button
+
   function selectChair(button) {
+    const isUnavailableSingle = button.classList.contains('chair-unavailable');
+    if (isUnavailableSingle) {
+      button.style.animation = 'shake 0.5s';
+      setTimeout(() => { if(button) button.style.animation = ''; }, 500); // Check if button still exists
+      return;
+    }
+
     const idGhe = button.getAttribute('data-id-ghe');
     const chairLabel = button.getAttribute('data-chair-label');
     const trangThaiGhe = button.getAttribute('data-trang-thai');
 
-    document.getElementById('idGhe').value = idGhe;
-    document.getElementById('chairLabel').textContent = chairLabel;
-    document.getElementById('trangThaiGhe').value = trangThaiGhe;
-    document.getElementById('selected-chair').style.display = 'block';
-    document.getElementById('saveButton').disabled = false;
+    // --- Visual Selection Handling ---
+    if (currentSelectedButton && currentSelectedButton !== button) {
+      currentSelectedButton.classList.remove('selected');
+    }
+
+    if (button.classList.contains('selected')) {
+      button.classList.remove('selected');
+      currentSelectedButton = null;
+      document.getElementById('selected-chair').style.display = 'none';
+      document.getElementById('saveButton').disabled = true;
+      document.getElementById('idGhe').value = '';
+      return;
+    } else {
+      button.classList.add('selected');
+      currentSelectedButton = button;
+    }
+    // --- End Visual Selection ---
+
+
+    const selectedChairDiv = document.getElementById('selected-chair');
+    const chairLabelSpan = document.getElementById('chairLabel');
+    const saveButton = document.getElementById('saveButton');
+    const trangThaiSelect = document.getElementById('trangThaiGhe');
+    const idGheInput = document.getElementById('idGhe');
+
+    // --- Update Form ---
+    idGheInput.value = idGhe;
+    chairLabelSpan.textContent = chairLabel;
+    trangThaiSelect.value = trangThaiGhe;
+
+    selectedChairDiv.style.display = 'block';
+    selectedChairDiv.style.animation = 'none';
+    void selectedChairDiv.offsetWidth;
+    selectedChairDiv.style.animation = 'popIn 0.3s ease-out forwards';
+
+    saveButton.disabled = false;
   }
 
   window.onload = function () {
     const flashMessage = document.getElementById('flash-message');
-    if (flashMessage) {
+    if (flashMessage && flashMessage.textContent && flashMessage.textContent.trim() !== '') {
+      flashMessage.style.opacity = '1';
+      flashMessage.style.transform = 'translateY(0)';
       setTimeout(() => {
-        flashMessage.style.opacity = '0';
-        setTimeout(() => flashMessage.remove(), 500);
+        if(flashMessage) {
+          flashMessage.style.opacity = '0';
+          setTimeout(() => { if(flashMessage) flashMessage.style.display = 'none'; }, 400);
+        }
       }, 3000);
+    } else if (flashMessage) {
+      flashMessage.style.display = 'none';
     }
+
+    document.querySelectorAll('.chair-btn').forEach(button => {
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          if (!button.classList.contains('chair-unavailable')) {
+            selectChair(button);
+          } else {
+            button.style.animation = 'shake 0.5s';
+            setTimeout(() => { if(button) button.style.animation = ''; }, 500); // Check if button exists
+          }
+        }
+      });
+
+      if (!button.hasAttribute('onclick')) {
+        button.addEventListener('click', function() {
+          if (!button.classList.contains('chair-unavailable')) {
+            selectChair(this);
+          } else {
+            button.style.animation = 'shake 0.5s';
+            setTimeout(() => { if(button) button.style.animation = ''; }, 500); // Check if button exists
+          }
+        });
+      } else {
+        const originalOnclick = button.getAttribute('onclick');
+        if (button.classList.contains('chair-unavailable') && !button.classList.contains('chair-unavailable-doi')) {
+          button.removeAttribute('onclick');
+        }
+      }
+    });
+
+    // Deselect chair if clicking outside interactive areas
+    document.addEventListener('click', function(event) {
+      const container = document.querySelector('.container');
+      const flashMsg = document.getElementById('flash-message');
+
+      // Check if click target is outside the main container AND not the flash message
+      if (container && !container.contains(event.target) && (!flashMsg || !flashMsg.contains(event.target)) && event.target.tagName !== 'HTML' ) {
+        // More specific check: is the click on the body itself?
+        if (event.target === document.body) {
+          if (currentSelectedButton) {
+            currentSelectedButton.classList.remove('selected');
+            currentSelectedButton = null;
+            document.getElementById('selected-chair').style.display = 'none';
+            document.getElementById('saveButton').disabled = true;
+            document.getElementById('idGhe').value = '';
+          }
+        }
+      }
+    });
+
   };
 </script>
 </body>

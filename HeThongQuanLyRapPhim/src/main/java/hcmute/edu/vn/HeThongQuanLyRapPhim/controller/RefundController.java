@@ -14,16 +14,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Controller
 @RequestMapping("/refund")
 public class RefundController {
-    private InvoiceService invoiceService;
-    private RefundService refundService;
-    private ChairService chairService;
-    private DoiTuongSuDungService profileService;
+    private final InvoiceService invoiceService;
+
+    private final RefundService refundService;
+
+    private final ChairService chairService;
+
+    private final DoiTuongSuDungService profileService;
+
     @Autowired
     public RefundController(InvoiceService invoiceService, RefundService refundService,
                             ChairService chairService, DoiTuongSuDungService profileService) {
@@ -33,34 +36,36 @@ public class RefundController {
         this.profileService = profileService;
     }
     //hien danh sach hoa don cua doi tuong do
-    @GetMapping("/danh-sach-hoa-don")
-    public String showInvoices(HttpSession session, Model model) {
-        // Kiểm tra đăng nhập
-        session.setAttribute("idCustomer",1);
-        Integer idCustomer = (Integer) session.getAttribute("idCustomer");
-        if (idCustomer == null) {
-            return "redirect:/"; // Redirect về trang đăng nhập hoặc trang chủ
-        }
-        // Lấy danh sách hóa đơn
-        List<HoaDon> invoices = invoiceService.findByIdDoiTuongSuDung(idCustomer);
-        model.addAttribute("invoices", invoices);
-        model.addAttribute("pageTitle", "Your Invoices");
-        return "LichSuDatVe";
-    }
+//    @GetMapping("/danh-sach-hoa-don")
+//    public String showInvoices(HttpSession session, Model model) {
+//        // Kiểm tra đăng nhập
+//        session.setAttribute("idCustomer",1);
+//        int idCustomer = (int) session.getAttribute("idCustomer");
+//        DoiTuongSuDung customer = (DoiTuongSuDung) session.getAttribute("user");
+//        if (customer == null) {
+//            return "redirect:/"; // Redirect về trang đăng nhập hoặc trang chủ
+//        }
+//        // Lấy danh sách hóa đơn
+//        List<HoaDon> invoices = invoiceService.findByIdDoiTuongSuDung(idCustomer);
+//        model.addAttribute("invoices", invoices);
+//        model.addAttribute("pageTitle", "Your Invoices");
+//        return "LichSuDatVe";
+//    }
     @GetMapping("/yeu-cau-hoan-tra/{id}")
     public String yeuCauHoanTra(
             @PathVariable("id") int idHoaDon,
             HttpSession session, Model model) {
-        Integer idCustomer = (Integer) session.getAttribute("idCustomer");
-        if (idCustomer == null) {
+        DoiTuongSuDung customer = (DoiTuongSuDung) session.getAttribute("user");
+        if (customer == null) {
             session.setAttribute("errorMessage", "Dang nhap de co the hoan tra ve.");
             //quay lai trang dang nhap
             return "";
         }
         HoaDon hoaDon = invoiceService.findById(idHoaDon);
         model.addAttribute("hoaDon", hoaDon);
-        return "ChiTietHoaDon";
+        return "InvoiceDetail";
     }
+
     @GetMapping("/thuc-hien-hoan-tra/{id}")
     public String thucHienHoanTra(
             @PathVariable("id") int id,
@@ -88,14 +93,14 @@ public class RefundController {
         //phim da bat dau chieu
         if (now.isAfter(ngayGioChieu)) {
             model.addAttribute("errorMessage", "Vé không thể hoàn trả do phim đã bắt đầu chiếu.");
-            return "ChiTietHoaDon.html";
+            return "InvoiceDetail.html";
         }
 
         // con it hon 45p
         Duration duration = Duration.between(now, ngayGioChieu);
         if (duration.toMinutes() < 45) {
             model.addAttribute("errorMessage", "Vé không thể hoàn trả do đã quá thời gian cho phép.");
-            return "ChiTietHoaDon.html";
+            return "InvoiceDetail.html";
         }
         HoanTra hoanTra = new HoanTra();
         hoanTra.setDoiTuongSuDung(doiTuongSuDung);

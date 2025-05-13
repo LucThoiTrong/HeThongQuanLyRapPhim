@@ -19,18 +19,15 @@ public class BookingController {
     private final MovieService movieService;
     private final DoiTuongSuDungService doiTuongSuDungService;
     private final PopcornDrinkComboService popcornDrinkComboService;
-    private final ChairService chairService;
 
     @Autowired
     public BookingController(BookingService bookingService, MovieService movieService,
                              DoiTuongSuDungService doiTuongSuDungService,
-                             PopcornDrinkComboService popcornDrinkComboService,
-                             ChairService chairService) {
+                             PopcornDrinkComboService popcornDrinkComboService) {
         this.bookingService = bookingService;
         this.movieService = movieService;
         this.doiTuongSuDungService = doiTuongSuDungService;
         this.popcornDrinkComboService = popcornDrinkComboService;
-        this.chairService = chairService;
     }
     //tim suat chieu cua phim theo ngay chieu va hinh thuc chieu
     @GetMapping("/{idPhim}")
@@ -83,7 +80,7 @@ public class BookingController {
             model.addAttribute("hinhThucChieu", hinhThucChieu);
             model.addAttribute("danhSachHinhThuc", dsHinhThucChieu);
             model.addAttribute("groupedByRap", groupedByRap);
-            return "SuatChieu";
+            return "Showtime";
         }
     }
     @GetMapping("/combo-list")
@@ -92,8 +89,6 @@ public class BookingController {
                                 HttpSession session,
                                 Model model) {
         List<ComboBapNuoc> comboList = popcornDrinkComboService.findAll();
-        //cap nhat trang thai ghe da chon
-        chairService.capNhatTrangThaiGhe(danhSachGheDuocChon,true);
         //ban dau phai dat soTienduocgiam va tonghoadonsau giam
         // la 0.0 de khong bi lay tu session truoc
         session.setAttribute("soTienGiam", 0.0);
@@ -147,7 +142,7 @@ public class BookingController {
         DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         session.setAttribute("doiTuongSuDung",customer);
         model.addAttribute("doiTuongSuDung", customer);
-        return "ThanhToan";
+        return "Payment";
     }
     @PostMapping("/ap-dung-ma-giam-gia")
     public String apDungMaGiamGia(@ModelAttribute("maGiamGia") MaGiamGia maGiamGia,
@@ -181,7 +176,7 @@ public class BookingController {
         // Lấy đối tượng sử dụng
         DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        return "ThanhToan";
+        return "Payment";
     }
     @PostMapping("/dat-lai-ma-giam-gia")
     public String datLaiMaGiamGia(HttpSession session, Model model) {
@@ -203,13 +198,11 @@ public class BookingController {
         session.setAttribute("soTienGiam", soTienGiam);
         //de lay danh sach ma giam gia
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        return "ThanhToan";
+        return "Payment";
     }
     //neu het thoi gian giu ghe -> chuyen ve trang chu
     @GetMapping("/return-view")
     public String returnView(HttpSession session,Model model) {
-        String danhSachGheDuocChon = (String) session.getAttribute("danhSachGheDuocChon");
-        chairService.capNhatTrangThaiGhe(danhSachGheDuocChon,false);
         //xoa het session va tro lai trang dang nhap -> dang nhap lai
         session.invalidate();
         model.addAttribute("taiKhoan", new TKDoiTuongSuDung());

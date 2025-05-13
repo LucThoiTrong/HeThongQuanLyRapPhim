@@ -24,7 +24,7 @@
 
         .container {
             width: 90%;
-            max-width: 900px; /* Điều chỉnh max-width cho phù hợp với nội dung đặt vé */
+            max-width: 900px;
             margin: auto;
         }
 
@@ -45,7 +45,7 @@
             bottom: 0;
             width: 100px;
             height: 4px;
-            background: #f56565; /* Accent color from homepage */
+            background: #f56565; /* Accent color */
             border-radius: 2px;
         }
 
@@ -73,7 +73,7 @@
             margin: 30px 0;
         }
 
-        /* Date Selection */
+        /* Date Selection - Themed */
         .date-grid {
             display: flex;
             flex-wrap: wrap;
@@ -91,7 +91,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            min-width: 100px; /* Ensure consistent width */
+            min-width: 100px;
             text-align: left;
             color: #4a5568;
         }
@@ -100,11 +100,19 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .date-cell.selected {
-            background-color: #3182ce; /* Blue accent for selection */
-            border-color: #3182ce;
+            background-color: #f56565; /* MODIFIED: Red accent */
+            border-color: #e53e3e;   /* MODIFIED: Darker red accent for border */
             color: #fff;
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3); /* MODIFIED: Red shadow */
         }
+        .date-cell:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.4);
+        }
+        .date-cell.selected:focus-visible { /* Added focus state for selected */
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.7);
+        }
+
         .date-cell .left {
             display: flex;
             flex-direction: column;
@@ -113,7 +121,10 @@
             border-right: 1px dashed #cbd5e0;
         }
         .date-cell.selected .left {
-            border-right: 1px dashed #a0aec0;
+            border-right: 1px dashed rgba(255,255,255,0.5); /* MODIFIED: Lighter dash for contrast */
+        }
+        .date-cell .month, .date-cell .day, .date-cell .date {
+            transition: color 0.3s ease; /* Smooth color transition */
         }
         .date-cell .month {
             font-size: 0.75em;
@@ -137,7 +148,7 @@
             color: #fff;
         }
 
-        /* Format Selection */
+        /* Format Selection - Themed */
         .format-container {
             margin-top: 10px;
         }
@@ -147,12 +158,12 @@
             gap: 12px;
             justify-content: center;
         }
-        .format-box .btn { /* Nút hình thức chiếu */
+        .format-box .btn {
             background-color: #f7fafc;
             border: 1px solid #e2e8f0;
             color: #4a5568;
             padding: 10px 20px;
-            border-radius: 20px; /* Pill shape */
+            border-radius: 20px;
             font-size: 0.95em;
             font-weight: 500;
             cursor: pointer;
@@ -163,26 +174,34 @@
             background-color: #edf2f7;
         }
         .format-box.selected .btn {
-            background-color: #3182ce;
-            border-color: #3182ce;
+            background-color: #f56565; /* MODIFIED: Red accent */
+            border-color: #e53e3e;   /* MODIFIED: Darker red accent for border */
             color: #fff;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(49, 130, 206, 0.25);
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25); /* MODIFIED: Red shadow */
+        }
+        .format-box .btn:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.4);
+        }
+        .format-box.selected .btn:focus-visible { /* Added focus state for selected */
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25), 0 0 0 3px rgba(255, 255, 255, 0.7);
         }
 
-        /* Screening List */
+
+        /* Screening List - Themed */
         .screening-list {
             list-style: none;
             padding: 0;
         }
-        .screening-list > li { /* Từng rạp */
+        .screening-list > li {
             margin-bottom: 25px;
             padding: 20px;
-            background: #fdfdfe;
+            background: #fdfdfe; /* Slightly off-white for card feel */
             border: 1px solid #e9edf1;
             border-radius: 8px;
         }
-        .cinema-name { /* Tên rạp */
+        .cinema-name {
             font-size: 1.3em;
             color: #1a202c;
             font-weight: 600;
@@ -195,16 +214,16 @@
             color: #f56565; /* Red icon color */
         }
 
-        .screening-row { /* Chứa các nút giờ chiếu */
+        .screening-row {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
-        .screening-row form { /* Form cho từng suất chiếu */
-            display: inline-block; /* Để các form nằm cạnh nhau */
+        .screening-row form {
+            display: inline-block;
         }
-        .time-default { /* Nút giờ chiếu */
-            background-color: #48bb78; /* Green for available times */
+        .time-default { /* Nút giờ chiếu - Teal color */
+            background-color: #17a2b8; /* MODIFIED: Teal color */
             color: white;
             border: none;
             padding: 10px 18px;
@@ -212,14 +231,19 @@
             font-size: 1em;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .time-default:hover {
-            background-color: #38a169; /* Darker green on hover */
+            background-color: #138496; /* MODIFIED: Darker Teal on hover */
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
+        .time-default:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.5);
+        }
+
 
         /* Responsive adjustments */
         @media (max-width: 768px) {
@@ -238,12 +262,12 @@
             .page-main-title { font-size: 1.6em; }
             .section-title { font-size: 1.2em; }
             .booking-section { padding: 15px; }
-            .date-grid { flex-direction: column; align-items: stretch; } /* Stack dates vertically */
-            .date-cell { flex-direction: row; justify-content: space-between; width: 100%;} /* Make date cell full width */
+            .date-grid { flex-direction: column; align-items: stretch; }
+            .date-cell { flex-direction: row; justify-content: space-between; width: 100%;}
             .date-cell .left { border-right: none; padding-right: 0; flex-direction: row; gap: 8px; align-items: baseline;}
             .date-cell .date { margin-left: auto;}
-            .format-row { justify-content: flex-start;} /* Align format buttons to start */
-            .screening-row { justify-content: flex-start;} /* Align time buttons to start */
+            .format-row { justify-content: flex-start;}
+            .screening-row { justify-content: flex-start;}
         }
 
     </style>

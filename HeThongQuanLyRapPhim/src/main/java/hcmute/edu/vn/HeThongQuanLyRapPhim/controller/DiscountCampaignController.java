@@ -2,7 +2,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ChienDichMaGiamGiaService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DiscountCampaignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,11 +14,11 @@ import java.util.List;
 @Controller
 @RequestMapping("/discount-campaign")
 public class DiscountCampaignController {
-    private final ChienDichMaGiamGiaService chienDichGiamGiaService;
+    private final DiscountCampaignService chienDichGiamGiaService;
 
     @Autowired
-    public DiscountCampaignController(ChienDichMaGiamGiaService chienDichMaGiamGiaService) {
-        this.chienDichGiamGiaService = chienDichMaGiamGiaService;
+    public DiscountCampaignController(DiscountCampaignService discountCampaignService) {
+        this.chienDichGiamGiaService = discountCampaignService;
     }
 
     // Lấy danh sách chiến dịch giảm giá
@@ -26,7 +26,7 @@ public class DiscountCampaignController {
     public String list(Model model) {
         List<ChienDichGiamGia> chienDichGiamGiaList = chienDichGiamGiaService.findAll();
         model.addAttribute("chienDichGiamGiaList", chienDichGiamGiaList);
-        return "DanhSachChienDichGiamGia";
+        return "DiscountCampaignListPage";
     }
 
     // Thêm chiến dịch giảm giá
@@ -49,7 +49,7 @@ public class DiscountCampaignController {
         MaGiamGia maGiamGia = new MaGiamGia();
         model.addAttribute("maGiamGia", maGiamGia);
         model.addAttribute("soLuongMaGiamGia", 0);
-        return "ThemMaGiamGiaTheoChienLuoc";
+        return "AddDiscountWithCampaign";
     }
 
     @PostMapping("/save")
@@ -102,7 +102,7 @@ public class DiscountCampaignController {
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
         System.out.println(chienDichGiamGia.getNgayBatDauChienDich());
         System.out.println(chienDichGiamGia.getNgayKetThucChienDich());
-        return "CapNhatChienDichGiamGia";
+        return "UpdateDiscountCampaign";
     }
 
     @GetMapping("/delete")

@@ -23,16 +23,16 @@ public class PaymentController {
     private ChairService chairService;
     private PopcornDrinkComboService popcornDrinkComboService;
     private EmailService emailService;
-    private MaGiamGiaService maGiamGiaService;
+    private DiscountService discountService;
     public PaymentController(VNPayService vnpayService, InvoiceService hoaDonService,
                              ChairService chairService,PopcornDrinkComboService popcornDrinkComboService,
-                             EmailService emailService, MaGiamGiaService maGiamGiaService) {
+                             EmailService emailService, DiscountService discountService) {
         this.vnpayService = vnpayService;
         this.hoaDonService = hoaDonService;
         this.chairService = chairService;
         this.popcornDrinkComboService = popcornDrinkComboService;
         this.emailService = emailService;
-        this.maGiamGiaService = maGiamGiaService;
+        this.discountService = discountService;
     }
 
     @PostMapping("/vnpay")
@@ -45,7 +45,7 @@ public class PaymentController {
         MaGiamGia maGiamGia = (MaGiamGia) session.getAttribute("maGiamGiaDaChon");
         if (maGiamGia != null) {
             maGiamGia.setTrangThaiSuDung(true);
-            maGiamGiaService.save(maGiamGia);
+            discountService.save(maGiamGia);
         }
         int amountInt = (int) amount;
         try {
@@ -117,6 +117,6 @@ public class PaymentController {
             }
         }
         model.addAttribute("message", message);
-        return "SauKhiThanhToan";
+        return "AfterPayment";
     }
 }

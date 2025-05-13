@@ -260,6 +260,13 @@
             .legend-seat-box { width: 16px; height: 14px;}
             .ticket-container { padding: 15px; }
         }
+        .seat-box.reserved {
+            background-color: #78909c;
+            color: #eceff1;
+            cursor: not-allowed;
+            border-color: #546e7a;
+            pointer-events: initial; /* Ngăn mọi sự kiện, bao gồm hover và click */
+        }
     </style>
 </head>
 <body>
@@ -278,6 +285,7 @@
                 <div class="seat-container">
                     <button th:each="ghe : ${dayGhe.dsGhe}"
                             th:text="${ghe.idGhe}"
+                            th:classappend="${danhSachGheDaDat.contains(ghe) ? 'reserved' : ''}"
                             th:attr="data-id=${ghe.idGhe},
                                      data-trangthai=${ghe.trangThaiGhe},
                                      data-giave=${dayGhe.giaDayGhe}"

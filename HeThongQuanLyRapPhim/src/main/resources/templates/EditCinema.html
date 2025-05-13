@@ -197,7 +197,7 @@
         <div class="form-group">
             <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label>
             <select id="nhanVien" th:field="*{nhanVien.idDoiTuongSuDung}" required>
-                <option value="">--Chọn nhân viên--</option>
+                <option value="-1">--Chọn nhân viên--</option>
                 <option th:each="nv : ${nhanVienList}" th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option>
             </select>
             <span id="nhanVienError" class="error-message" th:text="${nhanVienError}"></span>

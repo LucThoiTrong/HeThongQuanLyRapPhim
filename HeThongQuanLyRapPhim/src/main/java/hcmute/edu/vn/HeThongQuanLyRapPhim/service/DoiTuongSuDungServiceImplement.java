@@ -11,9 +11,12 @@ import java.util.Optional;
 
 @Service
 public class DoiTuongSuDungServiceImplement implements DoiTuongSuDungService {
+    private final DoiTuongSuDungRepository doiTuongSuDungRepository;
 
     @Autowired
-    private DoiTuongSuDungRepository doiTuongSuDungRepository;
+    public DoiTuongSuDungServiceImplement(DoiTuongSuDungRepository doiTuongSuDungRepository) {
+        this.doiTuongSuDungRepository = doiTuongSuDungRepository;
+    }
 
     @Override
     public List<DoiTuongSuDung> getAllDoiTuongSuDung() {
@@ -31,19 +34,8 @@ public class DoiTuongSuDungServiceImplement implements DoiTuongSuDungService {
     }
 
     @Override
-    public DoiTuongSuDung updateDoiTuongSuDung(int id, DoiTuongSuDung doiTuongSuDungMoi) {
-        Optional<DoiTuongSuDung> optionalDoiTuongSuDung = doiTuongSuDungRepository.findById(id);
-        if (optionalDoiTuongSuDung.isPresent()) {
-            DoiTuongSuDung doiTuongSuDung = optionalDoiTuongSuDung.get();
-            doiTuongSuDung.setHoTen(doiTuongSuDungMoi.getHoTen());
-            doiTuongSuDung.setSoDienThoai(doiTuongSuDungMoi.getSoDienThoai());
-            doiTuongSuDung.setEmail(doiTuongSuDungMoi.getEmail());
-            doiTuongSuDung.setNgaySinh(doiTuongSuDungMoi.getNgaySinh());
-            doiTuongSuDung.setGioiTinh(doiTuongSuDungMoi.getGioiTinh());
-            doiTuongSuDung.setLoaiDoiTuongSuDung(doiTuongSuDungMoi.getLoaiDoiTuongSuDung());
-            return doiTuongSuDungRepository.save(doiTuongSuDung);
-        }
-        return null;
+    public DoiTuongSuDung updateDoiTuongSuDung(DoiTuongSuDung doiTuongSuDungMoi) {
+        return doiTuongSuDungRepository.save(doiTuongSuDungMoi);
     }
 
     @Override

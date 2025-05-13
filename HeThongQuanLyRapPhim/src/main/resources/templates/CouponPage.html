@@ -35,17 +35,17 @@
             flex-grow: 1;
         }
 
-        /* --- HEADER (Synchronized) --- */
+        /* --- HEADER (LIGHT THEME APPLIED) --- */
         header {
-            background: linear-gradient(90deg, #1a202c, #2d3748);
-            color: #fff;
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
             padding: 1.2rem 0;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
         }
         header .container {
             display: flex;
@@ -54,7 +54,7 @@
             flex-wrap: wrap;
         }
         header .logo a {
-            color: #fff;
+            color: #1a202c; /* Màu chữ logo tối */
             font-size: 2em;
             font-weight: 700;
             text-decoration: none;
@@ -62,7 +62,7 @@
             align-items: center;
             gap: 8px;
         }
-        header .logo a i { color: #f56565; font-size: 1.2em; }
+        header .logo a i { color: #f56565; font-size: 1.2em; } /* Màu nhấn đỏ/san hô cho icon logo */
 
         header nav {
             flex-grow: 1;
@@ -76,7 +76,7 @@
             padding-left: 0;
         }
         header nav ul li a {
-            color: #e2e8f0;
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
             text-decoration: none;
             font-size: 1em;
             padding: 8px 16px;
@@ -85,15 +85,18 @@
             font-weight: 500;
         }
         header nav ul li a:hover,
-        header nav ul li a.active { background: #f56565; color: #fff; }
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .header-actions .btn-login {
-            background: linear-gradient(45deg, #3182ce, #63b3ed);
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
             color: #fff;
             padding: 8px 20px;
             text-decoration: none;
@@ -103,28 +106,47 @@
             transition: all 0.3s ease;
         }
         .header-actions .btn-login:hover {
-            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+            background: linear-gradient(45deg, #c53030, #e53e3e);
         }
 
-        /* CSS CHO USER MENU DROPDOWN (Synchronized) */
+        /* CSS CHO USER MENU DROPDOWN (LIGHT THEME APPLIED) */
         .header-actions .user-menu-container { position: relative; display: inline-block; }
-        .header-actions .user-profile-toggle { display: flex; align-items: center; padding: 8px 15px; text-decoration: none; color: #fff; background-color: transparent; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; }
-        .header-actions .user-profile-toggle:hover { background: linear-gradient(45deg, #2b6cb0, #4299e1); }
-        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; }
+        .header-actions .user-profile-toggle {
+            display: flex; align-items: center; padding: 8px 15px; text-decoration: none;
+            color: #1a202c; /* Màu chữ tối */
+            background-color: transparent; border-radius: 6px; font-size: 1em;
+            font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer;
+        }
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt */
+            color: #c53030; /* Màu chữ nhấn */
+        }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; color: #1a202c; } /* Màu icon theo text */
         .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
         .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
         .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
-        .header-actions .dropdown-menu-content { display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff; min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0; }
+        .header-actions .dropdown-menu-content { /* Nền dropdown giữ trắng */
+            display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff;
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px;
+            z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0;
+        }
         .header-actions .dropdown-menu-content.show { display: block; }
-        .header-actions .dropdown-menu-content .dropdown-item { color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex; align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; }
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex;
+            align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px;
+        }
         .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
         .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
         .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { background-color: #e9ecef; color: #3182ce; font-weight: 500; }
-        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #3182ce; }
-        /* KẾT THÚC CSS USER MENU */
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { /* Style cho active link (nếu có class này) */
+            background-color: #fef2f2; /* Nền đỏ rất nhạt */
+            color: #e53e3e; /* Màu chữ nhấn */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #e53e3e; }
+        /* KẾT THÚC CSS HEADER */
 
-        /* --- PAGE TITLE SECTION --- */
+        /* --- PAGE TITLE SECTION (Kept from original) --- */
         .page-header {
             background-color: #fff;
             padding: 30px 0;
@@ -142,15 +164,15 @@
             align-items: center;
             gap: 10px;
         }
-        .page-header h1 i { color: #f56565; }
+        .page-header h1 i { color: #f56565; } /* Giữ nguyên màu đỏ cho icon tiêu đề trang */
 
-        /* --- DISCOUNT CODES LISTING --- */
+        /* --- DISCOUNT CODES LISTING (Kept from original) --- */
         .discount-codes-container { padding: 0 0 30px 0; }
         .discount-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .discount-card { background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); display: flex; flex-direction: column; border: 1px solid #e2e8f0; transition: all 0.3s ease; }
         .discount-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
         .discount-card-header { padding: 20px; border-bottom: 1px dashed #cbd5e0; display: flex; align-items: center; gap: 15px; }
-        .discount-card-header .icon { font-size: 2.5em; color: #f56565; }
+        .discount-card-header .icon { font-size: 2.5em; color: #f56565; } /* Giữ nguyên màu đỏ cho icon mã giảm giá */
         .discount-card-header .code { font-size: 1.6em; font-weight: 700; color: #1a202c; background-color: #f0f2f5; padding: 5px 10px; border-radius: 6px; border: 1px dashed #cbd5e0; }
         .discount-card-body { padding: 20px; flex-grow: 1; }
         .discount-card-body h3 { font-size: 1.25em; font-weight: 600; color: #2d3748; margin-bottom: 10px; min-height: 2.6em; }
@@ -158,6 +180,7 @@
         .discount-card-body .expiry-date, .discount-card-body .conditions { font-size: 0.85em; color: #718096; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
         .discount-card-body .expiry-date i, .discount-card-body .conditions i { color: #a0aec0; }
         .discount-card-footer { padding: 20px; border-top: 1px dashed #cbd5e0; text-align: right; }
+        /* Nút "Lưu mã" giữ nguyên màu xanh lá như trong code gốc của bạn */
         .btn-collect-code { background: linear-gradient(45deg, #48bb78, #81e6d9); color: #fff; padding: 10px 25px; text-decoration: none; border-radius: 6px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
         .btn-collect-code:hover { background: linear-gradient(45deg, #38a169, #68d391); box-shadow: 0 2px 8px rgba(72, 187, 120, 0.4); }
         .btn-collect-code.collected { background: linear-gradient(45deg, #a0aec0, #cbd5e0); color: #4a5568; cursor: not-allowed; box-shadow: none; }
@@ -174,11 +197,11 @@
             color: #4a5568;
         }
         .login-prompt i {
-            color: #f56565; /* Màu đỏ cảnh báo */
+            color: #f56565; /* Màu đỏ cảnh báo, giữ nguyên */
             margin-right: 8px;
         }
         .login-prompt a {
-            color: #3182ce; /* Màu xanh dương cho link */
+            color: #3182ce; /* Màu xanh dương cho link đăng nhập, giữ nguyên */
             text-decoration: underline;
             font-weight: 500;
         }
@@ -187,19 +210,26 @@
         }
 
 
-        /* --- FOOTER --- */
-        footer { background: #2c3e50; color: #bdc3c7; text-align: center; padding: 30px 0; margin-top: auto; }
+        /* --- FOOTER (LIGHT THEME APPLIED) --- */
+        footer {
+            background: #f8f9fa; /* Nền xám rất nhạt */
+            color: #495057; /* Màu chữ tối */
+            text-align: center;
+            padding: 30px 0;
+            margin-top: auto;
+            border-top: 1px solid #e0e0e0; /* Đường kẻ mỏng */
+        }
         footer .container { display: flex; flex-direction: column; align-items: center; }
         .footer-nav ul { list-style: none; padding: 0; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-        .footer-nav ul li a { color: #bdc3c7; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
-        .footer-nav ul li a:hover { color: #fff; }
+        .footer-nav ul li a { color: #495057; text-decoration: none; font-size: 0.95em; transition: color 0.3s ease; }
+        .footer-nav ul li a:hover { color: #e53e3e; } /* Màu nhấn khi hover */
         .social-media { margin-bottom: 15px; display: flex; justify-content: center; gap: 15px; }
-        .social-media a { color: #bdc3c7; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
-        .social-media a:hover { color: #e74c3c; }
+        .social-media a { color: #495057; font-size: 1.6em; text-decoration: none; transition: color 0.3s ease; }
+        .social-media a:hover { color: #e53e3e; } /* Màu nhấn khi hover (thay vì #e74c3c) */
         footer p { font-size: 0.9em; line-height: 1.5; }
         footer p:not(:last-child) { margin-bottom: 5px; }
 
-        /* --- Responsive CSS --- */
+        /* --- Responsive CSS (Giữ nguyên từ code gốc của bạn, kiểm tra padding-top cho body) --- */
         @media (max-width: 992px) {
             body { padding-top: 150px; }
             header .container { justify-content: space-around; }
@@ -358,7 +388,6 @@
             <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
         </div>
         <p>&copy; <span id="currentYearDiscount">2024</span> PhimHay. All rights reserved.</p>
-        <p>Giao diện được xây dựng bởi AI.</p>
     </div>
 </footer>
 

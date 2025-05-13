@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("hoaDon", hoaDon);
 
             // Render nội dung HTML từ template
-            String htmlContent = templateEngine.process("EmailHoaDonThanhCong.html", context);
+            String htmlContent = templateEngine.process("EmailInvoiceSuccess.html", context);
 
             // Tạo email MIME
             MimeMessage message = mailSender.createMimeMessage();
@@ -45,6 +45,7 @@ public class EmailServiceImpl implements EmailService {
             throw new RuntimeException("Không thể gửi email: " + e.getMessage());
         }
     }
+
     @Override
     public void sendVerificationEmail(String email, int id) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -58,6 +59,24 @@ public class EmailServiceImpl implements EmailService {
 
         helper.setTo(email);
         helper.setSubject("Xác thực tài khoản");
+        helper.setText(emailContent, true);
+
+        mailSender.send(message);
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String email, int id) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        Context context = new Context();
+        String verificationLink = "http://localhost:8080/reset-password?id=" + id;
+        context.setVariable("verificationLink", verificationLink);
+
+        String emailContent = templateEngine.process("ResetPasswordMail", context);
+
+        helper.setTo(email);
+        helper.setSubject("Khôi phục mật khẩu");
         helper.setText(emailContent, true);
 
         mailSender.send(message);

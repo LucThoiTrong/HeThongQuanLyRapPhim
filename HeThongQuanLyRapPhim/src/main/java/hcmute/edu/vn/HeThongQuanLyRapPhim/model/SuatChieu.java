@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "suat_chieu")
@@ -99,5 +100,12 @@ public class SuatChieu implements Serializable {
 
     public void setDsHoaDon(Set<HoaDon> dsHoaDon) {
         this.dsHoaDon = dsHoaDon;
+    }
+    public Set<Ghe> getDanhSachGheDaDat() {
+        return getDsHoaDon().stream()
+                .filter(hoaDon -> hoaDon.getTrangThaiHoaDon() == TrangThaiHoaDon.DA_THANH_TOAN)
+                .flatMap(hoaDon -> hoaDon.getDsVeXemPhimDaMua().stream())
+                .map(VeXemPhim::getGhe)
+                .collect(Collectors.toSet());
     }
 }

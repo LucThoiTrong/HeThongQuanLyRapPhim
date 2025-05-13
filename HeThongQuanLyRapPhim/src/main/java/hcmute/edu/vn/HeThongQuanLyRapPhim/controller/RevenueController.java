@@ -32,7 +32,7 @@ public class RevenueController {
     }
 
     // Show tổng doanh thu 12 tháng
-    @PostMapping("/{idRapPhim}/{nam}")
+    @GetMapping("/{idRapPhim}/{nam}")
     public String showRevenuePage(Model model,@PathVariable int nam, @PathVariable int idRapPhim) {
         Map<String, Double> tongDoanhThu = new HashMap<>();
 
@@ -70,30 +70,33 @@ public class RevenueController {
     // Show chi tiết doanh thu từng tháng
     // Đầu vào là tháng năm và từng bộ phim hoặc từng loại combo
     // Đâu ra Doanh thu từng bộ phim trong tháng và số lượng mua của từng loại combo
-//    @GetMapping("/")
-//    public String showRevenueDetailPage(Model model, int thang, int nam, int idRapPhim) {
-//        Map<String, Double> tongDoanhThuTungPhim = new HashMap<>();
-//        Map<String, Integer> soLuongMuaTungCombo = new HashMap<>();
-//
-//        // Lấy rạp phim
-//        RapPhim rapPhim = cinemaService.getCinemaById(idRapPhim);
-//
-//        // Lấy toàn bộ danh sách phim đang chiếu
-//        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.DANG_CHIEU);
-//        for (Phim phim : danhSachPhim) {
-//            double tongTien = rapPhim.tongDoanhThuTungPhim(thang, nam, phim);
-//            tongDoanhThuTungPhim.put(phim.getTenPhim(), tongTien);
-//        }
-//
-//        // Lấy toàn bộ combo đang ban
-//        List<ComboBapNuoc> danhSachCombo = popcornDrinkComboService.findAll();
-//        for (ComboBapNuoc comboBapNuoc : danhSachCombo) {
-//            int soLuongBanRa = rapPhim.tongSoLuongTungComboBanRa(thang, nam, comboBapNuoc);
-//            soLuongMuaTungCombo.put(comboBapNuoc.getTenCombo(), soLuongBanRa);
-//        }
-//        model.addAttribute("tongDoanhThuTungPhim", tongDoanhThuTungPhim);
-//        model.addAttribute("soLuongMuaTungCombo", soLuongMuaTungCombo);
-//
-//        return "RevenueDetail";
-//    }
+    @GetMapping("/{idRapPhim}/{nam}/{thang}")
+    public String showRevenueDetailPage(Model model, @PathVariable int idRapPhim, @PathVariable int nam, @PathVariable int thang) {
+        Map<String, Double> tongDoanhThuTungPhim = new HashMap<>();
+        Map<String, Integer> soLuongMuaTungCombo = new HashMap<>();
+
+        // Lấy rạp phim
+        RapPhim rapPhim = cinemaService.getCinemaById(idRapPhim);
+
+        // Lấy toàn bộ danh sách phim đang chiếu
+        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.DANG_CHIEU);
+        for (Phim phim : danhSachPhim) {
+            double tongTien = rapPhim.tongDoanhThuTungPhim(thang, nam, phim);
+            tongDoanhThuTungPhim.put(phim.getTenPhim(), tongTien);
+        }
+
+        // Lấy toàn bộ combo đang ban
+        List<ComboBapNuoc> danhSachCombo = popcornDrinkComboService.findAll();
+        for (ComboBapNuoc comboBapNuoc : danhSachCombo) {
+            int soLuongBanRa = rapPhim.tongSoLuongTungComboBanRa(thang, nam, comboBapNuoc);
+            soLuongMuaTungCombo.put(comboBapNuoc.getTenCombo(), soLuongBanRa);
+        }
+        model.addAttribute("tongDoanhThuTungPhim", tongDoanhThuTungPhim);
+        model.addAttribute("soLuongMuaTungCombo", soLuongMuaTungCombo);
+        model.addAttribute("rapPhim", rapPhim);
+        model.addAttribute("nam", nam);
+        model.addAttribute("selectedMonth", thang);
+
+        return "RevenueDetail";
+    }
 }
