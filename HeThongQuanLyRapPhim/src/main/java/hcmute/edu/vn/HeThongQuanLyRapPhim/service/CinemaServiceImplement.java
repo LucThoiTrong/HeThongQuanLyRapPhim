@@ -39,22 +39,18 @@ public class CinemaServiceImplement implements CinemaService {
     }
 
     @Override
-    public RapPhim updateCinema(int id, RapPhim rapPhimMoi) {
-        RapPhim rapPhimCu = cinemaRepository.findById(id).orElse(null);
-        if (rapPhimCu != null) {
-            rapPhimCu.setTenRapPhim(rapPhimMoi.getTenRapPhim());
-            rapPhimCu.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
-            rapPhimCu.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
-            rapPhimCu.setNhanVien(rapPhimMoi.getNhanVien());
-            return cinemaRepository.save(rapPhimCu);
-        }
-        return null;
+    public RapPhim updateCinema(int id, RapPhim rapPhim) {
+        return cinemaRepository.save(rapPhim);
     }
 
     @Override
     public boolean deleteCinema(int id) {
-        Optional<RapPhim> optionalRapPhim = cinemaRepository.findById(id);
-        if (optionalRapPhim.isPresent()) {
+        RapPhim rapPhim = cinemaRepository.findById(id).orElse(null);
+        if (rapPhim != null) {
+            if(rapPhim.getNhanVien() != null) {
+                rapPhim.getNhanVien().setRapPhim(null);
+                cinemaRepository.save(rapPhim);
+            }
             cinemaRepository.deleteById(id);
             return true;
         }

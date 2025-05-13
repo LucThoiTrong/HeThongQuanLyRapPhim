@@ -3,11 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <title>Danh Sách Rạp Phim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --primary-color: #0a3d62;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
+      --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      --text-color: #333;
+      --bg-color: #f0f4f8;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --primary-gradient: linear-gradient(45deg, #1e3a8a, #6d28d9);
+      --text-color: #e5e7eb;
+      --bg-color: #1f2937;
+      --card-bg: rgba(31, 41, 55, 0.9);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -18,147 +42,273 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #f0f4f8;
-      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-color);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      transition: all 0.3s ease;
     }
 
     header {
-      background-color: var(--primary-color);
-      color: #ffffff;
-      padding: 1rem 2rem;
-      box-shadow: var(--card-shadow);
+      background: var(--primary-gradient);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow);
       position: sticky;
       top: 0;
       z-index: 1000;
+      text-align: center;
     }
 
     h1 {
-      color: #ffffff;
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin: 1rem 0;
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 1px;
     }
 
     .container {
+      max-width: 1300px;
+      margin: 2rem auto;
       padding: 2rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.5s ease;
       flex: 1;
     }
 
+    .search-bar {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto 2rem;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 40px 12px 20px;
+      border-radius: 25px;
+      border: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .search-bar input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .search-bar i {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-color);
+    }
+
     .button-group {
-      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 2rem;
+      gap: 1rem;
     }
 
     .btn {
-      display: inline-block;
       padding: 0.75rem 1.5rem;
       font-size: 1rem;
       font-weight: 500;
-      line-height: 1.5;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: middle;
-      cursor: pointer;
-      border-radius: 8px;
+      border-radius: 25px;
       text-decoration: none;
-      color: #ffffff;
-      margin-right: 10px;
-      background-color: var(--primary-color);
+      color: #fff;
+      background: var(--primary-gradient);
       border: none;
-      transition: var(--transition);
-      box-shadow: var(--card-shadow);
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-      opacity: 0.9;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
     }
 
     .btnDelete {
-      background-color: #dc3545;
+      background: #ef4444;
+    }
+
+    .btnDelete:hover {
+      background: #dc2626;
     }
 
     table {
-      border-collapse: collapse;
       width: 100%;
-      margin-top: 20px;
-      box-shadow: var(--card-shadow);
-      border-radius: 8px;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--card-bg);
+      border-radius: 15px;
       overflow: hidden;
+      box-shadow: var(--shadow);
     }
 
     th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
+      padding: 1rem;
       text-align: left;
+      border: none;
+      transition: all 0.3s ease;
     }
 
     th {
-      background-color: #e0f2f7;
-      color: #0a3d62;
+      background: var(--primary-gradient);
+      color: #fff;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    tr:nth-child(even) {
-      background-color: #ffffff;
+    td {
+      background: var(--card-bg);
+    }
+
+    tr {
+      transition: transform 0.3s ease, background 0.3s ease;
     }
 
     tr:hover {
-      background-color: #f1f1f1;
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.01);
     }
 
-    .alert-success {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-      max-width: 800px;
-      margin: 15px auto;
-    }
-    .alert-danger {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-      max-width: 800px;
-      margin: 15px auto;
-    }
-    #flash-message {
-      margin-top: 15px;
+    .alert {
+      padding: 1rem;
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      background: rgba(34, 197, 94, 0.1);
+      color: #15803d;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      transition: opacity 0.5s ease-out;
+      text-align: center;
     }
 
-    form {
-      margin: 0;
-      padding: 0;
-      display: inline;
+    .home-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+      z-index: 2000;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .home-button:hover {
+      transform: scale(1.1) rotate(360deg);
+      box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+    }
+
+    .home-button i {
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    /* Style for action buttons */
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .action-buttons .btn,
+    .action-buttons .btnDelete {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      .search-bar {
+        max-width: 100%;
+      }
+      .button-group {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      th, td {
+        font-size: 0.9rem;
+        padding: 0.75rem;
+      }
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+      .action-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .action-buttons .btn,
+      .action-buttons .btnDelete {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-<header>
+<header class="animate__animated animate__fadeInDown">
   <h1>Danh Sách Rạp Phim</h1>
 </header>
 
-<div th:if="${message}"
-     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
-     th:text="${message}"
-     id="flash-message">
-</div>
+<div class="container animate__animated animate__fadeIn">
+  <div th:if="${message}" class="alert animate__animated animate__fadeIn" th:text="${message}" id="flash-message"></div>
 
-<div class="container">
-  <div class="button-group">
-    <a th:href="@{/cinemas/new}" class="btn">Thêm rạp phim mới</a>
-    <a th:href="@{/manage/}" class="btn btn-secondary">Quay lại</a>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Tìm kiếm rạp phim..." onkeyup="searchTable()">
+    <i class="fas fa-search"></i>
   </div>
 
-  <table>
+  <div class="button-group">
+    <a th:href="@{/cinemas/new}" class="btn" data-bs-toggle="tooltip" title="Thêm rạp phim mới">
+      <i class="fas fa-plus"></i> Thêm rạp phim mới
+    </a>
+    <a th:href="@{/manage/}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại trang quản lý">
+      <i class="fas fa-arrow-left"></i> Quay lại
+    </a>
+  </div>
+
+  <table id="cinemaTable">
     <thead>
     <tr>
       <th>Tên Rạp Phim</th>
@@ -169,7 +319,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="cinema : ${cinemas}">
+    <tr th:each="cinema : ${cinemas}" class="animate__animated animate__fadeInUp">
       <td th:text="${cinema.tenRapPhim}"></td>
       <td th:text="${cinema.diaChiRapPhim}"></td>
       <td th:text="${cinema.trangThaiRapPhim.moTa}"></td>
@@ -178,18 +328,36 @@
         <span th:if="${cinema.nhanVien == null}">Trống</span>
       </td>
       <td>
-        <a th:href="@{/cinemas/update/{id}(id=${cinema.idRapPhim})}" class="btn">Sửa</a>
-        <form th:action="@{/cinemas/delete/{id}(id=${cinema.idRapPhim})}" method="post" class="delete-form" style="display: inline;">
-          <button type="button" class="btn btnDelete delete-button" th:attr="data-cinema-name=${cinema.tenRapPhim}">Xóa</button>
-        </form>
+        <div class="action-buttons">
+          <a th:href="@{/cinemas/update/{id}(id=${cinema.idRapPhim})}" class="btn" data-bs-toggle="tooltip" title="Sửa thông tin rạp">
+            <i class="fas fa-edit"></i> Sửa
+          </a>
+          <form th:action="@{/cinemas/delete/{id}(id=${cinema.idRapPhim})}" method="post" class="delete-form" style="display: inline;">
+            <button type="button" class="btn btnDelete delete-button" th:attr="data-cinema-name=${cinema.tenRapPhim}" data-bs-toggle="tooltip" title="Xóa rạp phim">
+              <i class="fas fa-trash"></i> Xóa
+            </button>
+          </form>
+        </div>
       </td>
     </tr>
     </tbody>
   </table>
 </div>
 
+<!-- Home Button -->
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+  <i class="fas fa-home"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Kích hoạt tooltip của Bootstrap
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
     // Xử lý nút xóa
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach(button => {
@@ -207,7 +375,7 @@
       });
     });
 
-    // Tự động ẩn thông báo flash message
+    // Tự động ẩn thông báo flash
     const flashMessage = document.getElementById('flash-message');
     if (flashMessage) {
       setTimeout(function() {
@@ -216,6 +384,25 @@
       }, 3000);
     }
   });
+
+  // Tìm kiếm trong bảng
+  function searchTable() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#cinemaTable tbody tr');
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const text = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+      row.style.display = text.includes(input) ? '' : 'none';
+    });
+  }
+</script>
+</script>
+// Điều hướng về trang chủ
+<script th:inline="javascript">
+  function goToHome() {
+    /*<![CDATA[*/
+    window.location.href = /*[[@{/manage/}]]*/ '/manage/'}
+  /*]]>*/
 </script>
 </body>
 </html>

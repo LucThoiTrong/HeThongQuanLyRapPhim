@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <file url="file://$PROJECT_DIR$" libraries="{@lottiefiles/lottie-player, @popperjs, animejs, chart.js, file-saver, gsap, hover.css, html2canvas, leaflet, sweetalert2, tippy.js, xlsx}" />
+    <file url="file://$PROJECT_DIR$/HeThongQuanLyRapPhim" libraries="{@lottiefiles/lottie-player, @popperjs, animejs, chart.js, file-saver, gsap, hover.css, html2canvas, leaflet, sweetalert2, tippy.js, xlsx}" />
+  </component>
+</project>

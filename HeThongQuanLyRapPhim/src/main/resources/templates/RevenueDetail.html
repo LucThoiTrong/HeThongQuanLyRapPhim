@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="|Thống Kê ${rapPhim.tenRapPhim} - Tháng ${selectedMonth}/${nam}|">Thống Kê Rạp</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <title th:text="|Thống Kê ${rapPhim?.tenRapPhim ?: 'Rạp Phim'} - Tháng ${selectedMonth}/${nam ?: 'N/A'}|">Thống Kê Rạp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
     <style>
-        :root {
-            --primary-color: #1e90ff;
-            --secondary-color: #ffffff;
-            --text-color: #2d3748;
-            --accent-color: #ff6b6b;
-            --background-color: #f7fafc;
-            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -25,220 +19,258 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6e9f0 0%, #eef1f5 100%);
             min-height: 100vh;
+            background: linear-gradient(135deg, #f0f2f5, #ffffff);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 40px 20px;
+            position: relative;
+            animation: fadeIn 0.8s ease-in-out;
         }
 
-        .header {
+        .main-content-wrapper {
             width: 100%;
             max-width: 1200px;
-            background: linear-gradient(90deg, var(--primary-color), #4dabf7);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
+        }
+
+        .header-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
             margin-bottom: 30px;
+            flex-wrap: wrap;
             gap: 15px;
         }
 
-        .cinema-name {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            flex-shrink: 0;
-        }
-
-        .date-selectors {
+        .action-buttons {
             display: flex;
-            gap: 20px;
-            align-items: center;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .selector-group {
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .action-button i {
+            font-size: 1.2em;
+        }
+
+        .action-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-3px);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .back-button i {
+            font-size: 1.2em;
+        }
+
+        .back-button:hover {
+            background: #f0f0f0;
+            transform: translateX(-3px);
+        }
+
+        .cinema-name {
+            font-size: 2em;
+            font-weight: 600;
+            color: #2c3e50;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .year-selector {
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
-        .selector-group label {
-            font-size: 1.0em;
-            color: var(--secondary-color);
-            margin-right: 10px;
-            font-weight: 600;
-        }
-
-        .selector-group select {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--secondary-color);
-            font-size: 0.9em;
+        .year-selector label {
+            font-size: 1em;
+            color: #555;
             font-weight: 500;
-            color: var(--text-color);
+        }
+
+        .year-selector select {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            background-color: #ffffff;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            min-width: 80px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        .selector-group select:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .selector-group select:focus {
+        .year-selector select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
             outline: none;
-            border: 2px solid var(--accent-color);
+        }
+
+        .chart-title {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .charts-area {
             width: 100%;
             max-width: 1200px;
             display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .chart-wrapper {
-            flex: 1;
-            min-width: 300px;
-            max-width: calc(50% - 15px);
-            display: flex;
             flex-direction: column;
-            gap: 15px;
-        }
-
-        .chart-title {
-            font-size: 1.5em;
-            font-weight: 600;
-            color: var(--text-color);
-            text-align: center;
-            text-transform: capitalize;
+            align-items: center;
         }
 
         .chart-container {
             width: 100%;
-            background: linear-gradient(135deg, var(--secondary-color), #f1f5f9);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
+            max-width: 100%;
+            height: 600px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
             position: relative;
-            overflow-x: auto;
-            transition: transform 0.3s ease;
-            min-height: 450px;
-        }
-
-        .chart-container:hover {
-            transform: translateY(-5px);
+            animation: slideDown 0.8s ease-in-out;
+            margin-bottom: 50px; /* Tăng khoảng cách giữa các biểu đồ */
         }
 
         canvas {
-            max-width: 100%;
-            min-height: 380px;
+            width: 100% !important;
+            height: 100% !important;
         }
 
-        .button-container {
-            width: 100%;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+        .error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-weight: 500;
         }
 
-        .export-button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            font-size: 0.9em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .export-button:hover {
-            background-color: #1871cc;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        @media (max-width: 992px) {
-            .chart-wrapper {
-                max-width: 100%;
-            }
-            .charts-area {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 15px;
-            }
-            .cinema-name {
-                font-size: 1.5em;
-                margin-bottom: 15px;
-            }
-            .date-selectors {
-                width: 100%;
-                justify-content: flex-start;
-                gap: 15px;
-            }
-            .selector-group {
-                flex-grow: 1;
-            }
-            .selector-group select {
-                width: 100%;
+        /* Print-specific styles */
+        @media print {
+            .header-controls, .action-buttons, .back-button, .year-selector {
+                display: none !important;
             }
             .chart-container {
-                padding: 20px;
-                min-height: 350px;
+                box-shadow: none;
+                padding: 0;
             }
-            canvas {
-                min-height: 300px;
+            .chart-title, .cinema-name {
+                color: #000 !important;
+                -webkit-text-fill-color: #000 !important;
+                text-shadow: none !important;
             }
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .cinema-name {
+                font-size: 1.6em;
+            }
+
             .chart-title {
-                font-size: 1.3em;
+                font-size: 1.4em;
             }
-            .button-container {
-                justify-content: center;
+
+            .chart-container {
+                max-width: 100%;
+                height: 400px;
+                margin-bottom: 40px; /* Giảm nhẹ khoảng cách trên di động */
             }
-            .export-button {
-                width: auto;
-                max-width: 180px;
+
+            .year-selector select, .action-button, .back-button {
+                padding: 8px 16px;
+                font-size: 0.9em;
             }
         }
     </style>
 </head>
 <body>
-<div class="header">
-    <h1 class="cinema-name" th:text="${rapPhim.tenRapPhim}">Tên Rạp: Placeholder</h1>
-    <div class="date-selectors">
-        <div class="selector-group">
-            <label for="month-select">Tháng:</label>
+<div class="main-content-wrapper">
+    <div class="header-controls">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="javascript:history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <div class="action-buttons">
+                <button class="action-button" onclick="printChart()">
+                    <i class="fas fa-print"></i> In
+                </button>
+                <button class="action-button" onclick="exportToImage('comboChart', 'ComboSales')">
+                    <i class="fas fa-image"></i> Xuất Ảnh Doanh Thu Combo
+                </button>
+                <button class="action-button" onclick="exportToImage('movieRevenueChart', 'MovieRevenue')">
+                    <i class="fas fa-image"></i> Xuất Ảnh Doanh Thu Phim
+                </button>
+                <button class="action-button" onclick="exportComboDataToExcel()">
+                    <i class="fas fa-file-excel"></i> Xuất Excel Combo
+                </button>
+                <button class="action-button" onclick="exportMovieDataToExcel()">
+                    <i class="fas fa-file-excel"></i> Xuất Excel Doanh Thu
+                </button>
+            </div>
+        </div>
+        <h1 class="cinema-name" th:text="|Tên Rạp: ${rapPhim?.tenRapPhim ?: 'Không xác định'}|">Tên Rạp: Placeholder</h1>
+        <div class="year-selector">
+            <label for="month-select"><i class="fas fa-calendar-alt"></i> Tháng:</label>
             <select id="month-select" name="month">
                 <option th:each="monthOpt : ${#numbers.sequence(1, 12)}"
                         th:value="${monthOpt}"
                         th:text="${'Tháng ' + monthOpt}"
                         th:selected="${monthOpt == selectedMonth}">Tháng 1</option>
             </select>
-        </div>
-        <div class="selector-group">
-            <label for="year-select">Năm:</label>
+            <label for="year-select"><i class="fas fa-calendar-alt"></i> Năm:</label>
             <select id="year-select" name="year">
                 <option th:each="yearOpt : ${#numbers.sequence(2020, 2025)}"
                         th:value="${yearOpt}"
@@ -247,72 +279,109 @@
             </select>
         </div>
     </div>
-</div>
 
-<div class="charts-area">
-    <div class="chart-wrapper">
-        <h2 class="chart-title" th:text="|Số Lượng Combo Bán Ra (Tháng ${selectedMonth}/${nam})|">Số Lượng Combo Bán Ra</h2>
+    <div class="charts-area">
         <div class="chart-container">
+            <h2 class="chart-title" th:text="|Số Lượng Combo Bán Ra (Tháng ${selectedMonth}/${nam ?: 'N/A'})|">Số Lượng Combo Bán Ra</h2>
             <canvas id="comboChart"></canvas>
         </div>
-        <div class="button-container">
-            <button class="export-button" onclick="saveComboChartAsImage()">Lưu Biểu Đồ (PNG)</button>
-            <button class="export-button" onclick="exportComboDataToExcel()">Tải Excel</button>
-        </div>
-    </div>
-
-    <div class="chart-wrapper">
-        <h2 class="chart-title" th:text="|Doanh Thu Theo Phim (Tháng ${selectedMonth}/${nam})|">Doanh Thu Theo Phim</h2>
         <div class="chart-container">
+            <h2 class="chart-title" th:text="|Doanh Thu Theo Phim (Tháng ${selectedMonth}/${nam ?: 'N/A'})|">Doanh Thu Theo Phim</h2>
             <canvas id="movieRevenueChart"></canvas>
-        </div>
-        <div class="button-container">
-            <button class="export-button" onclick="saveMovieChartAsImage()">Lưu Biểu Đồ (PNG)</button>
-            <button class="export-button" onclick="exportMovieDataToExcel()">Tải Excel</button>
         </div>
     </div>
 </div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // Data from backend
     const comboSalesData = /*[[${soLuongMuaTungCombo}]]*/ {};
     const movieRevenueData = /*[[${tongDoanhThuTungPhim}]]*/ {};
-    // Lấy ID rạp phim từ model attribute rapPhim.idRapPhim
-    const cinemaId = /*[[${rapPhim.idRapPhim}]]*/ '0';
-    const currentYear = /*[[${nam}]]*/ 2023; // Năm ban đầu được tải
-    const currentMonth = /*[[${selectedMonth}]]*/ 1; // Tháng ban đầu được tải
-    const cinemaName = /*[[${rapPhim.tenRapPhim}]]*/ 'Unknown Cinema';
+    const cinemaId = /*[[${rapPhim?.idRapPhim ?: '0'}]]*/ '0';
+    const currentYear = /*[[${nam ?: '2023'}]]*/ 2023;
+    const currentMonth = /*[[${selectedMonth ?: '1'}]]*/ 1;
+    const cinemaName = /*[[${rapPhim?.tenRapPhim ?: 'Unknown Cinema'}]]*/ 'Unknown Cinema';
 
-    // Process data for charts
     const comboLabels = Object.keys(comboSalesData);
     const comboQuantities = Object.values(comboSalesData);
     const movieLabels = Object.keys(movieRevenueData);
     const movieRevenues = Object.values(movieRevenueData);
 
-    // Initialize charts (Giữ nguyên phần khởi tạo biểu đồ)
     let comboChartInstance = null;
     let movieChartInstance = null;
-    function generatePastelColors(count) { /* ... code ... */
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-            const hue = Math.floor(Math.random() * 360);
-            const saturation = 70 + Math.random() * 10;
-            const lightness = 75 + Math.random() * 10;
-            colors.push(`hsla(${hue}, ${saturation}%, ${lightness}%, 0.8)`);
-        }
-        return colors;
+
+    function createGradient(ctx, chartArea) {
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, '#3498db');
+        gradient.addColorStop(1, '#2ecc71');
+        return gradient;
     }
-    const chartOptionsBase = { /* ... code ... */
-        responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top', labels: { font: { size: 13, family: 'Poppins', weight: '600' }, color: 'var(--text-color)' } }, tooltip: { backgroundColor: 'rgba(0, 0, 0, 0.8)', titleFont: { family: 'Poppins', size: 14, weight: '600' }, bodyFont: { family: 'Poppins', size: 12 }, callbacks: { label: function(context) { let label = context.dataset.label || ''; if (label) label += ': '; let value = context.parsed.y; if (context.chart.canvas.id === 'movieRevenueChart') { if (value !== null) { label += value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }); } } else { if (value !== null) { label += value.toLocaleString('vi-VN'); } } return label; } } } }, scales: { y: { beginAtZero: true, title: { display: true, font: { family: 'Poppins', size: 14, weight: '600' }, color: 'var(--text-color)' }, ticks: { font: { family: 'Poppins', size: 12 }, color: 'var(--text-color)' } }, x: { title: { display: true, font: { family: 'Poppins', size: 14, weight: '600' }, color: 'var(--text-color)' }, ticks: { font: { family: 'Poppins', size: 12 }, color: 'var(--text-color)' } } }, animation: { duration: 1000, easing: 'easeOutQuad' }
+
+    const chartOptionsBase = {
+        responsive: true,
+        maintainAspectRatio: false,
+        devicePixelRatio: window.devicePixelRatio || 2,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    font: { size: 14, family: 'Poppins', weight: '600' },
+                    color: '#2c3e50'
+                },
+                ticks: {
+                    font: { size: 12, family: 'Poppins' },
+                    color: '#555'
+                },
+                grid: { color: '#e0e0e0', lineWidth: 1 }
+            },
+            x: {
+                title: {
+                    display: true,
+                    font: { size: 14, family: 'Poppins', weight: '600' },
+                    color: '#2c3e50'
+                },
+                ticks: { font: { size: 12, family: 'Poppins' }, color: '#555' },
+                grid: { display: false }
+            }
+        },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                enabled: true,
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                titleFont: { family: 'Poppins', size: 12, weight: '600' },
+                bodyFont: { family: 'Poppins', size: 12 },
+                padding: 10,
+                cornerRadius: 6
+            }
+        },
+        animation: {
+            duration: 1500,
+            easing: 'easeOutQuart',
+            x: {
+                from: 0,
+                delay: (context) => context.dataIndex * 100
+            }
+        }
     };
+
     const ctxCombo = document.getElementById('comboChart')?.getContext('2d');
-    if (ctxCombo) { /* ... code khởi tạo combo chart ... */
+    if (ctxCombo) {
         const comboChartOptions = JSON.parse(JSON.stringify(chartOptionsBase));
-        comboChartOptions.plugins.legend.display = false;
         comboChartOptions.scales.y.title.text = 'Số Lượng Bán';
         comboChartOptions.scales.x.title.text = 'Loại Combo';
-        comboChartOptions.scales.y.ticks.callback = function(value) { return value.toLocaleString('vi-VN'); };
+        comboChartOptions.scales.y.ticks.callback = function(value) {
+            return value.toLocaleString('vi-VN');
+        };
+        comboChartOptions.plugins.tooltip.callbacks = {
+            label: function(context) {
+                return `Số Lượng: ${context.parsed.y.toLocaleString('vi-VN')}`;
+            }
+        };
+        comboChartOptions.datasets = {
+            barPercentage: 0.4, // Thu nhỏ chiều rộng cột
+            categoryPercentage: 0.5 // Thu nhỏ không gian giữa các cột
+        };
 
         comboChartInstance = new Chart(ctxCombo, {
             type: 'bar',
@@ -321,23 +390,49 @@
                 datasets: [{
                     label: 'Số Lượng',
                     data: comboQuantities,
-                    backgroundColor: generatePastelColors(comboLabels.length),
-                    borderColor: generatePastelColors(comboLabels.length).map(c => c.replace('0.8', '1')),
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return;
+                        return createGradient(ctx, chartArea);
+                    },
+                    borderColor: 'rgba(52, 152, 219, 1)',
                     borderWidth: 1,
-                    borderRadius: 5
+                    hoverBackgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, '#2980b9');
+                        gradient.addColorStop(1, '#27ae60');
+                        return gradient;
+                    },
+                    hoverBorderColor: 'rgba(41, 128, 185, 1)',
+                    borderRadius: 8
                 }]
             },
             options: comboChartOptions
         });
-    } else { console.error("Canvas element with ID 'comboChart' not found."); }
+    } else {
+        console.error("Canvas element with ID 'comboChart' not found.");
+    }
+
     const ctxMovie = document.getElementById('movieRevenueChart')?.getContext('2d');
-    if (ctxMovie) { /* ... code khởi tạo movie chart ... */
+    if (ctxMovie) {
         const movieChartOptions = JSON.parse(JSON.stringify(chartOptionsBase));
-        movieChartOptions.plugins.legend.display = false;
         movieChartOptions.scales.y.title.text = 'Doanh Thu (VNĐ)';
         movieChartOptions.scales.x.title.text = 'Tên Phim';
         movieChartOptions.scales.y.ticks.callback = function(value) {
-            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
+            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+        };
+        movieChartOptions.plugins.tooltip.callbacks = {
+            label: function(context) {
+                return `Doanh Thu: ${context.parsed.y.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`;
+            }
+        };
+        movieChartOptions.datasets = {
+            barPercentage: 0.4, // Thu nhỏ chiều rộng cột
+            categoryPercentage: 0.5 // Thu nhỏ không gian giữa các cột
         };
 
         movieChartInstance = new Chart(ctxMovie, {
@@ -347,110 +442,140 @@
                 datasets: [{
                     label: 'Doanh Thu',
                     data: movieRevenues,
-                    backgroundColor: 'rgba(255, 107, 107, 0.8)',
-                    borderColor: 'rgba(255, 107, 107, 1)',
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return;
+                        return createGradient(ctx, chartArea);
+                    },
+                    borderColor: 'rgba(52, 152, 219, 1)',
                     borderWidth: 1,
-                    borderRadius: 5
+                    hoverBackgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, '#2980b9');
+                        gradient.addColorStop(1, '#27ae60');
+                        return gradient;
+                    },
+                    hoverBorderColor: 'rgba(41, 128, 185, 1)',
+                    borderRadius: 8
                 }]
             },
             options: movieChartOptions
         });
-    } else { console.error("Canvas element with ID 'movieRevenueChart' not found."); }
+    } else {
+        console.error("Canvas element with ID 'movieRevenueChart' not found.");
+    }
 
+    document.getElementById('year-select')?.addEventListener('change', handleDateChange);
+    document.getElementById('month-select')?.addEventListener('change', handleDateChange);
 
-    // --- BỔ SUNG/CẬP NHẬT PHẦN XỬ LÝ SỰ KIỆN ---
-    const yearSelect = document.getElementById('year-select');
-    const monthSelect = document.getElementById('month-select');
-
-    /**
-     * Hàm xử lý khi người dùng thay đổi tháng hoặc năm.
-     * Sẽ điều hướng trang đến URL mới với các giá trị đã chọn.
-     */
     function handleDateChange() {
-        // Lấy giá trị năm và tháng đang được chọn trong dropdown
-        const selectedYear = yearSelect.value;
-        const selectedMonth = monthSelect.value;
-
-        // Kiểm tra xem các giá trị có hợp lệ không (đề phòng trường hợp lỗi)
-        if (!selectedYear || !selectedMonth) {
-            console.error("Không thể lấy giá trị tháng hoặc năm đã chọn.");
+        const selectedYear = document.getElementById('year-select').value;
+        const selectedMonth = document.getElementById('month-select').value;
+        if (!cinemaId || cinemaId === '0' || !selectedYear || !selectedMonth) {
+            console.error('Lỗi: cinemaId, selectedYear hoặc selectedMonth không hợp lệ', { cinemaId, selectedYear, selectedMonth });
+            alert('Không thể chuyển tháng/năm do thông tin không hợp lệ!');
             return;
         }
-
-        // Xây dựng URL mới theo định dạng yêu cầu: /revenue/{idRapPhim}/{nam}/{thang}
-        // Sử dụng biến `cinemaId` đã được lấy từ Thymeleaf ở trên
-        const newUrl = `/revenue/${cinemaId}/${selectedYear}/${selectedMonth}`;
-
-        // Điều hướng trang đến URL mới
+        const newUrl = `/revenue/${encodeURIComponent(cinemaId)}/${encodeURIComponent(selectedYear)}/${encodeURIComponent(selectedMonth)}`;
+        console.log('Điều hướng đến:', newUrl);
         window.location.href = newUrl;
     }
 
-    // Gắn hàm xử lý sự kiện 'change' cho cả hai dropdown
-    // Kiểm tra sự tồn tại của element trước khi gắn listener
-    if (yearSelect) {
-        yearSelect.addEventListener('change', handleDateChange);
-    } else {
-        console.error("Không tìm thấy element #year-select");
+    function printChart() {
+        window.print();
     }
 
-    if (monthSelect) {
-        monthSelect.addEventListener('change', handleDateChange);
-    } else {
-        console.error("Không tìm thấy element #month-select");
-    }
+    function exportToImage(chartId, filePrefix) {
+        const chartContainer = document.querySelector(`#${chartId}`).closest('.chart-container');
+        const chartTitle = chartContainer.querySelector('.chart-title').textContent;
+        const cinemaName = document.querySelector('.cinema-name').textContent;
 
-    // --- HÀM EXPORT (Giữ nguyên) ---
-    function saveComboChartAsImage() { /* ... code ... */
-        if (comboChartInstance) {
+        html2canvas(chartContainer, {
+            scale: 6,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            logging: false
+        }).then(canvas => {
+            const newCanvas = document.createElement('canvas');
+            const ctx = newCanvas.getContext('2d');
+            const padding = 20;
+            const titleHeight = 60;
+            newCanvas.width = canvas.width + padding * 2;
+            newCanvas.height = canvas.height + titleHeight + padding * 2;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+
+            ctx.font = 'bold 24px Poppins';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.fillText(cinemaName, newCanvas.width / 2, padding + 20);
+            ctx.fillText(chartTitle, newCanvas.width / 2, padding + 50);
+
+            ctx.drawImage(canvas, padding, padding + titleHeight);
+
             const link = document.createElement('a');
-            link.href = comboChartInstance.toBase64Image();
-            link.download = `ComboSales_${cinemaName}_${currentMonth}-${currentYear}.png`;
+            link.href = newCanvas.toDataURL('image/png', 1.0);
+            link.download = `${filePrefix}_${currentMonth}-${currentYear}.png`;
             link.click();
-        } else {
-            alert("Không thể lưu biểu đồ Combo.");
-        }
+        }).catch(err => {
+            console.error('Lỗi khi xuất ảnh:', err);
+            alert('Không thể xuất ảnh do lỗi hệ thống! Vui lòng thử lại.');
+        });
     }
-    function exportComboDataToExcel() { /* ... code ... */
-        if (comboLabels.length === 0) {
-            alert("Không có dữ liệu Combo để xuất.");
-            return;
-        }
-        const data = comboLabels.map((label, index) => ({
-            'Loại Combo': label,
-            'Số Lượng Bán': comboQuantities[index] || 0
-        }));
 
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Combo Sales');
-        worksheet['!cols'] = [ { wch: 30 }, { wch: 15, z: '#,##0' } ];
-        XLSX.writeFile(workbook, `ComboSales_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
-    }
-    function saveMovieChartAsImage() { /* ... code ... */
-        if (movieChartInstance) {
-            const link = document.createElement('a');
-            link.href = movieChartInstance.toBase64Image();
-            link.download = `MovieRevenue_${cinemaName}_${currentMonth}-${currentYear}.png`;
-            link.click();
-        } else {
-            alert("Không thể lưu biểu đồ Doanh thu Phim.");
-        }
-    }
-    function exportMovieDataToExcel() { /* ... code ... */
-        if (movieLabels.length === 0) {
-            alert("Không có dữ liệu Doanh thu Phim để xuất.");
-            return;
-        }
-        const data = movieLabels.map((label, index) => ({
-            'Tên Phim': label,
-            'Doanh Thu (VNĐ)': movieRevenues[index] || 0
-        }));
+    function exportComboDataToExcel() {
+        try {
+            if (comboLabels.length === 0) {
+                alert("Không có dữ liệu Combo để xuất.");
+                return;
+            }
+            const data = comboLabels.map((label, index) => ({
+                'Loại Combo': label,
+                'Số Lượng Bán': comboQuantities[index] || 0
+            }));
 
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Movie Revenue');
-        worksheet['!cols'] = [ { wch: 40 }, { wch: 20, z: '#,##0 "VNĐ"' } ];
-        XLSX.writeFile(workbook, `MovieRevenue_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Combo Sales');
+            ws['!cols'] = [{ wch: 30 }, { wch: 15 }];
+
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            saveAs(blob, `ComboSales_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
+        } catch (err) {
+            console.error('Lỗi khi xuất Excel:', err);
+            alert('Không thể xuất Excel do lỗi hệ thống! Vui lòng thử lại.');
+        }
+    }
+
+    function exportMovieDataToExcel() {
+        try {
+            if (movieLabels.length === 0) {
+                alert("Không có dữ liệu Doanh thu Phim để xuất.");
+                return;
+            }
+            const data = movieLabels.map((label, index) => ({
+                'Tên Phim': label,
+                'Doanh Thu (VNĐ)': movieRevenues[index] || 0
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Movie Revenue');
+            ws['!cols'] = [{ wch: 40 }, { wch: 20 }];
+
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            saveAs(blob, `MovieRevenue_${cinemaName}_${currentMonth}-${currentYear}.xlsx`);
+        } catch (err) {
+            console.error('Lỗi khi xuất Excel:', err);
+            alert('Không thể xuất Excel do lỗi hệ thống! Vui lòng thử lại.');
+        }
     }
     /*]]>*/
 </script>

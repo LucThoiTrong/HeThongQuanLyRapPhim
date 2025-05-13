@@ -3,8 +3,72 @@
 <head>
   <meta charset="UTF-8">
   <title>Thêm suất chiếu mới</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
   <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+    }
+    .card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .icon {
+      color: #3b82f6;
+      transition: transform 0.2s ease;
+    }
+    .input-group:hover .icon {
+      transform: scale(1.2);
+    }
+    .alert {
+      animation: fadeInDown 0.5s ease;
+      border: 1px solid;
+    }
+    .btn {
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    .title-gradient {
+      font-family: 'Bebas Neue', 'Montserrat', sans-serif !important;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+    .title-gradient::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      opacity: 0.6;
+    }
+    .title-icon {
+      color: #3b82f6;
+      transition: transform 0.3s ease;
+    }
+    .title-icon:hover {
+      transform: scale(1.1);
+    }
     .error-message:empty {
       display: none;
     }
@@ -14,105 +78,105 @@
       margin-left: 10px;
       white-space: nowrap;
     }
-    .input-group .form-control, .input-group .form-select {
-      flex: 1 1 auto;
-    }
-    .alert-error {
+    .invalid-feedback {
       display: none;
-      margin-top: 10px;
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 0.25rem;
     }
-    .alert-success {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
-      transition: opacity 0.5s ease-out;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+    .was-validated .form-control:invalid,
+    .was-validated .form-select:invalid {
+      border-color: #dc3545;
     }
-    .alert-danger {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      /* Thêm transition để có hiệu ứng mờ dần khi ẩn (tùy chọn) */
-      transition: opacity 0.5s ease-out;
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+    .was-validated .form-control:invalid ~ .invalid-feedback,
+    .was-validated .form-select:invalid ~ .invalid-feedback {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .title-gradient {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
-<body>
-<div class="container mt-5">
-  <div th:if="${message}" class="alert" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
-       role="alert" th:text="${message}">
+<body class="min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold animate__animated animate__slideInLeft">
+      <span class="title-gradient"><i class="fas fa-ticket-alt title-icon mr-2"></i>Thêm suất chiếu mới</span>
+    </h1>
+    <a th:href="@{/showtimes/}" class="btn inline-block px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+      <i class="fas fa-arrow-left mr-2"></i> Hủy
+    </a>
   </div>
 
-  <h1 class="text-center mb-4">Thêm suất chiếu mới</h1>
-
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form th:action="@{/showtimes/new}" th:object="${suatChieu}" method="post" class="needs-validation" novalidate>
-        <div class="mb-3 input-group">
-          <div class="flex-grow-1">
-            <label for="ngayGioChieu" class="form-label">Ngày giờ chiếu</label>
-            <input type="datetime-local" class="form-control" id="ngayGioChieu" th:field="*{ngayGioChieu}" required>
-            <div class="invalid-feedback">Vui lòng chọn ngày giờ chiếu.</div>
-          </div>
-          <div th:errors="*{ngayGioChieu}" class="error-message align-self-end"></div>
-        </div>
-        <div class="mb-3 input-group">
-          <div class="flex-grow-1">
-            <label for="hinhThucChieu" class="form-label">Hình thức chiếu</label>
-            <select class="form-select" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
-              <option th:each="hinhThuc : ${hinhThucChieuList}" th:value="${hinhThuc}" th:text="${hinhThuc}"></option>
-            </select>
-            <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
-          </div>
-          <div th:errors="*{hinhThucChieu}" class="error-message align-self-end"></div>
-        </div>
-        <div class="mb-3 input-group">
-          <div class="flex-grow-1">
-            <label for="rapPhim" class="form-label">Rạp phim</label>
-            <select class="form-select" id="rapPhim" name="rapPhim" required onchange="loadRooms(this.value)">
-              <option value="">Chọn rạp phim</option>
-              <option th:each="rap : ${rapPhimList}" th:value="${rap.idRapPhim}" th:text="${rap.tenRapPhim}"></option>
-            </select>
-            <div class="invalid-feedback">Vui lòng chọn rạp phim.</div>
-          </div>
-        </div>
-        <div class="mb-3 input-group">
-          <div class="flex-grow-1">
-            <label for="phongChieuPhim" class="form-label">Phòng chiếu</label>
-            <select class="form-select" id="phongChieuPhim" th:field="*{phongChieuPhim.idPhongChieuPhim}" required>
-              <option value="">Chọn phòng chiếu</option>
-            </select>
-            <input type="hidden" th:field="*{phongChieuPhim.idPhongChieuPhim}" id="phongChieuPhimIdHidden">
-            <div class="invalid-feedback">Vui lòng chọn phòng chiếu.</div>
-          </div>
-          <div th:errors="*{phongChieuPhim}" class="error-message align-self-end"></div>
-        </div>
-        <div class="mb-3 input-group">
-          <div class="flex-grow-1">
-            <label for="phim" class="form-label">Phim</label>
-            <select class="form-select" id="phim" th:field="*{phim}" required>
-              <option th:each="phim : ${phimList}" th:value="${phim.idPhim}" th:text="${phim.tenPhim}"></option>
-            </select>
-            <div class="invalid-feedback">Vui lòng chọn phim.</div>
-          </div>
-          <div th:errors="*{phim}" class="error-message align-self-end"></div>
-        </div>
-        <div id="room-error" class="alert alert-danger alert-error"></div>
-        <div th:if="${message}" class="alert alert-danger alert-error" th:text="${message}"></div>
-        <button type="submit" class="btn btn-primary">Thêm suất chiếu</button>
-        <a th:href="@{/showtimes/}" class="btn btn-secondary">Hủy</a>
-      </form>
-    </div>
+  <!-- Form -->
+  <div class="card p-6 rounded-xl animate__animated animate__fadeInUp">
+    <form th:action="@{/showtimes/new}" th:object="${suatChieu}" method="post" class="needs-validation" novalidate>
+      <div class="mb-4 input-group relative">
+        <label for="ngayGioChieu" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-calendar-alt icon mr-2"></i> Ngày giờ chiếu
+        </label>
+        <input type="datetime-local" class="form-control w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="ngayGioChieu" th:field="*{ngayGioChieu}" required>
+        <div class="invalid-feedback">Vui lòng chọn ngày giờ chiếu.</div>
+        <div th:errors="*{ngayGioChieu}" class="error-message absolute right-0 top-9"></div>
+      </div>
+      <div class="mb-4 input-group relative">
+        <label for="hinhThucChieu" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-video icon mr-2"></i> Hình thức chiếu
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
+          <option th:each="hinhThuc : ${hinhThucChieuList}" th:value="${hinhThuc}" th:text="${hinhThuc}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
+        <div th:errors="*{hinhThucChieu}" class="error-message absolute right-0 top-9"></div>
+      </div>
+      <div class="mb-4 input-group relative">
+        <label for="rapPhim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-theater-masks icon mr-2"></i> Rạp phim
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="rapPhim" name="rapPhim" required onchange="loadRooms(this.value)">
+          <option value="">Chọn rạp phim</option>
+          <option th:each="rap : ${rapPhimList}" th:value="${rap.idRapPhim}" th:text="${rap.tenRapPhim}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn rạp phim.</div>
+      </div>
+      <div class="mb-4 input-group relative">
+        <label for="phongChieuPhim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-door-open icon mr-2"></i> Phòng chiếu
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="phongChieuPhim" th:field="*{phongChieuPhim.idPhongChieuPhim}" required>
+          <option value="">Chọn phòng chiếu</option>
+        </select>
+        <input type="hidden" th:field="*{phongChieuPhim.idPhongChieuPhim}" id="phongChieuPhimIdHidden">
+        <div class="invalid-feedback">Vui lòng chọn phòng chiếu.</div>
+        <div th:errors="*{phongChieuPhim}" class="error-message absolute right-0 top-9"></div>
+      </div>
+      <div class="mb-4 input-group relative">
+        <label for="phim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-film icon mr-2"></i> Phim
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="phim" th:field="*{phim}" required>
+          <option th:each="phim : ${phimList}" th:value="${phim.idPhim}" th:text="${phim.tenPhim}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn phim.</div>
+        <div th:errors="*{phim}" class="error-message absolute right-0 top-9"></div>
+      </div>
+      <div id="room-error" class="alert bg-red-100 text-red-800 border-red-300 p-3 rounded-lg mb-4 hidden"></div>
+      <div class="flex space-x-3">
+        <button type="submit" class="btn px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <i class="fas fa-plus mr-2"></i> Thêm suất chiếu
+        </button>
+        <a th:href="@{/showtimes/}" class="btn px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+          <i class="fas fa-times mr-2"></i> Hủy
+        </a>
+      </div>
+    </form>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Scripts -->
 <script>
   (function () {
     'use strict';
@@ -135,7 +199,7 @@
 
     if (!idRapPhim) {
       roomSelect.innerHTML = '<option value="">Chọn phòng chiếu</option>';
-      roomError.style.display = 'none';
+      roomError.classList.add('hidden');
       hiddenInput.value = '';
       return;
     }
@@ -151,7 +215,7 @@
               roomSelect.innerHTML = '<option value="">Chọn phòng chiếu</option>';
               if (data.length === 0) {
                 roomError.textContent = 'Không có phòng chiếu nào cho rạp này.';
-                roomError.style.display = 'block';
+                roomError.classList.remove('hidden');
               } else {
                 data.forEach(room => {
                   const option = document.createElement('option');
@@ -159,13 +223,13 @@
                   option.text = room.tenPhongChieuPhim;
                   roomSelect.appendChild(option);
                 });
-                roomError.style.display = 'none';
+                roomError.classList.add('hidden');
               }
             })
             .catch(error => {
               console.error('Lỗi khi tải phòng chiếu:', error);
               roomError.textContent = 'Lỗi khi tải phòng chiếu: ' + error.message;
-              roomError.style.display = 'block';
+              roomError.classList.remove('hidden');
             });
   }
 </script>

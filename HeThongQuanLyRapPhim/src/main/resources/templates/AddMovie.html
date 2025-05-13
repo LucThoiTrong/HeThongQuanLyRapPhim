@@ -1,401 +1,166 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <title>Thêm phim mới</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root {
-      --primary-color: #0a3d62;
-      --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --transition: all 0.3s ease;
+    .error-message:empty {
+      display: none;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: #f0f4f8;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      background-color: var(--primary-color);
-      color: #ffffff;
-      padding: 1rem 2rem;
-      box-shadow: var(--card-shadow);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .container {
-      padding: 2rem;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-    }
-
-    .alert {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      transition: opacity 0.5s ease-out;
-      max-width: 600px;
-      width: 100%;
-    }
-
-    .alert-success {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-      max-width: 800px;
-      margin: 15px auto;
-    }
-    .alert-danger {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 4px;
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-      max-width: 800px;
-      margin: 15px auto;
-    }
-
-    form {
-      max-width: 600px;
-      width: 100%;
-      padding: 30px;
-      background-color: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      box-shadow: var(--card-shadow);
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #555;
-    }
-
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    input[type="url"],
-    textarea,
-    select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 16px;
-      transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(10, 61, 98, 0.25);
-      outline: none;
-    }
-
-    textarea {
-      resize: vertical;
-    }
-
-    .button-group {
-      margin-top: 30px;
-      text-align: right;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 500;
-      line-height: 1.5;
-      text-align: center;
-      white-space: nowrap;
-      vertical-align: middle;
-      cursor: pointer;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #ffffff;
-      margin-left: 10px;
-      border: none;
-      transition: var(--transition);
-      box-shadow: var(--card-shadow);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-      opacity: 0.9;
-    }
-
-    button.btn {
-      background-color: var(--primary-color);
-    }
-
-    a.btn {
-      background-color: #6c757d;
-    }
-
     .error-message {
       color: #dc3545;
-      font-size: 14px;
-      margin-top: 5px;
-      display: none;
-      background-color: #f8d7da;
-      padding: 5px 10px;
-      border-radius: 4px;
+      font-size: 0.875em;
+      margin-left: 10px;
+      white-space: nowrap;
     }
-
-    .error {
-      border-color: #dc3545 !important;
+    .input-group .form-control, .input-group .form-select {
+      flex: 1 1 auto;
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>Thêm phim mới</h1>
-</header>
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Thêm phim mới</h1>
 
-<div th:if="${message}"
-     th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
-     th:text="${message}"
-     id="flash-message">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form th:action="@{/movies/new}" th:object="${phim}" method="post" class="needs-validation" novalidate>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="tenPhim" class="form-label">Tên phim</label>
+            <input type="text" class="form-control" id="tenPhim" th:field="*{tenPhim}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên phim.</div>
+          </div>
+          <div th:errors="*{tenPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="daoDien" class="form-label">Đạo diễn</label>
+            <input type="text" class="form-control" id="daoDien" th:field="*{daoDien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên đạo diễn.</div>
+          </div>
+          <div th:errors="*{daoDien}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="dienVien" class="form-label">Diễn viên</label>
+            <input type="text" class="form-control" id="dienVien" th:field="*{dienVien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên diễn viên.</div>
+          </div>
+          <div th:errors="*{dienVien}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="moTaPhim" class="form-label">Mô tả phim</label>
+            <textarea class="form-control" id="moTaPhim" th:field="*{moTaPhim}" rows="4" required></textarea>
+            <div class="invalid-feedback">Vui lòng nhập mô tả phim.</div>
+          </div>
+          <div th:errors="*{moTaPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="theLoai" class="form-label">Thể loại</label>
+            <input type="text" class="form-control" id="theLoai" th:field="*{theLoai}" required>
+            <div class="invalid-feedback">Vui lòng nhập thể loại.</div>
+          </div>
+          <div th:errors="*{theLoai}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="thoiGianKhoiChieu" class="form-label">Thời gian khởi chiếu</label>
+            <input type="date" class="form-control" id="thoiGianKhoiChieu" th:field="*{thoiGianKhoiChieu}" required>
+            <div class="invalid-feedback">Vui lòng chọn thời gian khởi chiếu.</div>
+          </div>
+          <div th:errors="*{thoiGianKhoiChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="thoiLuongChieu" class="form-label">Thời lượng chiếu (phút)</label>
+            <input type="number" class="form-control" id="thoiLuongChieu" th:field="*{thoiLuongChieu}" required>
+            <div class="invalid-feedback">Vui lòng nhập thời lượng chiếu.</div>
+          </div>
+          <div th:errors="*{thoiLuongChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="linkTrailer" class="form-label">Link trailer</label>
+            <input type="url" class="form-control" id="linkTrailer" th:field="*{linkTrailer}" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:errors="*{linkTrailer}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="linkAnh" class="form-label">Link ảnh</label>
+            <input type="url" class="form-control" id="linkAnh" th:field="*{linkAnh}" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:errors="*{linkAnh}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="doTuoi" class="form-label">Độ tuổi</label>
+            <select class="form-select" id="doTuoi" th:field="*{doTuoi}" required>
+              <option th:each="doTuoi : ${doTuoiList}" th:value="${doTuoi}" th:text="${doTuoi}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn độ tuổi.</div>
+          </div>
+          <div th:errors="*{doTuoi}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="trangThaiPhim" class="form-label">Trạng thái phim</label>
+            <select class="form-select" id="trangThaiPhim" th:field="*{trangThaiPhim}" required>
+              <option th:each="trangThai : ${trangThaiPhimList}" th:value="${trangThai}" th:text="${trangThai}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn trạng thái phim.</div>
+          </div>
+          <div th:errors="*{trangThaiPhim}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="hinhThucChieu" class="form-label">Hình thức chiếu</label>
+            <select class="form-select" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
+              <option value="">Chọn hình thức chiếu</option>
+              <option th:each="hinhThuc : ${hinhThucChieuList}"
+                      th:value="${hinhThuc.name()}"
+                      th:text="${hinhThuc.moTa}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
+          </div>
+          <div th:errors="*{hinhThucChieu}" class="error-message align-self-end"></div>
+        </div>
+        <div class="mb-3 input-group">
+          <div class="flex-grow-1">
+            <label for="ngonNgu" class="form-label">Ngôn ngữ</label>
+            <input type="text" class="form-control" id="ngonNgu" th:field="*{ngonNgu}" required>
+            <div class="invalid-feedback">Vui lòng nhập ngôn ngữ.</div>
+          </div>
+          <div th:errors="*{ngonNgu}" class="error-message align-self-end"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm phim</button>
+        <a th:href="@{/movies/}" class="btn btn-secondary">Hủy</a>
+      </form>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-  <form th:action="@{/movies/new}" th:object="${phim}" method="post" id="movieForm" onsubmit="return validateForm(event)">
-    <div class="form-group">
-      <label for="tenPhim">Tên phim</label>
-      <input type="text" id="tenPhim" th:field="*{tenPhim}" required>
-      <span id="tenPhimError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="daoDien">Đạo diễn</label>
-      <input type="text" id="daoDien" th:field="*{daoDien}" required>
-      <span id="daoDienError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="dienVien">Diễn viên</label>
-      <input type="text" id="dienVien" th:field="*{dienVien}" required>
-      <span id="dienVienError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="moTaPhim">Mô tả phim</label>
-      <textarea id="moTaPhim" th:field="*{moTaPhim}" rows="4" required></textarea>
-      <span id="moTaPhimError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="theLoai">Thể loại</label>
-      <input type="text" id="theLoai" th:field="*{theLoai}" required>
-      <span id="theLoaiError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="thoiGianKhoiChieu">Thời gian khởi chiếu</label>
-      <input type="date" id="thoiGianKhoiChieu" th:field="*{thoiGianKhoiChieu}" required>
-      <span id="thoiGianKhoiChieuError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="thoiLuongChieu">Thời lượng chiếu (phút)</label>
-      <input type="number" id="thoiLuongChieu" th:field="*{thoiLuongChieu}" required min="1">
-      <span id="thoiLuongChieuError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="linkTrailer">Link trailer</label>
-      <input type="url" id="linkTrailer" th:field="*{linkTrailer}">
-      <span id="linkTrailerError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="linkAnh">Link ảnh</label>
-      <input type="url" id="linkAnh" th:field="*{linkAnh}">
-      <span id="linkAnhError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="doTuoi">Độ tuổi</label>
-      <select id="doTuoi" th:field="*{doTuoi}" required>
-        <option value="">--Chọn độ tuổi--</option>
-        <option th:each="doTuoi : ${doTuoiList}" th:value="${doTuoi}" th:text="${doTuoi}"></option>
-      </select>
-      <span id="doTuoiError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="trangThaiPhim">Trạng thái phim</label>
-      <select id="trangThaiPhim" th:field="*{trangThaiPhim}" required>
-        <option value="">--Chọn trạng thái--</option>
-        <option th:each="trangThai : ${trangThaiPhimList}" th:value="${trangThai}" th:text="${trangThai}"></option>
-      </select>
-      <span id="trangThaiPhimError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="hinhThucChieu">Hình thức chiếu</label>
-      <select id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
-        <option value="">--Chọn hình thức chiếu--</option>
-        <option th:each="hinhThuc : ${hinhThucChieuList}" th:value="${hinhThuc}" th:text="${hinhThuc.moTa}"></option>
-      </select>
-      <span id="hinhThucChieuError" class="error-message"></span>
-    </div>
-    <div class="form-group">
-      <label for="ngonNgu">Ngôn ngữ</label>
-      <input type="text" id="ngonNgu" th:field="*{ngonNgu}" required>
-      <span id="ngonNguError" class="error-message"></span>
-    </div>
-    <div class="button-group">
-      <button type="submit" class="btn">Thêm phim</button>
-      <a th:href="@{/movies/}" class="btn">Hủy</a>
-    </div>
-  </form>
-</div>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  function validateForm(event) {
-    event.preventDefault();
-    let isValid = true;
-
-    // Reset các thông báo lỗi client-side
-    const errorElements = document.querySelectorAll('.error-message');
-    const inputElements = document.querySelectorAll('input, select, textarea');
-    errorElements.forEach(el => el.style.display = 'none');
-    inputElements.forEach(el => el.classList.remove('error'));
-
-    const tenPhim = document.getElementById('tenPhim').value.trim();
-    const daoDien = document.getElementById('daoDien').value.trim();
-    const dienVien = document.getElementById('dienVien').value.trim();
-    const moTaPhim = document.getElementById('moTaPhim').value.trim();
-    const theLoai = document.getElementById('theLoai').value.trim();
-    const thoiGianKhoiChieu = document.getElementById('thoiGianKhoiChieu').value;
-    const thoiLuongChieu = document.getElementById('thoiLuongChieu').value;
-    const linkTrailer = document.getElementById('linkTrailer').value.trim();
-    const linkAnh = document.getElementById('linkAnh').value.trim();
-    const doTuoi = document.getElementById('doTuoi').value;
-    const trangThaiPhim = document.getElementById('trangThaiPhim').value;
-    const hinhThucChieu = document.getElementById('hinhThucChieu').value;
-    const ngonNgu = document.getElementById('ngonNgu').value.trim();
-
-    // Validation cho từng trường
-    if (!tenPhim) {
-      showError('tenPhim', 'Tên phim không được để trống.');
-      isValid = false;
-    } else if (tenPhim.length < 3 || tenPhim.length > 100) {
-      showError('tenPhim', 'Tên phim phải từ 3 đến 100 ký tự.');
-      isValid = false;
-    } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-]+$/.test(tenPhim)) {
-      showError('tenPhim', 'Tên phim chỉ được chứa chữ, số, khoảng trắng và dấu gạch ngang.');
-      isValid = false;
-    }
-
-    if (!daoDien) {
-      showError('daoDien', 'Tên đạo diễn không được để trống.');
-      isValid = false;
-    }
-
-    if (!dienVien) {
-      showError('dienVien', 'Tên diễn viên không được để trống.');
-      isValid = false;
-    }
-
-    if (!moTaPhim) {
-      showError('moTaPhim', 'Mô tả phim không được để trống.');
-      isValid = false;
-    }
-
-    if (!theLoai) {
-      showError('theLoai', 'Thể loại không được để trống.');
-      isValid = false;
-    }
-
-    if (!thoiGianKhoiChieu) {
-      showError('thoiGianKhoiChieu', 'Thời gian khởi chiếu không được để trống.');
-      isValid = false;
-    }
-
-    if (!thoiLuongChieu) {
-      showError('thoiLuongChieu', 'Thời lượng chiếu không được để trống.');
-      isValid = false;
-    } else if (thoiLuongChieu <= 0) {
-      showError('thoiLuongChieu', 'Thời lượng chiếu phải lớn hơn 0.');
-      isValid = false;
-    }
-
-    if (linkTrailer && !/^https?:\/\/.+/.test(linkTrailer)) {
-      showError('linkTrailer', 'Link trailer phải là URL hợp lệ.');
-      isValid = false;
-    }
-
-    if (linkAnh && !/^https?:\/\/.+/.test(linkAnh)) {
-      showError('linkAnh', 'Link ảnh phải là URL hợp lệ.');
-      isValid = false;
-    }
-
-    if (!doTuoi) {
-      showError('doTuoi', 'Vui lòng chọn độ tuổi.');
-      isValid = false;
-    }
-
-    if (!trangThaiPhim) {
-      showError('trangThaiPhim', 'Vui lòng chọn trạng thái phim.');
-      isValid = false;
-    }
-
-    if (!hinhThucChieu) {
-      showError('hinhThucChieu', 'Vui lòng chọn hình thức chiếu.');
-      isValid = false;
-    }
-
-    if (!ngonNgu) {
-      showError('ngonNgu', 'Ngôn ngữ không được để trống.');
-      isValid = false;
-    }
-
-    if (isValid) {
-      document.getElementById('movieForm').submit();
-    }
-
-    return isValid;
-  }
-
-  function showError(fieldId, message) {
-    const field = document.getElementById(fieldId);
-    const errorElement = document.getElementById(fieldId + 'Error');
-    field.classList.add('error');
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-  }
-
-  window.onload = function() {
-    const flashMessage = document.getElementById('flash-message');
-    if (flashMessage) {
-      setTimeout(() => {
-        flashMessage.style.opacity = '0';
-        setTimeout(() => flashMessage.remove(), 500);
-      }, 3000);
-    }
-  };
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
 </script>
 </body>
 </html>
