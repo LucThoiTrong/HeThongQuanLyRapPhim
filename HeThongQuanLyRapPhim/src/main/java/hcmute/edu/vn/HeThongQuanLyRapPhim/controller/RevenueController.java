@@ -79,7 +79,7 @@ public class RevenueController {
         RapPhim rapPhim = cinemaService.getCinemaById(idRapPhim);
 
         // Lấy toàn bộ danh sách phim đang chiếu
-        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhim(TrangThaiPhim.DANG_CHIEU);
+        List<Phim> danhSachPhim = movieService.getMoviesByTrangThaiPhimDangChieuVaDaChieu();
         for (Phim phim : danhSachPhim) {
             double tongTien = rapPhim.tongDoanhThuTungPhim(thang, nam, phim);
             tongDoanhThuTungPhim.put(phim.getTenPhim(), tongTien);

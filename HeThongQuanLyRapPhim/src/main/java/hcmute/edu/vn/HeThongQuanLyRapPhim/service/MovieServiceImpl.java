@@ -80,6 +80,11 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    public List<Phim> getMoviesByTrangThaiPhimDangChieuVaDaChieu() {
+        return movieRepository.getAllByTrangThaiPhimIsNot(TrangThaiPhim.SAP_CHIEU);
+    }
+
+    @Override
     public Optional<Phim> findByMovieName(String tenPhim) {
         return movieRepository.findByTenPhim(tenPhim);
     }

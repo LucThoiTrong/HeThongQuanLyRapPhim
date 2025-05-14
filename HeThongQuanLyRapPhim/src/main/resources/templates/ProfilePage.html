@@ -600,6 +600,11 @@
                 <section id="info-section" class="profile-content-section active">
                     <h2><i class="fas fa-id-card"></i>Thông tin cá nhân</h2>
                     <form class="profile-form" id="personalInfoForm" th:action="@{/user/profile/update}" th:object="${khachHang}" method="post">
+                        <div th:if="${message != null}"
+                             th:classappend="${message == 'Cập nhật thông tin thành công' ? 'alert-success' : 'alert-danger'}"
+                             class="alert" role="alert"
+                             th:text="${message}">
+                        </div>
                         <div th:if="${param.success_update_info != null}" class="alert alert-success" role="alert">
                             Cập nhật thông tin cá nhân thành công!
                         </div>
