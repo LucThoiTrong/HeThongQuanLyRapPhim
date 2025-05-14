@@ -206,6 +206,6 @@ public class BookingController {
         //xoa het session va tro lai trang dang nhap -> dang nhap lai
         session.invalidate();
         model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
-        return "Login.html";
+        return "Login";
     }
 }

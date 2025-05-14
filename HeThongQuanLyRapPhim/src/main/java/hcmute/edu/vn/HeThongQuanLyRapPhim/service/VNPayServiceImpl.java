@@ -49,7 +49,9 @@ public class VNPayServiceImpl implements VNPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+//        cld.add(Calendar.HOUR, 24);
+        cld.add(Calendar.HOUR, 8);  // Thêm 7 giờ để chuyển từ UTC sang giờ Việt Nam
+
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -77,7 +79,27 @@ public class VNPayServiceImpl implements VNPayService {
 
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+//        System.out.println("==== VNPay DEBUG ====");
+//        System.out.println("Client IP: " + clientIp);
+//        System.out.println("Amount (x100): " + amount);
+//        System.out.println("Transaction Ref: " + vnp_TxnRef);
+//        System.out.println("Create Date: " + vnp_CreateDate);
+//        System.out.println("Expire Date: " + vnp_ExpireDate);
+//        System.out.println("Return URL: " + VNPayConfig.vnp_ReturnUrl);
+//
+//// Log toàn bộ tham số gửi đến VNPay
+//        System.out.println("--- VNPay Params ---");
+//        for (String key : fieldNames) {
+//            System.out.println(key + ": " + vnp_Params.get(key));
+//        }
+//
+//// Log URL cuối cùng gửi đến VNPay
+//        System.out.println("--- Final Payment URL ---");
+//        System.out.println(VNPayConfig.vnp_PayUrl + "?" + query);
+//        System.out.println("======================");
+
         return VNPayConfig.vnp_PayUrl + "?" + query;
+
     }
     @Override
     public String getPaymentMessage(String responseCode) {
