@@ -34,7 +34,7 @@ public class CustomerAdminController {
         if (customer != null) {
             model.addAttribute("customer", customer);
         }
-        return "EditCustomer";
+        return "EditCustomerPage";
     }
 
     // Thực hiện update

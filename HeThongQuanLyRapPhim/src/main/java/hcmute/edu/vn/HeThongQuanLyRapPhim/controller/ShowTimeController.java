@@ -62,7 +62,7 @@ public class ShowTimeController {
         model.addAttribute("phimList", movieService.getAllMovies());
         model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
         model.addAttribute("phongChieuList", Collections.emptyList());
-        return "AddShowTime";
+        return "AddShowTimePage";
     }
 
     // Xử lý thêm suất chiếu
@@ -73,7 +73,7 @@ public class ShowTimeController {
             model.addAttribute("phimList", movieService.getAllMovies());
             model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
             model.addAttribute("phongChieuList", Collections.emptyList());
-            return "AddShowTime";
+            return "AddShowTimePage";
         }
         try {
             SuatChieu savedShowTime = showTimeService.createShowTime(suatChieu);
@@ -88,7 +88,7 @@ public class ShowTimeController {
             model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
             model.addAttribute("phongChieuList", Collections.emptyList());
             model.addAttribute("message", e.getMessage());
-            return "AddShowTime";
+            return "AddShowTimePage";
         }
         return "redirect:/showtimes/";
     }
@@ -112,7 +112,7 @@ public class ShowTimeController {
         model.addAttribute("rapPhimList", cinemaService.getAllCinemas());
         model.addAttribute("phongChieuList", phongChieuList);
         model.addAttribute("selectedRapPhimId", idRapPhim);
-        return "EditShowTime";
+        return "EditShowTimePage";
     }
 
     // Xử lý cập nhật suất chiếu
@@ -136,26 +136,26 @@ public class ShowTimeController {
 
         if (result.hasErrors()) {
             System.out.println("Validation errors: " + result.getAllErrors());
-            return "EditShowTime";
+            return "EditShowTimePage";
         }
 
         try {
             // Kiểm tra và ánh xạ phim từ phim.idPhim
             if (suatChieu.getPhim() == null || suatChieu.getPhim().getIdPhim() == null) {
                 model.addAttribute("message", "Vui lòng chọn phim.");
-                return "EditShowTime";
+                return "EditShowTimePage";
             }
             Phim phim = movieService.getMovieById(suatChieu.getPhim().getIdPhim());
             if (phim == null || phim.getThoiLuongChieu() == null) {
                 model.addAttribute("message", "Phim không hợp lệ hoặc thiếu thời lượng chiếu.");
-                return "EditShowTime";
+                return "EditShowTimePage";
             }
             suatChieu.setPhim(phim);
 
             // Kiểm tra phòng chiếu
             if (suatChieu.getPhongChieuPhim() == null || suatChieu.getPhongChieuPhim().getIdPhongChieuPhim() == null) {
                 model.addAttribute("message", "Vui lòng chọn phòng chiếu.");
-                return "EditShowTime";
+                return "EditShowTimePage";
             }
 
             SuatChieu updatedShowTime = showTimeService.updateShowTime(id, suatChieu);
@@ -164,11 +164,11 @@ public class ShowTimeController {
                 return "redirect:/showtimes/";
             } else {
                 model.addAttribute("message", "Không tìm thấy suất chiếu để cập nhật.");
-                return "EditShowTime";
+                return "EditShowTimePage";
             }
         } catch (IllegalArgumentException e) {
             model.addAttribute("message", e.getMessage());
-            return "EditShowTime";
+            return "EditShowTimePage";
         }
     }
 

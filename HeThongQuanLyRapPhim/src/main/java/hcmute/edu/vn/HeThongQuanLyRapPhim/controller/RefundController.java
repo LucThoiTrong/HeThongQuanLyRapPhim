@@ -63,7 +63,7 @@ public class RefundController {
         }
         HoaDon hoaDon = invoiceService.findById(idHoaDon);
         model.addAttribute("hoaDon", hoaDon);
-        return "InvoiceDetail";
+        return "InvoiceDetailPage";
     }
 
     @GetMapping("/thuc-hien-hoan-tra/{id}")
@@ -93,14 +93,14 @@ public class RefundController {
         //phim da bat dau chieu
         if (now.isAfter(ngayGioChieu)) {
             model.addAttribute("errorMessage", "Vé không thể hoàn trả do phim đã bắt đầu chiếu.");
-            return "InvoiceDetail.html";
+            return "InvoiceDetailPage";
         }
 
         // con it hon 45p
         Duration duration = Duration.between(now, ngayGioChieu);
         if (duration.toMinutes() < 45) {
             model.addAttribute("errorMessage", "Vé không thể hoàn trả do đã quá thời gian cho phép.");
-            return "InvoiceDetail.html";
+            return "InvoiceDetailPage";
         }
         HoanTra hoanTra = new HoanTra();
         hoanTra.setDoiTuongSuDung(doiTuongSuDung);

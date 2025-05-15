@@ -34,6 +34,6 @@ public class RowSeatController {
         List<DayGhe> danhSachDayGhe = gheService.findByPhongChieuPhim(suatChieu.getPhongChieuPhim());
         model.addAttribute("danhSachDayGhe", danhSachDayGhe);
         model.addAttribute("danhSachGheDaDat", danhSachGheDaDat);
-        return "SeatingPlan";
+        return "SeatingPlanPage";
     }
 }

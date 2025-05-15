@@ -35,7 +35,7 @@ public class CinemaController {
         List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
         model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
 
-        return "CinemaListPage";
+        return "CinemaPage";
     }
 
     @GetMapping("/new")
@@ -44,7 +44,7 @@ public class CinemaController {
         model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
         List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
         model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
-        return "AddCinema";
+        return "AddCinemaPage";
     }
 
     @PostMapping("/new")
@@ -83,7 +83,7 @@ public class CinemaController {
         model.addAttribute("rapPhim", rapPhim);
         model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
         model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
-        return "EditCinema";
+        return "EditCinemaPage";
     }
 
     @PostMapping("/update/{id}")

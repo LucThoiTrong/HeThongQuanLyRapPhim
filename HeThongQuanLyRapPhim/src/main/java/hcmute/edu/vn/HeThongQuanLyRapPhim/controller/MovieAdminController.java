@@ -35,7 +35,7 @@ public class MovieAdminController {
         List<Phim> dsPhim = movieService.getAllMovies();
         session.setAttribute("movies", dsPhim);
         model.addAttribute("movies", dsPhim);
-        return "MovieListPage";
+        return "MoviePage";
     }
 
     @GetMapping("/new")
@@ -44,7 +44,7 @@ public class MovieAdminController {
         model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
         model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
         model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
-        return "AddMovie";
+        return "AddMoviePage";
     }
 
     @PostMapping("/new")
@@ -54,14 +54,14 @@ public class MovieAdminController {
                              RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             prepareFormModel(model);
-            return "AddMovie";
+            return "AddMoviePage";
         }
         Phim created = movieService.createMovie(phim);
         if (created == null) {
             model.addAttribute("phim", phim);
             prepareFormModel(model);
             model.addAttribute("message", "Tên phim đã tồn tại");
-            return "AddMovie";
+            return "AddMoviePage";
         }
         redirectAttributes.addFlashAttribute("message", "Thêm phim thành công");
         return "redirect:/movies/";
@@ -87,7 +87,7 @@ public class MovieAdminController {
         model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
         model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
         model.addAttribute("hinhThucChieuList", Arrays.asList(HinhThucChieu.values()));
-        return "EditMovie";
+        return "EditMoviePage";
     }
 
     @PostMapping("/update/{id}")
@@ -98,14 +98,14 @@ public class MovieAdminController {
                              RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             prepareFormModel(model);
-            return "EditMovie";
+            return "EditMoviePage";
         }
         Phim updated = movieService.updateMovie(id, phim);
         if (updated == null) {
             model.addAttribute("phim", phim);
             prepareFormModel(model);
             model.addAttribute("message", "Tên phim đã tồn tại hoặc không tìm thấy phim");
-            return "EditMovie";
+            return "EditMoviePage";
         }
         redirectAttributes.addFlashAttribute("message", "Cập nhật phim thành công");
         return "redirect:/movies/";

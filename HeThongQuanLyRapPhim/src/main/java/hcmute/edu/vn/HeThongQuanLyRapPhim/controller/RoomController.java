@@ -27,7 +27,7 @@ public class RoomController {
         List<PhongChieuPhim> dsPhongChieuPhim = roomService.getAllRoomsByCinemaId(idRapPhim);
         model.addAttribute("dsPhongChieuPhim", dsPhongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
-        return "RoomListPage";
+        return "RoomPage";
     }
 
     @GetMapping("/new")
@@ -39,7 +39,7 @@ public class RoomController {
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
         model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
-        return "AddRoom";
+        return "AddRoomPage";
     }
 
     @PostMapping("/new")
@@ -82,7 +82,7 @@ public class RoomController {
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
         model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
-        return "EditRoom";
+        return "EditRoomPage";
     }
 
     @PostMapping("/update/{id}")

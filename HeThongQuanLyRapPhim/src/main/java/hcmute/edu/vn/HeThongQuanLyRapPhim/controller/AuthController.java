@@ -29,7 +29,7 @@ public class AuthController {
     @GetMapping("/signin")
     public String showLoginForm(Model model, @ModelAttribute("taiKhoan") TKDoiTuongSuDung taiKhoan) {
         model.addAttribute("taiKhoan", taiKhoan!=null ? taiKhoan:new TKDoiTuongSuDung());
-        return "Login";
+        return "LoginPage";
     }
 
     @PostMapping("/signin")
@@ -72,7 +72,7 @@ public class AuthController {
         if (!model.containsAttribute("taiKhoan")) {
             model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
         }
-        return "Register";
+        return "RegisterPage";
     }
 
     @PostMapping("/register")
@@ -129,7 +129,7 @@ public class AuthController {
             emailService.sendResetPasswordEmail(email, tk.getIdTKDoiTuongSuDung());
             redirectAttributes.addFlashAttribute("message", "Email khôi phục mật khẩu đã được gửi!");
             redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
-            return "NotificationForgotPassword"; // Chuyển hướng về trang thông báo
+            return "NotificationForgotPasswordPage"; // Chuyển hướng về trang thông báo
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("message", "Lỗi khi gửi email: " + e.getMessage());
             redirectAttributes.addFlashAttribute("message_type", "ERROR");

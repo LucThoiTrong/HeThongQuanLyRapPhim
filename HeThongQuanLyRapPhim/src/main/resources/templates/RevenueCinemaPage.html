@@ -248,13 +248,14 @@
         <h1 class="cinema-name" th:text="|Tên Rạp: ${rapPhim?.tenRapPhim ?: 'Không xác định'}|">Tên Rạp: Placeholder</h1>
         <div class="year-selector">
             <label for="year-select"><i class="fas fa-calendar-alt"></i> Chọn năm:</label>
-            <select id="year-select" name="year" th:unless="${#lists.isEmpty(availableYears)}">
-                <option th:each="yearOpt : ${availableYears}"
-                        th:value="${yearOpt}"
-                        th:text="${yearOpt}"
-                        th:selected="${yearOpt == nam}">2023</option>
+            <select id="year-select" name="year">
+                <th:block th:with="currentYear=${T(java.time.Year).now().getValue()}">
+                    <option th:each="yearOpt : ${#numbers.sequence(currentYear, currentYear - 9, -1)}"
+                            th:value="${yearOpt}"
+                            th:text="${yearOpt}"
+                            th:selected="${yearOpt == nam}">2023</option>
+                </th:block>
             </select>
-            <span th:if="${#lists.isEmpty(availableYears)}" class="error-message">Không có năm nào để chọn!</span>
         </div>
     </div>
 

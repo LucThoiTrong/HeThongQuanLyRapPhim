@@ -41,7 +41,7 @@ public class EmployeeController {
     @GetMapping("/new/")
     public String showFormInsert(Model model) {
         model.addAttribute("nhanVien", new DoiTuongSuDung());
-        return "AddEmployee";
+        return "AddEmployeePage";
     }
 
     // Thực hiện Insert
@@ -74,7 +74,7 @@ public class EmployeeController {
             }
 
             model.addAttribute("dsCinema", dsRapPhim);
-            return "EditEmployee";
+            return "EditEmployeePage";
         } else {
             redirectAttributes.addFlashAttribute("message", "Không tìm thấy nhân viên");
             return "redirect:/employees/";

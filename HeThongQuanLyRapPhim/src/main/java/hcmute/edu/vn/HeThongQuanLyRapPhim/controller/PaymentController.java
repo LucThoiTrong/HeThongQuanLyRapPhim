@@ -116,7 +116,7 @@ public class PaymentController {
             }
         }
         model.addAttribute("message", message);
-        return "AfterPayment";
+        return "AfterPaymentPage";
     }
     private String getClientIpAddress(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
