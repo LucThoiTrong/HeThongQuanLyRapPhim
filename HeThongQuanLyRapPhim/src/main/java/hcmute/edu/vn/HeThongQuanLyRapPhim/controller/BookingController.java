@@ -40,7 +40,7 @@ public class BookingController {
         DoiTuongSuDung customer = (DoiTuongSuDung) session.getAttribute("user");
         if (customer == null) {
             model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
-            return "LoginPage";
+            return "Login";
         }
         else {
             // lay thong tin phim
@@ -80,7 +80,7 @@ public class BookingController {
             model.addAttribute("hinhThucChieu", hinhThucChieu);
             model.addAttribute("danhSachHinhThuc", dsHinhThucChieu);
             model.addAttribute("groupedByRap", groupedByRap);
-            return "ShowtimePage";
+            return "Showtime";
         }
     }
     @GetMapping("/combo-list")
@@ -97,7 +97,7 @@ public class BookingController {
 
         model.addAttribute("tongGiaVe", tongGiaVe);
         model.addAttribute("danhSachCombo", comboList);
-        return "ChoosePopcornDrinkComboPage";
+        return "ChoosePopcornDrinkCombo";
     }
     @PostMapping("/thanh-toan")
     public String hienTrangThanhToan(@RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
@@ -142,7 +142,7 @@ public class BookingController {
         DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         session.setAttribute("doiTuongSuDung",customer);
         model.addAttribute("doiTuongSuDung", customer);
-        return "PaymentPage";
+        return "Payment";
     }
     @PostMapping("/ap-dung-ma-giam-gia")
     public String apDungMaGiamGia(@ModelAttribute("maGiamGia") MaGiamGia maGiamGia,
@@ -176,7 +176,7 @@ public class BookingController {
         // Lấy đối tượng sử dụng
         DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        return "PaymentPage";
+        return "Payment";
     }
     @PostMapping("/dat-lai-ma-giam-gia")
     public String datLaiMaGiamGia(HttpSession session, Model model) {
@@ -198,7 +198,7 @@ public class BookingController {
         session.setAttribute("soTienGiam", soTienGiam);
         //de lay danh sach ma giam gia
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
-        return "PaymentPage";
+        return "Payment";
     }
     //neu het thoi gian giu ghe -> chuyen ve trang chu
     @GetMapping("/return-view")
@@ -206,6 +206,6 @@ public class BookingController {
         //xoa het session va tro lai trang dang nhap -> dang nhap lai
         session.invalidate();
         model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
-        return "LoginPage.html";
+        return "Login";
     }
 }
