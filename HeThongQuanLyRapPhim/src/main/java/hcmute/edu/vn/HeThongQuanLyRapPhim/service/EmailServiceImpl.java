@@ -55,7 +55,7 @@ public class EmailServiceImpl implements EmailService {
         String verificationLink = "https://phimhay.azurewebsites.net/auth/verify?id=" + id;
         context.setVariable("verificationLink", verificationLink);
 
-        String emailContent = templateEngine.process("verify-email", context);
+        String emailContent = templateEngine.process("EmailVerify", context);
 
         helper.setTo(email);
         helper.setSubject("Xác thực tài khoản");
