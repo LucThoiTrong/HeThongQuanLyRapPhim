@@ -58,22 +58,18 @@ public class ReviewController {
         // Tìm đánh giá từ database
         DanhGia existingReview = reviewService.findReviewById(reviewId);
 
-        if (existingReview != null) {
-            // Cập nhật thông tin đánh giá
-            existingReview.setNoiDungDanhGia(danhGia.getNoiDungDanhGia());
-            existingReview.setDiemDanhGia(danhGia.getDiemDanhGia());
-            existingReview.setThoiGianDanhGia(new Date());
+        // Cập nhật thông tin đánh giá
+        existingReview.setNoiDungDanhGia(danhGia.getNoiDungDanhGia());
+        existingReview.setDiemDanhGia(danhGia.getDiemDanhGia());
+        existingReview.setThoiGianDanhGia(new Date());
 
-            // Lưu lại đánh giá đã được cập nhật
-            DanhGia updatedReview = reviewService.updateReview(existingReview);
+        // Lưu lại đánh giá đã được cập nhật
+        DanhGia updatedReview = reviewService.updateReview(existingReview);
 
-            if (updatedReview != null) {
-                redirectAttributes.addFlashAttribute("message", "Cập nhật đánh giá thành công");
-            } else {
-                redirectAttributes.addFlashAttribute("message", "Cập nhật đánh giá thất bại");
-            }
+        if (updatedReview != null) {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật đánh giá thành công");
         } else {
-            redirectAttributes.addFlashAttribute("message", "Đánh giá không tồn tại");
+            redirectAttributes.addFlashAttribute("message", "Cập nhật đánh giá thất bại");
         }
 
         return "redirect:/movies/movie-detail/" + movieId;

@@ -2,6 +2,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,19 +38,17 @@ public class PaymentController {
 
     @PostMapping("/vnpay")
     public String createPayment(@RequestParam("tongTienSauGiam") double amount,
-                                Model model, HttpSession session) {
-//        session.setAttribute("idSuatChieu", idSuatChieu);
-//        session.setAttribute("tongTienSauGiam", amount);
-//        session.setAttribute("idCustomer", idCustomer);
-//        session.setAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
+                                Model model, HttpSession session,HttpServletRequest request) {
         MaGiamGia maGiamGia = (MaGiamGia) session.getAttribute("maGiamGiaDaChon");
         if (maGiamGia != null) {
             maGiamGia.setTrangThaiSuDung(true);
             discountService.save(maGiamGia);
         }
+        String clientIp = getClientIpAddress(request);
+
         int amountInt = (int) amount;
         try {
-            String paymentUrl = vnpayService.createPayment(amountInt);
+            String paymentUrl = vnpayService.createPayment(amountInt,clientIp);
             return "redirect:" + paymentUrl; // chuyển hướng đến URL thanh toán
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
@@ -117,6 +116,16 @@ public class PaymentController {
             }
         }
         model.addAttribute("message", message);
-        return "AfterPayment";
+        return "AfterPaymentPage";
+    }
+    private String getClientIpAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        } else {
+            // Nếu có nhiều IP, lấy cái đầu tiên
+            ip = ip.split(",")[0];
+        }
+        return ip;
     }
 }

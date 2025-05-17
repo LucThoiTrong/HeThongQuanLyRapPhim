@@ -24,7 +24,7 @@ public class PopcornDrinkComboController {
     public String list(Model model) {
         List<ComboBapNuoc> comboBapNuoc = popCornDrinkComboService.findAll();
         model.addAttribute("comboBapNuocs", comboBapNuoc);
-        return "ComboListPage";
+        return "ComboPage";
     }
 
     // Hiển thị form insert
@@ -33,7 +33,7 @@ public class PopcornDrinkComboController {
         //tao model de lien ket du lieu tu form
         ComboBapNuoc comboBapNuoc = new ComboBapNuoc();
         model.addAttribute("comboBapNuoc", comboBapNuoc);
-        return "AddPopcornDrinkCombo";
+        return "AddPopcornDrinkComboPage";
     }
 
     // Thực hiện lưu combo
@@ -53,7 +53,7 @@ public class PopcornDrinkComboController {
     public String showFormForUpdate(@PathVariable int id, Model model) {
         ComboBapNuoc comboBapNuoc = popCornDrinkComboService.findById(id);
         model.addAttribute("comboBapNuoc", comboBapNuoc);
-        return "EditPopcornDrinkCombo";
+        return "EditPopcornDrinkComboPage";
     }
 
     // Thực hiện cập nhật combo

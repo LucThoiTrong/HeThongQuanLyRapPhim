@@ -29,7 +29,7 @@ public class AuthController {
     @GetMapping("/signin")
     public String showLoginForm(Model model, @ModelAttribute("taiKhoan") TKDoiTuongSuDung taiKhoan) {
         model.addAttribute("taiKhoan", taiKhoan!=null ? taiKhoan:new TKDoiTuongSuDung());
-        return "Login";
+        return "LoginPage";
     }
 
     @PostMapping("/signin")
@@ -72,7 +72,7 @@ public class AuthController {
         if (!model.containsAttribute("taiKhoan")) {
             model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
         }
-        return "Register";
+        return "RegisterPage";
     }
 
     @PostMapping("/register")
@@ -114,18 +114,27 @@ public class AuthController {
     public String showForgotPasswordForm() {
         return "ForgotPasswordPage";
     }
+
     @PostMapping("/submit-email")
-    public String submitEmail(String email){
+    public String submitEmail(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
         DoiTuongSuDung doiTuongSuDung = authService.getDoiTuongSuDungByEmail(email);
-        TKDoiTuongSuDung tk = doiTuongSuDung.getTkDoiTuongSuDung();
-        if(doiTuongSuDung!=null){
-            try {
-                emailService.sendResetPasswordEmail(email,tk.getIdTKDoiTuongSuDung());
-            } catch (Exception e) {
-                System.err.println("Lỗi gửi email " + e.getMessage());
-            }
+        if (doiTuongSuDung == null || doiTuongSuDung.getTkDoiTuongSuDung() == null) {
+            redirectAttributes.addFlashAttribute("message", "Email không tồn tại!");
+            redirectAttributes.addFlashAttribute("message_type", "ERROR");
+            return "redirect:/forgot-password";
         }
-        return "NotificationForgotPassword";
+
+        try {
+            TKDoiTuongSuDung tk = doiTuongSuDung.getTkDoiTuongSuDung();
+            emailService.sendResetPasswordEmail(email, tk.getIdTKDoiTuongSuDung());
+            redirectAttributes.addFlashAttribute("message", "Email khôi phục mật khẩu đã được gửi!");
+            redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
+            return "NotificationForgotPasswordPage"; // Chuyển hướng về trang thông báo
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("message", "Lỗi khi gửi email: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("message_type", "ERROR");
+            return "redirect:/forgot-password";
+        }
     }
     //de show form
     @GetMapping("/reset-password")

@@ -41,7 +41,7 @@ public class RowChairController {
         model.addAttribute("dsDayGhe", dsDayGhe);
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
-        return "RowChairListPage";
+        return "RowChairPage";
     }
 
     // Hiển thị form cập nhật dãy ghế
@@ -71,7 +71,7 @@ public class RowChairController {
         model.addAttribute("idRapPhim", idRapPhim);
         model.addAttribute("maxRows", getMaxRows(phongChieuPhim.getKichThuocPhong()));
 
-        return "EditRowChair";
+        return "EditRowChairPage";
     }
 
     // Xử lý cập nhật dãy ghế

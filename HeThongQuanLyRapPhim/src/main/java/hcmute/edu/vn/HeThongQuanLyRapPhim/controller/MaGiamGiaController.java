@@ -27,7 +27,7 @@ public class MaGiamGiaController {
     public String getDiscountList(Model model) {
         List<MaGiamGia> maGiamGiaList = discountService.findAll();
         model.addAttribute("maGiamGiaList", maGiamGiaList);
-        return "DiscountListPage";
+        return "DiscountPage";
     }
 
     @GetMapping("/create")
@@ -35,7 +35,7 @@ public class MaGiamGiaController {
         List<ChienDichGiamGia> chienDichGiamGiaList = discountCampaignService.findAll();
         model.addAttribute("listChienDichGiamGia", chienDichGiamGiaList);
         model.addAttribute("maGiamGia", new MaGiamGia());
-        return "AddDiscount"; // Tên file form tạo mới: resources/templates/discount/create.html
+        return "AddDiscountPage"; // Tên file form tạo mới: resources/templates/discount/create.html
     }
 
     @PostMapping("/save")
@@ -50,7 +50,7 @@ public class MaGiamGiaController {
         model.addAttribute("listChienDichGiamGia", chienDichGiamGiaList);
         MaGiamGia maGiamGia = discountService.findById(id);
         model.addAttribute("maGiamGia", maGiamGia);
-        return "AddDiscount"; // Tên file form chỉnh sửa: resources/templates/discount/edit.html
+        return "AddDiscountPage"; // Tên file form chỉnh sửa: resources/templates/discount/edit.html
     }
 
     @GetMapping("/delete")

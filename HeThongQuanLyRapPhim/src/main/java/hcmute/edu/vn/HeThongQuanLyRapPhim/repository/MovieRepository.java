@@ -12,4 +12,6 @@ public interface MovieRepository extends JpaRepository<Phim, Integer> {
     Optional<Phim> findByTenPhim(String tenPhim);
 
     List<Phim> findByTrangThaiPhim(TrangThaiPhim trangThaiPhim);
+
+    List<Phim> getAllByTrangThaiPhimIsNot(TrangThaiPhim trangThaiPhim);
 }

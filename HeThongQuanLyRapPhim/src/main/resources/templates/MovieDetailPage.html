@@ -307,6 +307,30 @@
             border-radius: 2px;
         }
 
+        /* --- START: FLASH MESSAGES CSS --- */
+        .flash-message-success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 20px; /* Added for spacing if it's directly above form/heading */
+            text-align: center;
+        }
+
+        .flash-message-error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 20px; /* Added for spacing */
+            text-align: center;
+        }
+        /* --- END: FLASH MESSAGES CSS --- */
+
         .review-form, .reply-form-container, .edit-review-form-container, .edit-reply-form-container {
             background-color: #f7fafc;
             padding: 25px;
@@ -341,10 +365,6 @@
         #movie-review-form .submit-review-btn { background: linear-gradient(45deg, #48bb78, #81e6d9); }
         #movie-review-form .submit-review-btn:hover { background: linear-gradient(45deg, #38a169, #4fd1c5); }
 
-        /* Nút "Lưu thay đổi" của edit-reply-form-container và edit-review-form-actual (nếu không có style riêng) sẽ có style mặc định của .submit-review-btn (nếu bạn thêm class này)
-           Hoặc giữ nguyên style inline như trong HTML của bạn cho nút Lưu Thay Đổi của edit-review-form: style="background: linear-gradient(45deg, #ffc107, #ff9800);"
-           và nút Gửi của reply-form: style="background: linear-gradient(45deg, #38a169, #81e6d9);"
-        */
         .edit-reply-form-container .submit-review-btn, .edit-reply-form-container .cancel-edit-reply-btn { padding: 8px 18px; font-size: 0.95em; }
         .edit-reply-form-container .cancel-edit-reply-btn { background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
         .edit-reply-form-container .cancel-edit-reply-btn:hover { background-color: #5a6268; transform: translateY(-1px); }
@@ -412,10 +432,6 @@
 
 
         /* --- RESPONSIVE CSS (Header parts synchronized, content parts kept original or adjusted for new header) --- */
-        /* Các giá trị padding-top cho body trong media queries cần được kiểm tra và điều chỉnh
-           nếu chiều cao header thay đổi khi responsive với theme sáng.
-           Giữ nguyên các giá trị padding-top gốc của bạn, nhưng hãy lưu ý kiểm tra.
-        */
         @media (max-width: 992px) {
             body { padding-top: 150px; }
             header .container { justify-content: space-around; }
@@ -551,6 +567,13 @@
 
     <div class="reviews-section-wrapper">
         <div class="container">
+            <div id="flashMessageContainer">
+                <th:block th:if="${message}">
+                    <div th:classappend="${#strings.containsIgnoreCase(message, 'thành công') ? 'flash-message-success' : 'flash-message-error'}"
+                         th:text="${message}">
+                    </div>
+                </th:block>
+            </div>
             <h2><i class="fas fa-comments"></i> Đánh Giá Phim</h2>
             <div class="review-form">
                 <h3>Để lại đánh giá của bạn</h3>
@@ -746,6 +769,32 @@
             });
         }
 
+        // --- START: Auto-hide flash message ---
+        const flashMessageContainer = document.getElementById('flashMessageContainer');
+        if (flashMessageContainer) {
+            // The actual message div is the first child div if it exists due to th:block
+            const flashMessageDiv = flashMessageContainer.querySelector('div');
+            if (flashMessageDiv && flashMessageDiv.textContent.trim() !== '') {
+                flashMessageDiv.style.display = 'block'; // Ensure it's visible
+                setTimeout(() => {
+                    let opacity = 1;
+                    const fadeInterval = setInterval(function() {
+                        if (opacity <= 0.1){
+                            clearInterval(fadeInterval);
+                            flashMessageDiv.style.display = 'none';
+                        }
+                        flashMessageDiv.style.opacity = opacity;
+                        opacity -= opacity * 0.1; // Exponential fade
+                    }, 50);
+                }, 5000); // Hide after 5 seconds
+            } else if (flashMessageDiv) {
+                // If Thymeleaf rendered the outer container but the inner div (message) is empty or not there
+                flashMessageDiv.style.display = 'none';
+            }
+        }
+        // --- END: Auto-hide flash message ---
+
+
         // --- Ẩn/Hiện các thành phần dựa trên trạng thái đăng nhập ---
         const reviewFormDiv = document.querySelector('.review-form');
         if (reviewFormDiv) {
@@ -756,7 +805,15 @@
                 loginPrompt.innerHTML = 'Vui lòng <a href="/signin" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> để để lại đánh giá.';
                 loginPrompt.style.textAlign = 'center';
                 loginPrompt.style.marginTop = '20px';
-                reviewFormDiv.parentNode.insertBefore(loginPrompt, reviewFormDiv.nextSibling); // Chèn sau reviewFormDiv
+                loginPrompt.style.marginBottom = '20px'; // Add some bottom margin too
+                // Insert before the review form or where appropriate if reviewFormDiv is hidden
+                const reviewsSectionH2 = document.querySelector('.reviews-section-wrapper h2');
+                if (reviewsSectionH2) {
+                    reviewsSectionH2.parentNode.insertBefore(loginPrompt, reviewsSectionH2.nextSibling);
+                } else {
+                    reviewFormDiv.parentNode.insertBefore(loginPrompt, reviewFormDiv);
+                }
+
             } else {
                 reviewFormDiv.style.display = 'block';
             }
@@ -819,6 +876,11 @@
                 reviewsSection.style.display = 'block';
             } else {
                 reviewsSection.style.display = 'none';
+                // If reviews section is hidden, also hide any login prompt for reviews
+                const loginPromptForReviews = document.querySelector('.reviews-section-wrapper p a[href="/signin"]');
+                if (loginPromptForReviews && loginPromptForReviews.parentNode) {
+                    loginPromptForReviews.parentNode.style.display = 'none';
+                }
             }
         }
 
@@ -975,39 +1037,40 @@
         const openTrailerModalBtn = document.getElementById('openTrailerModalBtn');
         const closeTrailerModalBtn = document.getElementById('closeTrailerModalBtn');
         const trailerVideoIframe = document.getElementById('trailerVideo');
-        // --- CẬP NHẬT HÀM getYouTubeEmbedUrl ĐỂ XỬ LÝ LINK TRAILER ĐA DẠNG HƠN ---
+
         function getYouTubeEmbedUrl(youtubeUrl) {
             if (!youtubeUrl) return '';
             let videoId = null;
             try {
                 const url = new URL(youtubeUrl);
-                // Trường hợp 1: youtube.com/watch?v=VIDEO_ID
-                if (url.hostname === 'youtube.com' || url.hostname === 'www.youtube.com') {
-                    videoId = url.searchParams.get('v');
+                if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com' || url.hostname === 'm.youtube.com') {
+                    if (url.pathname === '/watch') {
+                        videoId = url.searchParams.get('v');
+                    } else if (url.pathname.startsWith('/embed/')) {
+                        videoId = url.pathname.split('/embed/')[1];
+                    } else if (url.pathname.startsWith('/v/')) {
+                        videoId = url.pathname.split('/v/')[1];
+                    }
+                } else if (url.hostname === 'youtu.be') {
+                    videoId = url.pathname.substring(1);
                 }
-                // Trường hợp 2: youtu.be/VIDEO_ID
-                else if (url.hostname === 'youtu.be') {
-                    videoId = url.pathname.substring(1); // Bỏ dấu / ở đầu
-                }
-                // Trường hợp 3: youtube.com/embed/VIDEO_ID (ít gặp hơn cho link trailer gốc)
-                else if ((url.hostname === 'youtube.com' || url.hostname === 'www.youtube.com') && url.pathname.startsWith('/embed/')) {
-                    videoId = url.pathname.split('/embed/')[1];
-                }
-                // (Bỏ qua các trường hợp googleusercontent.com vì đó thường là link đã qua xử lý, link gốc từ DB nên là youtube.com hoặc youtu.be)
-
             } catch (e) {
-                console.error("Invalid trailer URL format:", youtubeUrl);
-                return ''; // URL không hợp lệ
+                console.error("Invalid trailer URL format:", youtubeUrl, e);
+                // Fallback for simple strings that might just be the ID
+                if (typeof youtubeUrl === 'string' && !youtubeUrl.includes('/') && !youtubeUrl.includes('?')) {
+                    videoId = youtubeUrl;
+                } else {
+                    return ''; // URL không hợp lệ
+                }
             }
 
-            // Loại bỏ các tham số khác nếu có trong videoId
             if (videoId) {
                 videoId = videoId.split('&')[0].split('?')[0];
-                // Trả về URL embed chuẩn, thêm autoplay
                 return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
             }
-            return ''; // Không tìm thấy videoId
+            return '';
         }
+
 
         if (openTrailerModalBtn && trailerModal && closeTrailerModalBtn && trailerVideoIframe) {
             openTrailerModalBtn.addEventListener('click', () => {

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Xác thực tài khoản - PhimHay'">Xác thực tài khoản - PhimHay</title>
+    <style>
+        /* Reset & Defaults */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f0f2f5; font-family: 'Inter', Arial, sans-serif; }
+
+        /* Main Container */
+        .email-wrapper {
+            padding: 20px 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background-color: #f56565;
+            color: #ffffff;
+            padding: 25px 30px;
+            text-align: center;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .header .brand-logo {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            line-height: 1;
+            font-family: 'Inter', Arial, sans-serif;
+            display: block;
+        }
+        .header .brand-logo-icon {
+            margin-right: 6px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .header .title-icon {
+            margin-right: 8px;
+            font-size: 24px;
+        }
+
+        /* Content */
+        .content {
+            padding: 30px 30px 20px 30px;
+            color: #2d3748;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        .content p {
+            margin: 0 0 18px;
+        }
+        .content p:last-child { /* Adjusted to ensure last paragraph of content flows well before footer */
+            margin-bottom: 10px; /* Added some margin if it's the very last before footer without a button */
+        }
+        .content strong, .content b {
+            color: #1a202c;
+            font-weight: 600;
+        }
+        .content .greeting {
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        /* Button */
+        .button-container {
+            text-align: center;
+            padding: 20px 0 30px; /* Ensure enough space around the button */
+        }
+        .button {
+            display: inline-block;
+            padding: 15px 35px;
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #ffffff !important;
+            text-decoration: none !important;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 200px;
+            box-shadow: 0 2px 5px rgba(229, 62, 62, 0.3);
+            font-family: 'Inter', Arial, sans-serif;
+        }
+        .button:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            box-shadow: 0 4px 8px rgba(197, 48, 48, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px 30px;
+            font-size: 13px;
+            color: #718096;
+            border-top: 1px solid #e3e8ee;
+            background-color: #ffffff;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer strong {
+            color: #1a202c;
+            font-weight: 600;
+        }
+        .footer a {
+            color: #f56565;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 600px) {
+            .email-wrapper { padding: 10px 0; }
+            .email-container {
+                width: 95% !important;
+                border-radius: 8px !important;
+            }
+            .header {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 22px !important;
+            }
+            .header .brand-logo {
+                font-size: 20px;
+            }
+            .content {
+                padding: 25px 20px !important;
+            }
+            .button {
+                padding: 14px 28px !important;
+                font-size: 16px !important;
+                min-width: 180px;
+            }
+            .footer {
+                padding: 20px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0 !important; padding: 0 !important; background-color: #f0f2f5; font-family: 'Inter', Arial, sans-serif;">
+<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="email-wrapper" style="background-color: #f0f2f5; padding: 20px 0;">
+    <tr>
+        <td style="padding: 0 10px;" align="center">
+            <table role="presentation" class="email-container" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;">
+                <tr>
+                    <td class="header" style="background-color: #f56565; color: #ffffff; padding: 25px 30px; text-align: center; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                        <p class="brand-logo" style="font-size: 22px; font-weight: 700; margin: 0 0 10px 0; line-height: 1; font-family: 'Inter', Arial, sans-serif; display: block;">
+                            <span class="brand-logo-icon" style="margin-right: 6px;">🎬</span>PhimHay
+                        </p>
+                        <h1 style="margin: 0; font-size: 26px; font-weight: 700; line-height: 1.3; font-family: 'Inter', Arial, sans-serif;">
+                            <span class="title-icon" style="margin-right: 8px; font-size: 24px;">✅</span>Xác thực tài khoản
+                        </h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="content" style="padding: 30px 30px 20px 30px; color: #2d3748; line-height: 1.7; font-size: 16px; font-family: 'Inter', Arial, sans-serif;">
+                        <p class="greeting" style="margin: 0 0 18px; font-size: 17px; font-weight: 500;">
+                            Xin chào,
+                        </p>
+                        <p style="margin: 0 0 18px;">
+                            Cảm ơn bạn đã đăng ký tài khoản tại <strong style="color: #1a202c; font-weight: 600;">PhimHay</strong>. Vui lòng nhấp vào nút bên dưới để hoàn tất việc xác thực tài khoản của bạn:
+                        </p>
+                        <div class="button-container" style="text-align: center; padding: 20px 0 30px;">
+                            <a th:href="${verificationLink}" href="#" target="_blank" class="button"
+                               style="display: inline-block; padding: 15px 35px; background: linear-gradient(45deg, #e53e3e, #f56565); color: #ffffff !important; text-decoration: none !important; border-radius: 8px; font-size: 17px; font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer; font-family: 'Inter', Arial, sans-serif; min-width: 200px; box-shadow: 0 2px 5px rgba(229, 62, 62, 0.3);">
+                                Xác thực Ngay
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="footer" style="text-align: center; padding: 25px 30px; font-size: 13px; color: #718096; border-top: 1px solid #e3e8ee; background-color: #ffffff; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-family: 'Inter', Arial, sans-serif;">
+                        <p style="margin: 5px 0;">Trân trọng,</p>
+                        <p style="margin: 5px 0 10px;"><strong style="color: #1a202c; font-weight: 600;">Đội ngũ PhimHay</strong></p>
+                        <p style="margin: 5px 0;">&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> PhimHay. Bảo lưu mọi quyền.</p>
+                        <p style="margin: 5px 0;">Nếu bạn có câu hỏi, vui lòng <a href="[Link_Trang_Lien_He_Hoac_FAQ]" target="_blank" style="color: #f56565; text-decoration: none; font-weight: 500;">liên hệ hỗ trợ</a>.</p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

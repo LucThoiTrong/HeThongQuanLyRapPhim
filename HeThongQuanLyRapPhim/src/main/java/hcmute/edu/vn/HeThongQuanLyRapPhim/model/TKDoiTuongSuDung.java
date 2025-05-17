@@ -21,7 +21,7 @@ public class TKDoiTuongSuDung implements Serializable {
     @Column(name = "trang_thai_tai_khoan", nullable = false)
     private boolean trangThaiTaiKhoan;
 
-    @OneToOne(cascade = CascadeType.PERSIST, optional = false)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_doi_tuong_su_dung")
     private DoiTuongSuDung doiTuongSuDung;
 

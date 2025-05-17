@@ -26,12 +26,11 @@ public class Phim implements Serializable {
     @Column(name = "dien_vien")
     private String dienVien;
 
-    @Column(name = "mo_ta_phim")
+    @Column(name = "mo_ta_phim", length = 1000)
     private String moTaPhim;
 
     @Column(name = "the_loai")
     private String theLoai;
-
 
     @Column(name = "thoiGianKhoiChieu")
     @Temporal(TemporalType.DATE) // Chỉ định kiểu dữ liệu DATE cho JPA

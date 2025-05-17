@@ -78,10 +78,5 @@ public class MovieServiceImpl implements MovieService {
         }
         return false;
     }
-
-    @Override
-    public Optional<Phim> findByMovieName(String tenPhim) {
-        return movieRepository.findByTenPhim(tenPhim);
-    }
 }
 

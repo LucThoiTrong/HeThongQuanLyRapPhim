@@ -26,7 +26,7 @@ public class DiscountCampaignController {
     public String list(Model model) {
         List<ChienDichGiamGia> chienDichGiamGiaList = chienDichGiamGiaService.findAll();
         model.addAttribute("chienDichGiamGiaList", chienDichGiamGiaList);
-        return "DiscountCampaignListPage";
+        return "DiscountCampaignPage";
     }
 
     // Thêm chiến dịch giảm giá
@@ -35,7 +35,7 @@ public class DiscountCampaignController {
         //tao model de lien ket du lieu tu form
         ChienDichGiamGia chienDichGiamGia = new ChienDichGiamGia();
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
-        return "AddDiscountCampaign";
+        return "AddDiscountCampaignPage";
     }
 
 
@@ -49,7 +49,7 @@ public class DiscountCampaignController {
         MaGiamGia maGiamGia = new MaGiamGia();
         model.addAttribute("maGiamGia", maGiamGia);
         model.addAttribute("soLuongMaGiamGia", 0);
-        return "AddDiscountWithCampaign";
+        return "AddDiscountWithCampaignPage";
     }
 
     @PostMapping("/save")
@@ -102,7 +102,7 @@ public class DiscountCampaignController {
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
         System.out.println(chienDichGiamGia.getNgayBatDauChienDich());
         System.out.println(chienDichGiamGia.getNgayKetThucChienDich());
-        return "UpdateDiscountCampaign";
+        return "EditDiscountCampaignPage";
     }
 
     @GetMapping("/delete")

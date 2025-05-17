@@ -12,7 +12,7 @@ import java.util.*;
 @Service
 public class VNPayServiceImpl implements VNPayService {
     @Override
-    public String createPayment(int amountint) throws UnsupportedEncodingException {
+    public String createPayment(int amountint, String clientIp) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -26,7 +26,7 @@ public class VNPayServiceImpl implements VNPayService {
 
         String bankCode = "";
         String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-        String vnp_IpAddr = "127.0.0.1";
+//        String vnp_IpAddr = "127.0.0.1";
         String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
 
         Map<String, String> vnp_Params = new HashMap<>();
@@ -42,14 +42,16 @@ public class VNPayServiceImpl implements VNPayService {
         vnp_Params.put("vnp_OrderType", orderType);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
-        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+        vnp_Params.put("vnp_IpAddr", clientIp);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
+//        cld.add(Calendar.HOUR, 24);
+        cld.add(Calendar.HOUR, 8);  // Thêm 7 giờ để chuyển từ UTC sang giờ Việt Nam
+
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
@@ -77,7 +79,27 @@ public class VNPayServiceImpl implements VNPayService {
 
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
+//        System.out.println("==== VNPay DEBUG ====");
+//        System.out.println("Client IP: " + clientIp);
+//        System.out.println("Amount (x100): " + amount);
+//        System.out.println("Transaction Ref: " + vnp_TxnRef);
+//        System.out.println("Create Date: " + vnp_CreateDate);
+//        System.out.println("Expire Date: " + vnp_ExpireDate);
+//        System.out.println("Return URL: " + VNPayConfig.vnp_ReturnUrl);
+//
+//// Log toàn bộ tham số gửi đến VNPay
+//        System.out.println("--- VNPay Params ---");
+//        for (String key : fieldNames) {
+//            System.out.println(key + ": " + vnp_Params.get(key));
+//        }
+//
+//// Log URL cuối cùng gửi đến VNPay
+//        System.out.println("--- Final Payment URL ---");
+//        System.out.println(VNPayConfig.vnp_PayUrl + "?" + query);
+//        System.out.println("======================");
+
         return VNPayConfig.vnp_PayUrl + "?" + query;
+
     }
     @Override
     public String getPaymentMessage(String responseCode) {
