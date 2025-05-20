@@ -116,7 +116,7 @@
         }
 
         .seat-box.seat-available {
-            background-color: #cfd8dc;
+            background-color: #f0f0f0;
         }
         .seat-box.seat-available:hover {
             background-color: #b0bec5;
@@ -350,23 +350,23 @@
 
 <script th:inline="javascript">
     // Hàm mới để khởi tạo trạng thái ghế dựa trên data-trangthai
-    function initializeSeatStates() {
-        const seatButtons = document.querySelectorAll('.seat-map .seat-box'); // Chỉ lấy ghế trong sơ đồ
-        seatButtons.forEach(btn => {
-            // data-trangthai từ Thymeleaf sẽ là chuỗi "true" hoặc "false"
-            const isOccupied = btn.getAttribute('data-trangthai') === 'true';
-
-            if (isOccupied) {
-                btn.classList.add('seat-occupied');
-                btn.classList.remove('seat-available'); // Đảm bảo không có class available
-                btn.disabled = true;
-            } else {
-                btn.classList.add('seat-available');
-                btn.classList.remove('seat-occupied'); // Đảm bảo không có class occupied
-                btn.disabled = false;
-            }
-        });
-    }
+    // function initializeSeatStates() {
+    //     const seatButtons = document.querySelectorAll('.seat-map .seat-box'); // Chỉ lấy ghế trong sơ đồ
+    //     seatButtons.forEach(btn => {
+    //         // data-trangthai từ Thymeleaf sẽ là chuỗi "true" hoặc "false"
+    //         // const isOccupied = btn.getAttribute('data-trangthai') === 'true';
+    //
+    //         if (isOccupied) {
+    //             btn.classList.add('seat-occupied');
+    //             btn.classList.remove('seat-available'); // Đảm bảo không có class available
+    //             btn.disabled = true;
+    //         } else {
+    //             btn.classList.add('seat-available');
+    //             btn.classList.remove('seat-occupied'); // Đảm bảo không có class occupied
+    //             btn.disabled = false;
+    //         }
+    //     });
+    // }
 
     function selectSeat(btn) {
         // Kiểm tra nếu ghế đã bị chiếm (được set bởi initializeSeatStates) hoặc bị disabled

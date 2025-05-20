@@ -96,6 +96,22 @@ public class RapPhim implements Serializable {
         this.diaChiRapPhim = diaChiRapPhim;
     }
 
+    // Thực hiện kiểm tra tên phòng chiếu phim
+    public boolean kiemTraTenRapPhim(String tenPhongChieuPhim) {
+        return getDsPhongChieuPhim().stream()
+                .anyMatch(pc -> pc.getTenPhongChieuPhim().equals(tenPhongChieuPhim));
+    }
+
+    // Lấy danh sách suất chiếu của 1 rạp phim dựa trên ngày chiếu và hình thức chiếu
+    public List<SuatChieu> layDanhSachSuatChieu(LocalDate ngayChieu, HinhThucChieu hinhThucChieu) {
+        return getDsPhongChieuPhim().stream()
+                .flatMap(pc -> pc.getDsSuatChieu().stream())
+                .filter(sc -> sc.getNgayGioChieu().toLocalDate().equals(ngayChieu) &&
+                        sc.getHinhThucChieu().equals(hinhThucChieu) &&
+                        sc.getNgayGioChieu().isAfter(LocalDateTime.now()))
+                .toList();
+    }
+
     // Tính tổng doanh thu từng tháng
     public double tongDoanhThuTungThang(int thang, int nam) {
         // Lấy ngày đầu tháng và ngày cuối tháng

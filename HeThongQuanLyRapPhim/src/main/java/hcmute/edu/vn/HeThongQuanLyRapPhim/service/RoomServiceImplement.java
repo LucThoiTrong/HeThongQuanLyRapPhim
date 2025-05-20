@@ -1,24 +1,49 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.CinemaRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoomServiceImplement implements RoomService {
+    private final RoomRepository roomRepository;
+    private final CinemaRepository cinemaRepository;
 
     @Autowired
-    private RoomRepository roomRepository;
+    public RoomServiceImplement(RoomRepository roomRepository, CinemaRepository cinemaRepository) {
+        this.roomRepository = roomRepository;
+        this.cinemaRepository = cinemaRepository;
+    }
+
+    // Thực hiện kiểm tra tên phòng chiếu phim có tồn tại trong rạp phim chưa
+    @Override
+    public boolean checkRoomName(String tenPhongChieuPhim, int idRapPhim) {
+        // Lấy rạp phim
+        RapPhim rapPhim = cinemaRepository.findById(idRapPhim).orElse(null);
+        if (rapPhim != null) {
+            // Thực hiện kiểm tra trong rạp phim đó có tồn tại tên phòng chiếu phim thêm mới hay không
+            return rapPhim.kiemTraTenRapPhim(tenPhongChieuPhim);
+        }
+        return false;
+    }
+
+    @Override
+    public RapPhim getCinemaById(int idRapPhim) {
+        return cinemaRepository.findById(idRapPhim).orElse(null);
+    }
 
     @Override
     public List<PhongChieuPhim> getAllRoomsByCinemaId(int idRapPhim) {
-        List<PhongChieuPhim> rooms = roomRepository.findAllRoomByIdCinema(idRapPhim);
-        System.out.println("Rooms for idRapPhim " + idRapPhim + ": " + rooms);
-        return rooms;
+        RapPhim rapPhim = cinemaRepository.findById(idRapPhim).orElse(null);
+        if (rapPhim != null) {
+            return roomRepository.findAllByRapPhim(rapPhim);
+        }
+        return null;
     }
 
     @Override
@@ -44,17 +69,12 @@ public class RoomServiceImplement implements RoomService {
     }
 
     @Override
-    public boolean deleteRoom(int id) {
-        Optional<PhongChieuPhim> optionalPhongChieuPhim = roomRepository.findById(id);
-        if (optionalPhongChieuPhim.isPresent()) {
-            roomRepository.deleteById(id);
-            return true;
+    public boolean deleteRoom(int idPhongChieuPhim) {
+        PhongChieuPhim phongChieuPhim = roomRepository.findById(idPhongChieuPhim).orElse(null);
+        if (phongChieuPhim != null) {
+           roomRepository.deleteById(idPhongChieuPhim);
+           return true;
         }
         return false;
-    }
-
-    @Override
-    public PhongChieuPhim findRoomByNameAndCinemaId(String tenPhongChieuPhim, int idRapPhim) {
-        return roomRepository.findByTenPhongChieuPhimAndRapPhimId(tenPhongChieuPhim, idRapPhim).orElse(null);
     }
 }

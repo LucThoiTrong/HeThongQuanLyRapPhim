@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface RowChairService {
     List<DayGhe> getAllRowChairByIdRoom(int idPhongChieuPhim);
-    DayGhe getRowChairById(int id);
     void updateRowChair(PhongChieuPhim phongChieuPhim, int soLuongDoi, int soLuongVip, int soLuongThuong);
     PhongChieuPhim getRoomById(int idPhongChieuPhim);
 }

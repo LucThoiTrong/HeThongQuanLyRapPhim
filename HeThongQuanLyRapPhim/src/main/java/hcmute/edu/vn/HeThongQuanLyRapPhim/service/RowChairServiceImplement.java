@@ -8,7 +8,6 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.RoomRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.RowChairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,30 +15,26 @@ import java.util.List;
 
 @Service
 public class RowChairServiceImplement implements RowChairService {
+    private final RowChairRepository rowChairRepository;
+
+    private final RoomRepository roomRepository;
 
     @Autowired
-    private RowChairRepository rowChairRepository;
-
-    @Autowired
-    private RoomRepository roomRepository;
+    public RowChairServiceImplement(RowChairRepository rowChairRepository, RoomRepository roomRepository) {
+        this.rowChairRepository = rowChairRepository;
+        this.roomRepository = roomRepository;
+    }
 
     @Override
-    @Transactional(readOnly = true)
     public List<DayGhe> getAllRowChairByIdRoom(int idPhongChieuPhim) {
         return rowChairRepository.findAllRowChairByIdRoom(idPhongChieuPhim);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public DayGhe getRowChairById(int id) {
-        return rowChairRepository.findById(id).orElse(null);
-    }
 
     @Override
-    @Transactional
     public void updateRowChair(PhongChieuPhim phongChieuPhim, int soLuongDoi, int soLuongVip, int soLuongThuong) {
-        // Xóa tất cả dãy ghế cũ của phòng
-        rowChairRepository.deleteAll(rowChairRepository.findAllRowChairByIdRoom(phongChieuPhim.getIdPhongChieuPhim()));
+        // Xoá tất cả dãy ghế thuộc phòng chiếu phim
+        phongChieuPhim.getDsDayGhe().clear();
 
         // Tạo danh sách dãy ghế mới
         List<DayGhe> newDayGheList = new ArrayList<>();
@@ -52,7 +47,7 @@ public class RowChairServiceImplement implements RowChairService {
             dayGhe.setLoaiGhe(LoaiGhe.DOI);
             dayGhe.setGiaDayGhe(240000);
             dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(new HashSet<>(generateChairs(dayGhe, LoaiGhe.DOI)));
+            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.DOI));
             newDayGheList.add(dayGhe);
         }
 
@@ -63,7 +58,7 @@ public class RowChairServiceImplement implements RowChairService {
             dayGhe.setLoaiGhe(LoaiGhe.VIP);
             dayGhe.setGiaDayGhe(120000);
             dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(new HashSet<>(generateChairs(dayGhe, LoaiGhe.VIP)));
+            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.VIP));
             newDayGheList.add(dayGhe);
         }
 
@@ -74,7 +69,7 @@ public class RowChairServiceImplement implements RowChairService {
             dayGhe.setLoaiGhe(LoaiGhe.THUONG);
             dayGhe.setGiaDayGhe(100000);
             dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(new HashSet<>(generateChairs(dayGhe, LoaiGhe.THUONG)));
+            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.THUONG));
             newDayGheList.add(dayGhe);
         }
 
@@ -83,22 +78,7 @@ public class RowChairServiceImplement implements RowChairService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public PhongChieuPhim getRoomById(int id) {
         return roomRepository.findById(id).orElse(null);
-    }
-
-    private List<Ghe> generateChairs(DayGhe dayGhe, LoaiGhe loaiGhe) {
-        List<Ghe> ghes = new ArrayList<>();
-        int soLuongGhe = loaiGhe == LoaiGhe.DOI ? 5 : 10; // 5 ghế cho DOI, 10 ghế cho VIP/THUONG
-
-        for (int i = 0; i < soLuongGhe; i++) {
-            Ghe ghe = new Ghe();
-            ghe.setTrangThaiGhe(true); // Mặc định ghế có sẵn
-            ghe.setDayGhe(dayGhe); // Liên kết với dãy ghế
-            ghes.add(ghe);
-        }
-
-        return ghes;
     }
 }

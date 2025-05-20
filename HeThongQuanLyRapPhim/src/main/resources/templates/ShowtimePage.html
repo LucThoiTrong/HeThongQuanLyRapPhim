@@ -284,18 +284,8 @@
         <div class="booking-section">
             <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Chọn ngày chiếu</h2>
             <div class="date-grid">
-                <th:block th:each="ngay : ${danhSachNgay}">
-                    <button type="button"
-                            class="date-cell"
-                            th:classappend="${ngay.isEqual(ngayChieu)} ? ' selected' : ''"
-                            th:attr="data-ngay=${ngay.toString()}">
-                        <div class="left">
-                            <div class="month" th:text="${#temporals.format(ngay, 'MMM')}">Th</div> <div class="day" th:text="${#strings.capitalize(#temporals.format(ngay, 'EEE'))}">Thứ</div> </div>
-                        <div class="date" th:text="${#temporals.format(ngay, 'dd')}">01</div>
-                    </button>
-                </th:block>
-                <p th:if="${danhSachNgay == null or #lists.isEmpty(danhSachNgay)}">Không có ngày chiếu khả dụng.</p>
             </div>
+            <p id="no-dates-message" style="display: none;">Không có ngày chiếu khả dụng.</p>
         </div>
 
         <div class="booking-section">
@@ -317,7 +307,8 @@
                 </div>
             </div>
         </div>
-    </form> <div class="booking-section">
+    </form>
+    <div class="booking-section">
     <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Danh sách rạp &amp; giờ chiếu</h2>
     <ul class="screening-list">
         <th:block th:if="${groupedByRap != null and not #maps.isEmpty(groupedByRap)}">
@@ -342,29 +333,202 @@
         </li>
     </ul>
 </div>
+</div>
 
-</div> <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Chọn ngày
-        document.querySelectorAll('.date-cell').forEach(btn => {
-            btn.addEventListener('click', (event) => {
-                // Ngăn chặn hành vi submit mặc định nếu button nằm trong form
-                event.preventDefault();
-                document.getElementById('ngayChieuInput').value = btn.getAttribute('data-ngay');
-                document.getElementById('mainForm').submit();
-            });
-        });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Lựa chọn các phần tử DOM cần thiết ---
+        const dateGrid = document.querySelector('.date-grid'); // Container cho các ô ngày
+        const noDatesMessage = document.getElementById('no-dates-message'); // Thông báo khi không có ngày
+        const today = new Date(); // Lấy ngày hiện tại
+        const numberOfDaysToShow = 15; // Số ngày sẽ hiển thị
 
-        // Chọn hình thức
-        // Cần đảm bảo các button này nằm trong .format-box
-        document.querySelectorAll('.format-box .btn').forEach(btn => {
-            btn.addEventListener('click', (event) => {
-                // Ngăn chặn hành vi submit mặc định nếu button nằm trong form
-                event.preventDefault();
-                document.getElementById('hinhThucInput').value = btn.getAttribute('data-ht');
-                document.getElementById('mainForm').submit();
+        // Input ẩn để lưu trữ giá trị ngày chiếu và hình thức chiếu gửi lên server
+        const ngayChieuInput = document.getElementById('ngayChieuInput');
+        const hinhThucInput = document.getElementById('hinhThucInput');
+        const mainForm = document.getElementById('mainForm'); // Form chính chứa các input
+
+        // --- Các hàm trợ giúp ---
+
+        /**
+         * Định dạng đối tượng Date sang chuỗi tháng tiếng Việt (ví dụ: "Thg 5")
+         * @param {Date} date - Đối tượng Date cần định dạng
+         * @returns {string} Chuỗi tháng đã định dạng
+         */
+        function getVietnameseMonth(date) {
+            return new Intl.DateTimeFormat('vi-VN', { month: 'short' }).format(date).replace('.', '');
+        }
+
+        /**
+         * Định dạng đối tượng Date sang chuỗi thứ trong tuần tiếng Việt (ví dụ: "Thứ Hai")
+         * @param {Date} date - Đối tượng Date cần định dạng
+         * @returns {string} Chuỗi thứ đã định dạng và viết hoa chữ cái đầu
+         */
+        function getVietnameseDayOfWeek(date) {
+            let dayName = new Intl.DateTimeFormat('vi-VN', { weekday: 'long' }).format(date);
+            return dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        }
+
+        /**
+         * Định dạng đối tượng Date hoặc chuỗi ngày sang chuỗi YYYY-MM-DD
+         * @param {Date|string} date - Đối tượng Date hoặc chuỗi ngày cần định dạng
+         * @returns {string|null} Chuỗi ngày theo định dạng YYYY-MM-DD hoặc null nếu đầu vào không hợp lệ
+         */
+        function formatDateToISO(date) {
+            // Kiểm tra và chuyển đổi nếu đầu vào là chuỗi ngày
+            if (!(date instanceof Date && !isNaN(date))) {
+                if (typeof date === 'string') {
+                    const parsedDate = new Date(date); // Thử phân tích chuỗi ngày
+                    if (parsedDate instanceof Date && !isNaN(parsedDate)) {
+                        date = parsedDate;
+                    } else {
+                        console.error("Lỗi định dạng ngày (formatDateToISO):", date);
+                        return null;
+                    }
+                } else {
+                    console.error("Đối tượng ngày không hợp lệ (formatDateToISO):", date);
+                    return null;
+                }
+            }
+            // Định dạng ngày thành YYYY-MM-DD
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); // Tháng trong JS bắt đầu từ 0
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Kiểm tra xem một chuỗi có phải là định dạng ngày YYYY-MM-DD hợp lệ không
+         * @param {string} dateString - Chuỗi ngày cần kiểm tra
+         * @returns {boolean} True nếu hợp lệ, False nếu không
+         */
+        function isValidDateString(dateString) {
+            if (!dateString) return false;
+            // Sử dụng regex để kiểm tra định dạng và new Date() để kiểm tra tính hợp lệ của ngày
+            return /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString + "T00:00:00"));
+        }
+
+        // --- Phần 1: Tạo động các ô chọn ngày và xác định ngày được chọn ban đầu ---
+        let initiallySelectedDateISO; // Biến lưu trữ ngày được chọn ban đầu (YYYY-MM-DD)
+        const todayISO = formatDateToISO(today); // Ngày hôm nay ở định dạng YYYY-MM-DD
+
+        // Ưu tiên lấy ngày đã chọn từ server (qua input#ngayChieuInput mà Thymeleaf đã điền giá trị)
+        // Điều này quan trọng để duy trì trạng thái "selected" sau khi submit form và trang tải lại.
+        if (ngayChieuInput && ngayChieuInput.value && isValidDateString(ngayChieuInput.value)) {
+            initiallySelectedDateISO = ngayChieuInput.value;
+        } else {
+            // Nếu không có giá trị từ server, hoặc giá trị không hợp lệ, mặc định là ngày hôm nay
+            initiallySelectedDateISO = todayISO;
+            if (ngayChieuInput) {
+                // Cập nhật input ẩn với ngày hôm nay nếu nó rỗng hoặc không hợp lệ khi tải trang
+                ngayChieuInput.value = todayISO;
+            }
+        }
+
+        // Kiểm tra xem container .date-grid có tồn tại không
+        if (!dateGrid) {
+            console.error("Không tìm thấy phần tử '.date-grid'.");
+            if (noDatesMessage) noDatesMessage.style.display = 'block'; // Hiển thị thông báo lỗi
+        } else {
+            // Vòng lặp để tạo các ô ngày (button)
+            for (let i = 0; i < numberOfDaysToShow; i++) {
+                const currentDateObj = new Date(today); // Bắt đầu từ ngày hôm nay
+                currentDateObj.setDate(today.getDate() + i); // Tính toán cho các ngày tiếp theo
+
+                const button = document.createElement('button');
+                button.setAttribute('type', 'button'); // Quan trọng: để button không tự submit form
+                button.classList.add('date-cell'); // Thêm class CSS
+
+                const dateISO = formatDateToISO(currentDateObj); // Lấy ngày hiện tại của vòng lặp ở định dạng YYYY-MM-DD
+                button.setAttribute('data-ngay', dateISO); // Lưu trữ ngày vào data attribute
+
+                // Quan trọng: Thêm class 'selected' nếu ngày này trùng với ngày được chọn ban đầu
+                if (dateISO === initiallySelectedDateISO) {
+                    button.classList.add('selected');
+                }
+
+                // Tạo cấu trúc HTML bên trong button (left, month, day, date)
+                const leftDiv = document.createElement('div');
+                leftDiv.classList.add('left');
+
+                const monthDiv = document.createElement('div');
+                monthDiv.classList.add('month');
+                monthDiv.textContent = getVietnameseMonth(currentDateObj);
+
+                const dayOfWeekDiv = document.createElement('div');
+                dayOfWeekDiv.classList.add('day');
+                dayOfWeekDiv.textContent = getVietnameseDayOfWeek(currentDateObj);
+
+                leftDiv.appendChild(monthDiv);
+                leftDiv.appendChild(dayOfWeekDiv);
+
+                const dateDiv = document.createElement('div');
+                dateDiv.classList.add('date');
+                dateDiv.textContent = ('0' + currentDateObj.getDate()).slice(-2); // Hiển thị ngày (dd)
+
+                button.appendChild(leftDiv);
+                button.appendChild(dateDiv);
+                dateGrid.appendChild(button); // Thêm button ngày vào grid
+            }
+
+            // Kiểm tra và hiển thị/ẩn thông báo nếu không có ngày nào được tạo
+            if (dateGrid.children.length === 0) {
+                if (noDatesMessage) noDatesMessage.style.display = 'block';
+            } else {
+                if (noDatesMessage) noDatesMessage.style.display = 'none';
+            }
+        }
+
+        // --- Phần 2: Gắn sự kiện click cho các ô ngày và các nút chọn hình thức ---
+
+        // Gắn sự kiện cho các ô ngày đã được tạo động
+        if (mainForm && ngayChieuInput) {
+            document.querySelectorAll('.date-grid .date-cell').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Khi click vào một ngày:
+                    // 1. Cập nhật giá trị của input#ngayChieuInput
+                    ngayChieuInput.value = btn.getAttribute('data-ngay');
+                    console.log('Ngày đã chọn (sẽ submit):', ngayChieuInput.value);
+                    // 2. Submit form để tải lại trang với ngày chiếu mới
+                    // Class 'selected' sẽ được áp dụng lại ở Phần 1 khi trang tải lại.
+                    mainForm.submit();
+                });
             });
-        });
+        } else {
+            console.error("Lỗi JS khi gắn sự kiện ngày: Không tìm thấy 'mainForm' hoặc 'ngayChieuInput'.");
+        }
+
+        // Gắn sự kiện cho các nút chọn hình thức
+        if (mainForm && hinhThucInput) {
+            // Lưu ý: Việc áp class 'selected' cho hình thức hiện tại chủ yếu do Thymeleaf xử lý
+            // khi trang tải lại (th:classappend trong HTML).
+            // JavaScript ở đây chủ yếu để cập nhật input và submit form.
+            document.querySelectorAll('.format-box .btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Khi click vào một hình thức:
+                    // Tùy chọn: Cập nhật class 'selected' cho div.format-box cha ngay lập tức (trước khi submit)
+                    // để người dùng thấy phản hồi. Tuy nhiên, Thymeleaf sẽ là nguồn chính xác định
+                    // class 'selected' khi trang tải lại.
+                    const parentFormatBox = btn.closest('.format-box');
+                    if (parentFormatBox) {
+                        // Xóa 'selected' khỏi các .format-box khác
+                        document.querySelectorAll('.format-box.selected').forEach(selectedBox => {
+                            selectedBox.classList.remove('selected');
+                        });
+                        // Thêm 'selected' cho .format-box hiện tại
+                        parentFormatBox.classList.add('selected');
+                    }
+
+                    // 1. Cập nhật giá trị của input#hinhThucInput
+                    hinhThucInput.value = btn.getAttribute('data-ht');
+                    console.log('Hình thức đã chọn (sẽ submit):', hinhThucInput.value);
+                    // 2. Submit form
+                    mainForm.submit();
+                });
+            });
+        } else {
+            console.error("Lỗi JS khi gắn sự kiện hình thức: Không tìm thấy 'mainForm' hoặc 'hinhThucInput'.");
+        }
     });
 </script>
 

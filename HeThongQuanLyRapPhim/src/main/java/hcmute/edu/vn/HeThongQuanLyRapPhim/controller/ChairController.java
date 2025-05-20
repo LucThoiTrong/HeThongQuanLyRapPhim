@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -31,32 +32,30 @@ public class ChairController {
         this.chairService = chairService;
     }
 
+    // Hiện danh sách ghế
     @GetMapping("/edit/{idRapPhim}/{idPhongChieuPhim}")
     public String manageChairs(@PathVariable("idRapPhim") int idRapPhim,
                                @PathVariable("idPhongChieuPhim") int idPhongChieuPhim,
                                Model model) {
-        try {
-            PhongChieuPhim phongChieuPhim = chairService.getPhongChieuPhimById(idPhongChieuPhim);
-            List<DayGhe> dsDayGheList = new ArrayList<>(phongChieuPhim.getDsDayGhe());
-            dsDayGheList.sort(Comparator.comparing(DayGhe::getTenDayGhe));
+        PhongChieuPhim phongChieuPhim = chairService.getPhongChieuPhimById(idPhongChieuPhim);
+        // Lấy toàn bộ danh sách dãy ghế trong phòng chiếu
+        List<DayGhe> dsDayGheList = new ArrayList<>(phongChieuPhim.getDsDayGhe());
 
-            // Sắp xếp dsGhe trong mỗi DayGhe
-            for (DayGhe dayGhe : dsDayGheList) {
-                List<Ghe> dsGheList = new ArrayList<>(dayGhe.getDsGhe());
-                dsGheList.sort(Comparator.comparing(ghe -> dayGhe.getTenDayGhe() + ghe.getIdGhe())); // Sắp xếp theo tên dãy + idGhe
-                dayGhe.setDsGhe(new LinkedHashSet<>(dsGheList)); // Chuyển lại thành Set để lưu trữ
-            }
+        // Sắp thứ tự theo tên dãy ghế
+        dsDayGheList.sort(Comparator.comparing(DayGhe::getTenDayGhe));
 
-            model.addAttribute("phongChieuPhim", phongChieuPhim);
-            model.addAttribute("dsDayGhe", dsDayGheList);
-            model.addAttribute("idRapPhim", idRapPhim);
-            return "ChairPage";
-        } catch (RuntimeException e) {
-            model.addAttribute("message", "Lỗi khi tải trang quản lý ghế: " + e.getMessage());
-            return "redirect:/rows/" + idRapPhim + "/" + idPhongChieuPhim;
+        // Sắp xếp dsGhe trong mỗi DayGhe
+        for (DayGhe dayGhe : dsDayGheList) {
+            List<Ghe> dsGheList = new ArrayList<>(dayGhe.getDsGhe());
+            dsGheList.sort(Comparator.comparing(ghe -> dayGhe.getTenDayGhe() + ghe.getIdGhe())); // Sắp xếp theo tên dãy + idGhe
+            dayGhe.setDsGhe(new LinkedHashSet<>(dsGheList)); // Chuyển lại thành Set để lưu trữ
         }
-    }
 
+        model.addAttribute("phongChieuPhim", phongChieuPhim);
+        model.addAttribute("dsDayGhe", dsDayGheList);
+        model.addAttribute("idRapPhim", idRapPhim);
+        return "ChairPage";
+    }
 
     @PostMapping("/update")
     public String updateChairStatus(@RequestParam("idGhe") int idGhe,
@@ -64,13 +63,13 @@ public class ChairController {
                                     @RequestParam("idRapPhim") int idRapPhim,
                                     @RequestParam("idPhongChieuPhim") int idPhongChieuPhim,
                                     RedirectAttributes redirectAttributes) {
-        try {
-            Ghe gheMoi = new Ghe();
-            gheMoi.setTrangThaiGhe(trangThaiGhe);
-            chairService.updateChair(idGhe, gheMoi);
+        Ghe gheMoi = new Ghe();
+        gheMoi.setTrangThaiGhe(trangThaiGhe);
+        Ghe result = chairService.updateChair(idGhe, gheMoi);
+        if (result != null) {
             redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái ghế thành công!");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái ghế thất bại: " + e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật trạng thái ghế thất bại");
         }
         return "redirect:/seats/edit/" + idRapPhim + "/" + idPhongChieuPhim;
     }

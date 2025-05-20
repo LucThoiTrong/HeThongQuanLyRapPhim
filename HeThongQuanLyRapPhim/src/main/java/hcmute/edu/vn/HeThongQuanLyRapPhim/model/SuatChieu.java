@@ -101,6 +101,8 @@ public class SuatChieu implements Serializable {
     public void setDsHoaDon(Set<HoaDon> dsHoaDon) {
         this.dsHoaDon = dsHoaDon;
     }
+
+    // Lấy danh sách ghế đã đặt
     public Set<Ghe> getDanhSachGheDaDat() {
         return getDsHoaDon().stream()
                 .filter(hoaDon -> hoaDon.getTrangThaiHoaDon() == TrangThaiHoaDon.DA_THANH_TOAN)

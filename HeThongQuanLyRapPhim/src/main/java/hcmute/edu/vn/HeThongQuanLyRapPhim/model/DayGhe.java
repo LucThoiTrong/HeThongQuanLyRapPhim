@@ -87,4 +87,18 @@ public class DayGhe implements Serializable {
     public void setDsGhe(Set<Ghe> dsGhe) {
         this.dsGhe = dsGhe;
     }
+
+    public Set<Ghe> generateDsGhe(LoaiGhe loaiGhe) {
+        int soLuongGheToiDa;
+        if(loaiGhe == LoaiGhe.DOI) {
+            soLuongGheToiDa = 5;
+        } else {
+            soLuongGheToiDa = 10;
+        }
+        Set<Ghe> dsGhe = new HashSet<>();
+        for (int i = 0; i <= soLuongGheToiDa; i++) {
+            dsGhe.add(new Ghe(true, this));
+        }
+        return dsGhe;
+    }
 }

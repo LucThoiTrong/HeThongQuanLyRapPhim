@@ -6,15 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            --secondary-gradient: linear-gradient(45deg, #8b5cf6, #c026d3); /* Gradient cho nút Quản lý */
+            --secondary-gradient: linear-gradient(45deg, #8b5cf6, #c026d3);
             --text-color: #333;
             --bg-color: #f0f4f8;
             --card-bg: rgba(255, 255, 255, 0.9);
@@ -22,7 +20,7 @@
             --input-bg: rgba(230, 235, 240, 0.7);
             --input-focus-bg: rgba(255, 255, 255, 0.85);
             --input-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            --arrow-color: '%23333333';
+            --arrow-color: '%23333333'; /* SVG arrow color */
 
             --success-bg: rgba(34, 197, 94, 0.1);
             --success-text: #15803d;
@@ -72,7 +70,7 @@
 
         .form-container-wrapper {
             width: 100%;
-            max-width: 600px; /* Giới hạn chiều rộng tối đa */
+            max-width: 600px;
             margin: 2rem auto;
             display: flex;
             flex-direction: column;
@@ -124,7 +122,7 @@
         select {
             width: 100%;
             padding: 12px 15px;
-            border: none;
+            border: none; /* Consider a subtle border: border: 1px solid rgba(0,0,0,0.1); */
             border-radius: 25px;
             background: var(--input-bg);
             color: var(--text-color);
@@ -137,7 +135,7 @@
             appearance: none;
             -webkit-appearance: none;
             -moz-appearance: none;
-            padding-right: 40px;
+            padding-right: 40px; /* Space for arrow */
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='var(--arrow-color)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m3 6l5 5l5-5'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 15px center;
@@ -149,33 +147,35 @@
             outline: none;
             background: var(--input-focus-bg);
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+            /* border-color: rgba(59, 130, 246, 0.3); If using border */
         }
 
-        .error {
+        .error { /* Class added by JS to input/select with error */
             box-shadow: 0 0 0 2px #ef4444 !important;
+            /* border-color: #ef4444 !important; If using border */
         }
 
         .error-message {
             color: #ef4444;
             font-size: 0.9rem;
             margin-top: 0.5rem;
-            display: none;
+            display: none; /* Shown by JS */
             padding: 0.5rem;
-            border-radius: 10px;
+            border-radius: 10px; /* Rounded corners for error message box */
             background: rgba(239, 68, 68, 0.1);
         }
 
         .button-group {
             display: flex;
             justify-content: flex-end;
-            flex-wrap: wrap; /* Vẫn cho phép xuống dòng nếu màn hình quá hẹp */
-            gap: 0.5rem; /* <<<< ĐÃ GIẢM GAP ĐỂ CÓ THÊM KHÔNG GIAN */
+            flex-wrap: wrap;
+            gap: 0.5rem;
             margin-top: 2rem;
         }
 
         .btn {
-            padding: 0.70rem 1.1rem; /* <<<< GIẢM NHẸ PADDING NÚT */
-            font-size: 0.95rem; /* <<<< GIẢM NHẸ FONT SIZE NÚT */
+            padding: 0.70rem 1.1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             border-radius: 25px;
             text-decoration: none;
@@ -185,19 +185,14 @@
             box-shadow: var(--shadow);
             transition: all 0.3s ease;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap; /* Ngăn text trong nút xuống dòng */
+            display: inline-flex; /* For icon alignment */
+            align-items: center; /* For icon alignment */
+            justify-content: center; /* For icon alignment */
+            white-space: nowrap;
         }
         .btn i {
-            margin-right: 0.4rem; /* Điều chỉnh khoảng cách icon */
+            margin-right: 0.4rem;
         }
-        /* Nếu nút chỉ có icon (không áp dụng ở đây vì các nút đều có text) */
-        /* .btn:last-child i {
-            margin-right: 0;
-        } */
-
 
         .btn:hover {
             transform: translateY(-3px);
@@ -211,11 +206,11 @@
             background: var(--btn-secondary-hover-bg);
         }
 
-        .btn-quanlykhac {
+        .btn-quanlykhac { /* Nút "Quản lý dãy ghế" */
             background: var(--secondary-gradient);
         }
         .btn-quanlykhac:hover {
-            opacity: 0.9;
+            opacity: 0.9; /* Slight dim on hover */
         }
 
 
@@ -236,12 +231,12 @@
                 font-size: 1.5rem;
             }
             .button-group {
-                justify-content: center; /* Căn giữa các nút trên mobile */
-                /* flex-direction: column; /* Bỏ comment nếu muốn xếp chồng */
+                /* flex-direction: column; /* Uncomment if you want buttons stacked on mobile */
+                justify-content: center; /* Center buttons if not stacked */
             }
             .btn {
-                /* width: auto; */ /* Đã có white-space: nowrap; */
-                padding: 0.6rem 1rem; /* Giữ padding nhỏ hơn cho mobile */
+                /* width: 100%; /* Uncomment if stacking buttons */
+                padding: 0.6rem 1rem;
                 font-size: 0.9rem;
             }
             .btn i {
@@ -249,12 +244,12 @@
             }
             input[type="text"],
             select {
-                padding-left: 12px;
+                padding-left: 12px; /* Giảm padding trái/phải cho input trên mobile */
                 padding-right: 12px;
                 font-size: 0.95rem;
             }
             select {
-                padding-right: 35px;
+                padding-right: 35px; /* Đảm bảo đủ chỗ cho mũi tên select trên mobile */
                 background-position: right 12px center;
             }
         }
@@ -274,6 +269,7 @@
     <div class="main-form animate__animated animate__fadeInUp">
         <form th:action="@{/rooms/update/{id}(id=${phongChieuPhim.idPhongChieuPhim},idRapPhim=${idRapPhim})}"
               th:object="${phongChieuPhim}" method="post" id="roomForm" onsubmit="return validateForm(event)">
+
             <input type="hidden" th:field="*{idPhongChieuPhim}"/>
             <input type="hidden" th:field="*{rapPhim.idRapPhim}" th:value="${idRapPhim}"/>
 
@@ -287,7 +283,9 @@
                 <label for="kichThuocPhong">Kích thước phòng</label>
                 <select id="kichThuocPhong" th:field="*{kichThuocPhong}" required>
                     <option value="">--Chọn kích thước--</option>
-                    <option th:each="kichThuoc : ${kichThuocPhongList}" th:value="${kichThuoc}" th:text="${kichThuoc.moTa}"></option>
+                    <option value="NHO">Nhỏ</option>
+                    <option value="VUA">Vừa</option>
+                    <option value="LON">Lớn</option>
                 </select>
                 <span id="kichThuocPhongError" class="error-message" th:text="${kichThuocPhongError}"></span>
             </div>
@@ -305,19 +303,29 @@
             </div>
         </form>
     </div>
-</div> <script>
+</div>
+
+<script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Flash message auto-hide
         const flashMessage = document.getElementById('flash-message');
         if (flashMessage && flashMessage.textContent && flashMessage.textContent.trim() !== "") {
+            // Ensure it's visible before starting fade out
+            flashMessage.style.display = 'block'; // Or 'flex', 'grid' depending on initial display type
+            flashMessage.style.opacity = '1';
+
             setTimeout(function() {
                 flashMessage.style.transition = 'opacity 0.5s ease';
                 flashMessage.style.opacity = '0';
-                setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
-            }, 3000);
+                setTimeout(function() {
+                    flashMessage.style.display = 'none';
+                }, 500); // Matches transition duration
+            }, 3000); // Display time
         } else if (flashMessage) {
-            flashMessage.style.display = 'none';
+            flashMessage.style.display = 'none'; // Hide if empty
         }
 
+        // Display server-side validation errors on page load
         const tenPhongChieuPhimErrorSpan = document.getElementById('tenPhongChieuPhimError');
         if (tenPhongChieuPhimErrorSpan && tenPhongChieuPhimErrorSpan.textContent && tenPhongChieuPhimErrorSpan.textContent.trim() !== "") {
             const tenPhongInput = document.getElementById('tenPhongChieuPhim');
@@ -336,43 +344,45 @@
     function validateForm(event) {
         let isValid = true;
 
+        // Clear previous errors
         const errorElements = document.querySelectorAll('.error-message');
         const inputElements = document.querySelectorAll('input[type="text"], select');
         errorElements.forEach(el => el.style.display = 'none');
         inputElements.forEach(el => el.classList.remove('error'));
 
+        // Validate Tên phòng chiếu
         const tenPhongChieuPhim = document.getElementById('tenPhongChieuPhim').value.trim();
-        const kichThuocPhong = document.getElementById('kichThuocPhong').value;
-
         if (!tenPhongChieuPhim) {
             showError('tenPhongChieuPhim', 'Tên phòng chiếu không được để trống.');
             isValid = false;
         } else if (tenPhongChieuPhim.length < 3 || tenPhongChieuPhim.length > 50) {
             showError('tenPhongChieuPhim', 'Tên phòng chiếu phải từ 3 đến 50 ký tự.');
             isValid = false;
-        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-']+$/.test(tenPhongChieuPhim)) {
+        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-']+$/.test(tenPhongChieuPhim)) { // Allows letters (Vietnamese), numbers, spaces, hyphens, apostrophes
             showError('tenPhongChieuPhim', 'Tên phòng chiếu chỉ được chứa chữ, số, khoảng trắng, dấu gạch nối và dấu nháy đơn.');
             isValid = false;
         }
 
-        if (!kichThuocPhong) {
+        // Validate Kích thước phòng
+        const kichThuocPhong = document.getElementById('kichThuocPhong').value;
+        if (!kichThuocPhong) { // Checks if a value is selected (not the default "--Chọn kích thước--" which has value="")
             showError('kichThuocPhong', 'Vui lòng chọn kích thước phòng.');
             isValid = false;
         }
 
         if (!isValid) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent form submission if validation fails
         }
-        return isValid;
+        return isValid; // Allow submission if validation passes
     }
 
     function showError(fieldId, message) {
         const field = document.getElementById(fieldId);
         const errorElement = document.getElementById(fieldId + 'Error');
-        if (field) field.classList.add('error');
+        if (field) field.classList.add('error'); // Add error class to the input/select
         if (errorElement) {
             errorElement.textContent = message;
-            errorElement.style.display = 'block';
+            errorElement.style.display = 'block'; // Show the error message span
         }
     }
 </script>

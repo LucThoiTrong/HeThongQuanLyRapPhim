@@ -1,29 +1,25 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.KichThuocPhong;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.RoomService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
+import java.text.MessageFormat;
 import java.util.List;
 
 @Controller
 @RequestMapping("/rooms")
 public class RoomController {
+    private final RoomService roomService;
 
     @Autowired
-    private RoomService roomService;
-    @Autowired
-    private CinemaService cinemaService;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
+    }
 
     @GetMapping("/{id}")
     public String getAll(Model model, @PathVariable("id") int idRapPhim) {
@@ -33,106 +29,96 @@ public class RoomController {
         return "RoomPage";
     }
 
+    // Thực hiện thêm phòng chiếu
+    // Show form thêm phòng chiếu
     @GetMapping("/new")
     public String newPhongChieuPhim(Model model, @RequestParam("idRapPhim") int idRapPhim) {
+        // Khởi tạo đối tượng phòng chiếu
         PhongChieuPhim phongChieuPhim = new PhongChieuPhim();
-        RapPhim rapPhim = new RapPhim();
-        rapPhim.setIdRapPhim(idRapPhim);
-        phongChieuPhim.setRapPhim(rapPhim);
+
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
-        model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
         return "AddRoomPage";
     }
 
+    // Thực hiện thêm
     @PostMapping("/new")
-    public String insertPhongChieuPhim(@Valid @ModelAttribute("phongChieuPhim") PhongChieuPhim phongChieuPhim,
-                                       BindingResult result,
+    public String insertPhongChieuPhim(@ModelAttribute("phongChieuPhim") PhongChieuPhim phongChieuPhim,
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu không hợp lệ!");
-            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
-        }
-        if (phongChieuPhim.getKichThuocPhong() == null) {
-            redirectAttributes.addFlashAttribute("kichThuocPhongError", "Vui lòng chọn kích thước phòng!");
-            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
-        }
-//        RapPhim rapPhim = new RapPhim();
-//        rapPhim.setIdRapPhim(idRapPhim);
-        RapPhim rapPhim = cinemaService.getCinemaById(idRapPhim);
-        phongChieuPhim.setRapPhim(rapPhim);
-        PhongChieuPhim existingRoom = roomService.findRoomByNameAndCinemaId(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
-        if (existingRoom != null) {
+        // Kiểm tra tên phong chiếu đã tồn tại trong rạp đó hay chưa
+        boolean existingRoom = roomService.checkRoomName(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
+
+        if (existingRoom) {
             redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu đã tồn tại trong rạp này!");
             redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/new?idRapPhim=" + idRapPhim;
+            return MessageFormat.format("redirect:/rooms/new?idRapPhim={0}", idRapPhim);
         }
-        try {
-            roomService.createRoom(phongChieuPhim);
+
+        // Thực hiện lưu phòng chiếu
+        phongChieuPhim.setRapPhim(roomService.getCinemaById(idRapPhim));
+        PhongChieuPhim result = roomService.createRoom(phongChieuPhim);
+
+        if (result != null) {
             redirectAttributes.addFlashAttribute("message", "Thêm phòng chiếu thành công");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Thêm phòng chiếu thất bại: " + e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Thêm phòng chiếu thất bại");
         }
+
         return "redirect:/rooms/" + idRapPhim;
     }
 
+    // Thực hiện update phòng chiếu
+    // Show form update
     @GetMapping("/update/{id}")
     public String updatePhongChieuPhim(Model model, @PathVariable("id") int id,
                                        @RequestParam("idRapPhim") int idRapPhim) {
         PhongChieuPhim phongChieuPhim = roomService.getRoomById(id);
+
         model.addAttribute("phongChieuPhim", phongChieuPhim);
         model.addAttribute("idRapPhim", idRapPhim);
-        model.addAttribute("kichThuocPhongList", Arrays.asList(KichThuocPhong.values()));
         return "EditRoomPage";
     }
 
+    // Thực hiện update
     @PostMapping("/update/{id}")
-    public String updatePhongChieuPhim(@PathVariable("id") int id,
-                                       @Valid @ModelAttribute("phongChieuPhim") PhongChieuPhim phongChieuPhim,
-                                       BindingResult result,
+    public String updatePhongChieuPhim(@PathVariable("id") int idPhongChieuPhim,
+                                       @ModelAttribute("phongChieuPhim") PhongChieuPhim phongChieuPhim,
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu không hợp lệ!");
-            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
-        }
-        if (phongChieuPhim.getKichThuocPhong() == null) {
-            redirectAttributes.addFlashAttribute("kichThuocPhongError", "Vui lòng chọn kích thước phòng!");
-            redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
-        }
-        RapPhim rapPhim = new RapPhim();
-        rapPhim.setIdRapPhim(idRapPhim);
-        phongChieuPhim.setRapPhim(rapPhim);
-        PhongChieuPhim existingRoom = roomService.findRoomByNameAndCinemaId(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
-        if (existingRoom != null && existingRoom.getIdPhongChieuPhim() != id) {
+        // Kiểm tra tên phong chiếu đã tồn tại trong rạp đó hay chưa
+        boolean existingRoom = roomService.checkRoomName(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
+
+        // Nếu như tên tồn tại và idPhongChieu không trùng khớp với id của đối tượng phòng chiếu phim
+        if (existingRoom && !phongChieuPhim.getIdPhongChieuPhim().equals(idPhongChieuPhim)) {
             redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu đã tồn tại trong rạp này!");
             redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
-            return "redirect:/rooms/update/" + id + "?idRapPhim=" + idRapPhim;
+            return MessageFormat.format("redirect:/rooms/update/{0}?idRapPhim={1}", idPhongChieuPhim, idRapPhim);
         }
-        try {
-            roomService.updateRoom(id, phongChieuPhim);
+
+        PhongChieuPhim result = roomService.updateRoom(idPhongChieuPhim, phongChieuPhim);
+        if (result != null) {
             redirectAttributes.addFlashAttribute("message", "Cập nhật phòng chiếu thành công");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Cập nhật phòng chiếu thất bại: " + e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật phòng chiếu thất bại");
         }
+
         return "redirect:/rooms/" + idRapPhim;
     }
 
+    // Thực hiện delete
     @PostMapping("/delete/{id}")
-    public String deletePhongChieuPhim(@PathVariable("id") int id,
+    public String deletePhongChieuPhim(@PathVariable("id") int idPhongChieuPhim,
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
-        try {
-            roomService.deleteRoom(id);
+
+        boolean result = roomService.deleteRoom(idPhongChieuPhim);
+        if (result) {
             redirectAttributes.addFlashAttribute("message", "Xóa phòng chiếu thành công");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("message", "Xóa phòng chiếu thất bại: " + e.getMessage());
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Xóa phòng chiếu thất bại");
         }
+
         return "redirect:/rooms/" + idRapPhim;
     }
 }

@@ -8,36 +8,29 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ChairServiceImplement implements ChairService {
+    private final ChairRepository chairRepository;
 
     @Autowired
-    private ChairRepository chairRepository;
-
-    @Override
-    public List<Ghe> getAllChair() {
-        return chairRepository.findAll();
+    public ChairServiceImplement(ChairRepository chairRepository) {
+        this.chairRepository = chairRepository;
     }
 
     @Override
     public Ghe getChairById(int id) {
-        return chairRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ghế không tồn tại với ID: " + id));
-    }
-
-    @Override
-    public Ghe createChair(Ghe ghe) {
-        return chairRepository.save(ghe);
+        return chairRepository.findById(id).orElse(null);
     }
 
     @Override
     public Ghe updateChair(int id, Ghe gheMoi) {
-        Ghe gheCu = chairRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ghế không tồn tại với ID: " + id));
-        gheCu.setTrangThaiGhe(gheMoi.isTrangThaiGhe());
-        return chairRepository.save(gheCu);
+        Ghe gheCu = chairRepository.findById(id).orElse(null);
+        if (gheCu != null) {
+            gheCu.setTrangThaiGhe(gheMoi.isTrangThaiGhe());
+            return chairRepository.save(gheCu);
+        }
+        return null;
     }
 
     @Override
@@ -51,17 +44,18 @@ public class ChairServiceImplement implements ChairService {
 
     @Override
     public void capNhatTrangThaiGhe(String danhSachGheDuocChon, boolean trangThaiGhe) {
-        String[] mangIdGhe = danhSachGheDuocChon.split(",");
         List<Integer> danhSachId = Arrays.stream(danhSachGheDuocChon.split(","))
                 .map(String::trim)
                 .map(Integer::parseInt)
-                .collect(Collectors.toList());
-        for (int id: danhSachId)
-        {
+                .toList();
+
+        for (int id: danhSachId) {
             //tim id tung ghe va cap nhat trang thai cua ghe
-            Ghe ghe = chairRepository.findById(id).get();
-            ghe.setTrangThaiGhe(trangThaiGhe);
-            chairRepository.save(ghe);
+            Ghe ghe = chairRepository.findById(id).orElse(null);
+            if (ghe != null) {
+                ghe.setTrangThaiGhe(trangThaiGhe);
+                chairRepository.save(ghe);
+            }
         }
     }
 

@@ -23,11 +23,9 @@ public class PhongChieuPhim implements Serializable {
     private RapPhim rapPhim;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore // Ngăn tuần tự hóa dsDayGhe
     private Set<DayGhe> dsDayGhe;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore // Ngăn tuần tự hóa dsSuatChieu
     private Set<SuatChieu> dsSuatChieu;
 
     @Column(name = "kich_thuoc_phong")
@@ -90,5 +88,19 @@ public class PhongChieuPhim implements Serializable {
 
     public void setDsSuatChieu(Set<SuatChieu> dsSuatChieu) {
         this.dsSuatChieu = dsSuatChieu;
+    }
+
+    // lấy tổng số lượng của từng dãy ghế
+    public int getSoLuongDayGheTungLoai(LoaiGhe loaiGhe) {
+        return (int) getDsDayGhe().stream().filter(dayGhe -> dayGhe.getLoaiGhe() == loaiGhe).count();
+    }
+
+    // Lấy số lượng dãy ghế tối đa của 1 phòng chiếu
+    public int getSoLuongDayGheToiDa() {
+        return switch (getKichThuocPhong()) {
+            case NHO -> 10;
+            case VUA -> 15;
+            case LON -> 20;
+        };
     }
 }
