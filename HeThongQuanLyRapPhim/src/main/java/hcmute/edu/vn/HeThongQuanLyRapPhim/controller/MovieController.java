@@ -40,6 +40,7 @@ public class MovieController {
     @GetMapping("/movie-detail/{id}")
     public String getShowingDetail(Model model, @PathVariable int id) {
         Phim phim = movieService.getPhimById(id);
+
         model.addAttribute("phim", phim);
         model.addAttribute("danhGia", new DanhGia());
         model.addAttribute("phanHoi", new PhanHoi());

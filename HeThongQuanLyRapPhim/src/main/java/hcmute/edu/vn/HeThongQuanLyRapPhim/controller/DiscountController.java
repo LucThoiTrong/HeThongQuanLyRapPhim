@@ -13,12 +13,12 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/discount")
-public class MaGiamGiaController {
+public class DiscountController {
     private final DiscountService discountService;
     private final DiscountCampaignService discountCampaignService;
 
     @Autowired
-    public MaGiamGiaController(DiscountService discountService, DiscountCampaignService discountCampaignService) {
+    public DiscountController(DiscountService discountService, DiscountCampaignService discountCampaignService) {
         this.discountService = discountService;
         this.discountCampaignService = discountCampaignService;
     }

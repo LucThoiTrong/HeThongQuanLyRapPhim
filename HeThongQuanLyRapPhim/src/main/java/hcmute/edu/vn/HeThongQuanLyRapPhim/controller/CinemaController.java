@@ -4,7 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiRapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DoiTuongSuDungService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,10 +18,10 @@ import java.util.*;
 @RequestMapping("/cinemas")
 public class CinemaController {
     private final CinemaService cinemaService;
-    private final DoiTuongSuDungService doiTuongSuDungService;
+    private final UserService doiTuongSuDungService;
 
     @Autowired
-    public CinemaController(CinemaService cinemaService, DoiTuongSuDungService doiTuongSuDungService) {
+    public CinemaController(CinemaService cinemaService, UserService doiTuongSuDungService) {
         this.cinemaService = cinemaService;
         this.doiTuongSuDungService = doiTuongSuDungService;
     }

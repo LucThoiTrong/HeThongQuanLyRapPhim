@@ -25,11 +25,11 @@ public class RefundController {
 
     private final ChairService chairService;
 
-    private final DoiTuongSuDungService profileService;
+    private final UserService profileService;
 
     @Autowired
     public RefundController(InvoiceService invoiceService, RefundService refundService,
-                            ChairService chairService, DoiTuongSuDungService profileService) {
+                            ChairService chairService, UserService profileService) {
         this.invoiceService = invoiceService;
         this.refundService = refundService;
         this.chairService = chairService;

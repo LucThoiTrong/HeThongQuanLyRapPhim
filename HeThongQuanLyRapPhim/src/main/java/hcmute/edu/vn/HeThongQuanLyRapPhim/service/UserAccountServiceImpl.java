@@ -1,16 +1,16 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.TKDoiTuongSuDungRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TKDoiTuongServiceImpl implements TKDoiTuongService {
-    private final TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository;
+public class UserAccountServiceImpl implements UserAccountService {
+    private final UserAccountRepository tkDoiTuongSuDungRepository;
 
     @Autowired
-    public TKDoiTuongServiceImpl(TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository) {
+    public UserAccountServiceImpl(UserAccountRepository tkDoiTuongSuDungRepository) {
         this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
     }
 

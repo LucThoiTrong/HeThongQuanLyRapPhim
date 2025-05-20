@@ -17,12 +17,12 @@ import java.util.*;
 public class BookingController {
     private final BookingService bookingService;
     private final MovieService movieService;
-    private final DoiTuongSuDungService doiTuongSuDungService;
+    private final UserService doiTuongSuDungService;
     private final PopcornDrinkComboService popcornDrinkComboService;
 
     @Autowired
     public BookingController(BookingService bookingService, MovieService movieService,
-                             DoiTuongSuDungService doiTuongSuDungService,
+                             UserService doiTuongSuDungService,
                              PopcornDrinkComboService popcornDrinkComboService) {
         this.bookingService = bookingService;
         this.movieService = movieService;

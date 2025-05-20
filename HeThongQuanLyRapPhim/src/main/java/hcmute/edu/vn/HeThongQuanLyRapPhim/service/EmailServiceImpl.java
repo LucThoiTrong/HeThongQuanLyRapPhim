@@ -73,7 +73,7 @@ public class EmailServiceImpl implements EmailService {
         String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + id;
         context.setVariable("verificationLink", verificationLink);
 
-        String emailContent = templateEngine.process("ResetPasswordMail", context);
+        String emailContent = templateEngine.process("EmailResetPassword", context);
 
         helper.setTo(email);
         helper.setSubject("Khôi phục mật khẩu");

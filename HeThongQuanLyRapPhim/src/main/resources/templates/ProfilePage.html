@@ -986,6 +986,11 @@
         const pageHeader = document.getElementById('pageHeader');
         const mainContentArea = document.getElementById('mainContentArea');
 
+        // --- Định nghĩa các hằng số cho validation mật khẩu ---
+        const minPasswordLength = 6; // Hoặc giá trị bạn muốn, ví dụ 8
+        const uppercaseRegex = /[A-Z]/;
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // Bạn có thể tùy chỉnh regex này
+
         // --- Tính toán Padding cho Body dựa trên chiều cao Header ---
         function setBodyPaddingTop() {
             if (pageHeader) {
@@ -1061,7 +1066,6 @@
 
                 if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
                     userDropdownMenu.classList.remove('show');
-                    // Kiểm tra lại userProfileLinkToggle trước khi xóa class 'open'
                     if (userProfileLinkToggle) {
                         userProfileLinkToggle.classList.remove('open');
                     }
@@ -1081,14 +1085,12 @@
         const newPasswordInputModal = document.getElementById('new_password_modal');
         const confirmNewPasswordInputModal = document.getElementById('confirm_new_password_modal');
 
-        // Thêm tham chiếu đến div lỗi JS của mật khẩu hiện tại
         const jsErrorCurrentPasswordDiv = modalOverlay?.querySelector('.js-error-current-password');
         const jsErrorNewPasswordDiv = modalOverlay?.querySelector('.js-error-new-password');
         const jsErrorConfirmPasswordDiv = modalOverlay?.querySelector('.js-error-confirm-password');
 
-        // Cập nhật hàm xóa lỗi JS
         function clearPasswordModalJSErrors() {
-            if(jsErrorCurrentPasswordDiv) { jsErrorCurrentPasswordDiv.textContent = ''; jsErrorCurrentPasswordDiv.style.display = 'none'; } // Thêm dòng này
+            if(jsErrorCurrentPasswordDiv) { jsErrorCurrentPasswordDiv.textContent = ''; jsErrorCurrentPasswordDiv.style.display = 'none'; }
             if(jsErrorNewPasswordDiv) { jsErrorNewPasswordDiv.textContent = ''; jsErrorNewPasswordDiv.style.display = 'none'; }
             if(jsErrorConfirmPasswordDiv) { jsErrorConfirmPasswordDiv.textContent = ''; jsErrorConfirmPasswordDiv.style.display = 'none'; }
         }
@@ -1097,7 +1099,6 @@
             if(changePasswordForm) changePasswordForm.reset();
             if(currentPasswordInputModal && val_currentPassword_js) currentPasswordInputModal.value = val_currentPassword_js;
             if(newPasswordInputModal && val_newPassword_js) newPasswordInputModal.value = val_newPassword_js;
-            // Không cần điền lại confirm password
         }
 
         if (btnOpenModal && modalOverlay) {
@@ -1105,7 +1106,7 @@
                 modalOverlay.classList.add('active');
                 clearPasswordModalJSErrors();
                 resetAndRepopulatePasswordForm();
-                if(currentPasswordInputModal) currentPasswordInputModal.focus(); // Focus vào ô MK hiện tại
+                if(currentPasswordInputModal) currentPasswordInputModal.focus();
             });
         }
 
@@ -1117,18 +1118,17 @@
         if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
         if (modalOverlay) {
             modalOverlay.addEventListener('click', (event) => {
-                if (event.target === modalOverlay) closeModal(); // Đóng khi click ra ngoài
+                if (event.target === modalOverlay) closeModal();
             });
         }
 
-        // Xử lý submit form đổi mật khẩu
         if (changePasswordForm) {
             changePasswordForm.addEventListener('submit', (e) => {
                 let isValid = true;
-                clearPasswordModalJSErrors(); // Xóa lỗi JS cũ
+                clearPasswordModalJSErrors();
 
                 // *** BƯỚC 1: KIỂM TRA MẬT KHẨU HIỆN TẠI ***
-                if (currentPasswordInputModal && currentPasswordInputModal.value.trim() === '') { // Thêm kiểm tra currentPasswordInputModal tồn tại
+                if (currentPasswordInputModal && currentPasswordInputModal.value.trim() === '') {
                     if(jsErrorCurrentPasswordDiv) {
                         jsErrorCurrentPasswordDiv.textContent = 'Mật khẩu hiện tại không được để trống.';
                         jsErrorCurrentPasswordDiv.style.display = 'block';
@@ -1136,20 +1136,41 @@
                     isValid = false;
                 }
 
-                // *** BƯỚC 2: KIỂM TRA MẬT KHẨU MỚI ***
-                if (newPasswordInputModal && newPasswordInputModal.value.trim() === '') {
-                    if(jsErrorNewPasswordDiv) {
-                        jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới không được để trống.';
-                        jsErrorNewPasswordDiv.style.display = 'block';
+                // *** BƯỚC 2: KIỂM TRA MẬT KHẨU MỚI (ĐÃ CẬP NHẬT) ***
+                if (newPasswordInputModal) { // Kiểm tra newPasswordInputModal tồn tại
+                    const newPasswordValue = newPasswordInputModal.value; // Lấy giá trị một lần
+
+                    if (newPasswordValue.trim() === '') {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới không được để trống.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (newPasswordValue.length < minPasswordLength) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = `Mật khẩu mới phải có ít nhất ${minPasswordLength} ký tự.`;
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (!uppercaseRegex.test(newPasswordValue)) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải chứa ít nhất một chữ cái viết hoa.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (!specialCharRegex.test(newPasswordValue)) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải chứa ít nhất một ký tự đặc biệt.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
                     }
-                    isValid = false;
-                } else if (newPasswordInputModal && newPasswordInputModal.value.length < 6) {
-                    if(jsErrorNewPasswordDiv) {
-                        jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải có ít nhất 6 ký tự.';
-                        jsErrorNewPasswordDiv.style.display = 'block';
-                    }
+                    // Không cần 'else' để xóa lỗi ở đây vì clearPasswordModalJSErrors() đã chạy ở đầu
+                } else {
+                    // Trường hợp newPasswordInputModal không tồn tại (khó xảy ra nếu HTML đúng)
                     isValid = false;
                 }
+
 
                 // *** BƯỚC 3: KIỂM TRA XÁC NHẬN MẬT KHẨU MỚI ***
                 if (confirmNewPasswordInputModal && confirmNewPasswordInputModal.value.trim() === '') {
@@ -1159,7 +1180,6 @@
                     }
                     isValid = false;
                 } else if (newPasswordInputModal && confirmNewPasswordInputModal && newPasswordInputModal.value !== confirmNewPasswordInputModal.value) {
-                    // Chỉ kiểm tra khớp nếu cả 2 ô đều có giá trị và không rỗng (đã check ở trên)
                     if(jsErrorConfirmPasswordDiv) {
                         jsErrorConfirmPasswordDiv.textContent = 'Mật khẩu xác nhận không khớp.';
                         jsErrorConfirmPasswordDiv.style.display = 'block';
@@ -1169,18 +1189,15 @@
 
                 // *** BƯỚC 4: NGĂN SUBMIT NẾU KHÔNG HỢP LỆ ***
                 if (!isValid) {
-                    e.preventDefault(); // Ngăn form gửi đi server
+                    e.preventDefault();
                 }
-                // Nếu hợp lệ, form sẽ submit bình thường
             });
         }
 
-        // Mở modal nếu có lỗi từ server trả về qua flash attributes
         const shouldOpenModalDueToFlashError = flash_error_change_password_message || flash_error_currentPassword || flash_error_newPassword || flash_error_confirmNewPassword;
         if (shouldOpenModalDueToFlashError && modalOverlay && !modalOverlay.classList.contains('active')) {
-            if (btnOpenModal) btnOpenModal.click(); // Tự động mở modal
+            if (btnOpenModal) btnOpenModal.click();
         }
-        // Đóng modal nếu đổi mật khẩu thành công (thông báo thành công sẽ hiển thị trên trang chính)
         if (flash_success_change_password_message && modalOverlay && modalOverlay.classList.contains('active')) {
             closeModal();
         }
@@ -1197,14 +1214,13 @@
                     setTimeout(() => { this.innerHTML = originalHTML; }, 1500);
                 }).catch(err => {
                     console.error('Không thể sao chép: ', err);
-                    // Có thể thêm thông báo lỗi copy ở đây
                 });
             });
         });
 
         // --- Cập nhật năm hiện tại ở Footer ---
         const yearSpan = document.getElementById('currentYear');
-        if (yearSpan && !yearSpan.textContent) { // Chỉ cập nhật nếu chưa có giá trị (tránh ghi đè th:text)
+        if (yearSpan && !yearSpan.textContent) {
             yearSpan.textContent = new Date().getFullYear();
         }
     });

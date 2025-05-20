@@ -1,9 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DoiTuongSuDungService;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.DiscountService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CouponService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,18 +15,16 @@ import java.util.List;
 
 @Controller
 public class CouponController {
-    private final DiscountService discountService;
-    private final DoiTuongSuDungService doiTuongSuDungService;
+    private final CouponService couponService;
 
     @Autowired
-    public CouponController(DiscountService discountService, DoiTuongSuDungService doiTuongSuDungService) {
-        this.discountService = discountService;
-        this.doiTuongSuDungService = doiTuongSuDungService;
+    public CouponController(CouponService couponService) {
+        this.couponService = couponService;
     }
 
     @GetMapping("/coupon")
     public String showCouponPage(Model model) {
-        List<MaGiamGia> maGiamGiaList = discountService.findAll();
+        List<MaGiamGia> maGiamGiaList = couponService.findAllMaGiamGia();
         model.addAttribute("danhSachMaGiamGia", maGiamGiaList);
         return "CouponPage";
     }
@@ -37,11 +33,8 @@ public class CouponController {
     public String collectDiscount(Model model, @PathVariable int idMaGiamGia, HttpSession session, RedirectAttributes redirectAttributes) {
         int idCustomer = (int) session.getAttribute("idCustomer");
 
-        DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idCustomer);
-        MaGiamGia maGiamGia = discountService.findById(idMaGiamGia);
-        maGiamGia.setDoiTuongSuDung(customer);
+        MaGiamGia kq = couponService.getMaGiamGia(idMaGiamGia, idCustomer);
 
-        MaGiamGia kq = discountService.updateCustomer(maGiamGia);
         if(kq != null) {
             redirectAttributes.addFlashAttribute("message", "Thu thập mã giảm giá thành công");
         } else {

@@ -4,7 +4,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 
 import java.util.List;
 
-public interface DoiTuongSuDungService {
+public interface UserService {
     List<DoiTuongSuDung> getAllDoiTuongSuDung();
     DoiTuongSuDung getDoiTuongSuDungById(int id);
     DoiTuongSuDung createDoiTuongSuDung(DoiTuongSuDung doiTuongSuDung);

@@ -2,7 +2,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiDoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DoiTuongSuDungRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class DoiTuongSuDungServiceImplement implements DoiTuongSuDungService {
-    private final DoiTuongSuDungRepository doiTuongSuDungRepository;
+public class UserServiceImpl implements UserService {
+    private final UserRepository doiTuongSuDungRepository;
 
     @Autowired
-    public DoiTuongSuDungServiceImplement(DoiTuongSuDungRepository doiTuongSuDungRepository) {
+    public UserServiceImpl(UserRepository doiTuongSuDungRepository) {
         this.doiTuongSuDungRepository = doiTuongSuDungRepository;
     }
 

@@ -2,128 +2,128 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DoiTuongSuDungRepository;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.TKDoiTuongSuDungRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
-
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserAccountRepository;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    private final DoiTuongSuDungRepository doiTuongSuDungRepository;
+    private final UserRepository doiTuongSuDungRepository;
 
-    private final TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository;
+    private final UserAccountRepository tkDoiTuongSuDungRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
+    private final EmailService emailService;
+
     @Autowired
-    public AuthServiceImpl(DoiTuongSuDungRepository doiTuongSuDungRepository,
-                           TKDoiTuongSuDungRepository tkDoiTuongSuDungRepository,
-                           BCryptPasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserRepository doiTuongSuDungRepository,
+                           UserAccountRepository tkDoiTuongSuDungRepository,
+                           BCryptPasswordEncoder passwordEncoder,
+                           EmailService emailService) {
         this.doiTuongSuDungRepository = doiTuongSuDungRepository;
         this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
+    // Check tài khoản đã được kích hoạt hay chưa
     @Override
-    public TKDoiTuongSuDung register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password) throws Exception {
-        if (tkDoiTuongSuDungRepository.findByTenDangNhap(tenDangNhap).isPresent()) {
-            throw new Exception("Tên đăng nhập đã được sử dụng");
+    public boolean checkIsAccountVerified(String username) {
+        TKDoiTuongSuDung tkDoiTuongSuDung = tkDoiTuongSuDungRepository.findByTenDangNhap(username);
+        if (tkDoiTuongSuDung == null) {
+            return false;
         }
+        return tkDoiTuongSuDung.isTrangThaiTaiKhoan();
+    }
 
+    // Thực hiện đăng nhập
+    @Override
+    public DoiTuongSuDung login(String username, String password) {
+        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findByTenDangNhap(username);
+        if (tk == null || !passwordEncoder.matches(password, tk.getMatKhau())) {
+            return null;
+        }
+        return tk.getDoiTuongSuDung();
+    }
+
+    // Check tên đăng nhập đã tồn tại trong hệ thống hay chưa
+    @Override
+    public boolean checkUsername(String username) {
+        TKDoiTuongSuDung tkDoiTuongSuDung = tkDoiTuongSuDungRepository.findByTenDangNhap(username);
+        return tkDoiTuongSuDung == null;
+    }
+
+    // Check email đã tồn tại trong hệ thống hay chưa
+    @Override
+    public boolean checkEmail(String email) {
+        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungRepository.findDoiTuongSuDungByEmail(email);
+        return doiTuongSuDung == null;
+    }
+
+    // Thực hiện chức năng đăng ký
+    @Override
+    public boolean register(DoiTuongSuDung doiTuongSuDung, String tenDangNhap, String password)  {
+        // Thực hiện lưu thông tin khách hàng
         doiTuongSuDungRepository.save(doiTuongSuDung);
 
+        // Tạo tài khoản cho khách hàng
         TKDoiTuongSuDung tkDoiTuongSuDung = new TKDoiTuongSuDung();
         tkDoiTuongSuDung.setTenDangNhap(tenDangNhap);
         tkDoiTuongSuDung.setMatKhau(passwordEncoder.encode(password));
         tkDoiTuongSuDung.setTrangThaiTaiKhoan(false);
         tkDoiTuongSuDung.setDoiTuongSuDung(doiTuongSuDung);
 
-        TKDoiTuongSuDung savedTk = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
-
-        return savedTk;
-
+        // Thực hiện lưu tài khoản khách hàng
+        TKDoiTuongSuDung result = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
+        // Thực hiện gửi mail
+        try {
+            emailService.sendVerificationEmail(doiTuongSuDung.getEmail(), result.getIdTKDoiTuongSuDung());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
+    // Thực hiện chức năng xác thực tài khoản
     @Override
-    public DoiTuongSuDung login(String username, String password) {
-        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findByTenDangNhap(username)
-                .orElse(null);
-        if (tk == null) {
-            return null;
+    public boolean verifyAccount(int idTaiKhoan)  {
+        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findById(idTaiKhoan).orElse(null);
+        if (tk != null) {
+            tk.setTrangThaiTaiKhoan(true);
+            tkDoiTuongSuDungRepository.save(tk);
+            return true;
         }
-        if (!passwordEncoder.matches(password, tk.getMatKhau())) {
-            return null;
-        }
-        if (!tk.isTrangThaiTaiKhoan()) {
-            return null;
-        }
-        return tk.getDoiTuongSuDung();
+        return false;
     }
 
+    // Thực hiện chức năng quên mật khẩu
     @Override
-    public void verifyAccount(int id) throws Exception {
-        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findById(id)
-                .orElseThrow(() -> new Exception("Tài khoản không tồn tại"));
-
-        if (tk.isTrangThaiTaiKhoan()) {
-            throw new Exception("Tài khoản đã được xác thực");
+    public boolean sendMailForgotPassword(String email) {
+        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungRepository.findDoiTuongSuDungByEmail(email);
+        if (doiTuongSuDung == null) {
+            return false;
         }
-
-        tk.setTrangThaiTaiKhoan(true);
-        tkDoiTuongSuDungRepository.save(tk);
+        try {
+            emailService.sendResetPasswordEmail(email, doiTuongSuDung.getTkDoiTuongSuDung().getIdTKDoiTuongSuDung());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
     }
 
-    @Override
-    public void changePassword(String username, String oldPassword, String newPassword, String confirmNewPassword) throws Exception {
-        TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findByTenDangNhap(username)
-                .orElseThrow(() -> new Exception("Tài khoản không tồn tại"));
-
-        if (!passwordEncoder.matches(oldPassword, tk.getMatKhau())) {
-            throw new Exception("Mật khẩu cũ không đúng");
-        }
-
-        if (!newPassword.equals(confirmNewPassword)) {
-            throw new Exception("Mật khẩu mới xác nhận không khớp");
-        }
-
-        tk.setMatKhau(passwordEncoder.encode(newPassword));
-        tkDoiTuongSuDungRepository.save(tk);
-    }
-
-    @Override
-    public DoiTuongSuDung getDoiTuongSuDungByEmail(String email) {
-        return doiTuongSuDungRepository.getDoiTuongSuDungByEmail(email);
-    }
 
     @Override
     public void resetPassword(int id, String newPassword) {
         TKDoiTuongSuDung tk = tkDoiTuongSuDungRepository.findById(id).orElse(null);
-        tk.setMatKhau(passwordEncoder.encode(newPassword));
-        tkDoiTuongSuDungRepository.save(tk);
+        if (tk != null) {
+            tk.setMatKhau(passwordEncoder.encode(newPassword));
+            tkDoiTuongSuDungRepository.save(tk);
+        }
     }
-    //    private void sendVerificationEmail(String email, int id) throws MessagingException {
-//        MimeMessage message = mailSender.createMimeMessage();
-//        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-//
-//        Context context = new Context();
-//        String verificationLink = "http://localhost:8080/auth/verify?id=" + id;
-//        context.setVariable("verificationLink", verificationLink);
-//
-//        String emailContent = templateEngine.process("verify-email", context);
-//
-//        helper.setTo(email);
-//        helper.setSubject("Xác thực tài khoản");
-//        helper.setText(emailContent, true);
-//
-//        mailSender.send(message);
-//    }
 }
