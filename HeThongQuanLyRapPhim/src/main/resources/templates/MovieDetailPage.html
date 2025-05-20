@@ -692,10 +692,10 @@
                 </th:block>
             </div>
             <h2><i class="fas fa-comments"></i> Đánh Giá Phim</h2>
+<!--            Đánh giá-->
             <div class="review-form">
                 <h3>Để lại đánh giá của bạn</h3>
                 <form id="movie-review-form" th:action="@{/movies/{movieId}/reviews(movieId=${phim.idPhim})}" method="post" th:object="${danhGia}">
-                    <input type="hidden" name="idPhim" th:value="${phim.idPhim}" />
                     <div class="form-group">
                         <label for="rating">Chất lượng phim:</label>
                         <div class="star-rating-form" id="rating">
@@ -714,6 +714,7 @@
                 </form>
             </div>
 
+<!--            Danh sách đánh giá-->
             <div class="review-list">
                 <h3 th:if="${phim.dsDanhGia != null and not #lists.isEmpty(phim.dsDanhGia)}">Bình luận nổi bật</h3>
                 <div th:if="${phim.dsDanhGia == null or #lists.isEmpty(phim.dsDanhGia)}">
@@ -737,11 +738,13 @@
                     <div class="review-actions">
                         <button class="reply-btn-detail review-action-btn" th:attr="data-review-id=${danhGiaItem.idDanhGia}"><i class="fas fa-reply"></i> Phản hồi</button>
                         <button class="edit-btn-trigger review-action-btn edit-action" th:attr="data-review-id=${danhGiaItem.idDanhGia}" style="display: none;"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+<!--                        Xoá đánh giá-->
                         <form th:action="@{/movies/{movieId}/reviews/{reviewId}/delete(movieId=${phim.idPhim}, reviewId=${danhGiaItem.idDanhGia})}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');" style="display: none;">
                             <button type="submit" class="review-action-btn delete-action"><i class="fas fa-trash"></i> Xóa</button>
                         </form>
                     </div>
 
+<!--                    Danh sách phản hồi-->
                     <div class="replies-container">
                         <div class="reply-item" th:each="phanHoi : ${danhGiaItem.dsPhanHoi}"
                              th:id="'reply-item-' + ${phanHoi.idPhanHoi}"
@@ -754,13 +757,14 @@
 
                             <div class="review-actions">
                                 <button class="edit-reply-btn-trigger review-action-btn edit-action" th:attr="data-reply-id=${phanHoi.idPhanHoi}, data-parent-review-id=${danhGiaItem.idDanhGia}" style="display: none;"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+<!--                                Xoá phản hồi-->
                                 <form th:action="@{/reviews/replies/{replyId}/delete(replyId=${phanHoi.idPhanHoi})}"
                                       method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phản hồi này không?');" style="display: none;">
                                     <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
                                     <button type="submit" class="review-action-btn delete-action"><i class="fas fa-trash"></i> Xóa</button>
                                 </form>
                             </div>
-
+<!--                            Chỉnh sửa phản hồi-->
                             <div class="edit-reply-form-container" th:id="'edit-reply-form-container-' + ${phanHoi.idPhanHoi}" style="display: none;">
                                 <h4 th:text="'Chỉnh sửa phản hồi của ' + (${phanHoi.doiTuongSuDung != null ? phanHoi.doiTuongSuDung.hoTen : 'Người dùng ẩn'})"></h4>
                                 <form class="edit-reply-form-actual" th:action="@{/reviews/replies/{replyId}/update(replyId=${phanHoi.idPhanHoi})}" method="post"
@@ -777,9 +781,11 @@
                         </div>
                     </div>
 
+<!--                    form thêm phản hồi-->
                     <div class="reply-form-container" th:id="'reply-form-container-' + ${danhGiaItem.idDanhGia}" style="display: none;">
                         <form th:action="@{/reviews/{reviewId}/replies/new(reviewId=${danhGiaItem.idDanhGia})}" method="post"
-                              th:object="${phanHoi}"> <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
+                              th:object="${phanHoi}">
+                            <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
                             <div class="form-group">
                                 <label th:for="'reply-text-' + ${danhGiaItem.idDanhGia}">Nội dung phản hồi:</label>
                                 <textarea th:field="*{noiDungPhanHoi}" th:id="'reply-text-' + ${danhGiaItem.idDanhGia}"
@@ -792,6 +798,7 @@
                         </form>
                     </div>
 
+<!--                    Chỉnh sửa đánh giá-->
                     <div class="edit-review-form-container" th:id="'edit-review-form-container-' + ${danhGiaItem.idDanhGia}" style="display: none;">
                         <h4 th:text="'Chỉnh sửa đánh giá của ' + (${danhGiaItem.doiTuongSuDung != null ? danhGiaItem.doiTuongSuDung.hoTen : 'Người dùng ẩn'})"></h4>
                         <form class="edit-review-form-actual" th:action="@{/movies/{movieId}/reviews/{reviewId}/update(movieId=${phim.idPhim}, reviewId=${danhGiaItem.idDanhGia})}" method="post">
@@ -870,28 +877,37 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- CẬP NHẬT NĂM HIỆN TẠI ---
+        // Tìm phần tử span có ID 'currentYear' và cập nhật nội dung của nó thành năm hiện tại.
         const yearSpan = document.getElementById('currentYear');
         if (yearSpan) {
             yearSpan.textContent = new Date().getFullYear();
         }
 
-        // --- Lấy ID người dùng hiện tại ---
+        // --- LẤY ID NGƯỜI DÙNG HIỆN TẠI VÀ KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP ---
+        // Lấy giá trị ID người dùng từ một phần tử ẩn (thường là input).
         const currentUserIdElement = document.getElementById('currentUserId');
+        // Gán ID người dùng hoặc null nếu không tìm thấy hoặc giá trị rỗng.
         const currentUserId = currentUserIdElement ? (currentUserIdElement.value || '').trim() : null;
-        const isLoggedIn = currentUserId && currentUserId !== ''; // Biến kiểm tra đăng nhập
+        // Biến boolean kiểm tra xem người dùng đã đăng nhập hay chưa.
+        const isLoggedIn = currentUserId && currentUserId !== '';
 
-        // Synchronized JavaScript for User Menu Dropdown
+        // --- LOGIC CHO MENU DROPDOWN CỦA NGƯỜI DÙNG ---
+        // Xử lý việc hiển thị và ẩn menu dropdown khi người dùng nhấp vào liên kết hồ sơ.
         const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
         if (userProfileLinkToggle && userDropdownMenu) {
+            // Khi nhấp vào nút bật/tắt menu
             userProfileLinkToggle.addEventListener('click', function(event) {
-                event.preventDefault();
-                userDropdownMenu.classList.toggle('show');
-                this.classList.toggle('open');
+                event.preventDefault(); // Ngăn hành động mặc định của thẻ <a>
+                userDropdownMenu.classList.toggle('show'); // Thêm/xóa class 'show' để hiển thị/ẩn menu
+                this.classList.toggle('open'); // Thêm/xóa class 'open' trên nút để thay đổi giao diện (ví dụ: mũi tên)
             });
+            // Đóng menu dropdown nếu nhấp ra ngoài
             document.addEventListener('click', function(event) {
                 const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
                 const isClickInsideMenu = userDropdownMenu.contains(event.target);
+                // Nếu nhấp ra ngoài cả nút và menu, và menu đang hiển thị
                 if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
                     userDropdownMenu.classList.remove('show');
                     userProfileLinkToggle.classList.remove('open');
@@ -899,56 +915,61 @@
             });
         }
 
-        // --- START: Auto-hide flash message ---
+        // --- TỰ ĐỘNG ẨN THÔNG BÁO FLASH (FLASH MESSAGE) ---
+        // Hiển thị thông báo trong một khoảng thời gian ngắn rồi mờ dần và biến mất.
         const flashMessageContainer = document.getElementById('flashMessageContainer');
         if (flashMessageContainer) {
-            // The actual message div is the first child div if it exists due to th:block
+            // Tìm div chứa nội dung thông báo thực sự (có thể được tạo bởi th:block trong Thymeleaf)
             const flashMessageDiv = flashMessageContainer.querySelector('div');
+            // Nếu có thông báo và nội dung không rỗng
             if (flashMessageDiv && flashMessageDiv.textContent.trim() !== '') {
-                flashMessageDiv.style.display = 'block'; // Ensure it's visible
+                flashMessageDiv.style.display = 'block'; // Đảm bảo thông báo được hiển thị
+                // Sau 5 giây, bắt đầu quá trình làm mờ
                 setTimeout(() => {
                     let opacity = 1;
                     const fadeInterval = setInterval(function() {
-                        if (opacity <= 0.1){
-                            clearInterval(fadeInterval);
-                            flashMessageDiv.style.display = 'none';
+                        if (opacity <= 0.1){ // Khi độ mờ đủ thấp
+                            clearInterval(fadeInterval); // Dừng làm mờ
+                            flashMessageDiv.style.display = 'none'; // Ẩn hoàn toàn
                         }
                         flashMessageDiv.style.opacity = opacity;
-                        opacity -= opacity * 0.1; // Exponential fade
-                    }, 50);
-                }, 5000); // Hide after 5 seconds
+                        opacity -= opacity * 0.1; // Giảm độ mờ theo cấp số nhân (mờ nhanh dần)
+                    }, 50); // Thực hiện mỗi 50ms
+                }, 5000); // Bắt đầu ẩn sau 5 giây
             } else if (flashMessageDiv) {
-                // If Thymeleaf rendered the outer container but the inner div (message) is empty or not there
+                // Nếu Thymeleaf render container bên ngoài nhưng div bên trong (thông báo) rỗng
                 flashMessageDiv.style.display = 'none';
             }
         }
-        // --- END: Auto-hide flash message ---
 
+        // --- ẨN/HIỆN CÁC THÀNH PHẦN DỰA TRÊN TRẠNG THÁI ĐĂNG NHẬP ---
 
-        // --- Ẩn/Hiện các thành phần dựa trên trạng thái đăng nhập ---
+        // --- FORM ĐÁNH GIÁ CHÍNH ---
+        // Ẩn form đánh giá nếu người dùng chưa đăng nhập và hiển thị thông báo yêu cầu đăng nhập.
         const reviewFormDiv = document.querySelector('.review-form');
         if (reviewFormDiv) {
             if (!isLoggedIn) {
                 reviewFormDiv.style.display = 'none'; // Ẩn form đánh giá chính
-                // Optional: Thêm thông báo yêu cầu đăng nhập
+                // Tạo và thêm thông báo yêu cầu đăng nhập
                 const loginPrompt = document.createElement('p');
                 loginPrompt.innerHTML = 'Vui lòng <a href="/signin" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> để để lại đánh giá.';
                 loginPrompt.style.textAlign = 'center';
                 loginPrompt.style.marginTop = '20px';
-                loginPrompt.style.marginBottom = '20px'; // Add some bottom margin too
-                // Insert before the review form or where appropriate if reviewFormDiv is hidden
+                loginPrompt.style.marginBottom = '20px';
+                // Chèn thông báo vào vị trí phù hợp
                 const reviewsSectionH2 = document.querySelector('.reviews-section-wrapper h2');
                 if (reviewsSectionH2) {
                     reviewsSectionH2.parentNode.insertBefore(loginPrompt, reviewsSectionH2.nextSibling);
                 } else {
                     reviewFormDiv.parentNode.insertBefore(loginPrompt, reviewFormDiv);
                 }
-
             } else {
-                reviewFormDiv.style.display = 'block';
+                reviewFormDiv.style.display = 'block'; // Hiện form nếu đã đăng nhập
             }
         }
 
+        // --- NÚT PHẢN HỒI ---
+        // Ẩn tất cả các nút "Phản hồi" nếu người dùng chưa đăng nhập.
         document.querySelectorAll('.reply-btn-detail').forEach(button => {
             if (!isLoggedIn) {
                 button.style.display = 'none'; // Ẩn nút Phản hồi
@@ -958,9 +979,10 @@
         });
 
 
-        // --- Logic hiển thị nút Sửa/Xóa (giữ nguyên logic cũ nhưng bổ sung isLoggedIn) ---
+        // --- LOGIC HIỂN THỊ NÚT SỬA/XÓA CHO ĐÁNH GIÁ VÀ PHẢN HỒI ---
+        // Chỉ hiển thị nút Sửa/Xóa nếu người dùng đã đăng nhập VÀ là chủ sở hữu của đánh giá/phản hồi đó.
         function toggleActionButtons() {
-            // Ẩn tất cả trước nếu chưa đăng nhập
+            // Nếu chưa đăng nhập, ẩn tất cả các nút hành động (Sửa/Xóa)
             if (!isLoggedIn) {
                 document.querySelectorAll('.review-item .review-actions .edit-btn-trigger, .review-item .review-actions form[method="post"], .reply-item .review-actions .edit-reply-btn-trigger, .reply-item .review-actions form[method="post"]').forEach(el => {
                     el.style.display = 'none';
@@ -968,11 +990,13 @@
                 return; // Không cần làm gì thêm nếu chưa đăng nhập
             }
 
-            // Nếu đã đăng nhập, kiểm tra quyền sở hữu
+            // Nếu đã đăng nhập, kiểm tra quyền sở hữu cho từng đánh giá
             document.querySelectorAll('.review-item').forEach(reviewItem => {
-                const reviewerId = (reviewItem.dataset.reviewerId || '').trim();
+                const reviewerId = (reviewItem.dataset.reviewerId || '').trim(); // Lấy ID người đánh giá từ data attribute
                 const editButton = reviewItem.querySelector('.review-actions .edit-btn-trigger');
-                const deleteForm = reviewItem.querySelector('.review-actions form[method="post"]');
+                const deleteForm = reviewItem.querySelector('.review-actions form[method="post"]'); // Form xóa thường là một form POST
+
+                // So sánh ID người dùng hiện tại với ID người đánh giá
                 if (reviewerId && currentUserId === reviewerId) {
                     if (editButton) editButton.style.display = 'inline-flex';
                     if (deleteForm) deleteForm.style.display = 'inline';
@@ -981,10 +1005,13 @@
                     if (deleteForm) deleteForm.style.display = 'none';
                 }
             });
+
+            // Tương tự, kiểm tra quyền sở hữu cho từng phản hồi
             document.querySelectorAll('.reply-item').forEach(replyItem => {
-                const replierId = (replyItem.dataset.replierId || '').trim();
+                const replierId = (replyItem.dataset.replierId || '').trim(); // Lấy ID người phản hồi từ data attribute
                 const editButton = replyItem.querySelector('.review-actions .edit-reply-btn-trigger');
                 const deleteForm = replyItem.querySelector('.review-actions form[method="post"]');
+
                 if (replierId && currentUserId === replierId) {
                     if (editButton) editButton.style.display = 'inline-flex';
                     if (deleteForm) deleteForm.style.display = 'inline';
@@ -994,19 +1021,20 @@
                 }
             });
         }
-        toggleActionButtons(); // Gọi hàm này để áp dụng logic
+        toggleActionButtons(); // Gọi hàm này ngay khi tải trang để áp dụng logic hiển thị
 
-        // --- Logic ẩn/hiện mục đánh giá dựa trên trạng thái phim (giữ nguyên) ---
+        // --- LOGIC ẨN/HIỆN MỤC ĐÁNH GIÁ DỰA TRÊN TRẠNG THÁI PHIM ---
+        // Mục đánh giá chỉ hiển thị cho phim "Đang chiếu" hoặc "Đã chiếu".
         const pageContentWrapper = document.querySelector('.page-content-wrapper');
         const reviewsSection = document.querySelector('.reviews-section-wrapper');
         if (pageContentWrapper && reviewsSection) {
-            const trangThaiPhim = pageContentWrapper.getAttribute('data-trang-thai-phim');
+            const trangThaiPhim = pageContentWrapper.getAttribute('data-trang-thai-phim'); // Lấy trạng thái phim từ data attribute
             // Hiển thị đánh giá cho cả phim đang chiếu và đã chiếu
             if (trangThaiPhim === 'DANG_CHIEU' || trangThaiPhim === 'DA_CHIEU') {
                 reviewsSection.style.display = 'block';
             } else {
                 reviewsSection.style.display = 'none';
-                // If reviews section is hidden, also hide any login prompt for reviews
+                // Nếu mục đánh giá bị ẩn, cũng ẩn luôn thông báo yêu cầu đăng nhập để đánh giá (nếu có)
                 const loginPromptForReviews = document.querySelector('.reviews-section-wrapper p a[href="/signin"]');
                 if (loginPromptForReviews && loginPromptForReviews.parentNode) {
                     loginPromptForReviews.parentNode.style.display = 'none';
@@ -1014,26 +1042,28 @@
             }
         }
 
-        // --- THÊM KIỂM TRA ĐĂNG NHẬP VÀO CÁC FORM SUBMIT HANDLER ---
+        // --- THÊM KIỂM TRA ĐĂNG NHẬP VÀ VALIDATE DỮ LIỆU VÀO CÁC FORM SUBMIT HANDLER ---
 
-        // Form đánh giá chính
+        // --- FORM ĐÁNH GIÁ CHÍNH (SUBMIT) ---
         const mainReviewForm = document.getElementById('movie-review-form');
         if (mainReviewForm) {
             mainReviewForm.addEventListener('submit', (event) => {
-                // Kiểm tra đăng nhập trước tiên
+                // 1. Kiểm tra đăng nhập trước tiên
                 if (!isLoggedIn) {
                     alert('Vui lòng đăng nhập để gửi đánh giá.');
-                    event.preventDefault();
+                    event.preventDefault(); // Ngăn form submit
                     window.location.href = '/signin'; // Chuyển hướng đến trang đăng nhập
                     return;
                 }
-                // Các kiểm tra khác (rating, content)
+                // 2. Các kiểm tra khác (điểm đánh giá, nội dung)
                 const ratingElement = mainReviewForm.querySelector('input[name="diemDanhGia"]:checked');
                 const reviewContent = mainReviewForm.querySelector('#review-content').value;
+                // Nếu có trường điểm đánh giá nhưng chưa chọn
                 if (mainReviewForm.querySelector('input[name="diemDanhGia"]') && !ratingElement) {
                     alert('Vui lòng chọn điểm đánh giá.');
                     event.preventDefault(); return;
                 }
+                // Nếu nội dung rỗng
                 if (!reviewContent.trim()) {
                     alert('Vui lòng nhập nội dung cảm nghĩ.');
                     event.preventDefault(); return;
@@ -1041,17 +1071,18 @@
             });
         }
 
-        // Các form phản hồi mới
+        // --- CÁC FORM PHẢN HỒI MỚI (SUBMIT) ---
+        // Áp dụng cho tất cả các form tạo phản hồi mới (thường có action chứa "/replies/new")
         document.querySelectorAll('form[th\\:action*="/replies/new"]').forEach(form => {
             form.addEventListener('submit', (event) => {
-                // Kiểm tra đăng nhập trước tiên
+                // 1. Kiểm tra đăng nhập
                 if (!isLoggedIn) {
                     alert('Vui lòng đăng nhập để gửi phản hồi.');
                     event.preventDefault();
-                    window.location.href = '/signin'; // Chuyển hướng đến trang đăng nhập
+                    window.location.href = '/signin';
                     return;
                 }
-                // Kiểm tra nội dung
+                // 2. Kiểm tra nội dung phản hồi
                 const replyContentArea = form.querySelector('textarea');
                 if (replyContentArea && !replyContentArea.value.trim()) {
                     alert('Vui lòng nhập nội dung phản hồi.'); event.preventDefault();
@@ -1059,17 +1090,17 @@
             });
         });
 
-        // Các form chỉnh sửa đánh giá
+        // --- CÁC FORM CHỈNH SỬA ĐÁNH GIÁ (SUBMIT) ---
         document.querySelectorAll('.edit-review-form-actual').forEach(form => {
             form.addEventListener('submit', (event) => {
-                // Kiểm tra đăng nhập trước tiên (dù nút sửa chỉ hiện khi đúng user, nhưng kiểm tra lại cho chắc)
+                // 1. Kiểm tra đăng nhập (dù nút sửa chỉ hiện khi đúng user, nhưng kiểm tra lại cho chắc)
                 if (!isLoggedIn) {
                     alert('Vui lòng đăng nhập để chỉnh sửa đánh giá.');
                     event.preventDefault();
                     window.location.href = '/signin';
                     return;
                 }
-                // Các kiểm tra khác
+                // 2. Các kiểm tra khác (điểm, nội dung)
                 const ratingElement = form.querySelector('input[name="diemDanhGia"]:checked');
                 const reviewContent = form.querySelector('textarea[name="noiDungDanhGia"]').value;
                 if (!ratingElement) { alert('Vui lòng chọn điểm đánh giá khi chỉnh sửa.'); event.preventDefault(); return; }
@@ -1077,150 +1108,189 @@
             });
         });
 
-        // Các form chỉnh sửa phản hồi
+        // --- CÁC FORM CHỈNH SỬA PHẢN HỒI (SUBMIT) ---
         document.querySelectorAll('.edit-reply-form-actual').forEach(form => {
             form.addEventListener('submit', (event) => {
-                // Kiểm tra đăng nhập trước tiên
+                // 1. Kiểm tra đăng nhập
                 if (!isLoggedIn) {
                     alert('Vui lòng đăng nhập để chỉnh sửa phản hồi.');
                     event.preventDefault();
                     window.location.href = '/signin';
                     return;
                 }
-                // Kiểm tra nội dung
+                // 2. Kiểm tra nội dung
                 const replyContentArea = form.querySelector('textarea[name="noiDungPhanHoi"]');
                 if (replyContentArea && !replyContentArea.value.trim()) { alert('Vui lòng nhập nội dung phản hồi khi chỉnh sửa.'); event.preventDefault(); }
             });
         });
 
-        // --- Logic mở/đóng form phản hồi/chỉnh sửa (giữ nguyên logic cũ) ---
+        // --- LOGIC MỞ/ĐÓNG FORM PHẢN HỒI/CHỈNH SỬA ---
+        // Đảm bảo chỉ một form (phản hồi, sửa đánh giá, sửa phản hồi) được mở tại một thời điểm.
+
+        // --- NÚT "PHẢN HỒI" (MỞ FORM PHẢN HỒI) ---
         document.querySelectorAll('.reply-btn-detail').forEach(button => {
-            if (isLoggedIn) { // Chỉ gán sự kiện nếu đã đăng nhập
+            if (isLoggedIn) { // Chỉ gán sự kiện nếu đã đăng nhập (nút này đã được ẩn nếu chưa đăng nhập)
                 button.addEventListener('click', () => {
-                    const reviewId = button.dataset.reviewId;
+                    const reviewId = button.dataset.reviewId; // Lấy ID của đánh giá cần phản hồi
                     const replyFormContainer = document.getElementById(`reply-form-container-${reviewId}`);
                     if (replyFormContainer) {
+                        // Ẩn tất cả các form khác trước khi hiển thị form này
                         document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
                             if (form.id !== `reply-form-container-${reviewId}`) form.style.display = 'none';
                         });
+                        // Bật/tắt hiển thị form phản hồi hiện tại
                         const isHidden = replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '';
                         replyFormContainer.style.display = isHidden ? 'block' : 'none';
-                        if (isHidden) replyFormContainer.querySelector('textarea')?.focus();
+                        if (isHidden) replyFormContainer.querySelector('textarea')?.focus(); // Focus vào textarea nếu form được mở
                     }
                 });
             }
         });
 
+        // --- NÚT "SỬA ĐÁNH GIÁ" (MỞ FORM SỬA ĐÁNH GIÁ) ---
         document.querySelectorAll('.edit-btn-trigger').forEach(button => {
+            // Nút này chỉ hiển thị cho chủ sở hữu đã đăng nhập, nên không cần kiểm tra isLoggedIn ở đây nữa
             button.addEventListener('click', () => {
                 const reviewId = button.dataset.reviewId;
                 const editFormContainer = document.getElementById(`edit-review-form-container-${reviewId}`);
                 if (editFormContainer) {
+                    // Ẩn các form khác
                     document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
                         if (form.id !== `edit-review-form-container-${reviewId}`) form.style.display = 'none';
                     });
+                    // Bật/tắt form sửa đánh giá
                     const isHidden = editFormContainer.style.display === 'none' || editFormContainer.style.display === '';
                     editFormContainer.style.display = isHidden ? 'block' : 'none';
-                    if (isHidden) {
+                    if (isHidden) { // Nếu form được mở
                         const textarea = editFormContainer.querySelector('textarea[name="noiDungDanhGia"]');
-                        if(textarea) { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); }
+                        if(textarea) {
+                            textarea.focus(); // Focus
+                            textarea.setSelectionRange(textarea.value.length, textarea.value.length); // Di chuyển con trỏ đến cuối text
+                        }
                     }
                 }
             });
         });
+        // --- NÚT "HỦY" TRONG FORM SỬA ĐÁNH GIÁ ---
         document.querySelectorAll('.cancel-edit-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const reviewId = button.dataset.reviewId;
                 const editFormContainer = document.getElementById(`edit-review-form-container-${reviewId}`);
-                if (editFormContainer) editFormContainer.style.display = 'none';
+                if (editFormContainer) editFormContainer.style.display = 'none'; // Ẩn form
             });
         });
 
+        // --- NÚT "SỬA PHẢN HỒI" (MỞ FORM SỬA PHẢN HỒI) ---
         document.querySelectorAll('.edit-reply-btn-trigger').forEach(button => {
             button.addEventListener('click', () => {
                 const replyId = button.dataset.replyId;
                 const editReplyFormContainer = document.getElementById(`edit-reply-form-container-${replyId}`);
                 if (editReplyFormContainer) {
+                    // Ẩn các form khác
                     document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
                         if (form.id !== `edit-reply-form-container-${replyId}`) form.style.display = 'none';
                     });
+                    // Bật/tắt form sửa phản hồi
                     const isHidden = editReplyFormContainer.style.display === 'none' || editReplyFormContainer.style.display === '';
                     editReplyFormContainer.style.display = isHidden ? 'block' : 'none';
-                    if (isHidden) {
+                    if (isHidden) { // Nếu form được mở
                         const textarea = editReplyFormContainer.querySelector('textarea[name="noiDungPhanHoi"]');
-                        if (textarea) { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); }
+                        if (textarea) {
+                            textarea.focus();
+                            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                        }
                     }
                 }
             });
         });
+        // --- NÚT "HỦY" TRONG FORM SỬA PHẢN HỒI ---
         document.querySelectorAll('.cancel-edit-reply-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const replyId = button.dataset.replyId;
                 const editReplyFormContainer = document.getElementById(`edit-reply-form-container-${replyId}`);
-                if (editReplyFormContainer) editReplyFormContainer.style.display = 'none';
+                if (editReplyFormContainer) editReplyFormContainer.style.display = 'none'; // Ẩn form
             });
         });
 
 
-        // --- Logic Trailer Modal (giữ nguyên) ---
+        // --- LOGIC CHO MODAL XEM TRAILER ---
         const trailerModal = document.getElementById('trailerModal');
         const openTrailerModalBtn = document.getElementById('openTrailerModalBtn');
         const closeTrailerModalBtn = document.getElementById('closeTrailerModalBtn');
-        const trailerVideoIframe = document.getElementById('trailerVideo');
+        const trailerVideoIframe = document.getElementById('trailerVideo'); // Iframe để nhúng video
 
+        /**
+         * Chuyển đổi URL YouTube thông thường hoặc ID video thành URL nhúng.
+         * Hỗ trợ các định dạng URL:
+         * - https://www.youtube.com/watch?v=VIDEO_ID
+         * - https://www.youtube.com/embed/VIDEO_ID
+         * - https://www.youtube.com/v/VIDEO_ID
+         * - https://youtu.be/VIDEO_ID
+         * - VIDEO_ID (chỉ ID)
+         * @param {string} youtubeUrl - URL YouTube hoặc ID video.
+         * @returns {string} URL nhúng của YouTube hoặc chuỗi rỗng nếu không hợp lệ.
+         */
         function getYouTubeEmbedUrl(youtubeUrl) {
-            if (!youtubeUrl) return '';
+            if (!youtubeUrl) return ''; // Trả về rỗng nếu không có URL
             let videoId = null;
             try {
-                const url = new URL(youtubeUrl);
-                if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com' || url.hostname === 'm.youtube.com') {
+                const url = new URL(youtubeUrl); // Thử phân tích URL
+                // Kiểm tra các hostname phổ biến của YouTube
+                if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com') {
                     if (url.pathname === '/watch') {
-                        videoId = url.searchParams.get('v');
+                        videoId = url.searchParams.get('v'); // Lấy từ param 'v' (ví dụ: /watch?v=VIDEO_ID)
                     } else if (url.pathname.startsWith('/embed/')) {
-                        videoId = url.pathname.split('/embed/')[1];
+                        videoId = url.pathname.split('/embed/')[1]; // Lấy từ path (ví dụ: /embed/VIDEO_ID)
                     } else if (url.pathname.startsWith('/v/')) {
-                        videoId = url.pathname.split('/v/')[1];
+                        videoId = url.pathname.split('/v/')[1]; // Định dạng cũ (ví dụ: /v/VIDEO_ID)
                     }
-                } else if (url.hostname === 'youtu.be') {
-                    videoId = url.pathname.substring(1);
+                } else if (url.hostname === 'youtu.be') { // URL rút gọn
+                    videoId = url.pathname.substring(1); // Lấy từ path (ví dụ: /VIDEO_ID)
                 }
             } catch (e) {
-                console.error("Invalid trailer URL format:", youtubeUrl, e);
-                // Fallback for simple strings that might just be the ID
+                // Nếu không phải là URL hợp lệ, có thể nó chỉ là ID video
+                console.warn("URL trailer có thể không đúng định dạng, thử xử lý như ID:", youtubeUrl, e);
+                // Fallback: nếu là một chuỗi đơn giản không chứa '/' hoặc '?', coi đó là ID
                 if (typeof youtubeUrl === 'string' && !youtubeUrl.includes('/') && !youtubeUrl.includes('?')) {
                     videoId = youtubeUrl;
                 } else {
-                    return ''; // URL không hợp lệ
+                    console.error("Không thể lấy Video ID từ URL:", youtubeUrl);
+                    return ''; // URL không hợp lệ hoặc không lấy được ID
                 }
             }
 
             if (videoId) {
+                // Loại bỏ các tham số phụ sau ID video (ví dụ: &list=...)
                 videoId = videoId.split('&')[0].split('?')[0];
-                return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1`; // Tạo URL nhúng với autoplay
             }
-            return '';
+            console.error("Không tìm thấy Video ID hợp lệ từ:", youtubeUrl);
+            return ''; // Không tìm thấy videoId hợp lệ
         }
 
 
         if (openTrailerModalBtn && trailerModal && closeTrailerModalBtn && trailerVideoIframe) {
+            // Khi nhấp nút "Xem Trailer"
             openTrailerModalBtn.addEventListener('click', () => {
-                const trailerUrl = openTrailerModalBtn.getAttribute('data-trailer-url');
-                const embedUrl = getYouTubeEmbedUrl(trailerUrl);
+                const trailerUrl = openTrailerModalBtn.getAttribute('data-trailer-url'); // Lấy URL trailer từ data attribute
+                const embedUrl = getYouTubeEmbedUrl(trailerUrl); // Chuyển đổi sang URL nhúng
                 if (embedUrl) {
-                    trailerVideoIframe.src = embedUrl;
-                    trailerModal.style.display = 'flex';
+                    trailerVideoIframe.src = embedUrl; // Đặt src cho iframe
+                    trailerModal.style.display = 'flex'; // Hiển thị modal (dùng flex để căn giữa)
                 } else {
                     alert('Link trailer không hợp lệ hoặc không được hỗ trợ.');
                 }
             });
+            // Khi nhấp nút đóng modal (X)
             closeTrailerModalBtn.addEventListener('click', () => {
-                trailerModal.style.display = 'none';
-                trailerVideoIframe.src = ''; // Stop video
+                trailerModal.style.display = 'none'; // Ẩn modal
+                trailerVideoIframe.src = ''; // Dừng video bằng cách xóa src
             });
+            // Khi nhấp ra ngoài modal
             window.addEventListener('click', (event) => {
-                if (event.target === trailerModal) {
+                if (event.target === trailerModal) { // Nếu click vào nền mờ của modal
                     trailerModal.style.display = 'none';
-                    trailerVideoIframe.src = ''; // Stop video
+                    trailerVideoIframe.src = ''; // Dừng video
                 }
             });
         }
