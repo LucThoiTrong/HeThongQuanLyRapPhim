@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("hoaDon", hoaDon);
 
             // Render nội dung HTML từ template
-            String htmlContent = templateEngine.process("EmailInvoiceSuccess.html", context);
+            String htmlContent = templateEngine.process("EmailInvoiceSuccess", context);
 
             // Tạo email MIME
             MimeMessage message = mailSender.createMimeMessage();

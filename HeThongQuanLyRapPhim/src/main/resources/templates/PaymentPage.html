@@ -466,7 +466,7 @@
         </div>
         <div class="payment-action-area">
             <form id="paymentForm" method="POST" action="/payment/vnpay">
-                <input type="hidden" name="idCustomer" th:value="${session.doiTuongSuDung?.idDoiTuongSuDung}">
+                <input type="hidden" name="idCustomer" th:value="${doiTuongSuDung.idDoiTuongSuDung}">
                 <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
                 <input type="hidden" name="tongTienSauGiam" th:value="${session.tongTienSauGiam}">
                 <input type="hidden" name="suatChieu" th:value="${session.suatChieu?.idSuatChieu}">

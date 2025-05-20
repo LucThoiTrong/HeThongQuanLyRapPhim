@@ -91,60 +91,37 @@ public class BookingController {
                                 @RequestParam("tongGiaVe") int tongGiaVe,
                                 HttpSession session,
                                 Model model) {
+        // Lấy danh sách combo
         List<ComboBapNuoc> comboList = bookingService.findAllComboBapNuoc();
-        // ban dau phai dat soTienduocgiam va tonghoadonsau giam
-        // la 0.0 de khong bi lay tu session truoc
-        session.setAttribute("soTienGiam", 0.0);
-        session.setAttribute("tongHoaDonSauGiam", 0.0);
+
+        // Thực hiện lưu danh sách ghế người dùng chọn vô session
         session.setAttribute("danhSachGheDuocChon",danhSachGheDuocChon);
 
         model.addAttribute("tongGiaVe", tongGiaVe);
         model.addAttribute("danhSachCombo", comboList);
+
         return "ChoosePopcornDrinkComboPage";
     }
 
     @PostMapping("/thanh-toan")
-    public String hienTrangThanhToan(@RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
-                                     @RequestParam("tongVePrice") int tongVePrice,
+    public String hienTrangThanhToan(@RequestParam("tongVePrice") int tongVePrice,
                                      @RequestParam("tongComboVaVe") int tongComboVaVe,
                                      @RequestParam("giaTienCombo") int giaTienCombo,
                                      @RequestParam Map<String, String> tatCaThamSo,
                                      Model model, HttpSession session) {
-        //cai nay de khi load lai khong bi loi
-        double tongTienSauGiam = tongComboVaVe;
-        double soTienGiam = Optional.ofNullable((Double) session.getAttribute("soTienGiam")).orElse(0.0);
-        //lay danh sach combo duoc chon
-        Map<Integer, Integer> comboSoLuong = new HashMap<>();
+        // Tạo combo số lượng được người dùng chọn
+        Map<Integer, Integer> comboSoLuong = bookingService.extractComboSoLuong(tatCaThamSo);
 
-        for (Map.Entry<String, String> entry : tatCaThamSo.entrySet()) {
-            String key = entry.getKey();
-            // Kiểm tra xem key có phải là số (ID của ComboBapNuoc) hay không
-            if (key.matches("\\d+")) { // Chỉ lấy key là số
-                try {
-                    int comboId = Integer.parseInt(key);
-                    int soLuong = Integer.parseInt(entry.getValue());
-                    if (soLuong > 0) { // Chỉ thêm nếu số lượng > 0
-                        comboSoLuong.put(comboId, soLuong);
-                    }
-                } catch (NumberFormatException e) {
-                    System.err.println("Lỗi định dạng số cho combo ID: " + key);
-                }
-            }
-        }
-        // luu thong tin ghe duoc chon, tienVe, tienCombo, tienTongHoaDonChuaGiamGia/DaGiamGia
-        // vao session de reload lai trang
-        // khi ap dung ma giam gia
-        session.setAttribute("danhSachGheDuocChon", danhSachGheDuocChon);
+        // Lưu lại thông tin để hiện lại trên UI khi áp dụng mã giảm giá hoặc reload page
         session.setAttribute("tongVePrice", tongVePrice);
         session.setAttribute("tongComboVaVe", tongComboVaVe);
         session.setAttribute("giaTienCombo", giaTienCombo);
         session.setAttribute("danhSachComboDuocChon",comboSoLuong);
-        session.setAttribute("tongTienSauGiam",tongTienSauGiam);
+        session.setAttribute("tongTienSauGiam", (double) tongComboVaVe);
 
-        //lay đối tượng
+        // Lấy đối tượng khách hàng
         int idcustomer = (int) session.getAttribute("idCustomer");
         DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
-        session.setAttribute("doiTuongSuDung",customer);
         model.addAttribute("doiTuongSuDung", customer);
         return "PaymentPage";
     }
@@ -154,12 +131,12 @@ public class BookingController {
                                   @RequestParam("tongComboVaVe") String tongTien,
                                   Model model,
                                   HttpSession session) {
-        //luu ma giam gia vao session de cap nhat trang thai ma giam gia khi payment
+        // luu ma giam gia vao session de cap nhat trang thai ma giam gia khi payment
         session.setAttribute("maGiamGiaDaChon", maGiamGia);
         //tong hoa don ban dau chua giam
         double tongHoaDon = Double.parseDouble(tongTien);
-        double tienDuocGiam = 0.0;
-        double tongSauGiam = 0.0;
+        double tienDuocGiam;
+        double tongSauGiam;
 
         LocalDateTime now = LocalDateTime.now();
         if (maGiamGia.getNgayBatDauApDung().isAfter(now)) {
@@ -205,14 +182,5 @@ public class BookingController {
         //de lay danh sach ma giam gia
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
         return "PaymentPage";
-    }
-
-    //neu het thoi gian giu ghe -> chuyen ve trang chu
-    @GetMapping("/return-view")
-    public String returnView(HttpSession session,Model model) {
-        //xoa het session va tro lai trang dang nhap -> dang nhap lai
-        session.invalidate();
-        model.addAttribute("taiKhoan", new TKDoiTuongSuDung());
-        return "LoginPage";
     }
 }

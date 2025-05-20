@@ -9,5 +9,4 @@ public interface ChairService {
     Ghe getChairById(int id);
     Ghe updateChair(int id, Ghe ghe);
     PhongChieuPhim getPhongChieuPhimById(int idPhongChieuPhim);
-    void capNhatTrangThaiGhe(String danhSachGheDuocChon, boolean trangThaiGhe);
 }

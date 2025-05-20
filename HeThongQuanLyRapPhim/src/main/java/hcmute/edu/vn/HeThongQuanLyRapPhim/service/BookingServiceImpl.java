@@ -69,4 +69,24 @@ public class BookingServiceImpl implements BookingService {
     public List<DayGhe> findAllDayGhe(PhongChieuPhim phongChieuPhim) {
         return rowSeatRepository.findByPhongChieuPhim(phongChieuPhim);
     }
+
+    @Override
+    public Map<Integer, Integer> extractComboSoLuong(Map<String, String> tatCaThamSo) {
+        Map<Integer, Integer> comboSoLuong = new HashMap<>();
+        for (Map.Entry<String, String> entry : tatCaThamSo.entrySet()) {
+            String key = entry.getKey();
+            if (key.matches("\\d+")) {
+                try {
+                    int comboId = Integer.parseInt(key);
+                    int soLuong = Integer.parseInt(entry.getValue());
+                    if (soLuong > 0) {
+                        comboSoLuong.put(comboId, soLuong);
+                    }
+                } catch (NumberFormatException e) {
+                    System.err.println("Lỗi định dạng số cho combo ID: " + key);
+                }
+            }
+        }
+        return comboSoLuong;
+    }
 }

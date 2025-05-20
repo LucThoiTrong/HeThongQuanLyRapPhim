@@ -39,7 +39,8 @@
 
         .page-main-title {
             font-size: 2.2em;
-            color: #1a202c;
+            /* color: #1a202c; */ /* Old color */
+            color: #e53e3e; /* New color to match button */
             font-weight: 700;
             text-align: center;
             margin-top: 20px;
@@ -55,7 +56,7 @@
             bottom: 0;
             width: 100px;
             height: 4px;
-            background: #f56565;
+            background: #f56565; /* This already matches the button's lighter red */
             border-radius: 2px;
         }
 
@@ -65,25 +66,6 @@
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(45, 55, 72, 0.08);
             margin-bottom: 30px;
-        }
-
-        .clock-box {
-            text-align: center;
-        }
-        .clock-box p {
-            font-size: 1.1em;
-            color: #4a5568;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        .countdown {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #e53e3e;
-        }
-        .countdown span {
-            display: inline-block;
-            min-width: 50px;
         }
 
         .table-section {
@@ -264,13 +246,12 @@
             color: #bdc3c7;
             text-align: center;
             padding: 20px 0;
-            margin-top: 40px; /* This will be the auto margin from flex-grow on main */
+            margin-top: 40px;
             font-size: 0.9em;
         }
 
         @media (max-width: 768px) {
             .page-main-title { font-size: 1.8em; }
-            .countdown { font-size: 1.5em; }
             .card-style { padding: 20px; }
 
             .table thead { display: none; }
@@ -355,7 +336,6 @@
 
         @media (max-width: 480px) {
             .page-main-title { font-size: 1.6em; margin-bottom: 30px !important;}
-            .countdown { font-size: 1.3em; }
             .card-style { padding: 15px; }
             .ticket-details .column:first-child { font-size: 1.1em; }
 
@@ -370,14 +350,6 @@
     <div class="site-container mt-4 mb-5">
         <form action="/booking/thanh-toan" method="post">
             <h2 class="page-main-title"><i class="fas fa-shopping-basket"></i> Chọn Combo Bắp Nước</h2>
-
-            <div class="clock-box card-style">
-                <p><i class="fas fa-stopwatch"></i> Thời gian giữ ghế còn lại</p>
-                <div class="countdown">
-                    <span id="minutes">5</span> phút
-                    <span id="seconds">00</span> giây
-                </div>
-            </div>
 
             <div class="table-section card-style">
                 <div class="table-responsive">
@@ -447,8 +419,6 @@
                 <input type="hidden" name="tongVePrice" id="tongVePrice" th:value="${tongGiaVe}">
                 <input type="hidden" name="giaTienCombo" id="giaTienCombo" value="0">
                 <input type="hidden" name="tongComboVaVe" id="tongComboVaVe" th:value="${tongGiaVe}">
-                <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
-                <input type="hidden" name="idSuatChieu" th:value="${session.suatChieu?.idSuatChieu}" />
 
                 <div class="nav-button-wrapper">
                     <button type="submit" id="continue-button" class="nav-button next">
@@ -520,33 +490,6 @@
         });
 
         capNhatTongTien();
-
-        // COUNTDOWN TIMER LOGIC
-        let timeLeft = 300;
-        const countdownMinutesEl = document.getElementById('minutes');
-        const countdownSecondsEl = document.getElementById('seconds');
-        let timer;
-
-        function updateCountdown() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-
-            if (countdownMinutesEl) countdownMinutesEl.textContent = minutes;
-            if (countdownSecondsEl) countdownSecondsEl.textContent = seconds < 10 ? '0' + seconds : seconds;
-
-            if (timeLeft > 0) {
-                timeLeft--;
-            } else {
-                clearInterval(timer);
-                alert("Hết thời gian giữ vé! Vui lòng thực hiện lại quá trình đặt vé.");
-                const homeUrl = /*[[@{/}]]*/ '/';
-                window.location.href = homeUrl;
-            }
-        }
-        if (countdownMinutesEl && countdownSecondsEl) {
-            timer = setInterval(updateCountdown, 1000);
-            updateCountdown();
-        }
 
         // CURRENT YEAR
         const yearSpan = document.getElementById('currentYear');

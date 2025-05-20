@@ -122,7 +122,7 @@ public class RefundController {
 
         String danhSachIdGhe = sb.toString();
         // Thực hiện hoàn trả
-        chairService.capNhatTrangThaiGhe(danhSachIdGhe,false);
+//        chairService.capNhatTrangThaiGhe(danhSachIdGhe,false);
         hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DA_HOAN_TRA);
         refundService.save(hoanTra);
         redirectAttributes.addFlashAttribute("successMessage","Hoàn ve thanh cong, so tien se duoc hoan vao tai khoan cua ban!");
