@@ -1,7 +1,6 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DayGhe;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Ghe;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiGhe;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.RoomRepository;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -33,49 +31,17 @@ public class RowChairServiceImplement implements RowChairService {
 
     @Override
     public void updateRowChair(PhongChieuPhim phongChieuPhim, int soLuongDoi, int soLuongVip, int soLuongThuong) {
-        // Xoá tất cả dãy ghế thuộc phòng chiếu phim
         phongChieuPhim.getDsDayGhe().clear();
-
-        // Tạo danh sách dãy ghế mới
         List<DayGhe> newDayGheList = new ArrayList<>();
         int index = 1;
 
-        // Thêm dãy ghế Đôi
-        for (int i = 0; i < soLuongDoi; i++) {
-            DayGhe dayGhe = new DayGhe();
-            dayGhe.setTenDayGhe("Dãy " + (char) ('A' + index++ - 1));
-            dayGhe.setLoaiGhe(LoaiGhe.DOI);
-            dayGhe.setGiaDayGhe(240000);
-            dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.DOI));
-            newDayGheList.add(dayGhe);
-        }
+        index = phongChieuPhim.taoDayGhe(phongChieuPhim, newDayGheList, soLuongThuong, LoaiGhe.THUONG, 100000, index);
+        index = phongChieuPhim.taoDayGhe(phongChieuPhim, newDayGheList, soLuongVip, LoaiGhe.VIP, 120000, index);
+        phongChieuPhim.taoDayGhe(phongChieuPhim, newDayGheList, soLuongDoi, LoaiGhe.DOI, 240000, index);
 
-        // Thêm dãy ghế VIP
-        for (int i = 0; i < soLuongVip; i++) {
-            DayGhe dayGhe = new DayGhe();
-            dayGhe.setTenDayGhe("Dãy " + (char) ('A' + index++ - 1));
-            dayGhe.setLoaiGhe(LoaiGhe.VIP);
-            dayGhe.setGiaDayGhe(120000);
-            dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.VIP));
-            newDayGheList.add(dayGhe);
-        }
-
-        // Thêm dãy ghế Thường
-        for (int i = 0; i < soLuongThuong; i++) {
-            DayGhe dayGhe = new DayGhe();
-            dayGhe.setTenDayGhe("Dãy " + (char) ('A' + index++ - 1));
-            dayGhe.setLoaiGhe(LoaiGhe.THUONG);
-            dayGhe.setGiaDayGhe(100000);
-            dayGhe.setPhongChieuPhim(phongChieuPhim);
-            dayGhe.setDsGhe(dayGhe.generateDsGhe(LoaiGhe.THUONG));
-            newDayGheList.add(dayGhe);
-        }
-
-        // Lưu tất cả dãy ghế mới (cùng với ghế nhờ cascade)
         rowChairRepository.saveAll(newDayGheList);
     }
+
 
     @Override
     public PhongChieuPhim getRoomById(int id) {

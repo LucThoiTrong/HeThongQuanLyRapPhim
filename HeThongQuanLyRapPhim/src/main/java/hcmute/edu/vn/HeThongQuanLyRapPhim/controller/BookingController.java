@@ -66,6 +66,26 @@ public class BookingController {
         return "ShowtimePage";
     }
 
+    // Hiển thị sơ đồ ghế
+    @GetMapping("/so-do-ghe")
+    public String hienThiSoDoGhe(@RequestParam ("idSuatChieu") int idSuatChieu,
+                                 Model model, HttpSession session) {
+        // Lấy thông tin suất chiếu
+        SuatChieu suatChieu = bookingService.findById(idSuatChieu);
+        session.setAttribute("suatChieu", suatChieu);
+
+        // Lấy danh sách ghế đã được đặt
+        Set<Ghe> danhSachGheDaDat = suatChieu.getDanhSachGheDaDat();
+
+        // Lấy danh sách dãy ghế của phòng chiếu phim
+        List<DayGhe> danhSachDayGhe = bookingService.findAllDayGhe(suatChieu.getPhongChieuPhim());
+
+        model.addAttribute("danhSachDayGhe", danhSachDayGhe);
+        model.addAttribute("danhSachGheDaDat", danhSachGheDaDat);
+        return "SeatingPlanPage";
+    }
+
+    // Hiển thị combo bắp nước
     @GetMapping("/combo-list")
     public String showComboPage(@RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
                                 @RequestParam("tongGiaVe") int tongGiaVe,

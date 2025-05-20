@@ -10,6 +10,7 @@ public interface BookingService {
     Phim findPhimById(int id);
     List<ComboBapNuoc> findAllComboBapNuoc();
     SuatChieu findById(int id);
-    List<SuatChieu> getSuatChieuByPhimNgayChieuAndHinhThuc(Phim phim, LocalDate ngayChieu, HinhThucChieu hinhThucChieu);
     Map<String, List<SuatChieu>> getShowtimesForCinema(LocalDate date, HinhThucChieu hinhThucChieu);
+
+    List<DayGhe> findAllDayGhe(PhongChieuPhim phongChieuPhim);
 }

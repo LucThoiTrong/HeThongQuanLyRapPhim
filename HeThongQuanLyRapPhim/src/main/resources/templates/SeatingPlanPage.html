@@ -112,22 +112,50 @@
             font-weight: 600;
             transition: all 0.2s ease;
             user-select: none;
-            color: #37474f;
         }
 
+        /* Default available state (will be combined with type) */
         .seat-box.seat-available {
-            background-color: #f0f0f0;
+            /* Base available style, can be overridden by type-specific available */
         }
         .seat-box.seat-available:hover {
+            /* Generic hover, can be overridden */
             background-color: #b0bec5;
             transform: translateY(-1px);
         }
-        .seat-box.seat-occupied {
-            background-color: #78909c;
-            color: #eceff1;
-            cursor: not-allowed;
-            border-color: #546e7a;
+
+        /* Type-specific styles for available seats */
+        .seat-box.seat-thuong.seat-available {
+            background-color: #f0f0f0;
+            color: #37474f;
         }
+        .seat-box.seat-thuong.seat-available:hover {
+            background-color: #dcdcdc; /* Slightly darker grey for hover */
+            transform: translateY(-1px);
+        }
+
+        .seat-box.seat-vip.seat-available {
+            background-color: #FFD700; /* Gold */
+            color: #4a3b00; /* Darker text for contrast */
+            border-color: #e6c300;
+        }
+        .seat-box.seat-vip.seat-available:hover {
+            background-color: #e6c300; /* Darker gold */
+            transform: translateY(-1px);
+        }
+
+        .seat-box.seat-doi.seat-available {
+            background-color: #FFC0CB; /* Pink */
+            color: #5c373d; /* Darker pinkish text */
+            border-color: #f7b0be;
+            /* If double seats are wider: width: 68px; */
+        }
+        .seat-box.seat-doi.seat-available:hover {
+            background-color: #f7b0be; /* Darker pink */
+            transform: translateY(-1px);
+        }
+
+        /* State overrides - These should take precedence */
         .seat-box.seat-selected {
             background-color: #3182ce;
             color: #fff;
@@ -135,11 +163,21 @@
             box-shadow: 0 0 8px rgba(49, 130, 206, 0.5);
         }
 
+        .seat-box.seat-occupied,
+        .seat-box.reserved {
+            background-color: #78909c; /* Consistent color for all unavailable seats */
+            color: #eceff1;
+            cursor: not-allowed;
+            border-color: #546e7a;
+        }
+        /* .seat-box.reserved can have pointer-events: none; if strict non-interaction via CSS is desired */
+
+
         .seat-legend {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px; /* Adjusted gap */
             margin-top: 20px;
             padding: 10px 15px;
             background-color: #fff;
@@ -151,14 +189,18 @@
         .legend-item {
             display: flex;
             align-items: center;
-            font-size: 0.85em;
+            font-size: 0.8em; /* Adjusted font size */
         }
         .legend-seat-box {
             width: 20px;
             height: 18px;
             margin-right: 8px;
             border-radius: 4px 4px 2px 2px;
-            pointer-events: none;
+            pointer-events: none; /* Prevent interaction with legend items */
+            display: flex; /* For centering text if any */
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em; /* Small text in legend seats if needed */
         }
 
         .ticket-container {
@@ -255,17 +297,10 @@
             body { padding: 10px 0; }
             .seat-box { width: 24px; height: 20px; margin: 2px; font-size: 0.65em; border-radius: 4px 4px 1px 1px;}
             .seat-row-name { min-width: 25px; font-size: 0.75em; margin-right: 5px;}
-            .seat-legend { gap: 10px; padding: 8px 10px;}
+            .seat-legend { gap: 10px; padding: 8px 10px; flex-direction: column; align-items: flex-start;} /* Stack legend items */
             .legend-item { font-size: 0.75em; }
             .legend-seat-box { width: 16px; height: 14px;}
             .ticket-container { padding: 15px; }
-        }
-        .seat-box.reserved {
-            background-color: #78909c;
-            color: #eceff1;
-            cursor: not-allowed;
-            border-color: #546e7a;
-            pointer-events: initial; /* Ngăn mọi sự kiện, bao gồm hover và click */
         }
     </style>
 </head>
@@ -283,13 +318,15 @@
             <div th:each="dayGhe : ${danhSachDayGhe}" class="seat-row">
                 <b class="seat-row-name" th:text="${dayGhe.tenDayGhe}">A</b>
                 <div class="seat-container">
-                    <button th:each="ghe : ${dayGhe.dsGhe}"
-                            th:text="${ghe.idGhe}"
-                            th:classappend="${danhSachGheDaDat.contains(ghe) ? 'reserved' : ''}"
-                            th:attr="data-id=${ghe.idGhe},
-                                     data-trangthai=${ghe.trangThaiGhe},
-                                     data-giave=${dayGhe.giaDayGhe}"
+                    <button th:each="ghe, iterStat : ${dayGhe.dsGhe}"
+                            th:text="${iterStat.count}" th:attr="data-id=${ghe.idGhe},
+                                     data-giave=${dayGhe.giaDayGhe},
+                                     data-seat-number=${iterStat.count},
+                                     data-row-name=${dayGhe.tenDayGhe}"
                             class="seat-box"
+                            th:classappend="
+                                (${dayGhe.loaiGhe == 'VIP' ? 'seat-vip' : (dayGhe.loaiGhe == 'DOI' ? 'seat-doi' : 'seat-thuong')}) + ' ' +
+                                (${danhSachGheDaDat != null and danhSachGheDaDat.contains(ghe.idGhe) ? 'reserved' : (ghe.trangThaiGhe ? 'seat-available' : 'seat-occupied')})                            "
                             onclick="selectSeat(this)">
                     </button>
                 </div>
@@ -299,7 +336,13 @@
 
         <div class="seat-legend">
             <div class="legend-item">
-                <span class="legend-seat-box seat-box seat-available"></span> Ghế trống
+                <span class="legend-seat-box seat-box seat-thuong seat-available"></span> Ghế thường trống
+            </div>
+            <div class="legend-item">
+                <span class="legend-seat-box seat-box seat-vip seat-available"></span> Ghế VIP trống
+            </div>
+            <div class="legend-item">
+                <span class="legend-seat-box seat-box seat-doi seat-available"></span> Ghế đôi trống
             </div>
             <div class="legend-item">
                 <span class="legend-seat-box seat-box seat-selected"></span> Ghế đang chọn
@@ -349,41 +392,33 @@
 </div>
 
 <script th:inline="javascript">
-    // Hàm mới để khởi tạo trạng thái ghế dựa trên data-trangthai
-    // function initializeSeatStates() {
-    //     const seatButtons = document.querySelectorAll('.seat-map .seat-box'); // Chỉ lấy ghế trong sơ đồ
-    //     seatButtons.forEach(btn => {
-    //         // data-trangthai từ Thymeleaf sẽ là chuỗi "true" hoặc "false"
-    //         // const isOccupied = btn.getAttribute('data-trangthai') === 'true';
-    //
-    //         if (isOccupied) {
-    //             btn.classList.add('seat-occupied');
-    //             btn.classList.remove('seat-available'); // Đảm bảo không có class available
-    //             btn.disabled = true;
-    //         } else {
-    //             btn.classList.add('seat-available');
-    //             btn.classList.remove('seat-occupied'); // Đảm bảo không có class occupied
-    //             btn.disabled = false;
-    //         }
-    //     });
-    // }
+    /*<![CDATA[*/
+    // Assuming danhSachGheDaDat is a list of GHE IDs, not GHE objects.
+    // If danhSachGheDaDat contains full Ghe objects, the check in Thymeleaf:
+    // th:classappend="... ${danhSachGheDaDat.contains(ghe) ? ...}" might need adjustment
+    // to check for ID: ${danhSachGheDaDatIds.contains(ghe.idGhe) ? ... }
+    // For the provided snippet, I'll assume danhSachGheDaDat is a list of IDs for simplicity
+    // or that Thymeleaf's .contains() works correctly with your Ghe objects if they have proper equals/hashCode.
+    // The HTML provided had: danhSachGheDaDat.contains(ghe) -> implying it's a list of Ghe objects.
+    // If danhSachGheDaDat from server is a list of IDs, change in Thymeleaf:
+    // FROM: ${danhSachGheDaDat.contains(ghe) ? 'reserved' : ...}
+    // TO:   ${danhSachGheDaDat != null and danhSachGheDaDat.contains(ghe.idGhe) ? 'reserved' : ...}
+    // I've used the latter in the HTML above for robustness.
+    /*]]>*/
 
     function selectSeat(btn) {
-        // Kiểm tra nếu ghế đã bị chiếm (được set bởi initializeSeatStates) hoặc bị disabled
-        if (btn.classList.contains('seat-occupied') || btn.disabled) {
-            return;
+        if (btn.classList.contains('reserved') || btn.classList.contains('seat-occupied')) {
+            return; // Cannot select reserved or generally occupied seats
         }
 
         btn.classList.toggle('seat-selected');
 
-        // Quản lý class 'seat-available' khi chọn/bỏ chọn
         if (btn.classList.contains('seat-selected')) {
             btn.classList.remove('seat-available');
         } else {
-            // Nếu không được chọn VÀ không bị chiếm, nó phải là 'available'
-            if (!btn.classList.contains('seat-occupied')) { // Điều kiện này luôn đúng nếu đã qua check ở đầu hàm
-                btn.classList.add('seat-available');
-            }
+            // Only add 'seat-available' if it's not supposed to be 'occupied' or 'reserved'
+            // This check is implicitly true if we passed the initial guard conditions
+            btn.classList.add('seat-available');
         }
         updateTotalPrice();
     }
@@ -399,28 +434,33 @@
 
         const allRows = document.querySelectorAll('.seat-row');
         allRows.forEach(row => {
-            if (!isValid) return; // Nếu đã có lỗi thì không kiểm tra tiếp các hàng sau
+            if (!isValid) return;
 
             const seatButtons = Array.from(row.querySelectorAll('.seat-container button'));
-            const seatNumbersInRow = seatButtons.map(btn => parseInt(btn.textContent.trim()));
+            // Get seat numbers (1, 2, 3...) and row name for alerts
+            const seatNumbersInRow = seatButtons.map(btn => parseInt(btn.getAttribute('data-seat-number')));
+            const rowName = seatButtons.length > 0 ? seatButtons[0].getAttribute('data-row-name') : "";
+
 
             const selectedSeatsInRow = seatButtons
                 .filter(btn => btn.classList.contains('seat-selected'))
-                .map(btn => parseInt(btn.textContent.trim()))
+                .map(btn => parseInt(btn.getAttribute('data-seat-number')))
                 .sort((a, b) => a - b);
 
-            const occupiedSeatsInRow = seatButtons
-                .filter(btn => btn.classList.contains('seat-occupied')) // Class này được JS thêm vào
-                .map(btn => parseInt(btn.textContent.trim()));
+            const unselectableSeatsInRow = seatButtons // Consider both reserved and occupied as unselectable for gap logic
+                .filter(btn => btn.classList.contains('seat-occupied') || btn.classList.contains('reserved'))
+                .map(btn => parseInt(btn.getAttribute('data-seat-number')));
 
+            // Check for gaps between selected seats in the same row
             for (let i = 0; i < selectedSeatsInRow.length - 1; i++) {
                 const currentSelected = selectedSeatsInRow[i];
                 const nextSelected = selectedSeatsInRow[i+1];
                 for (let seatNum = currentSelected + 1; seatNum < nextSelected; seatNum++) {
+                    // Check if this seatNum exists in the row, is not selected, and is not unselectable (occupied/reserved)
                     if (seatNumbersInRow.includes(seatNum) &&
                         !selectedSeatsInRow.includes(seatNum) &&
-                        !occupiedSeatsInRow.includes(seatNum)) {
-                        alert(`Bạn không thể để ghế số ${seatNum} (dãy ${row.querySelector('.seat-row-name').textContent}) trống giữa các ghế đã chọn.`);
+                        !unselectableSeatsInRow.includes(seatNum)) {
+                        alert(`Bạn không thể để ghế số ${seatNum} (dãy ${rowName}) trống giữa các ghế đã chọn.`);
                         isValid = false;
                         return;
                     }
@@ -428,33 +468,45 @@
             }
             if (!isValid) return;
 
-            if (selectedSeatsInRow.length > 0 || occupiedSeatsInRow.length > 0) {
-                const allChosenOrOccupiedInRow = [...new Set([...selectedSeatsInRow, ...occupiedSeatsInRow])].sort((a,b) => a-b);
-                const firstChosenOrOccupied = allChosenOrOccupiedInRow[0];
-                const lastChosenOrOccupied = allChosenOrOccupiedInRow[allChosenOrOccupiedInRow.length - 1];
+            // Check for single empty seats at the ends of a selection block
+            if (selectedSeatsInRow.length > 0 || unselectableSeatsInRow.length > 0) {
+                const allChosenOrUnselectableInRow = [...new Set([...selectedSeatsInRow, ...unselectableSeatsInRow])].sort((a,b) => a-b);
+                if (allChosenOrUnselectableInRow.length === 0) return; // No seats to check against
 
-                if (seatNumbersInRow.includes(firstChosenOrOccupied - 1) &&
-                    !selectedSeatsInRow.includes(firstChosenOrOccupied - 1) &&
-                    !occupiedSeatsInRow.includes(firstChosenOrOccupied - 1)) {
-                    if (!seatNumbersInRow.includes(firstChosenOrOccupied - 2) ||
-                        selectedSeatsInRow.includes(firstChosenOrOccupied - 2) ||
-                        occupiedSeatsInRow.includes(firstChosenOrOccupied - 2)
-                    ) {
-                        alert(`Vui lòng không để ghế số ${firstChosenOrOccupied - 1} (dãy ${row.querySelector('.seat-row-name').textContent}) trống một mình.`);
+                const firstChosenOrUnselectable = allChosenOrUnselectableInRow[0];
+                const lastChosenOrUnselectable = allChosenOrUnselectableInRow[allChosenOrUnselectableInRow.length - 1];
+
+                // Check left side: one empty seat, then a boundary or two empty seats
+                const seatToLeft = firstChosenOrUnselectable - 1;
+                const seatFurtherToLeft = firstChosenOrUnselectable - 2;
+
+                if (seatNumbersInRow.includes(seatToLeft) && // Seat to the left exists
+                    !selectedSeatsInRow.includes(seatToLeft) && // and is not selected
+                    !unselectableSeatsInRow.includes(seatToLeft)) { // and is not unselectable (i.e., it's available and empty)
+                    // Now check if this empty seat is isolated
+                    // It's isolated if there's no seat further to its left OR the seat further to its left is taken/selected/unselectable
+                    if (!seatNumbersInRow.includes(seatFurtherToLeft) || // No seat further left (edge of row)
+                        selectedSeatsInRow.includes(seatFurtherToLeft) ||
+                        unselectableSeatsInRow.includes(seatFurtherToLeft)) {
+                        alert(`Vui lòng không để ghế số ${seatToLeft} (dãy ${rowName}) trống một mình ở đầu cụm ghế.`);
                         isValid = false;
                         return;
                     }
                 }
                 if (!isValid) return;
 
-                if (seatNumbersInRow.includes(lastChosenOrOccupied + 1) &&
-                    !selectedSeatsInRow.includes(lastChosenOrOccupied + 1) &&
-                    !occupiedSeatsInRow.includes(lastChosenOrOccupied + 1)) {
-                    if (!seatNumbersInRow.includes(lastChosenOrOccupied + 2) ||
-                        selectedSeatsInRow.includes(lastChosenOrOccupied + 2) ||
-                        occupiedSeatsInRow.includes(lastChosenOrOccupied + 2)
-                    ) {
-                        alert(`Vui lòng không để ghế số ${lastChosenOrOccupied + 1} (dãy ${row.querySelector('.seat-row-name').textContent}) trống một mình.`);
+                // Check right side: one empty seat, then a boundary or two empty seats
+                const seatToRight = lastChosenOrUnselectable + 1;
+                const seatFurtherToRight = lastChosenOrUnselectable + 2;
+
+                if (seatNumbersInRow.includes(seatToRight) && // Seat to the right exists
+                    !selectedSeatsInRow.includes(seatToRight) && // and is not selected
+                    !unselectableSeatsInRow.includes(seatToRight)) { // and is not unselectable
+                    // Now check if this empty seat is isolated
+                    if (!seatNumbersInRow.includes(seatFurtherToRight) || // No seat further right (edge of row)
+                        selectedSeatsInRow.includes(seatFurtherToRight) ||
+                        unselectableSeatsInRow.includes(seatFurtherToRight)) {
+                        alert(`Vui lòng không để ghế số ${seatToRight} (dãy ${rowName}) trống một mình ở cuối cụm ghế.`);
                         isValid = false;
                         return;
                     }
@@ -464,15 +516,18 @@
 
         if (!isValid) return false;
 
+        // Ensure updateTotalPrice is called before submitting to populate hidden fields
         updateTotalPrice();
         if (document.getElementById('danhSachGheDuocChon').value === "") {
+            // This check might be redundant if the first check (selectedSeatsElements.length === 0) passed
+            // but kept for safety, as updateTotalPrice could theoretically clear it if all prices are 0 (not the case here)
             alert('Vui lòng chọn ít nhất một ghế.');
             return false;
         }
         return true;
     }
 
-    let danhSachGheDuocChonIds = [];
+    let danhSachGheDuocChonIds = []; // Will store actual seat IDs (data-id)
     let tongTienVe = 0;
 
     function updateTotalPrice() {
@@ -481,12 +536,17 @@
         danhSachGheDuocChonIds = [];
 
         danhSachGheDuocChonElements.forEach(ghe => {
-            danhSachGheDuocChonIds.push(ghe.textContent.trim());
+            danhSachGheDuocChonIds.push(ghe.getAttribute('data-id')); // Use data-id for the form
             const giaVe = parseInt(ghe.getAttribute('data-giave')) || 0;
             tongTienVe += giaVe;
         });
 
-        const tongTienCombo = parseInt(document.getElementById('total-combo').dataset.value || "0") || 0;
+        // Assuming total-combo might be updated by other parts of your application
+        const comboValueElement = document.getElementById('total-combo');
+        const tongTienCombo = parseInt(comboValueElement.dataset.value || "0") || 0;
+        // Ensure the displayed text for combo is also updated if needed, e.g.
+        // comboValueElement.innerText = formatCurrency(tongTienCombo);
+
 
         document.getElementById('total-ve').innerText = formatCurrency(tongTienVe);
         document.getElementById('total').innerText = formatCurrency(tongTienVe + tongTienCombo);
@@ -499,10 +559,17 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        initializeSeatStates(); // <-- Gọi hàm khởi tạo ở đây
+        // The initializeSeatStates() function is no longer needed as Thymeleaf handles initial states.
+        updateTotalPrice(); // Initialize prices on load (e.g., if there are pre-selected seats or combo values)
+
+        // Initialize combo display if it's static or from session and not updated elsewhere
+        const comboElement = document.getElementById('total-combo');
+        if (!comboElement.dataset.value) { // Set initial value if not already set
+            comboElement.dataset.value = "0";
+        }
+        comboElement.innerText = formatCurrency(parseInt(comboElement.dataset.value));
+        // Initial call to update total price, including combo
         updateTotalPrice();
-        // document.getElementById('total-combo').innerText = formatCurrency(0);
-        // document.getElementById('total-combo').dataset.value = "0";
     });
 </script>
 

@@ -14,18 +14,20 @@ import java.util.Optional;
 @Service
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
+    private final RowSeatRepository rowSeatRepository;
     private final MovieRepository movieRepository;
     private final CinemaRepository cinemaRepository;
     private final UserRepository userRepository;
     private final PopcornDrinkComboRepository popcornDrinkComboRepository;
 
     @Autowired
-    public BookingServiceImpl(BookingRepository bookingRepository, MovieRepository movieRepository, UserRepository userRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, CinemaRepository cinemaRepository) {
+    public BookingServiceImpl(BookingRepository bookingRepository, MovieRepository movieRepository, UserRepository userRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, CinemaRepository cinemaRepository, RowSeatRepository rowSeatRepository) {
         this.bookingRepository = bookingRepository;
         this.movieRepository = movieRepository;
         this.userRepository = userRepository;
         this.popcornDrinkComboRepository = popcornDrinkComboRepository;
         this.cinemaRepository = cinemaRepository;
+        this.rowSeatRepository = rowSeatRepository;
     }
 
     @Override
@@ -45,11 +47,6 @@ public class BookingServiceImpl implements BookingService {
         suatChieu = result.get();
         return suatChieu;
     }
-    @Override
-    // Phương thức tìm danh sách suất chiếu theo phim, ngày chiếu và hình thức chiếu
-    public List<SuatChieu> getSuatChieuByPhimNgayChieuAndHinhThuc(Phim phim, LocalDate ngayChieu, HinhThucChieu hinhThucChieu) {
-        return bookingRepository.findByPhimAndNgayChieuAndHinhThucChieu(phim, ngayChieu, hinhThucChieu);
-    }
 
     // Thực hiện lấy danh sách suất chiếu theo từng rạp
     @Override
@@ -66,5 +63,10 @@ public class BookingServiceImpl implements BookingService {
         }
         // Nếu danh sách trả về có size != 0 thì lưu rạp đó và list suất chiếu
         return result;
+    }
+
+    @Override
+    public List<DayGhe> findAllDayGhe(PhongChieuPhim phongChieuPhim) {
+        return rowSeatRepository.findByPhongChieuPhim(phongChieuPhim);
     }
 }

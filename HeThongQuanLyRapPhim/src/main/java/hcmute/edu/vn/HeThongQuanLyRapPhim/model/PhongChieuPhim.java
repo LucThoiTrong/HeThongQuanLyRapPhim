@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -88,6 +89,21 @@ public class PhongChieuPhim implements Serializable {
 
     public void setDsSuatChieu(Set<SuatChieu> dsSuatChieu) {
         this.dsSuatChieu = dsSuatChieu;
+    }
+
+    // Khởi tạo danh sách dãy ghế trong phòng chiếu
+    public int taoDayGhe(PhongChieuPhim phongChieuPhim, List<DayGhe> list, int soLuong, LoaiGhe loai, int gia, int indexStart) {
+        for (int i = 0; i < soLuong; i++) {
+            DayGhe dayGhe = new DayGhe();
+            dayGhe.setTenDayGhe("Dãy " + (char) ('A' + indexStart - 1));
+            dayGhe.setLoaiGhe(loai);
+            dayGhe.setGiaDayGhe(gia);
+            dayGhe.setPhongChieuPhim(phongChieuPhim);
+            dayGhe.setDsGhe(dayGhe.generateDsGhe(loai));
+            list.add(dayGhe);
+            indexStart++;
+        }
+        return indexStart;
     }
 
     // lấy tổng số lượng của từng dãy ghế

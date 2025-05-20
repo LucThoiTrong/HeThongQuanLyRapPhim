@@ -315,7 +315,7 @@
             <li th:each="entry : ${groupedByRap}">
                 <h3 class="cinema-name"><i class="fas fa-video"></i> <span th:text="${entry.key}">Tên Rạp Chiếu</span></h3>
                 <div class="screening-row">
-                    <form th:each="suat : ${entry.value}" th:action="@{/so-do-ghe/chon-ghe}" method="get">
+                    <form th:each="suat : ${entry.value}" th:action="@{/booking/so-do-ghe}" method="get">
                         <input type="hidden" name="idSuatChieu" th:value="${suat.idSuatChieu}">
                         <button
                                 type="submit"
