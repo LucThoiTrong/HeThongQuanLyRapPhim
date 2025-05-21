@@ -146,12 +146,13 @@
         }
 
         .seat-box.seat-doi.seat-available {
+            width: 64px;
             background-color: #FFC0CB; /* Màu hồng */
             color: #5c373d; /* Màu chữ hồng đậm hơn */
             border-color: #f7b0be;
-            /* Nếu ghế đôi rộng hơn: width: 68px; */
         }
         .seat-box.seat-doi.seat-available:hover {
+            width: 64px;
             background-color: #f7b0be; /* Hồng đậm hơn */
             transform: translateY(-1px);
         }
@@ -162,6 +163,13 @@
             color: #fff;
             border-color: #2c7ae0;
             box-shadow: 0 0 8px rgba(49, 130, 206, 0.5);
+        }
+        .seat-box.seat-doi.seat-selected {
+            width: 64px;
+            background-color: #3182ce; /* Giữ màu nền của trạng thái selected */
+            color: #fff; /* Giữ màu chữ của trạng thái selected */
+            border-color: #2c7ae0; /* Giữ màu viền của trạng thái selected */
+            box-shadow: 0 0 8px rgba(49, 130, 206, 0.5); /* Giữ hiệu ứng bóng */
         }
 
         .seat-box.seat-occupied,
@@ -399,6 +407,7 @@
         <!-- Form gửi thông tin ghế đã chọn -->
         <form id="seatForm" method="GET" th:action="@{/booking/combo-list}">
             <input type="hidden" name="danhSachGheDuocChon" id="danhSachGheDuocChon">
+            <input type="hidden" name ="danhSachGheDuocChonIds" id="danhSachGheDuocChonIds">
             <input type="hidden" name="tongGiaVe" id="tongGiaVe">
             <input type="hidden" name="idSuatChieu" th:value="${session.suatChieu?.idSuatChieu}" />
             <!-- Nút tiếp tục để chuyển sang bước chọn combo -->
@@ -472,7 +481,8 @@
                     if (seatNumbersInRow.includes(seatNum) &&
                         !selectedSeatsInRow.includes(seatNum) &&
                         !unselectableSeatsInRow.includes(seatNum)) {
-                        alert(`Bạn không thể để ghế số ${seatNum} (dãy ${rowName}) trống giữa các ghế đã chọn.`);
+                        // alert(`Bạn không thể để ghế số ${seatNum} (dãy ${rowName}) trống giữa các ghế đã chọn.`);
+                        alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
                         isValid = false;
                         return;
                     }
@@ -498,7 +508,8 @@
                     if (!seatNumbersInRow.includes(seatFurtherToLeft) ||
                         selectedSeatsInRow.includes(seatFurtherToLeft) ||
                         unselectableSeatsInRow.includes(seatFurtherToLeft)) {
-                        alert(`Vui lòng không để ghế số ${seatToLeft} (dãy ${rowName}) trống một mình ở đầu cụm ghế.`);
+                        // alert(`Vui lòng không để ghế số ${seatToLeft} (dãy ${rowName}) trống một mình ở đầu cụm ghế.`);
+                        alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
                         isValid = false;
                         return;
                     }
@@ -515,7 +526,8 @@
                     if (!seatNumbersInRow.includes(seatFurtherToRight) ||
                         selectedSeatsInRow.includes(seatFurtherToRight) ||
                         unselectableSeatsInRow.includes(seatFurtherToRight)) {
-                        alert(`Vui lòng không để ghế số ${seatToRight} (dãy ${rowName}) trống một mình ở cuối cụm ghế.`);
+                        // alert(`Vui lòng không để ghế số ${seatToRight} (dãy ${rowName}) trống một mình ở cuối cụm ghế.`);
+                        alert(`Vui lòng không chừa ghế trống ở bên phải hoặc bên trái các ghế bạn đã chọn.`);
                         isValid = false;
                         return;
                     }
@@ -543,12 +555,25 @@
         const danhSachGheDuocChonElements = document.querySelectorAll('.seat-selected');
         tongTienVe = 0;
         danhSachGheDuocChonIds = [];
+        let danhSachGheDuocChon = []; // Mảng lưu số ghế
 
-        // Tính tổng giá vé và lưu ID ghế được chọn
+        // Tính tổng giá vé và lưu thông tin ghế được chọn
         danhSachGheDuocChonElements.forEach(ghe => {
-            danhSachGheDuocChonIds.push(ghe.getAttribute('data-id'));
+            danhSachGheDuocChonIds.push(ghe.getAttribute('data-id')); // Lưu ID ghế
+            const rowName = ghe.getAttribute('data-row-name'); // Lấy tên dãy (Dãy S, Dãy T,...)
+            const seatNumber = ghe.getAttribute('data-seat-number'); // Lấy số ghế (1, 2,...)
+
+            // Loại bỏ "Dãy" và kiểm tra null
+            if (rowName && seatNumber && rowName !== 'null' && seatNumber !== 'null') {
+                const cleanRowName = rowName.replace(/^Dãy\s*/, ''); // Loại bỏ "Dãy" và khoảng trắng
+                danhSachGheDuocChon.push(`${cleanRowName}${seatNumber}`); // Kết hợp thành S6, T6,...
+            }
             const giaVe = parseInt(ghe.getAttribute('data-giave')) || 0;
             tongTienVe += giaVe;
+            // In ra console để kiểm tra
+            console.log('Danh sách ID ghế được chọn:', danhSachGheDuocChonIds);
+            console.log('Danh sách ghế (ký hiệu) được chọn:', danhSachGheDuocChon);
+            console.log(tongTienVe);
         });
 
         // Lấy giá combo từ phần tử HTML
@@ -558,8 +583,10 @@
         // Cập nhật hiển thị giá vé, combo và tổng cộng
         document.getElementById('total-ve').innerText = formatCurrency(tongTienVe);
         document.getElementById('total').innerText = formatCurrency(tongTienVe + tongTienCombo);
-        document.getElementById('danhSachGheDuocChon').value = danhSachGheDuocChonIds.join(',');
+        document.getElementById('danhSachGheDuocChonIds').value = danhSachGheDuocChonIds.join(',');
+        document.getElementById('danhSachGheDuocChon').value = danhSachGheDuocChon.join(','); // Hiển thị S6,T6,...
         document.getElementById('tongGiaVe').value = tongTienVe;
+
     }
 
     // Hàm định dạng số tiền sang định dạng tiền tệ Việt Nam

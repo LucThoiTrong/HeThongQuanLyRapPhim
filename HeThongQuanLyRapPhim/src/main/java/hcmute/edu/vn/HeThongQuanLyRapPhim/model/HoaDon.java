@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -118,4 +119,24 @@ public class HoaDon implements Serializable {
     public int soLuongVeXemPhimDaMua() {
         return dsVeXemPhimDaMua.size();
     }
+
+//    // Khởi tạo danh sách véphim
+//    public Set<VeXemPhim> dsVeXemPhim(Ghe ghe, SuatChieu suatChieu){
+//        Set<VeXemPhim> dsVeXemPhim = new HashSet<>();
+//        VeXemPhim veXemPhim = new VeXemPhim();
+//        veXemPhim.setGhe(ghe);
+//        veXemPhim.setSuatChieu(suatChieu);
+//        dsVeXemPhim.add(veXemPhim);
+//        return dsVeXemPhim;
+//    }
+//
+//    // Khởi tạo danh sách combo bắp nước
+//    public  Set<ChiTietComBoBapNuoc> dsChiTietComboBapNuoc(ComboBapNuoc comboBapNuoc, int soLuong) {
+//        Set<ChiTietComBoBapNuoc> dsChiTietComBoBapNuoc = new HashSet<>();
+//        ChiTietComBoBapNuoc chiTietComBoBapNuoc = new ChiTietComBoBapNuoc();
+//        chiTietComBoBapNuoc.setSoLuong(soLuong);
+//        chiTietComBoBapNuoc.setComboBapNuoc(comboBapNuoc);
+//        dsChiTietComBoBapNuoc.add(chiTietComBoBapNuoc);
+//        return dsChiTietComBoBapNuoc;
+//    }
 }

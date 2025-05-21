@@ -110,6 +110,29 @@
             transition: border-color 0.3s ease;
         }
 
+        /* Container cho input mật khẩu và icon */
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .login-form .password-input-container input[type="password"],
+        .login-form .password-input-container input[type="text"] { /* Áp dụng cho cả khi type là text */
+            padding-right: 40px; /* Tạo không gian cho icon */
+        }
+
+        .toggle-password-icon {
+            position: absolute;
+            right: 15px; /* Điều chỉnh vị trí của icon */
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #718096; /* Màu icon */
+            z-index: 2; /* Đảm bảo icon nằm trên input */
+        }
+
+
         .login-form input[type="text"]:focus,
         .login-form input[type="password"]:focus {
             border-color: #3182ce;
@@ -133,7 +156,7 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            margin-bottom: 15px; /* Thêm margin để tạo khoảng cách với nút quên mật khẩu */
+            margin-bottom: 15px;
         }
 
         .btn-login-submit:hover {
@@ -161,7 +184,7 @@
 
         .forgot-password {
             text-align: right;
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* Tăng khoảng cách với nút đăng nhập */
             font-size: 0.9em;
         }
 
@@ -176,7 +199,6 @@
             text-decoration: underline;
         }
 
-        /* ... (các CSS khác của bạn giữ nguyên) ... */
 
         @media (max-width: 500px) {
             .login-container {
@@ -189,19 +211,25 @@
                 font-size: 1.5em;
             }
             .login-form input[type="text"],
-            .login-form input[type="password"] {
+            .login-form input[type="password"],
+            .login-form .password-input-container input[type="password"],
+            .login-form .password-input-container input[type="text"] {
                 padding: 10px 12px;
                 font-size: 0.95em;
+                padding-right: 35px; /* Điều chỉnh padding cho icon trên mobile */
+            }
+            .toggle-password-icon {
+                right: 10px; /* Điều chỉnh vị trí icon trên mobile */
             }
             .btn-login-submit {
                 font-size: 1em;
                 padding: 10px 15px;
             }
-            .alert { /* Điều chỉnh padding cho message trên mobile */
+            .alert {
                 padding: 10px;
             }
             .forgot-password {
-                text-align: left; /* Căn trái nút quên mật khẩu trên mobile nếu cần */
+                text-align: left;
             }
         }
     </style>
@@ -231,7 +259,10 @@
         </div>
         <div class="form-group">
             <label for="password"><i class="fas fa-lock"></i> Mật khẩu</label>
-            <input type="password" id="password" th:field="*{matKhau}" placeholder="Nhập mật khẩu của bạn" required>
+            <div class="password-input-container">
+                <input type="password" id="password" th:field="*{matKhau}" placeholder="Nhập mật khẩu của bạn" required>
+                <i class="fas fa-eye toggle-password-icon" id="togglePasswordIcon"></i>
+            </div>
         </div>
         <div class="forgot-password">
             <a th:href="@{/forgot-password}">Quên mật khẩu?</a>
@@ -245,5 +276,23 @@
         <p>Bạn chưa có tài khoản? <a th:href="@{/register}">Đăng ký ngay</a></p>
     </div>
 </main>
+
+<script>
+    const passwordInput = document.getElementById('password');
+    const togglePasswordIcon = document.getElementById('togglePasswordIcon');
+
+    if (passwordInput && togglePasswordIcon) {
+        togglePasswordIcon.addEventListener('click', function () {
+            // Kiểm tra type hiện tại của input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Thay đổi icon
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+</script>
+
 </body>
 </html>

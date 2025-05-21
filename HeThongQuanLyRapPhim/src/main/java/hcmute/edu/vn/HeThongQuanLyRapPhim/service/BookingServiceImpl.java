@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,5 +89,25 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         return comboSoLuong;
+    }
+
+    @Override
+    public boolean checkMaGiamGia(double tongSoTien, MaGiamGia maGiamGia) {
+        LocalDateTime now = LocalDateTime.now();
+        // Trả về true
+        // Mã giảm giá đã đến ngày áp dụng
+        // Và tổng số tiền đủ điều kiện để dùng mã
+        return !maGiamGia.getNgayBatDauApDung().isAfter(now) && !(tongSoTien < maGiamGia.getHanMucApDung());
+    }
+
+    @Override
+    public double tinhTienGiam(double tongHoaDon, MaGiamGia maGiamGia) {
+        double tienDuocGiam = tongHoaDon * maGiamGia.getPhanTramGiamGia() / 100;
+        return Math.min(tienDuocGiam, maGiamGia.getGiaTriGiamToiDa());
+    }
+
+    @Override
+    public DoiTuongSuDung findDoiTuongSuDungById(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 }

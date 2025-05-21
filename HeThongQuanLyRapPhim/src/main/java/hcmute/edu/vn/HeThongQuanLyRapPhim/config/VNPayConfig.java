@@ -7,9 +7,9 @@ import java.util.Random;
 
 public class VNPayConfig {
     public static String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static String vnp_ReturnUrl = "https://phimhay.azurewebsites.net/payment/vnpay-return";
-    public static String vnp_TmnCode = "4KGF7NH4";
-    public static String secretKey = "QBJ2XS3NT5D2N2I71C00DXI9TINSZ1BJ";
+    public static String vnp_ReturnUrl = "http://localhost:8080/payment/vnpay-return";
+    public static String vnp_TmnCode = "1CGVCIDX";
+    public static String secretKey = "Z885THWIX6HH2MOC8MUYB0O6JPWN9VLW";
 
     public static String hmacSHA512(final String key, final String data) {
         try {

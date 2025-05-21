@@ -8,7 +8,6 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.RoomService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.ShowTimeService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +42,7 @@ public class ShowTimeController {
 
     // Hiển thị danh sách suất chiếu
     @GetMapping("/")
-    public String showList(Model model, HttpSession session) {
+    public String showList(Model model) {
         List<SuatChieu> dsSuatChieu = showTimeService.getAllShowTimes();
 //        session.setAttribute("showtimes", dsSuatChieu);
         model.addAttribute("showtimes", dsSuatChieu);

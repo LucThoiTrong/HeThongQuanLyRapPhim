@@ -8,21 +8,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.print.DocFlavor;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
 @RequestMapping("/booking")
 public class BookingController {
     private final BookingService bookingService;
-    private final UserService doiTuongSuDungService;
 
     @Autowired
-    public BookingController(BookingService bookingService,
-                             UserService doiTuongSuDungService) {
+    public BookingController(BookingService bookingService) {
         this.bookingService = bookingService;
-        this.doiTuongSuDungService = doiTuongSuDungService;
     }
 
     //tim suat chieu cua phim theo ngay chieu va hinh thuc chieu
@@ -74,12 +71,13 @@ public class BookingController {
         SuatChieu suatChieu = bookingService.findById(idSuatChieu);
         session.setAttribute("suatChieu", suatChieu);
 
-        // Lấy danh sách ghế đã được đặt
+        // Lấy danh sách ghế đã được đặt của suất chiếu
         Set<Ghe> danhSachGheDaDat = suatChieu.getDanhSachGheDaDat();
 
         // Lấy danh sách dãy ghế của phòng chiếu phim
         List<DayGhe> danhSachDayGhe = bookingService.findAllDayGhe(suatChieu.getPhongChieuPhim());
-
+        List<String> danhSachGheDuocChonIds = new ArrayList<>();
+        model.addAttribute("danhSachGheDuocChonIds",danhSachGheDuocChonIds);
         model.addAttribute("danhSachDayGhe", danhSachDayGhe);
         model.addAttribute("danhSachGheDaDat", danhSachGheDaDat);
         return "SeatingPlanPage";
@@ -87,7 +85,10 @@ public class BookingController {
 
     // Hiển thị combo bắp nước
     @GetMapping("/combo-list")
-    public String showComboPage(@RequestParam("danhSachGheDuocChon") String danhSachGheDuocChon,
+    public String showComboPage(@RequestParam("danhSachGheDuocChon")
+                                String danhSachGheDuocChon,
+                                @RequestParam("danhSachGheDuocChonIds")
+                                String danhSachGheDuocChonIds,
                                 @RequestParam("tongGiaVe") int tongGiaVe,
                                 HttpSession session,
                                 Model model) {
@@ -96,6 +97,7 @@ public class BookingController {
 
         // Thực hiện lưu danh sách ghế người dùng chọn vô session
         session.setAttribute("danhSachGheDuocChon",danhSachGheDuocChon);
+        session.setAttribute("danhSachGheDuocChonIds", danhSachGheDuocChonIds);
 
         model.addAttribute("tongGiaVe", tongGiaVe);
         model.addAttribute("danhSachCombo", comboList);
@@ -121,7 +123,7 @@ public class BookingController {
 
         // Lấy đối tượng khách hàng
         int idcustomer = (int) session.getAttribute("idCustomer");
-        DoiTuongSuDung customer = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
+        DoiTuongSuDung customer = bookingService.findDoiTuongSuDungById(idcustomer);
         model.addAttribute("doiTuongSuDung", customer);
         return "PaymentPage";
     }
@@ -131,39 +133,38 @@ public class BookingController {
                                   @RequestParam("tongComboVaVe") String tongTien,
                                   Model model,
                                   HttpSession session) {
-        // luu ma giam gia vao session de cap nhat trang thai ma giam gia khi payment
+        // Lưu mã giảm giá vào session để cập nhật trạng thái mã giảm giá khi tiến hành thanh toán
         session.setAttribute("maGiamGiaDaChon", maGiamGia);
-        //tong hoa don ban dau chua giam
+
+        // Tổng hoá đơn chưa giảm
         double tongHoaDon = Double.parseDouble(tongTien);
         double tienDuocGiam;
         double tongSauGiam;
 
-        LocalDateTime now = LocalDateTime.now();
-        if (maGiamGia.getNgayBatDauApDung().isAfter(now)) {
-            model.addAttribute("error", "Mã giảm giá chưa đến hạn để sử dụng!");
-        } else if (tongHoaDon < maGiamGia.getHanMucApDung()) {
-            model.addAttribute("error", "Chưa đủ điều kiện để sử dụng mã giảm giá!");
-        } else {
+        if (bookingService.checkMaGiamGia(tongHoaDon, maGiamGia)) {
+            model.addAttribute("error", "Mã giảm giá không hợp lệ");
+        }
+        else {
             // Áp dụng giảm giá hợp lệ
-            tienDuocGiam = tongHoaDon * maGiamGia.getPhanTramGiamGia() / 100;
-            if (tienDuocGiam > maGiamGia.getGiaTriGiamToiDa()) {
-                tienDuocGiam = maGiamGia.getGiaTriGiamToiDa();
-            }
+            tienDuocGiam = bookingService.tinhTienGiam(tongHoaDon, maGiamGia);
+
             tongSauGiam = tongHoaDon - tienDuocGiam;
 
             session.setAttribute("tongTienSauGiam", tongSauGiam);
             session.setAttribute("soTienGiam", tienDuocGiam);
         }
+
         int idcustomer = (int) session.getAttribute("idCustomer");
         // Lấy đối tượng sử dụng
-        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
+        DoiTuongSuDung doiTuongSuDung = bookingService.findDoiTuongSuDungById(idcustomer);
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
+
         return "PaymentPage";
     }
 
     @PostMapping("/dat-lai-ma-giam-gia")
     public String datLaiMaGiamGia(HttpSession session, Model model) {
-        // xoa cac gia tri lien quan
+        // Xoá các dữ liệu liên quan
         session.removeAttribute("tongHoaDonSauGiam");
         session.removeAttribute("soTienGiam");
         session.removeAttribute("maGiamDaChon");
@@ -171,15 +172,16 @@ public class BookingController {
         // Lấy dữ liệu từ session
         Integer tongComboVaVe = (Integer) session.getAttribute("tongComboVaVe");
         int idcustomer = (int) session.getAttribute("idCustomer");
-        DoiTuongSuDung doiTuongSuDung = doiTuongSuDungService.getDoiTuongSuDungById(idcustomer);
+        DoiTuongSuDung doiTuongSuDung = bookingService.findDoiTuongSuDungById(idcustomer);
         session.setAttribute("doiTuongSuDung",doiTuongSuDung);
 
-        //dat lai tong tien sau khi giam va so tien giam gia
+        // Đặt lại tổng tiền sau khi giảm và số tiền giảm giá
         double tongTienSauGiam = tongComboVaVe;
         double soTienGiam = 0.0;
         session.setAttribute("tongTienSauGiam", tongTienSauGiam);
         session.setAttribute("soTienGiam", soTienGiam);
-        //de lay danh sach ma giam gia
+
+        // Lưu đối tượng để lấy danh sách mã giảm giá
         model.addAttribute("doiTuongSuDung", doiTuongSuDung);
         return "PaymentPage";
     }

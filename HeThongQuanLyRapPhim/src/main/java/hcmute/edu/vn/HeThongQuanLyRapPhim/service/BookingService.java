@@ -12,5 +12,8 @@ public interface BookingService {
     SuatChieu findById(int id);
     Map<String, List<SuatChieu>> getShowtimesForCinema(LocalDate date, HinhThucChieu hinhThucChieu);
     List<DayGhe> findAllDayGhe(PhongChieuPhim phongChieuPhim);
-    public Map<Integer, Integer> extractComboSoLuong(Map<String, String> tatCaThamSo);
+    Map<Integer, Integer> extractComboSoLuong(Map<String, String> tatCaThamSo);
+    boolean checkMaGiamGia(double tongSoTien, MaGiamGia maGiamGia);
+    double tinhTienGiam(double tongHoaDon, MaGiamGia maGiamGia);
+    DoiTuongSuDung findDoiTuongSuDungById(int id);
 }

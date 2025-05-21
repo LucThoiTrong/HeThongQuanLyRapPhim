@@ -1,6 +1,12 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.config.VNPayConfig;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -11,6 +17,21 @@ import java.util.*;
 
 @Service
 public class VNPayServiceImpl implements VNPayService {
+    private final InvoiceRepository invoiceRepository;
+    private final ChairRepository chairRepository;
+    private final PopcornDrinkComboRepository popcornDrinkComboRepository;
+    private final EmailService emailService;
+    private final DiscountRepository discountRepository;
+
+    @Autowired
+    public VNPayServiceImpl(InvoiceRepository invoiceRepository, ChairRepository chairRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, EmailService emailService, DiscountRepository discountRepository) {
+        this.invoiceRepository = invoiceRepository;
+        this.chairRepository = chairRepository;
+        this.popcornDrinkComboRepository = popcornDrinkComboRepository;
+        this.emailService = emailService;
+        this.discountRepository = discountRepository;
+    }
+
     @Override
     public String createPayment(int amountint, String clientIp) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
@@ -49,7 +70,6 @@ public class VNPayServiceImpl implements VNPayService {
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-//        cld.add(Calendar.HOUR, 24);
         cld.add(Calendar.HOUR, 8);  // Thêm 7 giờ để chuyển từ UTC sang giờ Việt Nam
 
         String vnp_ExpireDate = formatter.format(cld.getTime());
@@ -79,25 +99,6 @@ public class VNPayServiceImpl implements VNPayService {
 
         String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
         query.append("&vnp_SecureHash=").append(vnp_SecureHash);
-//        System.out.println("==== VNPay DEBUG ====");
-//        System.out.println("Client IP: " + clientIp);
-//        System.out.println("Amount (x100): " + amount);
-//        System.out.println("Transaction Ref: " + vnp_TxnRef);
-//        System.out.println("Create Date: " + vnp_CreateDate);
-//        System.out.println("Expire Date: " + vnp_ExpireDate);
-//        System.out.println("Return URL: " + VNPayConfig.vnp_ReturnUrl);
-//
-//// Log toàn bộ tham số gửi đến VNPay
-//        System.out.println("--- VNPay Params ---");
-//        for (String key : fieldNames) {
-//            System.out.println(key + ": " + vnp_Params.get(key));
-//        }
-//
-//// Log URL cuối cùng gửi đến VNPay
-//        System.out.println("--- Final Payment URL ---");
-//        System.out.println(VNPayConfig.vnp_PayUrl + "?" + query);
-//        System.out.println("======================");
-
         return VNPayConfig.vnp_PayUrl + "?" + query;
 
     }
@@ -108,5 +109,10 @@ public class VNPayServiceImpl implements VNPayService {
         } else {
             return "Thanh toán thất bại!";
         }
+    }
+
+    @Override
+    public void saveMaGiamGiaApDung(MaGiamGia maGiamGia) {
+
     }
 }
