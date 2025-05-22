@@ -23,7 +23,7 @@ public class HoanTra implements Serializable {
     @JoinColumn(name = "id_doi_tuong_su_dung")
     private DoiTuongSuDung doiTuongSuDung;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_hoa_don")
     private HoaDon hoaDon;
 
