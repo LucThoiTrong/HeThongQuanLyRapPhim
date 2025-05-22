@@ -87,10 +87,9 @@ public class RoomController {
                                        @RequestParam("idRapPhim") int idRapPhim,
                                        RedirectAttributes redirectAttributes) {
         // Kiểm tra tên phong chiếu đã tồn tại trong rạp đó hay chưa
-        boolean existingRoom = roomService.checkRoomName(phongChieuPhim.getTenPhongChieuPhim(), idRapPhim);
+        PhongChieuPhim existingRoom = roomService.getPhongChieuPhimByName(phongChieuPhim.getTenPhongChieuPhim());
 
-        // Nếu như tên tồn tại và idPhongChieu không trùng khớp với id của đối tượng phòng chiếu phim
-        if (existingRoom && !phongChieuPhim.getIdPhongChieuPhim().equals(idPhongChieuPhim)) {
+        if (existingRoom != null && !existingRoom.getIdPhongChieuPhim().equals(phongChieuPhim.getIdPhongChieuPhim())) {
             redirectAttributes.addFlashAttribute("tenPhongChieuPhimError", "Tên phòng chiếu đã tồn tại trong rạp này!");
             redirectAttributes.addFlashAttribute("phongChieuPhim", phongChieuPhim);
             return MessageFormat.format("redirect:/rooms/update/{0}?idRapPhim={1}", idPhongChieuPhim, idRapPhim);

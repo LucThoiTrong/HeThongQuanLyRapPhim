@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface RoomRepository extends JpaRepository<PhongChieuPhim, Integer> {
     List<PhongChieuPhim> findAllByRapPhim(RapPhim rapPhim);
+    PhongChieuPhim findByTenPhongChieuPhim(String name);
 }

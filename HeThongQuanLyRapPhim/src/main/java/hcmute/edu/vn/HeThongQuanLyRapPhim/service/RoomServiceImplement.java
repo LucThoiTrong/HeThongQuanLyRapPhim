@@ -77,4 +77,9 @@ public class RoomServiceImplement implements RoomService {
         }
         return false;
     }
+
+    @Override
+    public PhongChieuPhim getPhongChieuPhimByName(String name) {
+        return roomRepository.findByTenPhongChieuPhim(name);
+    }
 }

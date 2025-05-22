@@ -13,4 +13,5 @@ public interface RoomService {
     PhongChieuPhim getRoomById(int id);
     PhongChieuPhim updateRoom(int id, PhongChieuPhim phongChieuPhim);
     boolean deleteRoom(int id);
+    PhongChieuPhim getPhongChieuPhimByName(String name);
 }
