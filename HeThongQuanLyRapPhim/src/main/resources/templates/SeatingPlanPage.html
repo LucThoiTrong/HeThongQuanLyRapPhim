@@ -6,7 +6,6 @@
     <title>Sơ Đồ Ghế Phòng Chiếu</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- CSS cho giao diện hiển thị sơ đồ ghế và thông tin vé -->
     <style>
         * {
             margin: 0;
@@ -115,49 +114,45 @@
             user-select: none;
         }
 
-        /* Trạng thái ghế có thể chọn (sẽ được kết hợp với loại ghế) */
         .seat-box.seat-available {
-            /* Kiểu cơ bản cho ghế có thể chọn, có thể bị ghi đè bởi kiểu ghế cụ thể */
+            /* Basic style for available seats */
         }
         .seat-box.seat-available:hover {
-            /* Hiệu ứng hover chung, có thể bị ghi đè */
             background-color: #b0bec5;
             transform: translateY(-1px);
         }
 
-        /* Kiểu ghế cụ thể cho ghế có thể chọn */
         .seat-box.seat-thuong.seat-available {
             background-color: #f0f0f0;
             color: #37474f;
         }
         .seat-box.seat-thuong.seat-available:hover {
-            background-color: #dcdcdc; /* Màu xám đậm hơn khi hover */
+            background-color: #dcdcdc;
             transform: translateY(-1px);
         }
 
         .seat-box.seat-vip.seat-available {
-            background-color: #FFD700; /* Màu vàng */
-            color: #4a3b00; /* Màu chữ tối hơn để tương phản */
+            background-color: #FFD700;
+            color: #4a3b00;
             border-color: #e6c300;
         }
         .seat-box.seat-vip.seat-available:hover {
-            background-color: #e6c300; /* Vàng đậm hơn */
+            background-color: #e6c300;
             transform: translateY(-1px);
         }
 
         .seat-box.seat-doi.seat-available {
             width: 64px;
-            background-color: #FFC0CB; /* Màu hồng */
-            color: #5c373d; /* Màu chữ hồng đậm hơn */
+            background-color: #FFC0CB;
+            color: #5c373d;
             border-color: #f7b0be;
         }
         .seat-box.seat-doi.seat-available:hover {
             width: 64px;
-            background-color: #f7b0be; /* Hồng đậm hơn */
+            background-color: #f7b0be;
             transform: translateY(-1px);
         }
 
-        /* Ghi đè trạng thái - Ưu tiên cao hơn */
         .seat-box.seat-selected {
             background-color: #3182ce;
             color: #fff;
@@ -166,15 +161,15 @@
         }
         .seat-box.seat-doi.seat-selected {
             width: 64px;
-            background-color: #3182ce; /* Giữ màu nền của trạng thái selected */
-            color: #fff; /* Giữ màu chữ của trạng thái selected */
-            border-color: #2c7ae0; /* Giữ màu viền của trạng thái selected */
-            box-shadow: 0 0 8px rgba(49, 130, 206, 0.5); /* Giữ hiệu ứng bóng */
+            background-color: #3182ce;
+            color: #fff;
+            border-color: #2c7ae0;
+            box-shadow: 0 0 8px rgba(49, 130, 206, 0.5);
         }
 
         .seat-box.seat-occupied,
         .seat-box.reserved {
-            background-color: #78909c; /* Màu thống nhất cho ghế không thể chọn */
+            background-color: #78909c;
             color: #eceff1;
             cursor: not-allowed;
             border-color: #546e7a;
@@ -318,16 +313,13 @@
         <h1>Chọn Ghế Ngồi</h1>
     </div>
 
-    <!-- Chỉ báo màn hình chiếu phim -->
     <div class="screen-indicator">Màn Hình</div>
 
     <div class="seat-selection-wrapper">
-        <!-- Khu vực hiển thị sơ đồ ghế -->
         <div class="seat-map">
             <div th:each="dayGhe : ${danhSachDayGhe}" class="seat-row">
                 <b class="seat-row-name" th:text="${dayGhe.tenDayGhe}">A</b>
                 <div class="seat-container">
-                    <!-- Nút ghế, lặp qua từng ghế trong dãy -->
                     <button th:each="ghe, iterStat : ${dayGhe.dsGhe}"
                             th:text="${iterStat.count}"
                             th:attr="data-id=${ghe.idGhe},
@@ -339,17 +331,15 @@
                             th:classappend="
                                 (${#strings.toUpperCase(#strings.trim(dayGhe.loaiGhe)) == 'VIP' ? 'seat-vip' :
                                   (#strings.toUpperCase(#strings.trim(dayGhe.loaiGhe)) == 'DOI' ? 'seat-doi' : 'seat-thuong')}) + ' ' +
-                                (${danhSachGheDaDat != null and danhSachGheDaDat.contains(ghe.idGhe) ? 'reserved' :
+                                (${danhSachGheDaDat != null and danhSachGheDaDat.contains(ghe) ? 'reserved' :
                                   (ghe.trangThaiGhe ? 'seat-available' : 'seat-occupied')})"
                             onclick="selectSeat(this)">
                     </button>
                 </div>
             </div>
-            <!-- Thông báo nếu sơ đồ ghế không khả dụng -->
             <p th:if="${danhSachDayGhe == null or #lists.isEmpty(danhSachDayGhe)}">Sơ đồ ghế không khả dụng.</p>
         </div>
 
-        <!-- Chú thích trạng thái và loại ghế -->
         <div class="seat-legend">
             <div class="legend-item">
                 <span class="legend-seat-box seat-box seat-thuong seat-available"></span> Ghế thường trống
@@ -369,48 +359,38 @@
         </div>
     </div>
 
-    <!-- Khu vực hiển thị thông tin vé -->
     <div class="ticket-container">
         <div class="ticket-details">
             <div class="column">
-                <!-- Tên phim -->
                 <span class="bold" th:text="${session.phim != null ? session.phim.tenPhim : 'Tên Phim'}">Tên Phim Mặc Định</span>
             </div>
             <div class="column">
                 <span class="label">Rạp</span>
-                <!-- Tên rạp phim -->
                 <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.rapPhim?.tenRapPhim ?: 'Tên Rạp'}">CGV Vincom</span>
                 <span class="label">Suất chiếu</span>
-                <!-- Thời gian và ngày chiếu -->
                 <span class="bold">
                     <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm') : 'HH:MM'}">10:30</span>
                     <br>
                     <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy') : 'dd/MM/yyyy'}">12/05/2025</span>
                 </span>
                 <span class="label">Phòng chiếu</span>
-                <!-- Tên phòng chiếu -->
                 <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.tenPhongChieuPhim ?: 'Tên Phòng'}">Phòng 01</span>
             </div>
             <div class="column">
                 <span class="label">Giá vé</span>
-                <!-- Tổng giá vé -->
                 <span class="bold" id="total-ve">0 ₫</span>
                 <span class="label">Combo</span>
-                <!-- Giá combo -->
                 <span class="bold" id="total-combo">0 ₫</span>
                 <span class="label">Tổng cộng</span>
-                <!-- Tổng giá vé và combo -->
                 <span class="bold" id="total">0 ₫</span>
             </div>
         </div>
 
-        <!-- Form gửi thông tin ghế đã chọn -->
         <form id="seatForm" method="GET" th:action="@{/booking/combo-list}">
             <input type="hidden" name="danhSachGheDuocChon" id="danhSachGheDuocChon">
             <input type="hidden" name ="danhSachGheDuocChonIds" id="danhSachGheDuocChonIds">
             <input type="hidden" name="tongGiaVe" id="tongGiaVe">
             <input type="hidden" name="idSuatChieu" th:value="${session.suatChieu?.idSuatChieu}" />
-            <!-- Nút tiếp tục để chuyển sang bước chọn combo -->
             <button type="submit" id="continue-button" class="nav-button next" onclick="return validateSelection()">
                 Tiếp Tục <i class="fas fa-arrow-right"></i>
             </button>
@@ -420,11 +400,8 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    // Giả định danhSachGheDaDat là danh sách các ID ghế (không phải đối tượng Ghe).
-    // Nếu danhSachGheDaDat chứa các đối tượng Ghe đầy đủ, cần điều chỉnh kiểm tra trong Thymeleaf:
-    // Từ: ${danhSachGheDaDat.contains(ghe) ? ...}
-    // Sang: ${danhSachGheDaDat.contains(ghe.idGhe) ? ...}
-    // Trong mã HTML, đã sử dụng cách kiểm tra với idGhe để đảm bảo tính mạnh mẽ.
+    // CHÚ Ý: Với `danhSachGheDaDat` là `Set<Ghe>`, kiểm tra trong Thymeleaf nên là `danhSachGheDaDat.contains(ghe)`.
+    // Điều này yêu cầu lớp Ghe.java phải có equals() và hashCode() đúng.
     /*]]>*/
 
     // Hàm xử lý sự kiện chọn ghế
@@ -570,10 +547,6 @@
             }
             const giaVe = parseInt(ghe.getAttribute('data-giave')) || 0;
             tongTienVe += giaVe;
-            // In ra console để kiểm tra
-            console.log('Danh sách ID ghế được chọn:', danhSachGheDuocChonIds);
-            console.log('Danh sách ghế (ký hiệu) được chọn:', danhSachGheDuocChon);
-            console.log(tongTienVe);
         });
 
         // Lấy giá combo từ phần tử HTML
@@ -605,7 +578,7 @@
             comboElement.dataset.value = "0";
         }
         comboElement.innerText = formatCurrency(parseInt(comboElement.dataset.value));
-        updateTotalPrice();
+        updateTotalPrice(); // Gọi lại để tính tổng cuối cùng
     });
 </script>
 </body>
