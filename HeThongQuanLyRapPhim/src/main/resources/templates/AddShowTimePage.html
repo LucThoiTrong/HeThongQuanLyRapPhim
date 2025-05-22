@@ -230,27 +230,42 @@
       return;
     }
 
-    // Use Thymeleaf to get the base URL and append the ID dynamically
     const baseUrl = /*[[@{/showtimes/rap-phim/}]]*/ '/showtimes/rap-phim/';
     const url = baseUrl + selectedIdRapPhim + '/phong-chieu';
     console.log("Đang gọi API lấy phòng chiếu với URL:", url);
 
     try {
       const response = await fetch(url);
+      const responseText = await response.text(); // <<<<---- LẤY RESPONSE DƯỚI DẠNG TEXT
+
+      console.log("===== RAW JSON RESPONSE FROM SERVER ====="); // <<<<---- LOG RA CONSOLE
+      console.log(responseText);                              // <<<<---- LOG RA CONSOLE
+      console.log("========================================");
+
       if (!response.ok) {
         let errorMsg = `Lỗi HTTP: ${response.status}`;
         try {
-          const errorData = await response.json();
+          // Thử parse responseText để lấy message lỗi chi tiết hơn nếu có
+          const errorData = JSON.parse(responseText); // Dùng responseText đã lấy
           if (errorData && errorData.message) {
             errorMsg = errorData.message;
           } else if (typeof errorData === 'string' && errorData.length < 100) {
-            errorMsg = errorData;
+            errorMsg = errorData; // Nếu server trả về lỗi dạng chuỗi thuần
           }
-        } catch (e) { /* Ignore if response is not JSON */ }
+        } catch (e) {
+          // Nếu responseText không phải JSON (ví dụ lỗi HTML từ server)
+          // thì errorMsg giữ nguyên hoặc có thể gán responseText nếu nó ngắn gọn
+          console.warn("Response lỗi không phải là JSON:", responseText);
+          if (responseText.length < 200) { // Chỉ hiển thị nếu nó không quá dài
+            errorMsg += ` (Server response: ${responseText})`;
+          }
+        }
         throw new Error(errorMsg);
       }
 
-      const rooms = await response.json();
+      // Sau khi đã log, bạn có thể parse nó
+      const rooms = JSON.parse(responseText); // Parse từ responseText đã lấy
+
       if (rooms && rooms.length > 0) {
         rooms.forEach(room => {
           const option = document.createElement('option');
@@ -265,7 +280,17 @@
     } catch (error) {
       console.error('Không thể tải danh sách phòng chiếu:', error);
       roomSelect.innerHTML = '<option value="">Lỗi tải phòng chiếu</option>';
-      roomLoadingErrorDiv.textContent = 'Không thể tải danh sách phòng chiếu. ' + error.message;
+      let displayErrorMessage = 'Không thể tải danh sách phòng chiếu. ' + error.message;
+
+      // Nếu lỗi là SyntaxError (lỗi parse JSON), chúng ta đã có responseText ở trên
+      // Nếu không, chúng ta cần fetch lại để lấy responseText (hoặc bạn có thể cấu trúc lại để luôn có responseText)
+      if (error instanceof SyntaxError) {
+        // Trong trường hợp này, responseText sẽ được log ở block try rồi
+        // Bạn có thể thêm vào đây nếu muốn chắc chắn
+        // console.error("Dữ liệu JSON không hợp lệ:", responseText); // responseText cần được truyền vào đây
+      }
+
+      roomLoadingErrorDiv.textContent = displayErrorMessage;
       roomLoadingErrorDiv.classList.remove('hidden');
     }
   }

@@ -12,29 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/payment")
 public class PaymentController {
     private final VNPayService vnpayService;
-    private final InvoiceService hoaDonService;
-    private final ChairService chairService;
-    private final PopcornDrinkComboService popcornDrinkComboService;
-    private final EmailService emailService;
 
     @Autowired
-    public PaymentController(VNPayService vnpayService, InvoiceService hoaDonService,
-                             ChairService chairService,PopcornDrinkComboService popcornDrinkComboService,
-                             EmailService emailService) {
+    public PaymentController(VNPayService vnpayService) {
         this.vnpayService = vnpayService;
-        this.hoaDonService = hoaDonService;
-        this.chairService = chairService;
-        this.popcornDrinkComboService = popcornDrinkComboService;
-        this.emailService = emailService;
     }
 
     @SuppressWarnings("SpringMVCViewInspection")
@@ -81,59 +68,9 @@ public class PaymentController {
             }
 
             String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChonIds");
-
-            // Tạo hoá đơn
-            HoaDon hoaDon = new HoaDon();
-
-            Set<VeXemPhim> dsVeXemPhim = new HashSet<>();
-            if (danhSachGhe != null && !danhSachGhe.isEmpty()) {
-                String[] gheArray = danhSachGhe.split(",");
-                for (String id : gheArray) {
-                    // Xoá tất cả ký tự không phải là số
-                    String soGhe = id.replaceAll("[^0-9]", "");  // giữ lại chỉ chữ số
-                    if (!soGhe.isEmpty()) {
-                        Ghe ghe = chairService.getChairById(Integer.parseInt(soGhe));
-                        VeXemPhim veXemPhim = new VeXemPhim();
-                        veXemPhim.setGhe(ghe);
-                        veXemPhim.setSuatChieu(suatChieu);
-                        veXemPhim.setHoaDon(hoaDon);
-                        dsVeXemPhim.add(veXemPhim);
-                    }
-                }
-            }
-
-            Set<ChiTietComBoBapNuoc> dsChiTietComBoBapNuoc = new HashSet<>();
             @SuppressWarnings("unchecked") Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
-            if (comboSoLuong != null) {
-                for (Map.Entry<Integer, Integer> entry : comboSoLuong.entrySet()) {
-                    Integer idCombo = entry.getKey();
-                    Integer soLuong = entry.getValue();
-                    ComboBapNuoc comboBapNuoc = popcornDrinkComboService.findById(idCombo);
-                    ChiTietComBoBapNuoc chiTietComBoBapNuoc = new ChiTietComBoBapNuoc();
-                    chiTietComBoBapNuoc.setComboBapNuoc(comboBapNuoc);
-                    chiTietComBoBapNuoc.setSoLuong(soLuong);
-                    chiTietComBoBapNuoc.setHoaDon(hoaDon);
-                    dsChiTietComBoBapNuoc.add(chiTietComBoBapNuoc);
-                }
-            }
-            hoaDon.setDoiTuongSuDung(doiTuongSuDung);
-            hoaDon.setSuatChieu(suatChieu);
-            hoaDon.setTrangThaiHoaDon(TrangThaiHoaDon.DA_THANH_TOAN);
-            hoaDon.setDsVeXemPhimDaMua(dsVeXemPhim);
-            hoaDon.setTongGiaTien(tongTienSauGiam);
-            hoaDon.setDsComBoDaMua(dsChiTietComBoBapNuoc);
-            hoaDon.setNgayThanhToan(LocalDateTime.now());
-            hoaDonService.save(hoaDon);
 
-            // Gửi email hóa đơn
-            try {
-                emailService.guiHoaDonQuaEmail(
-                        doiTuongSuDung.getEmail(),
-                        hoaDon
-                );
-            } catch (Exception e) {
-                System.err.println("Lỗi gửi email hóa đơn: " + e.getMessage());
-            }
+            vnpayService.createInvoice(danhSachGhe, comboSoLuong, suatChieu, doiTuongSuDung, tongTienSauGiam);
         }
         model.addAttribute("message", message);
         return "AfterPaymentPage";
