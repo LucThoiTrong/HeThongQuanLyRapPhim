@@ -75,11 +75,24 @@ public class ChienDichGiamGia implements Serializable {
     public void setDsMaGiamGia(Set<MaGiamGia> dsMaGiamGia) {
         this.dsMaGiamGia = dsMaGiamGia;
     }
-    public void addMaGiamGia(MaGiamGia maGiamGia) {
-        if (dsMaGiamGia == null) {
+
+    public void addMaGiamGia(MaGiamGia maGiamGia, int soLuongMaGiamGia, ChienDichGiamGia chienDichGiamGia) {
+        if(dsMaGiamGia == null) {
             dsMaGiamGia = new HashSet<>();
         }
-        dsMaGiamGia.add(maGiamGia);
-        maGiamGia.setChienDichGiamGia(this); // Đảm bảo liên kết hai chiều
+        for(int i = 0; i < soLuongMaGiamGia; i++) {
+            MaGiamGia newMaGiamGia = new MaGiamGia();
+            newMaGiamGia.setTenMaGiamGia(maGiamGia.getTenMaGiamGia());
+            newMaGiamGia.setPhanTramGiamGia(maGiamGia.getPhanTramGiamGia());
+            newMaGiamGia.setHanMucApDung(maGiamGia.getHanMucApDung());
+            newMaGiamGia.setGiaTriGiamToiDa(maGiamGia.getGiaTriGiamToiDa());
+            newMaGiamGia.setNgayBatDauApDung(maGiamGia.getNgayBatDauApDung());
+            newMaGiamGia.setNgayKetThucApDung(maGiamGia.getNgayKetThucApDung());
+            newMaGiamGia.setTrangThaiSuDung(maGiamGia.isTrangThaiSuDung());
+            newMaGiamGia.setChienDichGiamGia(chienDichGiamGia);
+            dsMaGiamGia.add(newMaGiamGia);
+        }
+        setDsMaGiamGia(dsMaGiamGia);
     }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,58 +42,27 @@ public class DiscountCampaignController {
 
     @GetMapping("/themDanhSachMaGiamGia")
     public String themDanhSachMaGiamGia(@ModelAttribute("chienDichGiamGia") ChienDichGiamGia chienDichGiamGia,
-                                        Model model)
-    {
+                                        Model model) {
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
-        System.out.println(chienDichGiamGia.getTenChienDich());
-        System.out.println(chienDichGiamGia.getNgayBatDauChienDich());
         MaGiamGia maGiamGia = new MaGiamGia();
         model.addAttribute("maGiamGia", maGiamGia);
         model.addAttribute("soLuongMaGiamGia", 0);
         return "AddDiscountWithCampaignPage";
     }
 
+    // Thực hiện thêm chiến dịch
     @PostMapping("/save")
     public String save(@RequestParam("tenChienDich") String tenChienDich,
                        @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
                        @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc,
                        @ModelAttribute("maGiamGia") MaGiamGia maGiamGia,
-                       @RequestParam("soLuongMaGiamGia") int soLuongMaGiamGia) {
-        //add danh sach ma giam gia vao chien dich
-        ChienDichGiamGia chienDichGiamGia=new ChienDichGiamGia();
-        chienDichGiamGia.setTenChienDich(tenChienDich);
-        chienDichGiamGia.setNgayBatDauChienDich(ngayBatDau);
-        chienDichGiamGia.setNgayKetThucChienDich(ngayKetThuc);
-        // Tạo danh sách mã giảm giá de add vao ds mgg trong chien dich
-        for (int i = 0; i < soLuongMaGiamGia; i++) {
-            MaGiamGia newMaGiamGia = new MaGiamGia();
-            newMaGiamGia.setTenMaGiamGia(maGiamGia.getTenMaGiamGia());
-            newMaGiamGia.setPhanTramGiamGia(maGiamGia.getPhanTramGiamGia());
-            newMaGiamGia.setHanMucApDung(maGiamGia.getHanMucApDung());
-            newMaGiamGia.setGiaTriGiamToiDa(maGiamGia.getGiaTriGiamToiDa());
-            newMaGiamGia.setNgayBatDauApDung(maGiamGia.getNgayBatDauApDung());
-            newMaGiamGia.setNgayKetThucApDung(maGiamGia.getNgayKetThucApDung());
-            newMaGiamGia.setTrangThaiSuDung(maGiamGia.isTrangThaiSuDung());
-
-            chienDichGiamGia.addMaGiamGia(newMaGiamGia);
+                       @RequestParam("soLuongMaGiamGia") int soLuongMaGiamGia, RedirectAttributes redirectAttributes) {
+        ChienDichGiamGia chienDichGiamGia = chienDichGiamGiaService.insert(tenChienDich, ngayBatDau, ngayKetThuc, maGiamGia, soLuongMaGiamGia);
+        if(chienDichGiamGia != null) {
+            redirectAttributes.addFlashAttribute("message", "Thêm chiến dịch thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Thêm chiến dịch thất bại");
         }
-        chienDichGiamGiaService.save(chienDichGiamGia);
-        return "redirect:/discount-campaign/";
-    }
-
-
-    @GetMapping("/capNhat")
-    public String save(@RequestParam("idChienDichGiamGia") int id,
-            @RequestParam("tenChienDich") String tenChienDich,
-                       @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
-                       @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc) {
-        ChienDichGiamGia chienDichGiamGia;
-        chienDichGiamGia = chienDichGiamGiaService.findById(id);
-        // Gán giá trị mới
-        chienDichGiamGia.setTenChienDich(tenChienDich);
-        chienDichGiamGia.setNgayBatDauChienDich(ngayBatDau);
-        chienDichGiamGia.setNgayKetThucChienDich(ngayKetThuc);
-        chienDichGiamGiaService.save(chienDichGiamGia);
         return "redirect:/discount-campaign/";
     }
 
@@ -100,14 +70,34 @@ public class DiscountCampaignController {
     public String showFormForUpdate(@RequestParam("idChienDichGiamGia") int theId, Model model) {
         ChienDichGiamGia chienDichGiamGia = chienDichGiamGiaService.findById(theId);
         model.addAttribute("chienDichGiamGia", chienDichGiamGia);
-        System.out.println(chienDichGiamGia.getNgayBatDauChienDich());
-        System.out.println(chienDichGiamGia.getNgayKetThucChienDich());
         return "EditDiscountCampaignPage";
     }
 
+    // Thực hiện cập nhật
+    @GetMapping("/capNhat")
+    public String save(@RequestParam("idChienDichGiamGia") int id,
+                       @RequestParam("tenChienDich") String tenChienDich,
+                       @RequestParam("ngayBatDauChienDich") LocalDateTime ngayBatDau,
+                       @RequestParam("ngayKetThucChienDich") LocalDateTime ngayKetThuc,
+                       RedirectAttributes redirectAttributes) {
+        ChienDichGiamGia result = chienDichGiamGiaService.update(id, tenChienDich, ngayBatDau, ngayKetThuc);
+        if(result != null) {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật chiến dịch thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật chiến dịch thất bại");
+        }
+        return "redirect:/discount-campaign/";
+    }
+
+    // Thực hiện delete
     @GetMapping("/delete")
-    public String delete(@RequestParam("idChienDichGiamGia") int theId) {
-        chienDichGiamGiaService.deleteById(theId);
+    public String delete(@RequestParam("idChienDichGiamGia") int theId, RedirectAttributes redirectAttributes) {
+        boolean result = chienDichGiamGiaService.deleteById(theId);
+        if(result) {
+            redirectAttributes.addFlashAttribute("message", "Xoá chiến dịch thành công");
+        } else {
+            redirectAttributes.addFlashAttribute("message", "Xoá chiến dịch thất bại");
+        }
         return "redirect:/discount-campaign/";
     }
 }

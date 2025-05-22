@@ -1,13 +1,13 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountCampaignRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 @Service
 public class DiscountCampaignServiceImpl implements DiscountCampaignService {
     private final DiscountCampaignRepository discountCampaignRepository;
@@ -24,27 +24,40 @@ public class DiscountCampaignServiceImpl implements DiscountCampaignService {
 
     @Override
     public ChienDichGiamGia findById(int theId) {
-//        Kiểu dữ liệu Optional giúp xử lý trường hợp dữ liệu có thể null một cách an toàn.
-        Optional<ChienDichGiamGia> result = discountCampaignRepository.findById(theId);
-        ChienDichGiamGia chienDichGiamGia = null;
-        if (result.isPresent()) {
-            chienDichGiamGia = result.get();
-        }
-        else {
-            // we didn't find the employee
-            throw new RuntimeException("Did not find combo bap nuoc id - " + theId);
-        }
-
-        return chienDichGiamGia;
+        return discountCampaignRepository.findById(theId).orElse(null);
     }
 
     @Override
-    public ChienDichGiamGia save(ChienDichGiamGia chienDichGiamGia) {
+    public ChienDichGiamGia insert(String tenChienDich, LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc, MaGiamGia maGiamGia, int soLuongMaGiamGia) {
+        ChienDichGiamGia chienDichGiamGia = new ChienDichGiamGia();
+        chienDichGiamGia.setTenChienDich(tenChienDich);
+        chienDichGiamGia.setNgayBatDauChienDich(ngayBatDau);
+        chienDichGiamGia.setNgayKetThucChienDich(ngayKetThuc);
+        chienDichGiamGia.addMaGiamGia(maGiamGia, soLuongMaGiamGia, chienDichGiamGia);
+
         return discountCampaignRepository.save(chienDichGiamGia);
     }
 
     @Override
-    public void deleteById(int theId) {
-        discountCampaignRepository.deleteById(theId);
+    public ChienDichGiamGia update(int id, String tenChienDich, LocalDateTime ngayBatDau, LocalDateTime ngayKetThuc) {
+        ChienDichGiamGia chienDichGiamGia = findById(id);
+
+        // Gán giá trị mới
+        chienDichGiamGia.setTenChienDich(tenChienDich);
+        chienDichGiamGia.setNgayBatDauChienDich(ngayBatDau);
+        chienDichGiamGia.setNgayKetThucChienDich(ngayKetThuc);
+
+        return discountCampaignRepository.save(chienDichGiamGia);
+    }
+
+
+    @Override
+    public boolean deleteById(int theId) {
+        ChienDichGiamGia chienDichGiamGia = findById(theId);
+        if (chienDichGiamGia != null) {
+            discountCampaignRepository.deleteById(theId);
+            return true;
+        }
+        return false;
     }
 }

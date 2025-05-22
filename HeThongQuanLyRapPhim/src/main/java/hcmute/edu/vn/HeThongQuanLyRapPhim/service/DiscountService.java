@@ -1,16 +1,15 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.ChienDichGiamGia;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
 
 import java.util.List;
 
 public interface DiscountService {
     List<MaGiamGia> findAll();
-
+    List<ChienDichGiamGia> findAllChienDichGiamGia();
     MaGiamGia findById(int theId);
-
-    MaGiamGia save(MaGiamGia maGiamGia);
-
-    void deleteById(int theId);
-    MaGiamGia updateCustomer(MaGiamGia maGiamGia);
+    MaGiamGia insert(MaGiamGia theMaGiamGia);
+    MaGiamGia update(int id, MaGiamGia theMaGiamGia);
+    boolean deleteById(int theId);
 }
