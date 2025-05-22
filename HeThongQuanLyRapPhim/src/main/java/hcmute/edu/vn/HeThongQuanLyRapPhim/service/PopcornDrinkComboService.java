@@ -8,8 +8,9 @@ public interface PopcornDrinkComboService {
     List<ComboBapNuoc> findAll();
 
     ComboBapNuoc findById(int theId);
+    ComboBapNuoc insert(ComboBapNuoc comboBapNuoc);
 
-    ComboBapNuoc save(ComboBapNuoc comboBapNuoc);
+    ComboBapNuoc update(int id, ComboBapNuoc comboBapNuoc);
 
     void deleteById(int theId);
 

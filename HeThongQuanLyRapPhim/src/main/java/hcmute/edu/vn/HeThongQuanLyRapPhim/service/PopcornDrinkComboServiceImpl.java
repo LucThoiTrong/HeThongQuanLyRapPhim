@@ -27,8 +27,17 @@ public class PopcornDrinkComboServiceImpl implements PopcornDrinkComboService {
     }
 
     @Override
-    public ComboBapNuoc save(ComboBapNuoc comboBapNuoc) {
+    public ComboBapNuoc insert(ComboBapNuoc comboBapNuoc) {
         return popCornDrinkComboRepository.save(comboBapNuoc);
+    }
+
+    @Override
+    public ComboBapNuoc update(int id, ComboBapNuoc comboBapNuoc) {
+        ComboBapNuoc findComboBapNuoc = findById(id);
+        if (findComboBapNuoc != null) {
+            return popCornDrinkComboRepository.save(comboBapNuoc);
+        }
+        return null;
     }
 
     @Override

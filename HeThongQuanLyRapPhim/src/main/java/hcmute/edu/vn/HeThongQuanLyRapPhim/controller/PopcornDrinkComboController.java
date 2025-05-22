@@ -39,7 +39,7 @@ public class PopcornDrinkComboController {
     // Thực hiện lưu combo
     @PostMapping("/new")
     public String insertCombo(@ModelAttribute("comboBapNuoc") ComboBapNuoc comboBapNuoc, RedirectAttributes redirectAttributes) {
-        ComboBapNuoc combo = popCornDrinkComboService.save(comboBapNuoc);
+        ComboBapNuoc combo = popCornDrinkComboService.insert(comboBapNuoc);
         if(combo != null) {
             redirectAttributes.addFlashAttribute("message", "Thêm combo thành công");
         } else {
@@ -59,9 +59,8 @@ public class PopcornDrinkComboController {
     // Thực hiện cập nhật combo
     @PostMapping("/update/{id}")
     public String updateCombo(@ModelAttribute("comboBapNuoc") ComboBapNuoc comboBapNuoc, @PathVariable int id, RedirectAttributes redirectAttributes) {
-        ComboBapNuoc cb = popCornDrinkComboService.findById(id);
+        ComboBapNuoc cb = popCornDrinkComboService.update(id, comboBapNuoc);
         if(cb != null) {
-            popCornDrinkComboService.save(comboBapNuoc);
             redirectAttributes.addFlashAttribute("message", "Cập nhật combo thành công");
         } else {
             redirectAttributes.addFlashAttribute("message", "Cập nhật combo thất bại");
