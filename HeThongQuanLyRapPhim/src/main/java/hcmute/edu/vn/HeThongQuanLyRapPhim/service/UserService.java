@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface UserService {
     DoiTuongSuDung getDoiTuongSuDungById(int id);
-    List<DoiTuongSuDung> getNhanVienChuaCoRap();
 }

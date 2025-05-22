@@ -456,12 +456,6 @@
             <h3 th:text="${nhanVien.hoTen}"></h3>
             <p><i class="fa-solid fa-envelope"></i> <span th:text="${nhanVien.email}"></span></p>
             <p><i class="fa-solid fa-phone"></i> <span th:text="${nhanVien.soDienThoai}"></span></p>
-            <p>
-                <i class="fa-solid fa-user-check"></i>
-                <span th:if="${nhanVien.tkDoiTuongSuDung == null}" class="status-text status-unknown">Chưa có tài khoản</span>
-                <span th:if="${nhanVien.tkDoiTuongSuDung != null and nhanVien.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-text status-active">Đang hoạt động</span>
-                <span th:if="${nhanVien.tkDoiTuongSuDung != null and !nhanVien.tkDoiTuongSuDung.trangThaiTaiKhoan}" class="status-text status-inactive">Không hoạt động</span>
-            </p>
             <p><i class="fa-solid fa-map-marker-alt"></i> <span th:text="${nhanVien.rapPhim?.tenRapPhim ?: 'Chưa có vị trí'}"></span></p>
             <div class="card-actions">
                 <a th:href="@{/employees/update/{id}(id=${nhanVien.idDoiTuongSuDung})}" class="btn btn-warning btn-sm" data-tippy-content="Chỉnh sửa thông tin">

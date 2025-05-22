@@ -428,21 +428,6 @@
                 <div th:if="${#fields.hasErrors('rapPhim')}" th:errors="*{rapPhim}" class="text-danger"></div>
             </div>
 
-            <div class="form-group with-icon">
-                <label for="trangThaiTaiKhoan" data-tippy-content="Trạng thái tài khoản của nhân viên">Trạng thái hoạt động</label>
-                <select id="trangThaiTaiKhoan" class="form-select"
-                        th:field="*{tkDoiTuongSuDung.trangThaiTaiKhoan}"
-                        th:disabled="${nhanVien.tkDoiTuongSuDung == null}">
-                    <option th:if="${nhanVien.tkDoiTuongSuDung == null}" value="" selected disabled>Chưa có tài khoản</option>
-                    <th:block th:if="${nhanVien.tkDoiTuongSuDung != null}">
-                        <option th:value="true" th:text="'Đang hoạt động'"></option>
-                        <option th:value="false" th:text="'Bị khoá'"></option>
-                    </th:block>
-                </select>
-                <i class="fa-solid fa-user-check"></i>
-                <div th:if="${#fields.hasErrors('tkDoiTuongSuDung.trangThaiTaiKhoan')}" th:errors="*{tkDoiTuongSuDung.trangThaiTaiKhoan}" class="text-danger"></div>
-            </div>
-
             <div class="button-group-form">
                 <a th:href="@{/employees/}" class="btn btn-cancel">
                     <i class="fa-solid fa-arrow-left"></i> Quay lại

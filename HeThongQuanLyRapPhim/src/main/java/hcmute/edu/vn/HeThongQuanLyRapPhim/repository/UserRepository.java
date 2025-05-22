@@ -15,4 +15,6 @@ public interface UserRepository extends JpaRepository<DoiTuongSuDung, Integer> {
     List<DoiTuongSuDung> findByLoaiDoiTuongSuDungAndRapPhimIsNull(LoaiDoiTuongSuDung loaiDoiTuongSuDung);
 
     DoiTuongSuDung findDoiTuongSuDungByEmail(String email);
+
+    List<DoiTuongSuDung> findAllByLoaiDoiTuongSuDung(LoaiDoiTuongSuDung loaiDoiTuongSuDung);
 }

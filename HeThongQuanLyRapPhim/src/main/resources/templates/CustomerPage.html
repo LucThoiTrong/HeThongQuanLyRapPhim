@@ -3,22 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Danh Sách Khách Hàng</title>
-    <!-- Font Awesome cho biểu tượng -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 cho thông báo -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Google Fonts (Poppins) -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tippy.js cho tooltip -->
     <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://unpkg.com/tippy.js@6"></script>
-    <!-- Hover.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/hover.css/2.3.1/css/hover-min.css">
     <style>
         :root {
             --primary-color: #0a3d62;
-            --secondary-color: #1bff00;
+            --secondary-color: #6c757d;
             --danger-color: #dc3545;
             --success-color: #28a745;
             --info-color: #17a2b8;
@@ -36,530 +31,175 @@
             --neon-glow: 0 0 10px rgba(10, 61, 98, 0.8), 0 0 20px rgba(10, 61, 98, 0.6), 0 0 30px rgba(10, 61, 98, 0.4);
             --transition: all 0.3s ease;
             --border-radius: 10px;
+            --border-radius-sm: 8px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Poppins', sans-serif;
             background: radial-gradient(circle at 50% 50%, #d9e2ec, #f0f4f8);
-            color: var(--text-dark);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.6;
-            position: relative;
-            overflow-x: hidden;
+            color: var(--text-dark); margin: 0; min-height: 100vh; display: flex;
+            flex-direction: column; line-height: 1.6; position: relative; overflow-x: hidden;
         }
-
+        body.dialog-open { overflow: hidden; }
         header {
-            background: linear-gradient(135deg, #0a3d62, #1e6091);
-            color: var(--text-light);
-            padding: 1.5rem 2rem;
-            box-shadow: var(--card-shadow);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: linear-gradient(135deg, #0a3d62, #1e6091); color: var(--text-light);
+            padding: 1.5rem 2rem; box-shadow: var(--card-shadow); position: sticky; top: 0;
+            z-index: 1000; display: flex; justify-content: space-between; align-items: center;
         }
-
-        header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        header .logo {
-            font-size: 2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        header .logo i {
-            animation: neonPulse 1.5s infinite;
-        }
-
-        .container {
-            padding: 3rem 2rem;
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .button-group {
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 1rem;
-        }
-
+        header h1 { font-size: 2.5rem; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        header .logo { font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        header .logo i { animation: neonPulse 1.5s infinite; }
+        .container { padding: 3rem 2rem; flex: 1; max-width: 1200px; margin: 0 auto; width: 100%; }
+        .button-group { margin-bottom: 2rem; display: flex; gap: 1rem; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
-            width: 180px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            color: var(--text-light);
-            background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62);
-            background-size: 200% 100%;
-            border: 2px solid transparent;
-            transition: var(--transition);
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-            animation: gradientFlow 3s ease infinite;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.8rem 1.5rem; width: 180px; font-size: 1rem; font-weight: 600;
+            text-align: center; cursor: pointer; border-radius: var(--border-radius); text-decoration: none;
+            color: var(--text-light); background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62);
+            background-size: 200% 100%; border: 2px solid transparent; transition: var(--transition);
+            box-shadow: var(--card-shadow); position: relative; overflow: hidden; animation: gradientFlow 3s ease infinite;
         }
-
         .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -150%;
-            width: 150%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
-            transition: left 0.5s ease;
+            content: ''; position: absolute; top: 0; left: -150%; width: 150%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); transition: left 0.5s ease;
         }
-
         .btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8), transparent);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s ease, height 0.3s ease;
-            opacity: 0;
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.8), transparent);
+            transform: translate(-50%, -50%); transition: width 0.3s ease, height 0.3s ease; opacity: 0;
         }
-
         .btn:hover {
             transform: perspective(600px) rotateX(8deg) rotateY(8deg) translateY(-4px);
-            box-shadow: var(--neon-glow);
-            filter: brightness(1.2);
-            border: 2px solid #1e6091;
+            box-shadow: var(--neon-glow); filter: brightness(1.2); border: 2px solid #1e6091;
         }
-
-        .btn:hover::before {
-            left: 150%;
-        }
-
-        .btn:hover i {
-            transform: scale(1.3) rotate(10deg);
-        }
-
-        .btn:active {
-            transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(0.92);
-            box-shadow: var(--card-shadow);
-        }
-
-        .btn:active::after {
-            width: 200px;
-            height: 200px;
-            opacity: 1;
-            transition: width 0.3s ease, height 0.3s ease, opacity 0.1s ease;
-        }
-
-        .btn i {
-            font-size: 1rem;
-            transition: transform 0.3s ease;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #adb5bd, #6c757d);
-            background-size: 200% 100%;
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #dc3545, #ff6b6b, #dc3545);
-            background-size: 200% 100%;
-        }
-
-        .btn-edit {
-            background: linear-gradient(45deg, #17a2b8, #48dbfb, #17a2b8);
-            background-size: 200% 100%;
-        }
-
-        .btn-success {
-            background: linear-gradient(45deg, #28a745, #2ecc71, #28a745);
-            background-size: 200% 100%;
-        }
-
-        .btn-warning {
-            background: linear-gradient(45deg, #ffc107, #ffd60a, #ffc107);
-            background-size: 200% 100%;
-            color: var(--text-dark);
-        }
-
-        .btn-sm {
-            padding: 0.6rem 0.8rem;
-            width: 100px;
-            font-size: 0.85rem;
-        }
-
-        .btn-sm i {
-            font-size: 0.85rem;
-        }
-
-        .actions-cell {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1rem;
-        }
-
-        .actions-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.75rem;
-            width: 100%;
-        }
-
-        .actions-row.history-buttons {
-            margin-top: 0.5rem;
-        }
-
+        .btn:hover::before { left: 150%; }
+        .btn:hover i { transform: scale(1.3) rotate(10deg); }
+        .btn:active { transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(0.92); box-shadow: var(--card-shadow); }
+        .btn:active::after { width: 200px; height: 200px; opacity: 1; transition: width 0.3s ease, height 0.3s ease, opacity 0.1s ease; }
+        .btn i { font-size: 1rem; transition: transform 0.3s ease; }
+        .btn-secondary { background: linear-gradient(45deg, var(--secondary-color), #adb5bd, var(--secondary-color)); background-size: 200% 100%; }
+        .btn-danger { background: linear-gradient(45deg, var(--danger-color), #ff6b6b, var(--danger-color)); background-size: 200% 100%; }
+        .btn-edit { background: linear-gradient(45deg, var(--info-color), #48dbfb, var(--info-color)); background-size: 200% 100%; }
+        .btn-success { background: linear-gradient(45deg, var(--success-color), #2ecc71, var(--success-color)); background-size: 200% 100%; }
+        .btn-warning { background: linear-gradient(45deg, var(--warning-color), #ffd60a, var(--warning-color)); background-size: 200% 100%; color: var(--text-dark); }
+        .btn-sm { padding: 0.6rem 0.8rem; width: 100px; font-size: 0.85rem; }
+        .btn-sm i { font-size: 0.85rem; }
+        .actions-cell { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1rem; }
+        .actions-row { display: flex; justify-content: center; gap: 0.75rem; width: 100%; }
+        .actions-row.history-buttons { margin-top: 0.5rem; }
         table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 1.5rem;
-            box-shadow: var(--card-shadow);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            background-color: var(--card-background);
-            position: relative;
-            z-index: 10;
+            border-collapse: collapse; width: 100%; margin-top: 1.5rem; box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius); overflow: hidden; background-color: var(--card-background);
+            position: relative; z-index: 10;
         }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            text-align: center;
-            vertical-align: middle;
-        }
-
+        th, td { border: 1px solid var(--border-color); padding: 1rem; text-align: center; vertical-align: middle; }
         th {
-            background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62);
-            background-size: 200% 100%;
-            color: var(--text-light);
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-transform: uppercase;
+            background: linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62); background-size: 200% 100%;
+            color: var(--text-light); font-weight: 600; font-size: 0.95rem; text-transform: uppercase;
             animation: gradientFlow 3s ease infinite;
         }
-
-        tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        tr:hover {
-            background-color: var(--table-hover-background);
-            box-shadow: 0 0 15px rgba(10, 61, 98, 0.3);
-            transform: scale(1.01);
-            transition: var(--transition);
-        }
-
+        tr:nth-child(even) { background-color: #f9fafb; }
+        tr:hover { background-color: var(--table-hover-background); box-shadow: 0 0 15px rgba(10,61,98,0.3); transform: scale(1.01); transition: var(--transition); }
         .alert {
-            padding: 1rem;
-            margin-bottom: 20px;
-            border-radius: var(--border-radius);
-            border: 1px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: var(--card-shadow);
+            padding: 1rem; margin-bottom: 20px; border-radius: var(--border-radius); border: 1px solid transparent;
+            display: flex; align-items: center; gap: 10px; box-shadow: var(--card-shadow);
         }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-color: #c3e6cb;
-        }
-
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border-color: #bee5eb;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-color: #f5c6cb;
-        }
-
+        .alert-success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .alert-info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+        .alert-danger { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
         .status-badge {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: var(--border-radius);
-            line-height: 1;
-            text-align: center;
-            white-space: nowrap;
-            border: 1px solid transparent;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0.4rem 0.8rem; font-size: 0.85rem; font-weight: 600; border-radius: var(--border-radius);
+            line-height: 1; text-align: center; white-space: nowrap; border: 1px solid transparent;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .status-active {
-            color: var(--success-color);
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-            animation: badgePulse 2s infinite;
-        }
-
-        .status-inactive {
-            color: var(--danger-color);
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .status-disabled {
-            color: var(--text-muted);
-            background-color: var(--light-gray-color);
-            border-color: var(--border-color);
-        }
-
+        .status-active { color: var(--success-color); background-color: #d4edda; border-color: #c3e6cb; animation: badgePulse 2s infinite; }
+        .status-inactive { color: var(--danger-color); background-color: #f8d7da; border-color: #f5c6cb; }
+        .status-disabled { color: var(--text-muted); background-color: var(--light-gray-color); border-color: var(--border-color); }
         .dialog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);
+            display: none; justify-content: center; align-items: center; z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
         }
-
-        .dialog-overlay.show {
-            display: flex;
-        }
-
+        .dialog-overlay.show { display: flex; opacity: 1; }
         .dialog-box {
-            background-color: var(--card-background);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--neon-glow);
-            width: 90%;
-            max-width: 700px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid transparent;
+            background-color: var(--card-background); padding: 1.5rem; border-radius: var(--border-radius);
+            box-shadow: var(--neon-glow); width: 90%; max-width: 700px; max-height: 85vh; display: flex;
+            flex-direction: column; border: 2px solid transparent;
             background: linear-gradient(var(--card-background), var(--card-background)) padding-box,
             linear-gradient(45deg, #0a3d62, #1e6091, #0a3d62) border-box;
-            background-size: 200% 100%;
-            animation: gradientFlow 3s ease infinite;
+            background-size: 200% 100%; animation: gradientFlow 3s ease infinite;
+            transform: scale(0.95); transition: transform 0.3s ease;
         }
-
+        .dialog-overlay.show .dialog-box { transform: scale(1); }
         .dialog-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem; margin-bottom: 1rem;
         }
-
-        .dialog-header h3 {
-            margin: 0;
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
+        .dialog-header h3 { margin: 0; font-size: 1.6rem; color: var(--primary-color); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .dialog-close-btn {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 0 5px;
-            line-height: 1;
-            transition: var(--transition);
+            background: none; border: none; font-size: 1.8rem; font-weight: bold; color: var(--text-muted);
+            cursor: pointer; padding: 0 5px; line-height: 1; transition: var(--transition);
         }
-
-        .dialog-close-btn:hover {
-            color: var(--danger-color);
-            transform: scale(1.2);
-        }
-
+        .dialog-close-btn:hover { color: var(--danger-color); transform: scale(1.2) rotate(90deg); }
         .dialog-content {
-            overflow-y: auto;
-            flex-grow: 1;
-            padding-right: 10px;
+            overflow-y: auto; flex-grow: 1; padding-right: 10px;
+            scrollbar-width: thin; scrollbar-color: var(--primary-color) var(--light-gray-color);
         }
-
-        .dialog-content .loading-spinner,
-        .dialog-content .no-data,
-        .dialog-content .error-message {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            font-size: 1.1em;
-            color: var(--text-muted);
-            min-height: 100px;
+        .dialog-content::-webkit-scrollbar { width: 8px; }
+        .dialog-content::-webkit-scrollbar-track { background: var(--light-gray-color); border-radius: 10px; }
+        .dialog-content::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 10px; border: 2px solid var(--light-gray-color); }
+        .dialog-content .loading-spinner, .dialog-content .no-data, .dialog-content .error-message {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 2rem 1rem; font-size: 1.1em; color: var(--text-muted); min-height: 150px; text-align: center;
         }
-
-        .dialog-content .error-message {
-            color: var(--danger-color);
+        .dialog-content .no-data i, .dialog-content .error-message i, .dialog-content .loading-spinner i {
+            margin-bottom: 0.75rem; font-size: 2.5em; color: var(--primary-color);
         }
-
-        .history-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .dialog-content .error-message i { color: var(--danger-color); }
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item {
+            background-color: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius-sm);
+            padding: 1rem 1.25rem; margin-bottom: 1rem; box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+            transition: all 0.25s ease-in-out;
         }
+        .history-item:last-child { margin-bottom: 0; }
+        .history-item:hover { border-left: 5px solid var(--primary-color); box-shadow: 0 5px 15px rgba(0,0,0,0.1); transform: translateX(5px); }
+        .history-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px dotted var(--border-color); }
+        .history-item-id { color: var(--primary-color); font-weight: 600; font-size: 1.05em; }
+        .history-item-date { font-size: 0.85em; color: var(--text-muted); background-color: var(--light-gray-color); padding: 0.2rem 0.5rem; border-radius: 4px; }
+        .history-item-body p { margin-bottom: 0.5em; font-size: 0.95em; line-height: 1.5; color: var(--text-dark); }
+        .history-item-body p:last-child { margin-bottom: 0; }
+        .history-item-body strong { color: var(--primary-color); margin-right: 5px; }
+        .history-item-body .ticket-list { list-style-type: disc; margin-left: 20px; padding-left: 5px;}
+        .history-item-body .ticket-list li { font-size: 0.9em; color: var(--text-muted); margin-bottom: 0.25em; }
 
-        .history-list li {
-            padding: 10px 0;
-            border-bottom: 1px dotted var(--border-color);
-            transition: var(--transition);
-        }
-
-        .history-list li:hover {
-            background-color: var(--table-hover-background);
-            box-shadow: 0 0 10px rgba(10, 61, 98, 0.2);
-        }
-
-        .history-list li:last-child {
-            border-bottom: none;
-        }
-
-        .history-item-date {
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-right: 10px;
-        }
-
-        @keyframes gradientFlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes neonPulse {
-            0% { transform: scale(1); text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-            50% { transform: scale(1.2); text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
-            100% { transform: scale(1); text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
-        }
-
-        @keyframes badgePulse {
-            0% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
-            50% { box-shadow: 0 0 15px rgba(40, 167, 69, 0.8); }
-            100% { box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
-        }
-
+        .history-item-footer { margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px dotted var(--border-color); text-align: right; font-size: 1em; }
+        .history-item-footer .total-amount, .history-item-footer .refund-amount { font-weight: bold; }
+        .history-item-footer .total-amount { color: var(--success-color); }
+        .history-item-footer .refund-amount { color: var(--danger-color); }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes neonPulse { 0% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } 50% { transform: scale(1.2); text-shadow: 0 0 15px rgba(255,255,255,0.8); } 100% { transform: scale(1); text-shadow: 0 0 5px rgba(255,255,255,0.5); } }
+        @keyframes badgePulse { 0% { box-shadow: 0 0 5px rgba(40,167,69,0.5); } 50% { box-shadow: 0 0 15px rgba(40,167,69,0.8); } 100% { box-shadow: 0 0 5px rgba(40,167,69,0.5); } }
+        .swal2-popup.swal2-popup-custom { border-radius: var(--border-radius) !important; box-shadow: var(--card-shadow) !important; font-family: 'Poppins', sans-serif !important; }
+        .swal2-popup.swal2-popup-custom .swal2-title { color: var(--primary-color) !important; font-size: 1.5em !important; }
+        .swal2-popup.swal2-popup-custom .swal2-html-container { font-size: 1em !important; color: var(--text-dark) !important; }
+        .swal2-popup.swal2-popup-custom .swal2-actions .swal2-confirm, .swal2-popup.swal2-popup-custom .swal2-actions .swal2-cancel { border-radius: var(--border-radius-sm) !important; padding: 0.6em 1.2em !important; font-weight: 500 !important; }
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 1rem;
-            }
-
-            header h1 {
-                font-size: 1.8rem;
-            }
-
-            .container {
-                padding: 2rem 1rem;
-            }
-
-            .button-group {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            table, tbody, td, tr {
-                display: block;
-            }
-
-            thead {
-                display: none;
-            }
-
-            tr {
-                margin-bottom: 1rem;
-                border: 1px solid var(--border-color);
-                border-radius: var(--border-radius);
-                box-shadow: var(--card-shadow);
-                background-color: var(--card-background);
-            }
-
-            td {
-                border: none;
-                border-bottom: 1px solid #eee;
-                position: relative;
-                padding-left: 45%;
-                padding-right: 1rem;
-                min-height: 2.5em;
-                display: flex;
-                justify-content: flex-end;
-                align-items: center;
-            }
-
-            td:before {
-                position: absolute;
-                top: 50%;
-                left: 1rem;
-                transform: translateY(-50%);
-                width: 40%;
-                padding-right: 0.75rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                text-align: left;
-                font-weight: bold;
-                color: var(--primary-color);
-                content: attr(data-label);
-            }
-
-            .actions-cell {
-                flex-direction: column;
-                align-items: flex-end;
-                padding-top: 0.75rem;
-                padding-bottom: 0.75rem;
-            }
-
-            .actions-row {
-                justify-content: flex-end;
-                gap: 0.5rem;
-            }
-
-            .actions-row .btn-sm {
-                width: 80px;
-            }
-
-            .dialog-box {
-                width: 95%;
-                max-height: 85vh;
-            }
+            header { flex-direction: column; align-items: flex-start; padding: 1rem; }
+            header h1 { font-size: 1.8rem; }
+            .container { padding: 2rem 1rem; }
+            .button-group { flex-direction: column; align-items: stretch; }
+            .btn { width: 100%; }
+            table, tbody, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 1rem; border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--card-shadow); background-color: var(--card-background); }
+            td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 45%; padding-right: 1rem; min-height: 2.5em; display: flex; justify-content: flex-end; align-items: center; }
+            td:before { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); width: 40%; padding-right: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; font-weight: bold; color: var(--primary-color); content: attr(data-label); }
+            .actions-cell { flex-direction: column; align-items: flex-end; padding-top: 0.75rem; padding-bottom: 0.75rem; }
+            .actions-row { justify-content: flex-end; gap: 0.5rem; }
+            .actions-row .btn-sm { width: 80px; }
+            .dialog-box { width: 95%; max-height: 90vh; padding: 1rem; }
+            .dialog-header h3 { font-size: 1.4rem; }
+            .history-item { padding: 0.75rem; }
         }
     </style>
 </head>
@@ -650,61 +290,49 @@
     <div class="dialog-box">
         <div class="dialog-header">
             <h3 id="dialogTitleEl">Lịch sử Khách Hàng</h3>
-            <button id="closeDialogBtn" class="dialog-close-btn" title="Đóng">×</button>
+            <button id="closeDialogBtn" class="dialog-close-btn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="dialog-content" id="dialogContentEl">
-            <p class="loading-spinner">Đang tải dữ liệu...</p>
+            <p class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...</p>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Tự động ẩn thông báo flash message sau 3 giây
         const flashMessage = document.getElementById('flash-message');
         if (flashMessage) {
-            setTimeout(() => {
-                flashMessage.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { if(flashMessage) flashMessage.style.display = 'none'; }, 3500);
         }
 
-        // Khởi tạo Tippy.js cho tooltip
         tippy('[data-tippy-content]', {
-            theme: 'light',
-            duration: 200,
+            theme: 'light', animation: 'scale-subtle', inertia: true,
+            duration: [275, 250], arrow: true, placement: 'top',
         });
 
-        // Logic cho nút Xóa với SweetAlert2
         const deleteButtons = document.querySelectorAll('.delete-button');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function(event) {
-                event.preventDefault();
-                event.stopPropagation();
+                event.preventDefault(); event.stopPropagation();
                 const customerName = button.dataset.customerName;
                 const customerId = button.dataset.customerId;
                 Swal.fire({
                     title: 'Xác nhận xóa',
                     html: `Bạn có chắc chắn muốn xóa khách hàng <strong>${customerName}</strong> (ID: ${customerId})?<br>Hành động này không thể hoàn tác.`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fa-solid fa-trash"></i> Xóa',
-                    cancelButtonText: '<i class="fa-solid fa-times"></i> Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                    icon: 'warning', showCancelButton: true, confirmButtonColor: 'var(--danger-color)',
+                    cancelButtonColor: 'var(--secondary-color)', confirmButtonText: '<i class="fa-solid fa-trash"></i> Xóa ngay',
+                    cancelButtonText: '<i class="fa-solid fa-times"></i> Hủy bỏ',
+                    customClass: { popup: 'swal2-popup-custom' },
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
                         const form = button.closest('form');
-                        if (form) {
-                            form.submit();
-                        } else {
-                            console.error("Không tìm thấy form cha để submit cho nút:", button);
-                        }
+                        if (form) { return new Promise(() => { form.submit(); }); } // Removed resolve for form submit
+                        else { Swal.showValidationMessage('Không tìm thấy form để xóa.'); return Promise.reject(); }
                     }
                 });
             });
         });
 
-        // Logic cho History Dialog
         const historyDialog = document.getElementById('historyDialog');
         const dialogTitleEl = document.getElementById('dialogTitleEl');
         const dialogContentEl = document.getElementById('dialogContentEl');
@@ -712,28 +340,97 @@
         const historyButtons = document.querySelectorAll('.history-btn');
 
         function openDialog() {
-            if (historyDialog) {
-                historyDialog.classList.add('show');
-            }
+            if (historyDialog) { historyDialog.classList.add('show'); document.body.classList.add('dialog-open'); }
         }
-
         function closeDialog() {
             if (historyDialog) {
                 historyDialog.classList.remove('show');
-                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+                dialogContentEl.innerHTML = '<p class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...</p>';
+                document.body.classList.remove('dialog-open');
             }
         }
+        if (closeDialogBtn) { closeDialogBtn.addEventListener('click', closeDialog); }
+        if (historyDialog) { historyDialog.addEventListener('click', function(event) { if (event.target === historyDialog) { closeDialog(); } }); }
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && historyDialog.classList.contains('show')) { closeDialog(); } });
 
-        if (closeDialogBtn) {
-            closeDialogBtn.addEventListener('click', closeDialog);
-        }
+        function createHistoryItemHTML(item, type) {
+            const li = document.createElement('li');
+            li.className = 'history-item';
 
-        if (historyDialog) {
-            historyDialog.addEventListener('click', function(event) {
-                if (event.target === historyDialog) {
-                    closeDialog();
+            const formatDate = (dateString) => {
+                if (!dateString) return 'N/A';
+                try {
+                    return new Date(dateString).toLocaleString('vi-VN', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                } catch (e) { return dateString; }
+            };
+
+            const formatCurrency = (amount) => {
+                if (amount === null || amount === undefined) return 'N/A';
+                return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            };
+
+            let innerHTML = '';
+            if (type === 'purchase') {
+                // --- HIỂN THỊ THÔNG TIN HÓA ĐƠN THEO YÊU CẦU MỚI ---
+                let movieName = 'Không xác định';
+                if (item.suatChieu && item.suatChieu.phim && item.suatChieu.phim.tenPhim) {
+                    movieName = item.suatChieu.phim.tenPhim;
                 }
-            });
+
+                let ticketListHTML = '';
+                if (item.dsVeXemPhimDaMua && item.dsVeXemPhimDaMua.length > 0) {
+                    ticketListHTML = '<p><strong>Danh sách vé:</strong></p><ul class="ticket-list">';
+                    item.dsVeXemPhimDaMua.forEach(ve => {
+                        // BẠN CẦN THAY THẾ 've.maGhe' và 've.loaiVe' BẰNG CÁC TRƯỜNG THỰC TẾ TỪ ENTITY VeXemPhim CỦA BẠN
+                        const seatCode = ve.maGhe || 'N/A'; // Giả định VeXemPhim có maGhe
+                        const ticketType = ve.loaiVe || 'Thường'; // Giả định VeXemPhim có loaiVe
+                        ticketListHTML += `<li>Ghế: ${seatCode} (${ticketType})</li>`;
+                    });
+                    ticketListHTML += '</ul>';
+                } else {
+                    ticketListHTML = '<p>Không có thông tin vé.</p>';
+                }
+
+                innerHTML = `
+                    <div class="history-item-header">
+                        <strong class="history-item-id">Mã HĐ: ${item.idHoaDon || 'N/A'}</strong>
+                        <span class="history-item-date">${formatDate(item.ngayThanhToan)}</span>
+                    </div>
+                    <div class="history-item-body">
+                        <p><strong>Phim:</strong> ${movieName}</p>
+                        ${ticketListHTML}
+                        ${item.trangThaiHoaDon ? `<p style="margin-top: 0.5em;"><strong>Trạng thái:</strong> ${item.trangThaiHoaDon}</p>` : ''}
+                    </div>
+                    <div class="history-item-footer">
+                        <strong>Tổng tiền:</strong> <span class="total-amount">${formatCurrency(item.tongGiaTien)}</span>
+                    </div>
+                `;
+            } else if (type === 'return') {
+                let originalInvoiceInfo = 'Không rõ';
+                let refundAmount = 'N/A';
+                if (item.hoaDon) {
+                    originalInvoiceInfo = `Hóa đơn gốc ID: ${item.hoaDon.idHoaDon || 'N/A'}`;
+                    refundAmount = formatCurrency(item.hoaDon.tongGiaTien);
+                }
+                innerHTML = `
+                    <div class="history-item-header">
+                        <strong class="history-item-id">Mã HT: ${item.idHoanTra || 'N/A'}</strong>
+                        <span class="history-item-date">${formatDate(item.ngayHoanTra)}</span>
+                    </div>
+                    <div class="history-item-body">
+                        <p><strong>Hoàn trả cho:</strong> ${originalInvoiceInfo}</p>
+                        <p><strong>Lý do:</strong> ${item.lyDoHoanTra || 'Không có'}</p>
+                    </div>
+                    <div class="history-item-footer">
+                        <strong>Số tiền hoàn (dự kiến):</strong> <span class="refund-amount">${refundAmount}</span>
+                    </div>
+                `;
+            }
+            li.innerHTML = innerHTML;
+            return li;
         }
 
         historyButtons.forEach(button => {
@@ -744,22 +441,52 @@
                 const historyType = this.dataset.historyType;
                 let titleText = historyType === 'purchase' ? `Lịch sử mua hàng của ${customerName}` : `Lịch sử hoàn trả của ${customerName}`;
                 dialogTitleEl.textContent = titleText;
-                dialogContentEl.innerHTML = '<p class="loading-spinner">Đang tải dữ liệu...</p>';
+                dialogContentEl.innerHTML = '<p class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải dữ liệu...</p>';
                 openDialog();
-                const fragmentUrl = `/customers/${customerId}/history-fragment?type=${historyType}`;
-                fetch(fragmentUrl)
+
+                const apiUrl = `/customers/${customerId}/history-fragment?type=${historyType}`; // Đảm bảo URL này đúng
+                console.log('Fetching data from API URL: ', apiUrl);
+
+                fetch(apiUrl)
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`Lỗi mạng: ${response.status} ${response.statusText}`);
+                            return response.json().catch(() => {
+                                throw new Error(`Lỗi ${response.status}: ${response.statusText}`);
+                            }).then(errorData => {
+                                throw new Error(errorData.message || `Lỗi ${response.status}`);
+                            });
                         }
-                        return response.text();
+                        return response.json();
                     })
-                    .then(htmlFragment => {
-                        dialogContentEl.innerHTML = htmlFragment;
+                    .then(data => {
+                        dialogContentEl.innerHTML = '';
+                        if (!data || (Array.isArray(data) && data.length === 0) || (typeof data === 'object' && !Array.isArray(data) && Object.keys(data).length === 0) ) {
+                            dialogContentEl.innerHTML = `<p class="no-data"><i class="fa-solid fa-folder-open"></i> Không có dữ liệu ${historyType === 'purchase' ? 'mua hàng' : 'hoàn trả'} nào.</p>`;
+                            return;
+                        }
+                        if (data.success === false && data.message) {
+                            dialogContentEl.innerHTML = `<p class="error-message"><i class="fa-solid fa-circle-exclamation"></i> ${data.message}</p>`;
+                            return;
+                        }
+
+                        const ul = document.createElement('ul');
+                        ul.className = 'history-list';
+                        const itemsToRender = Array.isArray(data) ? data : [data]; // Xử lý trường hợp API trả về 1 object hoặc mảng
+
+                        if (itemsToRender.length === 0) { // Kiểm tra lại sau khi đã chuẩn hóa itemsToRender
+                            dialogContentEl.innerHTML = `<p class="no-data"><i class="fa-solid fa-folder-open"></i> Không có dữ liệu ${historyType === 'purchase' ? 'mua hàng' : 'hoàn trả'} nào.</p>`;
+                            return;
+                        }
+
+                        itemsToRender.forEach(itemData => {
+                            const listItemElement = createHistoryItemHTML(itemData, historyType);
+                            ul.appendChild(listItemElement);
+                        });
+                        dialogContentEl.appendChild(ul);
                     })
                     .catch(error => {
-                        console.error('Lỗi khi tải fragment lịch sử:', error);
-                        dialogContentEl.innerHTML = `<p class="error-message">Không thể tải lịch sử. Vui lòng thử lại sau. (${error.message})</p>`;
+                        console.error('Lỗi khi tải lịch sử từ API:', error);
+                        dialogContentEl.innerHTML = `<p class="error-message"><i class="fa-solid fa-circle-exclamation"></i> Không thể tải lịch sử. (${error.message})</p>`;
                     });
             });
         });

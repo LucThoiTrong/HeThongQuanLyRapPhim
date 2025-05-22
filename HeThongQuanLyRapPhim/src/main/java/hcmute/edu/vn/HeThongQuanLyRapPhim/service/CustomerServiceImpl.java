@@ -1,21 +1,20 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoaDon;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoanTra;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.LoaiDoiTuongSuDung;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.CustomerRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
-    private final CustomerRepository customerRepository;
+    private final UserRepository customerRepository;
 
     @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository) {
+    public CustomerServiceImpl(UserRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
@@ -53,16 +52,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<HoaDon> getHoaDonOfCustomer(int id) {
-        DoiTuongSuDung doiTuongSuDung = customerRepository.findById(id).orElse(null);
-        assert doiTuongSuDung != null;
-        return doiTuongSuDung.getDsHoaDon().stream().toList();
+    public Set<HoaDon> getHoaDonByKhachHang(int id) {
+        DoiTuongSuDung customer = customerRepository.findById(id).orElse(null);
+        if (customer != null) {
+            return customer.getDsHoaDon().stream()
+                    .filter(hd -> hd.getTrangThaiHoaDon().equals(TrangThaiHoaDon.DA_THANH_TOAN))
+                    .collect(Collectors.toSet());
+        }
+        return null;
     }
 
     @Override
-    public List<HoanTra> getHoanTraOfCustomer(int id) {
-        DoiTuongSuDung doiTuongSuDung = customerRepository.findById(id).orElse(null);
-        assert doiTuongSuDung != null;
-        return doiTuongSuDung.getDsHoanTra().stream().toList();
+    public Set<HoanTra> getHoanTraByKhachHang(int id) {
+        DoiTuongSuDung customer = customerRepository.findById(id).orElse(null);
+        if (customer != null) {
+            return customer.getDsHoanTra();
+        }
+        return null;
     }
 }

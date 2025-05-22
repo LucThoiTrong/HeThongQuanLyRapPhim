@@ -5,12 +5,13 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoaDon;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoanTra;
 
 import java.util.List;
+import java.util.Set;
 
 public interface CustomerService {
     List<DoiTuongSuDung> getAllCustomer();
     DoiTuongSuDung getCustomerById(int id);
     boolean deleteCutomer(int id);
     DoiTuongSuDung updateCustomer(int id, DoiTuongSuDung newCustomer);
-    List<HoaDon> getHoaDonOfCustomer(int id);
-    List<HoanTra> getHoanTraOfCustomer(int id);
+    Set<HoaDon> getHoaDonByKhachHang(int id);
+    Set<HoanTra> getHoanTraByKhachHang(int id);
 }

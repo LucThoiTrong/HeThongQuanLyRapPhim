@@ -44,11 +44,6 @@ public class CinemaServiceImplement implements CinemaService {
     }
 
     @Override
-    public List<RapPhim> isCinemaWithoutManager() {
-        return cinemaRepository.findAll().stream().filter(x -> x.getNhanVien() == null).toList();
-    }
-
-    @Override
     public List<RapPhim> getAllCinemas() {
         return cinemaRepository.findAll();
     }

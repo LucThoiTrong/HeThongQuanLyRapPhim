@@ -47,7 +47,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setHoTen(newEmployee.getHoTen());
             employee.setSoDienThoai(newEmployee.getSoDienThoai());
             employee.setEmail(newEmployee.getEmail());
-            employee.getTkDoiTuongSuDung().setTrangThaiTaiKhoan(newEmployee.getTkDoiTuongSuDung().isTrangThaiTaiKhoan());
 
             if(employee.getRapPhim() != null) {
                 employee.getRapPhim().setNhanVien(null);
@@ -67,5 +66,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public DoiTuongSuDung createEmployee(DoiTuongSuDung newEmployee) {
         return employeeRepository.save(newEmployee);
+    }
+
+    @Override
+    public List<RapPhim> isCinemaWithoutManager() {
+        return cinemaRepository.findAll().stream().filter(x -> x.getNhanVien() == null).toList();
     }
 }

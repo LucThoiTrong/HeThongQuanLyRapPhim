@@ -62,17 +62,14 @@ public class CustomerAdminController {
         return "redirect:/customers/";
     }
 
-//    @GetMapping("/customers/{customerId}/history-fragment")
-//    public String getHistory(@PathVariable("customerId") int customerId,
-//                                   @RequestParam("type") String historyType,
-//                                   Model model){
-//        if(historyType.equals("hoadon")){
-//            List<HoaDon> dsHoaDon = customerService.getHoaDonOfCustomer(customerId);
-//            model.addAttribute("dsHoaDon", dsHoaDon);
-//        } else {
-//            List<HoanTra> dsHoanTra = customerService.getHoanTraOfCustomer(customerId);
-//            model.addAttribute("dsHoanTra", dsHoanTra);
-//        }
-//        return "";
-//    }
+    @GetMapping("/{id}/history-fragment")
+    @ResponseBody
+    public Object getCustomerHistoryFragment(@PathVariable("id") int customerId,
+                                             @RequestParam("type") String type) {
+        if ("purchase".equals(type)) {
+            return customerService.getHoaDonByKhachHang(customerId);
+        } else {
+            return customerService.getHoanTraByKhachHang(customerId);
+        }
+    }
 }

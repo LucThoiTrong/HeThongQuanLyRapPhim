@@ -21,14 +21,10 @@ import java.util.List;
 @RequestMapping("/employees")
 public class EmployeeController {
     private final EmployeeService employeeService;
-    private final AuthService authService;
-    private final CinemaService cinemaService;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService, AuthService authService, CinemaService cinemaService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.authService = authService;
-        this.cinemaService = cinemaService;
     }
 
     @GetMapping("/")
@@ -50,13 +46,7 @@ public class EmployeeController {
         nhanVien.setLoaiDoiTuongSuDung(LoaiDoiTuongSuDung.NHAN_VIEN);
         DoiTuongSuDung nv = employeeService.createEmployee(nhanVien);
         if(nv != null) {
-            String tenDangNhap = StringUtils.normalizeString(nhanVien.getHoTen());
-            try {
-                authService.register(nv, tenDangNhap, "password123");
-                redirectAttributes.addFlashAttribute("message", "Thêm nhân viên thành công");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            redirectAttributes.addFlashAttribute("message", "Thêm nhân viên thành công");
         } else {
             redirectAttributes.addFlashAttribute("message", "Thêm nhân viên thất bại");
         }
@@ -68,9 +58,9 @@ public class EmployeeController {
         DoiTuongSuDung nhanVien = employeeService.getEmployeeById(id);
         if(nhanVien != null) {
             model.addAttribute("nhanVien", nhanVien);
-            List<RapPhim> dsRapPhim = new ArrayList<>(cinemaService.isCinemaWithoutManager());
+            List<RapPhim> dsRapPhim = new ArrayList<>(employeeService.isCinemaWithoutManager());
             if (nhanVien.getRapPhim() != null) {
-                dsRapPhim.add(nhanVien.getRapPhim()); // Không còn lỗi nữa
+                dsRapPhim.add(nhanVien.getRapPhim());
             }
 
             model.addAttribute("dsCinema", dsRapPhim);
