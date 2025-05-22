@@ -19,10 +19,6 @@ public class InvoiceServiceImpl implements InvoiceService{
     public HoaDon save(HoaDon hoaDon) {
         return invoiceRepository.save(hoaDon);
     }
-    @Override
-    public List<HoaDon> findByIdDoiTuongSuDung(int idDoiTuongSuDung) {
-        return invoiceRepository.findByDoiTuongSuDungIdDoiTuongSuDung(idDoiTuongSuDung);
-    }
 
     @Override
     public HoaDon findById(int id) {

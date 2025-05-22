@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
     }
     
     @Override
-    public void guiHoaDonQuaEmail(String toEmail, HoaDon hoaDon) throws MessagingException {
+    public void guiHoaDonQuaEmail(String toEmail, HoaDon hoaDon){
         try {
             Context context = new Context();
             context.setVariable("hoaDon", hoaDon);
@@ -41,7 +41,6 @@ public class EmailServiceImpl implements EmailService {
             mailSender.send(message);
 
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("Không thể gửi email: " + e.getMessage());
         }
     }

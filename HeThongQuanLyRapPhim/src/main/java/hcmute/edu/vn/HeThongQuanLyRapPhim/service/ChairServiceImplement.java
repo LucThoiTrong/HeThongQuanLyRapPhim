@@ -16,11 +16,6 @@ public class ChairServiceImplement implements ChairService {
     }
 
     @Override
-    public Ghe getChairById(int id) {
-        return chairRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public Ghe updateChair(int id, Ghe gheMoi) {
         Ghe gheCu = chairRepository.findById(id).orElse(null);
         if (gheCu != null) {

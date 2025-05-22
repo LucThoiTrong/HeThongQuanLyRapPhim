@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -43,10 +42,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public SuatChieu findById(int id) {
-        Optional<SuatChieu> result = bookingRepository.findById(id);
-        SuatChieu suatChieu = null;
-        suatChieu = result.get();
-        return suatChieu;
+        return bookingRepository.findById(id).orElse(null);
     }
 
     // Thực hiện lấy danh sách suất chiếu theo từng rạp
