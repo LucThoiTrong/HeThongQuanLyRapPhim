@@ -5,9 +5,13 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.LinkedHashSet;
+
 
 @Entity
 @Table(name = "phong_chieu_phim")
@@ -72,6 +76,21 @@ public class PhongChieuPhim implements Serializable {
 
     public Set<DayGhe> getDsDayGhe() {
         return dsDayGhe;
+    }
+
+    public List<DayGhe> getDsDayGheSorted() {
+        return getDsDayGhe().stream()
+                .sorted(Comparator.comparing(DayGhe::getTenDayGhe)) // Sắp xếp theo tên dãy ghế
+                .peek(dayGhe -> {
+                    // Sắp xếp dsGhe theo dayName + idGhe
+                    Set<Ghe> sortedDsGhe = dayGhe.getDsGhe().stream()
+                            .sorted(Comparator.comparing(ghe -> dayGhe.getTenDayGhe() + ghe.getIdGhe()))
+                            .collect(Collectors.toCollection(LinkedHashSet::new)); // Duy trì thứ tự
+
+                    // Tạo DayGhe mới hoặc cập nhật lại dsGhe
+                    dayGhe.setDsGhe(sortedDsGhe);
+                })
+                .collect(Collectors.toList());
     }
 
     public void setDsDayGhe(Set<DayGhe> dsDayGhe) {

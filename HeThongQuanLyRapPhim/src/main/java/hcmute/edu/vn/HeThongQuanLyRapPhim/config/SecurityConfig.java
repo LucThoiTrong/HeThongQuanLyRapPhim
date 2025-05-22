@@ -16,28 +16,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/", "/login", "/register", "/auth/verify", "/change-password", "/css/**", "/js/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().permitAll()
-//                )
-//
-//                .formLogin(form -> form
-//                        .disable() // Disable default Spring Security form login
-//                );
-//                .logout(logout -> logout
-//                        .permitAll()
-//                )
-//                .csrf(csrf -> csrf
-//                        .ignoringRequestMatchers("/login", "/register", "/change-password") // Disable CSRF for simplicity
-//                );
-//        return http.build();
-//    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

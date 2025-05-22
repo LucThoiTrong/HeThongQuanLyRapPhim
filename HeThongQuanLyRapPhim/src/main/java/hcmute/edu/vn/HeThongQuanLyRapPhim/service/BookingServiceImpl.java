@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -64,7 +62,16 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<DayGhe> findAllDayGhe(PhongChieuPhim phongChieuPhim) {
-        return rowSeatRepository.findByPhongChieuPhim(phongChieuPhim);
+        List<DayGhe> danhSachDayGhe = rowSeatRepository.findByPhongChieuPhim(phongChieuPhim);
+        danhSachDayGhe.sort(Comparator.comparing(DayGhe::getTenDayGhe));
+
+        // Sắp xếp dsGhe trong mỗi DayGhe
+        for (DayGhe dayGhe : danhSachDayGhe) {
+            List<Ghe> dsGheList = new ArrayList<>(dayGhe.getDsGhe());
+            dsGheList.sort(Comparator.comparing(ghe -> dayGhe.getTenDayGhe() + ghe.getIdGhe())); // Sắp xếp theo tên dãy + idGhe
+            dayGhe.setDsGhe(new LinkedHashSet<>(dsGheList)); // Chuyển lại thành Set để lưu trữ
+        }
+        return danhSachDayGhe;
     }
 
     @Override

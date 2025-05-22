@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         Context context = new Context();
-        String verificationLink = "https://localhost:8080/auth/verify?id=" + id;
+        String verificationLink = "https://phimhay.azurewebsites.net/auth/verify?id=" + id;
         context.setVariable("verificationLink", verificationLink);
 
         String emailContent = templateEngine.process("EmailVerify", context);
@@ -69,7 +69,7 @@ public class EmailServiceImpl implements EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         Context context = new Context();
-        String verificationLink = "https://localhost:8080/reset-password?id=" + id;
+        String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + id;
         context.setVariable("verificationLink", verificationLink);
 
         String emailContent = templateEngine.process("EmailResetPassword", context);
