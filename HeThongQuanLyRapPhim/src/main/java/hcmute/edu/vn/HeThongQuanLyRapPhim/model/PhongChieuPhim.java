@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,9 +25,11 @@ public class PhongChieuPhim implements Serializable {
     private RapPhim rapPhim;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<DayGhe> dsDayGhe;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<SuatChieu> dsSuatChieu;
 
     @Column(name = "kich_thuoc_phong")
@@ -118,5 +121,28 @@ public class PhongChieuPhim implements Serializable {
             case VUA -> 15;
             case LON -> 20;
         };
+    }
+
+    // Kiểm tra toàn bộ suất chiếu của rạp đó
+    // Thời gian kết thúc = thời gian bắt đầu + thời lượng chiếu
+    // Đối với suất chiếu mới
+    // Kiểm tra xem Thời gian bắt đầu > thời gian kết thúc của các suất chiếu đã có trong rạp
+    // Hoặc thời gian kết thúc < Thời gian bắt đầu của suất các suất chiếu đã có trong rạp
+    // Đối với suất chiếu cập nhật => logic ko thay đổi chỉ bỏ qua lần kiểm tra nếu id trùng
+    public boolean kiemTraThoiGianSuatChieu(SuatChieu suatChieuMoi) {
+        LocalDateTime startMoi = suatChieuMoi.getNgayGioChieu();
+        LocalDateTime endMoi = startMoi.plusMinutes(suatChieuMoi.getPhim().getThoiLuongChieu());
+
+        return getDsSuatChieu().stream()
+                .filter(sc -> !sc.getIdSuatChieu().equals(suatChieuMoi.getIdSuatChieu())) // bỏ qua chính nó nếu đang chỉnh sửa
+                .anyMatch(sc -> {
+                    LocalDateTime startCu = sc.getNgayGioChieu();
+                    LocalDateTime endCu = startCu.plusMinutes(sc.getPhim().getThoiLuongChieu());
+
+                    // Kiểm tra có giao nhau hay không
+                    // Có giao nhau => true
+                    // Không giao nhau => false
+                    return !(endMoi.isBefore(startCu) || startMoi.isAfter(endCu));
+                });
     }
 }

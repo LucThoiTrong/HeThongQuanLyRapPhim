@@ -1,60 +1,54 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.PhongChieuPhim;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.SuatChieu;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.CinemaRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.MovieRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.RoomRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ShowTimeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@Transactional
 public class ShowTimeServiceImplement implements ShowTimeService {
-
     private final ShowTimeRepository showTimeRepository;
+    private final MovieRepository movieRepository;
+    private final RoomRepository roomRepository;
+    private final CinemaRepository cinemaRepository;
 
     @Autowired
-    public ShowTimeServiceImplement(ShowTimeRepository showTimeRepository) {
+    public ShowTimeServiceImplement(ShowTimeRepository showTimeRepository, MovieRepository movieRepository, RoomRepository roomRepository, CinemaRepository cinemaRepository) {
         this.showTimeRepository = showTimeRepository;
+        this.movieRepository = movieRepository;
+        this.roomRepository = roomRepository;
+        this.cinemaRepository = cinemaRepository;
     }
 
+    // Lấy toàn bộ danh sách suất chiếu
     @Override
     public List<SuatChieu> getAllShowTimes() {
         return showTimeRepository.findAll();
     }
 
     @Override
-    public SuatChieu getShowTimeById(int id) {
-        Optional<SuatChieu> optional = showTimeRepository.findById(id);
-        return optional.orElse(null);
+    public SuatChieu getShowTimeById(int idSuatChieuPhim) {
+        return showTimeRepository.findById(idSuatChieuPhim).orElse(null);
     }
 
+    // Thực hiện lưu suất chiếu
     @Override
     public SuatChieu createShowTime(SuatChieu newShowTime) {
-        if (newShowTime == null || newShowTime.getPhim() == null || newShowTime.getPhongChieuPhim() == null || newShowTime.getNgayGioChieu() == null) {
-            throw new IllegalArgumentException("Dữ liệu suất chiếu không đầy đủ.");
-        }
-        if (isShowTimeConflict(newShowTime)) {
-            throw new IllegalArgumentException("Suất chiếu bị trùng thời gian với suất chiếu khác trong cùng phòng.");
-        }
         return showTimeRepository.save(newShowTime);
     }
 
     @Override
     public SuatChieu updateShowTime(int id, SuatChieu newShowTime) {
-        if (newShowTime == null || newShowTime.getPhim() == null || newShowTime.getPhim().getThoiLuongChieu() == null ||
-                newShowTime.getPhongChieuPhim() == null || newShowTime.getNgayGioChieu() == null) {
-            throw new IllegalArgumentException("Dữ liệu suất chiếu hoặc thời lượng chiếu của phim không đầy đủ.");
-        }
-        Optional<SuatChieu> optional = showTimeRepository.findById(id);
-        if (optional.isPresent()) {
-            if (isShowTimeConflict(newShowTime, id)) {
-                throw new IllegalArgumentException("Suất chiếu bị trùng thời gian với suất chiếu khác trong cùng phòng.");
-            }
-            SuatChieu suatChieu = optional.get();
+        SuatChieu suatChieu = showTimeRepository.findById(id).orElse(null);
+        if(suatChieu!=null) {
             suatChieu.setPhim(newShowTime.getPhim());
             suatChieu.setPhongChieuPhim(newShowTime.getPhongChieuPhim());
             suatChieu.setNgayGioChieu(newShowTime.getNgayGioChieu());
@@ -73,40 +67,37 @@ public class ShowTimeServiceImplement implements ShowTimeService {
         return false;
     }
 
-    private boolean isShowTimeConflict(SuatChieu newShowTime) {
-        return isShowTimeConflict(newShowTime, -1);
+    @Override
+    public List<Phim> getAllPhims() {
+        return movieRepository.findAll();
     }
 
-    private boolean isShowTimeConflict(SuatChieu newShowTime, int excludeId) {
-        Integer thoiLuongChieu = newShowTime.getPhim() != null ? newShowTime.getPhim().getThoiLuongChieu() : null;
-        if (thoiLuongChieu == null) {
-            throw new IllegalArgumentException("Thời lượng chiếu của phim không được để trống.");
+    @Override
+    public List<RapPhim> getAllRapPhims() {
+        return cinemaRepository.findAll();
+    }
+
+    @Override
+    public List<PhongChieuPhim> getAllPhongChieuPhims(int idRapPhim) {
+        RapPhim rapPhim = cinemaRepository.findById(idRapPhim).orElse(null);
+        if (rapPhim != null) {
+            return roomRepository.findAllByRapPhim(rapPhim);
         }
+        return null;
+    }
 
-        LocalDateTime startTime = newShowTime.getNgayGioChieu();
-        LocalDateTime endTime = startTime.plusMinutes(thoiLuongChieu);
+    @Override
+    public boolean kiemTraThoiGianSuatChieu(SuatChieu suatChieu) {
+        // Set up Phim
+        int idPhim = suatChieu.getPhim().getIdPhim();
+        Phim phim = movieRepository.findById(idPhim).orElse(null);
+        suatChieu.setPhim(phim);
 
-        List<SuatChieu> existingShowTimes = showTimeRepository.findByIdPhongChieuPhim(
-                newShowTime.getPhongChieuPhim().getIdPhongChieuPhim());
-
-        for (SuatChieu existing : existingShowTimes) {
-            if (existing.getIdSuatChieu() == excludeId) {
-                continue;
-            }
-
-            Integer existingThoiLuongChieu = existing.getPhim() != null ? existing.getPhim().getThoiLuongChieu() : null;
-            if (existingThoiLuongChieu == null) {
-                throw new IllegalArgumentException("Thời lượng chiếu của suất chiếu hiện có (ID: " + existing.getIdSuatChieu() + ") không được để trống.");
-            }
-
-            LocalDateTime existingStartTime = existing.getNgayGioChieu();
-            LocalDateTime existingEndTime = existingStartTime.plusMinutes(existingThoiLuongChieu);
-
-            boolean isOverlapping = !(endTime.isBefore(existingStartTime) || startTime.isAfter(existingEndTime));
-            if (isOverlapping) {
-                return true;
-            }
-        }
-        return false;
+        // Set up PhongChieuPhim
+        int idPhongChieu = suatChieu.getPhongChieuPhim().getIdPhongChieuPhim();
+        PhongChieuPhim phongChieu = roomRepository.findById(idPhongChieu).orElse(null);
+        suatChieu.setPhongChieuPhim(phongChieu);
+        
+        return suatChieu.getPhongChieuPhim().kiemTraThoiGianSuatChieu(suatChieu);
     }
 }

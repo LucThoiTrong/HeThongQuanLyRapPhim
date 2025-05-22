@@ -77,6 +77,7 @@ public class BookingController {
         // Lấy danh sách dãy ghế của phòng chiếu phim
         List<DayGhe> danhSachDayGhe = bookingService.findAllDayGhe(suatChieu.getPhongChieuPhim());
         List<String> danhSachGheDuocChonIds = new ArrayList<>();
+        
         model.addAttribute("danhSachGheDuocChonIds",danhSachGheDuocChonIds);
         model.addAttribute("danhSachDayGhe", danhSachDayGhe);
         model.addAttribute("danhSachGheDaDat", danhSachGheDaDat);
