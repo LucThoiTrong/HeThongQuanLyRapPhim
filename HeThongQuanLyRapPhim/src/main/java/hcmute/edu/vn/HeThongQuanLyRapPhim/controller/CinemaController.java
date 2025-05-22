@@ -4,8 +4,6 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.RapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiRapPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.CinemaService;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,21 +16,19 @@ import java.util.*;
 @RequestMapping("/cinemas")
 public class CinemaController {
     private final CinemaService cinemaService;
-    private final UserService doiTuongSuDungService;
 
     @Autowired
-    public CinemaController(CinemaService cinemaService, UserService doiTuongSuDungService) {
+    public CinemaController(CinemaService cinemaService) {
         this.cinemaService = cinemaService;
-        this.doiTuongSuDungService = doiTuongSuDungService;
     }
 
     @GetMapping("/")
-    public String showList(Model model, HttpSession session) {
+    public String showList(Model model) {
         List<RapPhim> dsRapPhim = cinemaService.getAllCinemas();
-        session.setAttribute("cinemas", dsRapPhim);
+
         model.addAttribute("cinemas", dsRapPhim);
 
-        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
+        List<DoiTuongSuDung> nhanVienList = cinemaService.getNhanVienChuaCoRap();
         model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
 
         return "CinemaPage";
@@ -42,7 +38,7 @@ public class CinemaController {
     public String showAddForm(Model model) {
         model.addAttribute("rapPhim", new RapPhim());
         model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
-        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
+        List<DoiTuongSuDung> nhanVienList = cinemaService.getNhanVienChuaCoRap();
         model.addAttribute("nhanVienList", nhanVienList != null ? nhanVienList : new ArrayList<>());
         return "AddCinemaPage";
     }
@@ -65,20 +61,10 @@ public class CinemaController {
     }
 
     @GetMapping("/update/{id}")
-    public String showEditForm(@PathVariable("id") int id, Model model, HttpSession session) {
-        @SuppressWarnings("unchecked")
-        List<RapPhim> dsRapPhim = (List<RapPhim>) session.getAttribute("cinemas");
-        RapPhim rapPhim;
-        if (dsRapPhim == null) {
-            rapPhim = cinemaService.getCinemaById(id);
-        } else {
-            rapPhim = dsRapPhim.stream()
-                    .filter(p -> p.getIdRapPhim() == id)
-                    .findFirst().orElse(null);
-        }
+    public String showEditForm(@PathVariable("id") int id, Model model) {
+        RapPhim rapPhim = cinemaService.getCinemaById(id);
 
-        assert rapPhim != null;
-        List<DoiTuongSuDung> nhanVienList = getNhanVienListChoRap(rapPhim);
+        List<DoiTuongSuDung> nhanVienList = cinemaService.getDanhSachNhanVien(rapPhim);
 
         model.addAttribute("rapPhim", rapPhim);
         model.addAttribute("trangThaiList", Arrays.asList(TrangThaiRapPhim.values()));
@@ -95,36 +81,15 @@ public class CinemaController {
             return "redirect:/cinemas/update/" + id;
         }
 
-        RapPhim rapPhimCu = cinemaService.getCinemaById(id);
-        if (rapPhimCu != null) {
-            // Cập nhật các trường trong controller
-            rapPhimCu.setTenRapPhim(rapPhimMoi.getTenRapPhim());
-            rapPhimCu.setDiaChiRapPhim(rapPhimMoi.getDiaChiRapPhim());
-            rapPhimCu.setTrangThaiRapPhim(rapPhimMoi.getTrangThaiRapPhim());
-            rapPhimCu.setNhanVien(rapPhimMoi.getNhanVien());
-            RapPhim rp = cinemaService.updateCinema(id, rapPhimCu); // Gọi updateCinema với object đã chỉnh sửa
-            if (rp != null) {
-                redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thành công");
-            } else {
-                redirectAttributes.addFlashAttribute("error", "Cập nhật rạp phim thất bại");
-            }
+        // Cập nhật các trường trong controller
+        RapPhim rp = cinemaService.updateCinema(id, rapPhimMoi);
+        if (rp != null) {
+            redirectAttributes.addFlashAttribute("message", "Cập nhật rạp phim thành công");
         } else {
-            redirectAttributes.addFlashAttribute("error", "Không tìm thấy rạp phim để cập nhật");
+            redirectAttributes.addFlashAttribute("error", "Cập nhật rạp phim thất bại");
         }
+
         return "redirect:/cinemas/";
-    }
-
-    private List<DoiTuongSuDung> getNhanVienListChoRap(RapPhim rapPhim) {
-        List<DoiTuongSuDung> nhanVienList = doiTuongSuDungService.getNhanVienChuaCoRap();
-        DoiTuongSuDung currentNhanVien = rapPhim.getNhanVien();
-
-        if (currentNhanVien != null) {
-            if (nhanVienList == null) {
-                nhanVienList = new ArrayList<>();
-            }
-            nhanVienList.add(currentNhanVien);
-        }
-        return nhanVienList;
     }
 
     @PostMapping("/delete/{id}")

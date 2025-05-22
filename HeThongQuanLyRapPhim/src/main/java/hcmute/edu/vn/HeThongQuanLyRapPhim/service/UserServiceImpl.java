@@ -19,33 +19,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<DoiTuongSuDung> getAllDoiTuongSuDung() {
-        return doiTuongSuDungRepository.findAll();
-    }
-
-    @Override
     public DoiTuongSuDung getDoiTuongSuDungById(int id) {
         return doiTuongSuDungRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public DoiTuongSuDung createDoiTuongSuDung(DoiTuongSuDung doiTuongSuDung) {
-        return doiTuongSuDungRepository.save(doiTuongSuDung);
-    }
-
-    @Override
-    public DoiTuongSuDung updateDoiTuongSuDung(DoiTuongSuDung doiTuongSuDungMoi) {
-        return doiTuongSuDungRepository.save(doiTuongSuDungMoi);
-    }
-
-    @Override
-    public boolean deleteDoiTuongSuDung(int id) {
-        Optional<DoiTuongSuDung> optionalDoiTuongSuDung = doiTuongSuDungRepository.findById(id);
-        if (optionalDoiTuongSuDung.isPresent()) {
-            doiTuongSuDungRepository.deleteById(id);
-            return true;
-        }
-        return false;
     }
 
     // Phương thức riêng để lấy danh sách nhân viên chưa có nơi làm việc
@@ -53,5 +28,4 @@ public class UserServiceImpl implements UserService {
     public List<DoiTuongSuDung> getNhanVienChuaCoRap() {
         return doiTuongSuDungRepository.findByLoaiDoiTuongSuDungAndRapPhimIsNull(LoaiDoiTuongSuDung.NHAN_VIEN);
     }
-
 }

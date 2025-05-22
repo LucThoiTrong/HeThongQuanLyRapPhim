@@ -6,23 +6,18 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Main CSS-->
     <link rel="stylesheet" type="text/css" href="/css/main-admin.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-    <!-- or -->
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
-    <!-- Font-icon css-->
     <link rel="stylesheet" type="text/css"
           href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin=""/>
-    <!-- Tailwind CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         /* Map container styling */
@@ -81,13 +76,10 @@
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
-<!-- Navbar-->
 <header class="app-header">
-    <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
-                                    aria-label="Hide Sidebar"></a>
-    <!-- Navbar Right Menu-->
+    <a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
+       aria-label="Hide Sidebar"></a>
     <ul class="app-nav">
-        <!-- User Menu -->
         <li>
             <a class="app-nav__item" th:href="@{/signin}">
                 <i class='bx bx-log-out bx-rotate-180'></i>
@@ -96,7 +88,6 @@
         </li>
     </ul>
 </header>
-<!-- Sidebar menu-->
 <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
 <aside class="app-sidebar">
     <div class="app-sidebar__user"><img class="app-sidebar__user" src="/images/Logo.png" width="1000"
@@ -118,6 +109,8 @@
                 class="app-menu__label">Quản Lý Khách Hàng</span></a></li>
         <li><a class="app-menu__item" href="/showtimes/"><i class='app-menu__icon bx bx-calendar'></i><span
                 class="app-menu__label">Quản Lý Suất Chiếu</span></a></li>
+        <li><a class="app-menu__item" href="/movies/"><i class='app-menu__icon bx bx-film'></i><span
+                class="app-menu__label">Quản Lý Phim</span></a></li>
         <li><a class="app-menu__item" href="/combos/"><i class='app-menu__icon bx bx-cart-alt'></i><span
                 class="app-menu__label">Quản Lý Combo</span></a></li>
         <li><a class="app-menu__item" href="/discount-campaign/"><i class='app-menu__icon bx bx-dollar'></i><span
@@ -140,7 +133,6 @@
             </div>
         </div>
     </div>
-    <!-- Map Section -->
     <div class="row">
         <div class="col-md-12">
             <div class="map-container">
@@ -149,7 +141,6 @@
             </div>
         </div>
     </div>
-    <!-- Footer -->
     <div class="text-center" style="font-size: 13px">
         <p><b>Copyright
             <script type="text/javascript">
@@ -159,23 +150,15 @@
     </div>
 </main>
 <script src="/js/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
 <script src="/js/popper.min.js"></script>
 <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
-<!--===============================================================================================-->
 <script src="/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
 <script src="/js/main-admin.js"></script>
-<!--===============================================================================================-->
 <script src="/js/plugins/pace.min.js"></script>
-<!--===============================================================================================-->
 <script type="text/javascript" src="/js/plugins/chart.js"></script>
-<!--===============================================================================================-->
-<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
-<!-- Map Initialization Script -->
 <script type="text/javascript">
     // Initialize the map
     var map = L.map('cinema-map').setView([10.7769, 106.7009], 12); // Centered on Ho Chi Minh City
