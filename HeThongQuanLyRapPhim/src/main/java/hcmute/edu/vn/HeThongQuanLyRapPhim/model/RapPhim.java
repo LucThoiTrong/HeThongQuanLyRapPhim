@@ -103,12 +103,13 @@ public class RapPhim implements Serializable {
     }
 
     // Lấy danh sách suất chiếu của 1 rạp phim dựa trên ngày chiếu và hình thức chiếu
-    public List<SuatChieu> layDanhSachSuatChieu(LocalDate ngayChieu, HinhThucChieu hinhThucChieu) {
+    public List<SuatChieu> layDanhSachSuatChieu(LocalDate ngayChieu, HinhThucChieu hinhThucChieu, Phim phim) {
         return getDsPhongChieuPhim().stream()
                 .flatMap(pc -> pc.getDsSuatChieu().stream())
                 .filter(sc -> sc.getNgayGioChieu().toLocalDate().equals(ngayChieu) &&
                         sc.getHinhThucChieu().equals(hinhThucChieu) &&
-                        sc.getNgayGioChieu().isAfter(LocalDateTime.now()))
+                        sc.getNgayGioChieu().isAfter(LocalDateTime.now()) &&
+                        sc.getPhim().equals(phim))
                 .toList();
     }
 

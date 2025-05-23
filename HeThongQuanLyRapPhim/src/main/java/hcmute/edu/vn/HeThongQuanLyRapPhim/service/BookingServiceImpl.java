@@ -45,13 +45,13 @@ public class BookingServiceImpl implements BookingService {
 
     // Thực hiện lấy danh sách suất chiếu theo từng rạp
     @Override
-    public Map<String, List<SuatChieu>> getShowtimesForCinema(LocalDate date, HinhThucChieu hinhThucChieu) {
+    public Map<String, List<SuatChieu>> getShowtimesForCinema(LocalDate date, HinhThucChieu hinhThucChieu, Phim phim) {
         Map<String, List<SuatChieu>> result = new HashMap<>();
         // Lấy toàn bộ rạp phim
         List<RapPhim> cinemaList = cinemaRepository.findAll();
         // Sau đó tìm từng danh sách suất chiếu của rạp đó
         for (RapPhim cinema : cinemaList) {
-            List<SuatChieu> dsSuatChieu = cinema.layDanhSachSuatChieu(date, hinhThucChieu);
+            List<SuatChieu> dsSuatChieu = cinema.layDanhSachSuatChieu(date, hinhThucChieu, phim);
             if(!dsSuatChieu.isEmpty()) {
                 result.put(cinema.getTenRapPhim(), dsSuatChieu);
             }

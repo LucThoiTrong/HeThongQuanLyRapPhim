@@ -53,7 +53,7 @@ public class BookingController {
         }
 
         // Lấy danh sách suất chiếu của từng rạp phim lọc theo phim ngày chiếu và hình thức chiếu
-        Map<String, List<SuatChieu>> groupedByRap = bookingService.getShowtimesForCinema(ngayChieu, hinhThucChieu);
+        Map<String, List<SuatChieu>> groupedByRap = bookingService.getShowtimesForCinema(ngayChieu, hinhThucChieu, phim);
 
         model.addAttribute("ngayChieu", ngayChieu);
         model.addAttribute("hinhThucChieu", hinhThucChieu);

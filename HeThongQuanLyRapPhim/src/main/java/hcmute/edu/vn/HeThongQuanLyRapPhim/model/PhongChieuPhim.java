@@ -1,5 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -15,6 +17,7 @@ import java.util.LinkedHashSet;
 
 @Entity
 @Table(name = "phong_chieu_phim")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idPhongChieuPhim")
 public class PhongChieuPhim implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +32,6 @@ public class PhongChieuPhim implements Serializable {
     private RapPhim rapPhim;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<DayGhe> dsDayGhe;
 
     @OneToMany(mappedBy = "phongChieuPhim", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

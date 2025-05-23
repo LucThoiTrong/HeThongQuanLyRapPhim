@@ -148,7 +148,7 @@
             border-color: #f7b0be;
         }
         .seat-box.seat-doi.seat-available:hover {
-            width: 64px;
+            width: 64px; /* Giữ nguyên width khi hover */
             background-color: #f7b0be;
             transform: translateY(-1px);
         }
@@ -160,7 +160,7 @@
             box-shadow: 0 0 8px rgba(49, 130, 206, 0.5);
         }
         .seat-box.seat-doi.seat-selected {
-            width: 64px;
+            width: 64px; /* Giữ nguyên width cho ghế đôi đang chọn */
             background-color: #3182ce;
             color: #fff;
             border-color: #2c7ae0;
@@ -173,6 +173,12 @@
             color: #eceff1;
             cursor: not-allowed;
             border-color: #546e7a;
+        }
+
+        /* GIẢI PHÁP: Giữ nguyên chiều rộng cho ghế đôi đã đặt/đã bán */
+        .seat-box.seat-doi.seat-occupied,
+        .seat-box.seat-doi.reserved {
+            width: 64px; /* Đảm bảo ghế đôi giữ nguyên chiều rộng 64px */
         }
 
         .seat-legend {
@@ -288,6 +294,14 @@
             .container { width: 98%; }
             .screen-indicator { width: 95%; letter-spacing: 0.2em; font-size: 0.9em; }
             .seat-box { width: 28px; height: 24px; margin: 2px; font-size: 0.7em; }
+            /* Cần đảm bảo ghế đôi cũng điều chỉnh theo media query nếu cần */
+            .seat-box.seat-doi.seat-available,
+            .seat-box.seat-doi.seat-selected,
+            .seat-box.seat-doi.seat-occupied, /* Thêm cho ghế đôi occupied */
+            .seat-box.seat-doi.reserved { /* Thêm cho ghế đôi reserved */
+                /* Ví dụ: width: 56px; nếu ghế đơn là 28px */
+                width: calc(28px * 2 + 2px * 2); /* (width ghế đơn * 2) + (margin ghế đơn * 2) - Cần điều chỉnh dựa trên cách bạn muốn hiển thị */
+            }
             .seat-row-name { min-width: 30px; font-size: 0.8em; }
             .ticket-details { flex-direction: column; gap: 15px; }
             .ticket-details .column:first-child { font-size: 1.2em; }
@@ -298,6 +312,14 @@
         @media (max-width: 480px) {
             body { padding: 10px 0; }
             .seat-box { width: 24px; height: 20px; margin: 2px; font-size: 0.65em; border-radius: 4px 4px 1px 1px;}
+            /* Cần đảm bảo ghế đôi cũng điều chỉnh theo media query nếu cần */
+            .seat-box.seat-doi.seat-available,
+            .seat-box.seat-doi.seat-selected,
+            .seat-box.seat-doi.seat-occupied, /* Thêm cho ghế đôi occupied */
+            .seat-box.seat-doi.reserved { /* Thêm cho ghế đôi reserved */
+                /* Ví dụ: width: 48px; nếu ghế đơn là 24px */
+                width: calc(24px * 2 + 2px * 2);/* (width ghế đơn * 2) + (margin ghế đơn * 2) */
+            }
             .seat-row-name { min-width: 25px; font-size: 0.75em; margin-right: 5px;}
             .seat-legend { gap: 10px; padding: 8px 10px; flex-direction: column; align-items: flex-start;}
             .legend-item { font-size: 0.75em; }
