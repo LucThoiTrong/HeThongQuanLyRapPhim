@@ -5,8 +5,6 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoaDon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class InvoiceServiceImpl implements InvoiceService{
     private final InvoiceRepository invoiceRepository;

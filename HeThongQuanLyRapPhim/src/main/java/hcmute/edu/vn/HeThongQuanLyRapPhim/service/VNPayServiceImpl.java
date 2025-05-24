@@ -1,12 +1,14 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.config.VNPayConfig;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.event.InvoiceGeneratedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -20,16 +22,16 @@ public class VNPayServiceImpl implements VNPayService {
     private final InvoiceRepository invoiceRepository;
     private final ChairRepository chairRepository;
     private final PopcornDrinkComboRepository popcornDrinkComboRepository;
-    private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
     private final DiscountRepository discountRepository;
 
     @Autowired
-    public VNPayServiceImpl(InvoiceRepository invoiceRepository, ChairRepository chairRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, EmailService emailService, DiscountRepository discountRepository) {
+    public VNPayServiceImpl(InvoiceRepository invoiceRepository, ChairRepository chairRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, DiscountRepository discountRepository, ApplicationEventPublisher eventPublisher) {
         this.invoiceRepository = invoiceRepository;
         this.chairRepository = chairRepository;
         this.popcornDrinkComboRepository = popcornDrinkComboRepository;
-        this.emailService = emailService;
         this.discountRepository = discountRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -135,15 +137,8 @@ public class VNPayServiceImpl implements VNPayService {
 
         invoiceRepository.save(hoaDon);
 
-        // Tiến hành gửi mail
-        try {
-            emailService.guiHoaDonQuaEmail(
-                    customer.getEmail(),
-                    hoaDon
-            );
-        } catch (Exception e) {
-            System.err.println("Lỗi gửi email hóa đơn: " + e.getMessage());
-        }
+        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(this, customer.getEmail(), hoaDon);
+        eventPublisher.publishEvent(invoiceGeneratedEvent);
     }
 
     private Set<ChiTietComBoBapNuoc> createDetailCombo(Map<Integer, Integer> dsChiTietComBoBapNuoc, HoaDon hoaDon) {

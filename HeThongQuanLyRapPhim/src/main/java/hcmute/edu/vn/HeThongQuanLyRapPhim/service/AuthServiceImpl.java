@@ -1,11 +1,13 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.event.PasswordRecoveryRequestedEvent;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.event.RegistrationInitiatedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserAccountRepository;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,17 +21,17 @@ public class AuthServiceImpl implements AuthService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    private final EmailService emailService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
     public AuthServiceImpl(UserRepository doiTuongSuDungRepository,
                            UserAccountRepository tkDoiTuongSuDungRepository,
                            BCryptPasswordEncoder passwordEncoder,
-                           EmailService emailService) {
+                           ApplicationEventPublisher eventPublisher) {
         this.doiTuongSuDungRepository = doiTuongSuDungRepository;
         this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
+        this.eventPublisher = eventPublisher;
     }
 
     // Check tài khoản đã được kích hoạt hay chưa
@@ -73,20 +75,14 @@ public class AuthServiceImpl implements AuthService {
         doiTuongSuDungRepository.save(doiTuongSuDung);
 
         // Tạo tài khoản cho khách hàng
-        TKDoiTuongSuDung tkDoiTuongSuDung = new TKDoiTuongSuDung();
-        tkDoiTuongSuDung.setTenDangNhap(tenDangNhap);
-        tkDoiTuongSuDung.setMatKhau(passwordEncoder.encode(password));
-        tkDoiTuongSuDung.setTrangThaiTaiKhoan(false);
-        tkDoiTuongSuDung.setDoiTuongSuDung(doiTuongSuDung);
+        TKDoiTuongSuDung tkDoiTuongSuDung = new TKDoiTuongSuDung(tenDangNhap, passwordEncoder.encode(password), false, doiTuongSuDung);
 
         // Thực hiện lưu tài khoản khách hàng
         TKDoiTuongSuDung result = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
-        // Thực hiện gửi mail
-        try {
-            emailService.sendVerificationEmail(doiTuongSuDung.getEmail(), result.getIdTKDoiTuongSuDung());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+
+        RegistrationInitiatedEvent registrationInitiatedEvent = new RegistrationInitiatedEvent(this, doiTuongSuDung.getEmail(), result.getIdTKDoiTuongSuDung());
+        eventPublisher.publishEvent(registrationInitiatedEvent);
+
         return true;
     }
 
@@ -109,11 +105,8 @@ public class AuthServiceImpl implements AuthService {
         if (doiTuongSuDung == null) {
             return false;
         }
-        try {
-            emailService.sendResetPasswordEmail(email, doiTuongSuDung.getTkDoiTuongSuDung().getIdTKDoiTuongSuDung());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        PasswordRecoveryRequestedEvent passwordRecoveryRequestedEvent = new PasswordRecoveryRequestedEvent(this, email, doiTuongSuDung.getTkDoiTuongSuDung().getIdTKDoiTuongSuDung());
+        eventPublisher.publishEvent(passwordRecoveryRequestedEvent);
         return true;
     }
 

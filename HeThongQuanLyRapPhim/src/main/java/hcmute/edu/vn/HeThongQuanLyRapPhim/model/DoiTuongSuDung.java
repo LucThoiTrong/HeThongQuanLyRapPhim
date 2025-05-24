@@ -61,8 +61,6 @@ public class DoiTuongSuDung implements Serializable {
 
     public DoiTuongSuDung() {}
 
-    public DoiTuongSuDung(String hoTen, String email, LocalDateTime ngaySinh, Object gioiTinh, LoaiDoiTuongSuDung khachHang, String soDienThoai) {}
-
     public DoiTuongSuDung(String hoTen, String email, Date ngaySinh, GioiTinh gioiTinh, LoaiDoiTuongSuDung loaiDoiTuongSuDung, String soDienThoai) {
         this.hoTen = hoTen;
         this.email = email;
