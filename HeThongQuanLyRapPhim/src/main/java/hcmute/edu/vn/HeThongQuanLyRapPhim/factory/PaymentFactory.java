@@ -17,13 +17,10 @@ public class PaymentFactory {
     }
 
     public PaymentStrategy getPaymentStrategy(String method) {
-        switch (method.toLowerCase()) {
-            case "momo":
-                return momoStrategy;
-            case "vnpay":
-                return vnpayStrategy;
-            default:
-                throw new IllegalArgumentException(method);
-        }
+        return switch (method.toLowerCase()) {
+            case "momo" -> momoStrategy;
+            case "vnpay" -> vnpayStrategy;
+            default -> throw new IllegalArgumentException(method);
+        };
     }
 }
