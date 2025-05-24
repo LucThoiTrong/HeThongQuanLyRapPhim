@@ -369,7 +369,8 @@
                 <div class="payment-options-list">
                     <div class="payment-option">
                         <label>
-                            <input type="radio" name="paymentMethod" value="vnpay" checked> <span><i class="fas fa-credit-card"></i> VNPAY</span>
+                            <input type="radio" name="paymentMethod" value="vnpay"> <span><i class="fas fa-credit-card"></i> VNPAY</span>
+                            <input type="radio" name="paymentMethod" value="momo"> <span><i class="fas fa-credit-card"></i> MOMO</span>
                         </label>
                     </div>
                 </div>
@@ -439,7 +440,7 @@
             </div>
         </div>
         <div class="payment-action-area">
-            <form id="paymentForm" method="POST" action="/payment/vnpay">
+            <form id="paymentForm" method="POST" action="/payment">
                 <input type="hidden" name="idCustomer" th:value="${doiTuongSuDung.idDoiTuongSuDung}">
                 <input type="hidden" name="danhSachGheDuocChon" th:value="${session.danhSachGheDuocChon}">
                 <input type="hidden" name="tongTienSauGiam" th:value="${session.tongTienSauGiam}">

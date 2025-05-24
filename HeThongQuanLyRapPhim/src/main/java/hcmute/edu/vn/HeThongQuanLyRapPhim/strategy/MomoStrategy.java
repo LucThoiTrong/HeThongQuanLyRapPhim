@@ -1,6 +1,7 @@
-package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
+package hcmute.edu.vn.HeThongQuanLyRapPhim.strategy;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.config.VNPayConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.config.MomoConfig;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.event.InvoiceGeneratedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
@@ -11,113 +12,85 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class VNPayServiceImpl implements VNPayService {
+public class MomoStrategy implements PaymentStrategy{
     private final InvoiceRepository invoiceRepository;
     private final ChairRepository chairRepository;
     private final PopcornDrinkComboRepository popcornDrinkComboRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final DiscountRepository discountRepository;
-
+    private final ApplicationEventPublisher eventPublisher;
+    private final MomoConfig momoConfig;
     @Autowired
-    public VNPayServiceImpl(InvoiceRepository invoiceRepository, ChairRepository chairRepository, PopcornDrinkComboRepository popcornDrinkComboRepository, DiscountRepository discountRepository, ApplicationEventPublisher eventPublisher) {
+    public MomoStrategy(InvoiceRepository invoiceRepository,
+                        ChairRepository chairRepository,
+                        PopcornDrinkComboRepository popcornDrinkComboRepository,
+                        DiscountRepository discountRepository, MomoConfig momoConfig,
+                        ApplicationEventPublisher eventPublisher) {
         this.invoiceRepository = invoiceRepository;
         this.chairRepository = chairRepository;
         this.popcornDrinkComboRepository = popcornDrinkComboRepository;
         this.discountRepository = discountRepository;
         this.eventPublisher = eventPublisher;
+        this.momoConfig = momoConfig;
     }
+    public String createPayment(String amount) throws Exception {
+        String requestId = UUID.randomUUID().toString();
+        String orderId = UUID.randomUUID().toString();
+        String extraData = "";
+        String orderInfo="Thanh toán đơn hàng";
+        String rawSignature = "accessKey=" + momoConfig.getAccessKey()
+                + "&amount=" + amount
+                + "&extraData=" + extraData
+                + "&ipnUrl=" + momoConfig.getIpnUrl()
+                + "&orderId=" + orderId
+                + "&orderInfo=" + orderInfo
+                + "&partnerCode=" + momoConfig.getPartnerCode()
+                + "&redirectUrl=" + momoConfig.getRedirectUrl()
+                + "&requestId=" + requestId
+                + "&requestType=captureWallet";
 
-    @Override
-    public String createPayment(int amountint, String clientIp) {
-        String vnp_Version = "2.1.0";
-        String vnp_Command = "pay";
-        String orderType = "other";
 
-        long amount;
-        try {
-            amount = amountint * 100L;
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Số tiền không hợp lệ");
-        }
+        String signature = hmacSHA256(rawSignature, momoConfig.getSecretKey());
 
-        String bankCode = "";
-        String vnp_TxnRef = VNPayConfig.getRandomNumber(8);
-//        String vnp_IpAddr = "127.0.0.1";
-        String vnp_TmnCode = VNPayConfig.vnp_TmnCode;
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("partnerCode", momoConfig.getPartnerCode());
+        requestBody.put("accessKey", momoConfig.getAccessKey());
+        requestBody.put("requestId", requestId);
+        requestBody.put("amount", amount);
+        requestBody.put("orderId", orderId);
+        requestBody.put("orderInfo", orderInfo);
+        requestBody.put("redirectUrl", momoConfig.getRedirectUrl());
+        requestBody.put("ipnUrl", momoConfig.getIpnUrl());
+        requestBody.put("extraData", extraData);
+        requestBody.put("requestType", "captureWallet");
+        requestBody.put("signature", signature);
+        requestBody.put("lang", "vi");
 
-        Map<String, String> vnp_Params = new HashMap<>();
-        vnp_Params.put("vnp_Version", vnp_Version);
-        vnp_Params.put("vnp_Command", vnp_Command);
-        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(amount));
-        vnp_Params.put("vnp_CurrCode", "VND");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(momoConfig.getEndpoint()))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(new ObjectMapper().writeValueAsString(requestBody)))
+                .build();
 
-        vnp_Params.put("vnp_BankCode", bankCode);
-        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
-        vnp_Params.put("vnp_OrderType", orderType);
-        vnp_Params.put("vnp_Locale", "vn");
-        vnp_Params.put("vnp_ReturnUrl", VNPayConfig.vnp_ReturnUrl);
-        vnp_Params.put("vnp_IpAddr", clientIp);
-
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        cld.add(Calendar.HOUR, 8);  // Thêm 7 giờ để chuyển từ UTC sang giờ Việt Nam
-
-        String vnp_ExpireDate = formatter.format(cld.getTime());
-        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
-
-        List<String> fieldNames = new ArrayList<>(vnp_Params.keySet());
-        Collections.sort(fieldNames);
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
-        for (String fieldName : fieldNames) {
-            String fieldValue = vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
-                hashData.append(fieldName).append('=')
-                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII))
-                        .append('=')
-                        .append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-                query.append('&');
-                hashData.append('&');
-            }
-        }
-
-        if (!query.isEmpty())
-            query.setLength(query.length() - 1);
-        if (!hashData.isEmpty())
-            hashData.setLength(hashData.length() - 1);
-
-        String vnp_SecureHash = VNPayConfig.hmacSHA512(VNPayConfig.secretKey, hashData.toString());
-        query.append("&vnp_SecureHash=").append(vnp_SecureHash);
-        return VNPayConfig.vnp_PayUrl + "?" + query;
-
-    }
-    @Override
-    public String getPaymentMessage(String responseCode) {
-        if ("00".equals(responseCode)) {
-            return "Thanh toán thành công!";
-        } else {
-            return "Thanh toán thất bại!";
-        }
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        ObjectMapper mapper = new ObjectMapper();
+        String payUrl = mapper.readTree(response.body()).get("payUrl").asText();
+        return payUrl;  //trả về url de chuyen huong sang trang cua momo
     }
 
     @Override
     public void saveMaGiamGiaApDung(MaGiamGia maGiamGia) {
         discountRepository.save(maGiamGia);
     }
-
     @Override
     public void createInvoice(String danhSachGhe, Map<Integer, Integer> dsChiTietComBoBapNuoc, SuatChieu suatChieu, DoiTuongSuDung customer, double tongTienSauGiam) {
         HoaDon hoaDon = new HoaDon();
@@ -137,6 +110,7 @@ public class VNPayServiceImpl implements VNPayService {
 
         invoiceRepository.save(hoaDon);
 
+        // Tiến hành gửi mail
         InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(this, customer.getEmail(), hoaDon);
         eventPublisher.publishEvent(invoiceGeneratedEvent);
     }
@@ -176,5 +150,16 @@ public class VNPayServiceImpl implements VNPayService {
             }
         }
         return dsVeXemPhim;
+    }
+    private String hmacSHA256(String data, String key) throws Exception {
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(secretKeySpec);
+        byte[] hmacData = mac.doFinal(data.getBytes("UTF-8"));
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hmacData) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }

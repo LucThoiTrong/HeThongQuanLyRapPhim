@@ -1,8 +1,11 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
-import hcmute.edu.vn.HeThongQuanLyRapPhim.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.factory.PaymentFactory;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.MaGiamGia;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.SuatChieu;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.strategy.PaymentStrategy;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,45 +20,60 @@ import java.util.Map;
 @Controller
 @RequestMapping("/payment")
 public class PaymentController {
-    private final VNPayService vnpayService;
-
+    private final PaymentFactory paymentFactory;
     @Autowired
-    public PaymentController(VNPayService vnpayService) {
-        this.vnpayService = vnpayService;
+    public PaymentController(PaymentFactory paymentFactory) {
+        this.paymentFactory = paymentFactory;
     }
-
-    @SuppressWarnings("SpringMVCViewInspection")
-    @PostMapping("/vnpay")
+    @PostMapping
     public String createPayment(@RequestParam("tongTienSauGiam") double amount,
-                                Model model, HttpSession session,HttpServletRequest request) {
+                                @RequestParam("paymentMethod") String method,
+                                Model model, HttpSession session) {
         MaGiamGia maGiamGia = (MaGiamGia) session.getAttribute("maGiamGiaDaChon");
-
+        session.setAttribute("paymentMethod", method);
+        // Lấy service tương ứng theo phương thức thanh toán (Factory)
+        PaymentStrategy paymentService = paymentFactory.getPaymentStrategy(method);
         // Thực hiện cập nhật trạng thái mã giảm giá đã sử dụng
         if (maGiamGia != null) {
             maGiamGia.setTrangThaiSuDung(true);
-            vnpayService.saveMaGiamGiaApDung(maGiamGia);
+            paymentService.saveMaGiamGiaApDung(maGiamGia);
         }
-
-        String clientIp = getClientIpAddress(request);
-
-        int amountInt = (int) amount;
+        //Tạo yêu cầu thanh toán (Template Method bên trong từng PaymentService)
         try {
-            String paymentUrl = vnpayService.createPayment(amountInt,clientIp);
-            return "redirect:" + paymentUrl; // chuyển hướng đến URL thanh toán
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
-            return "vnpay";
+            String paymentUrl = paymentService.createPayment(String.valueOf((int) amount));
+            return "redirect:" + paymentUrl;  // chuyển hướng sang MoMo
         } catch (Exception e) {
-            model.addAttribute("error", "Đã xảy ra lỗi khi tạo thanh toán!");
-            return "vnpay";
+            model.addAttribute("message", "Lỗi khi tạo yêu cầu thanh toán: " + e.getMessage());
+            return "AfterPaymentPage";
         }
     }
-
+    @GetMapping("/momo-return")
+    public String handleMomoReturn(@RequestParam Map<String, String> params, Model model, HttpSession session) {
+        String resultCode = params.get("resultCode");
+        if ("0".equals(resultCode)) {
+            String method = (String) session.getAttribute("paymentMethod");
+            //Lấy service tương ứng theo phương thức thanh toán (Factory)
+            PaymentStrategy paymentService = paymentFactory.getPaymentStrategy(method);
+            //lay cac thong tin tu session
+            SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
+            DoiTuongSuDung doiTuongSuDung = (DoiTuongSuDung) session.getAttribute("user");
+            String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChonIds");
+            @SuppressWarnings("unchecked")
+            Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
+            double tongTienSauGiam = (Double) session.getAttribute("tongTienSauGiam");
+            paymentService.createInvoice(danhSachGhe, comboSoLuong, suatChieu, doiTuongSuDung, tongTienSauGiam);
+            model.addAttribute("message", "Thanh toán thành công!");
+        } else {
+            model.addAttribute("message", "Thanh toán thất bại!");
+        }
+        return "AfterPaymentPage";
+    }
     @GetMapping("/vnpay-return")
     public String handlePaymentReturn(@RequestParam("vnp_ResponseCode") String responseCode,
                                       Model model, HttpSession session) {
-        String message = vnpayService.getPaymentMessage(responseCode);
-
+        String method = (String) session.getAttribute("paymentMethod");
+        // Lấy service tương ứng theo phương thức thanh toán (Factory)
+        PaymentStrategy paymentService = paymentFactory.getPaymentStrategy(method);
         // thanh toan thanh cong -> tao hoa don
         if ("00".equals(responseCode)) {
             SuatChieu suatChieu = (SuatChieu) session.getAttribute("suatChieu");
@@ -69,21 +87,13 @@ public class PaymentController {
 
             String danhSachGhe = (String) session.getAttribute("danhSachGheDuocChonIds");
             @SuppressWarnings("unchecked") Map<Integer, Integer> comboSoLuong = (Map<Integer, Integer>) session.getAttribute("danhSachComboDuocChon");
+            paymentService.createInvoice(danhSachGhe, comboSoLuong, suatChieu, doiTuongSuDung, tongTienSauGiam);
 
-            vnpayService.createInvoice(danhSachGhe, comboSoLuong, suatChieu, doiTuongSuDung, tongTienSauGiam);
+            model.addAttribute("message", "Thanh toán thành công!");
         }
-        model.addAttribute("message", message);
+        else {
+            model.addAttribute("message", "Thanh toán thất bại!");
+        }
         return "AfterPaymentPage";
-    }
-
-    private String getClientIpAddress(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        } else {
-            // Nếu có nhiều IP, lấy cái đầu tiên
-            ip = ip.split(",")[0];
-        }
-        return ip;
     }
 }
