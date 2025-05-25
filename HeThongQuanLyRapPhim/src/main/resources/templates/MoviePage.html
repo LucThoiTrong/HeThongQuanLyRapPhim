@@ -429,6 +429,48 @@
       opacity: 0.6;
     }
 
+    .badge {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .badge.bg-success {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    .badge.bg-info {
+      background: linear-gradient(45deg, #17a2b8, #0dcaf0);
+    }
+
+    .badge.bg-warning {
+      background: linear-gradient(45deg, #f1c40f, #e67e22);
+    }
+
+    .badge.bg-primary {
+      background: var(--primary-gradient);
+    }
+
+    .badge.bg-danger {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    .badge.bg-secondary {
+      background: linear-gradient(45deg, #6c757d, #5a6268);
+    }
+
+    [data-theme="dark"] .badge {
+      filter: brightness(0.9);
+    }
+
+    .badge:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
@@ -581,8 +623,24 @@
       <td th:text="${phim.theLoai}"></td>
       <td th:text="${phim.thoiGianKhoiChieu}"></td>
       <td th:text="${phim.thoiLuongChieu} ? ${phim.thoiLuongChieu} + ' phút' : ''"></td>
-      <td th:text="${phim.doTuoi}"></td>
-      <td th:text="${phim.trangThaiPhim.getMoTa()}"></td>
+      <td>
+        <span class="badge"
+              th:class="'badge ' +
+                         (${phim.doTuoi.name()} == 'K' ? 'bg-success' :
+                         (${phim.doTuoi.name()} == 'P' ? 'bg-info' :
+                         (${phim.doTuoi.name()} == 'T13' ? 'bg-warning' :
+                         (${phim.doTuoi.name()} == 'T16' ? 'bg-primary' :
+                         (${phim.doTuoi.name()} == 'T18' ? 'bg-danger' : 'bg-secondary')))))"
+              th:text="${phim.doTuoi.name()}"></span>
+      </td>
+      <td>
+        <span class="badge"
+              th:class="'badge ' +
+                         (${phim.trangThaiPhim.name()} == 'DANG_CHIEU' ? 'bg-success' :
+                         (${phim.trangThaiPhim.name()} == 'SAP_CHIEU' ? 'bg-primary' :
+                         (${phim.trangThaiPhim.name()} == 'NGUNG_CHIEU' ? 'bg-danger' : 'bg-secondary')))"
+              th:text="${phim.trangThaiPhim.moTa}"></span>
+      </td>
       <td>
         <div class="action-buttons">
           <a th:href="@{/movies/update/{id}(id=${phim.idPhim})}" class="btn" data-bs-toggle="tooltip" title="Sửa thông tin phim">
