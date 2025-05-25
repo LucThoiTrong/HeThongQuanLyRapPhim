@@ -87,4 +87,12 @@ public class MovieAdminController {
         }
         return "redirect:/movies/";
     }
+
+    @GetMapping("/search")
+    public String searchMovies(@RequestParam("keyword") String keyword, Model model) {
+        List<Phim> ketQua = movieService.searchMovies(keyword);
+        model.addAttribute("movies", ketQua);
+        return "MoviePage";
+    }
+
 }

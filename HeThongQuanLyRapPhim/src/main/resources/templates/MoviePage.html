@@ -4,15 +4,10 @@
   <meta charset="UTF-8">
   <title>Danh Sách Phim</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
@@ -22,7 +17,7 @@
       --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
-    [data-theme="dark"] { /* Placeholder for potential dark theme */
+    [data-theme="dark"] {
       --primary-gradient: linear-gradient(45deg, #1e3a8a, #6d28d9);
       --text-color: #e5e7eb;
       --bg-color: #1f2937;
@@ -64,9 +59,9 @@
       letter-spacing: 1px;
     }
 
-    .main-container { /* Renamed from .container to avoid Bootstrap conflict if desired, but can be .container */
+    .main-container {
       max-width: 1300px;
-      width: 90%; /* Added for better responsiveness on very large screens */
+      width: 90%;
       margin: 2rem auto;
       padding: 2rem;
       background: var(--card-bg);
@@ -77,36 +72,153 @@
       flex: 1;
     }
 
-    .search-bar {
+    .search-container {
       position: relative;
-      max-width: 400px;
-      margin: 0 auto 2rem;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      padding: 0 10px;
     }
 
-    .search-bar input {
+    .search-form {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
       width: 100%;
-      padding: 12px 40px 12px 20px;
-      border-radius: 25px;
-      border: none;
-      background: rgba(0, 0, 0, 0.05); /* Slightly darker background for better visibility on light card */
-      color: var(--text-color);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      background: var(--card-bg);
+      border-radius: 50px;
+      padding: 5px;
+      box-shadow: var(--shadow);
       transition: all 0.3s ease;
     }
 
-    .search-bar input:focus {
-      outline: none;
-      background: rgba(0, 0, 0, 0.07);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 2px var(--primary-gradient); /* Focus ring with gradient */
+    .search-wrapper:hover,
+    .search-wrapper.focused {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.95);
     }
 
-    .search-bar i {
+    [data-theme="dark"] .search-wrapper:hover,
+    [data-theme="dark"] .search-wrapper.focused {
+      background: rgba(55, 65, 81, 0.95);
+    }
+
+    .search-icon {
       position: absolute;
-      right: 20px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-color);
-      opacity: 0.7;
+      opacity: 0.6;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-wrapper.focused .search-icon {
+      color: #3b82f6;
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .search-form input {
+      flex: 1;
+      padding: 12px 20px 12px 50px;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+      font-size: 1rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .search-form input:focus {
+      outline: none;
+      background: transparent;
+    }
+
+    .search-btn {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: var(--primary-gradient);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      margin-left: 5px;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      opacity: 0.6;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      opacity: 1;
+      color: #dc3545;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .search-suggestions.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    .search-suggestions ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .search-suggestions li {
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: all 0.2s ease;
+    }
+
+    .search-suggestions li:hover {
+      background: var(--primary-gradient);
+      color: #fff;
     }
 
     .button-group {
@@ -140,7 +252,7 @@
     }
 
     .btn-secondary {
-      background: #6c757d; /* Bootstrap secondary color for consistency */
+      background: #6c757d;
     }
 
     .btn-secondary:hover {
@@ -149,7 +261,7 @@
     }
 
     .btnDelete {
-      background: #dc3545; /* Bootstrap danger color */
+      background: #dc3545;
     }
 
     .btnDelete:hover {
@@ -161,22 +273,22 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      background: transparent; /* Table itself is transparent, cells will have background */
+      background: transparent;
       border-radius: 15px;
-      overflow: hidden; /* Important for border-radius on th/td */
+      overflow: hidden;
       box-shadow: var(--shadow);
     }
 
     th, td {
-      padding: 1rem 1.25rem; /* Increased padding slightly */
+      padding: 1rem 1.25rem;
       text-align: left;
-      border: none; /* Remove all borders, spacing handled by border-spacing or th/td styles */
-      border-bottom: 1px solid rgba(0,0,0,0.05); /* Subtle bottom border for rows */
+      border: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
       transition: all 0.3s ease;
     }
 
     tr:last-child td {
-      border-bottom: none; /* No border for the last row's cells */
+      border-bottom: none;
     }
 
     th {
@@ -184,10 +296,9 @@
       color: #fff;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px; /* Reduced letter-spacing for uppercase */
+      letter-spacing: 0.5px;
     }
 
-    /* Apply border radius to first and last th */
     th:first-child {
       border-top-left-radius: 15px;
     }
@@ -196,27 +307,26 @@
     }
 
     td {
-      background: var(--card-bg); /* Cells get the card background */
+      background: var(--card-bg);
     }
 
-    tbody tr { /* Keep hover on tbody rows only */
+    tbody tr {
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
-    tbody tr:hover td { /* Hover effect on all tds of the hovered row */
-      background-color: rgba(0,0,0,0.03); /* Subtle hover, adjust as needed */
-      transform: scale(1.005); /* Slight scale on hover, applied to row or cells */
+    tbody tr:hover td {
+      background-color: rgba(0,0,0,0.03);
+      transform: scale(1.005);
     }
 
     tbody tr:hover {
-      transform: scale(1.005); /* Slight scale on hover */
+      transform: scale(1.005);
     }
 
-
     .alert {
-      padding: 1rem; /* Adjusted padding */
+      padding: 1rem;
       margin-bottom: 2rem;
-      border-radius: 10px; /* Consistent border-radius */
+      border-radius: 10px;
       border: 1px solid transparent;
       transition: opacity 0.5s ease-out, transform 0.5s ease-out;
       text-align: center;
@@ -232,7 +342,6 @@
       color: #842029;
       border-color: #f5c2c7;
     }
-
 
     .home-button {
       position: fixed;
@@ -266,7 +375,7 @@
       display: flex;
       gap: 0.5rem;
       align-items: center;
-      justify-content: flex-start; /* Default for LTR languages */
+      justify-content: flex-start;
     }
 
     .action-buttons .btn,
@@ -277,12 +386,66 @@
       text-align: center;
     }
 
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .pagination .page-btn {
+      padding: 0.5rem 1rem;
+      min-width: 40px;
+      text-align: center;
+      border-radius: 25px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .pagination .page-btn:hover {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .pagination .page-btn.active {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .pagination .page-btn:disabled {
+      background: rgba(0,0,0,0.1);
+      cursor: not-allowed;
+      transform: none;
+      color: var(--text-color);
+      opacity: 0.6;
+    }
+
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(30px); } /* Reduced Y translation */
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 992px) { /* Adjusted breakpoint for table scroll */
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 992px) {
       .main-container {
         width: 95%;
         padding: 1.5rem;
@@ -290,10 +453,10 @@
       table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap; /* Ensures table content doesn't wrap, allowing horizontal scroll */
+        white-space: nowrap;
       }
       th, td {
-        white-space: nowrap; /* Prevent content within cells from wrapping unnecessarily */
+        white-space: nowrap;
       }
     }
 
@@ -304,14 +467,29 @@
         width: 95%;
       }
       h1 {
-        font-size: 1.75rem; /* Slightly adjusted */
+        font-size: 1.75rem;
       }
-      .search-bar {
+      .search-container {
         max-width: 100%;
+        padding: 0 5px;
+      }
+      .search-form input {
+        padding: 10px 15px 10px 40px;
+        font-size: 0.95rem;
+      }
+      .search-btn {
+        padding: 8px 15px;
+      }
+      .search-icon {
+        left: 15px;
+        font-size: 1rem;
+      }
+      .clear-btn {
+        right: 50px;
       }
       .button-group {
         flex-direction: column;
-        gap: 0.75rem; /* Adjusted gap */
+        gap: 0.75rem;
         align-items: stretch;
       }
       .button-group .btn {
@@ -319,7 +497,7 @@
         justify-content: center;
       }
       th, td {
-        font-size: 0.875rem; /* Standard small font size */
+        font-size: 0.875rem;
         padding: 0.75rem 0.5rem;
       }
       .action-buttons {
@@ -336,6 +514,11 @@
       .action-buttons .btnDelete:last-child {
         margin-bottom: 0;
       }
+      .pagination .page-btn {
+        padding: 0.4rem 0.8rem;
+        min-width: 35px;
+        font-size: 0.85rem;
+      }
     }
   </style>
 </head>
@@ -351,9 +534,20 @@
        id="flash-message">
   </div>
 
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." onkeyup="searchTable()">
-    <i class="fas fa-search"></i>
+  <div class="search-container animate__animated animate__fadeIn">
+    <form action="/movies/search" method="get" class="search-form">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" name="keyword" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
+        <button type="button" class="clear-btn" style="display: none;">
+          <i class="fas fa-times"></i>
+        </button>
+        <button type="submit" class="search-btn">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      <div class="search-suggestions" id="searchSuggestions"></div>
+    </form>
   </div>
 
   <div class="button-group">
@@ -385,8 +579,10 @@
       <td th:text="${phim.tenPhim}"></td>
       <td th:text="${phim.daoDien}"></td>
       <td th:text="${phim.theLoai}"></td>
-      <td th:text="${phim.thoiGianKhoiChieu}"></td> <td th:text="${phim.thoiLuongChieu} ? ${phim.thoiLuongChieu} + ' phút' : ''"></td> <td th:text="${phim.doTuoi}"></td>
-      <td th:text="${phim.trangThaiPhim}"></td>
+      <td th:text="${phim.thoiGianKhoiChieu}"></td>
+      <td th:text="${phim.thoiLuongChieu} ? ${phim.thoiLuongChieu} + ' phút' : ''"></td>
+      <td th:text="${phim.doTuoi}"></td>
+      <td th:text="${phim.trangThaiPhim.getMoTa()}"></td>
       <td>
         <div class="action-buttons">
           <a th:href="@{/movies/update/{id}(id=${phim.idPhim})}" class="btn" data-bs-toggle="tooltip" title="Sửa thông tin phim">
@@ -402,6 +598,8 @@
     </tr>
     </tbody>
   </table>
+
+  <div class="pagination" id="pagination"></div>
 </div>
 
 <button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
@@ -412,18 +610,140 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Kích hoạt tooltip của Bootstrap
+    // Pagination settings
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    let allRows = [];
+    let filteredRows = [];
+
+    // Initialize pagination
+    function initPagination() {
+      const table = document.getElementById('movieTable');
+      if (!table) return;
+      allRows = Array.from(table.querySelectorAll('tbody tr'));
+      filteredRows = [...allRows];
+      updatePagination();
+    }
+
+    // Update pagination display
+    function updatePagination() {
+      const table = document.getElementById('movieTable');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = '';
+
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = Math.min(startIndex + rowsPerPage, filteredRows.length);
+
+      for (let i = startIndex; i < endIndex; i++) {
+        tbody.appendChild(filteredRows[i]);
+      }
+
+      renderPaginationControls();
+    }
+
+    // Render pagination buttons
+    function renderPaginationControls() {
+      const pagination = document.getElementById('pagination');
+      if (!pagination) return;
+      pagination.innerHTML = '';
+
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+      const prevBtn = document.createElement('button');
+      prevBtn.className = 'page-btn';
+      prevBtn.textContent = 'Trước';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePagination();
+        }
+      });
+      pagination.appendChild(prevBtn);
+
+      const maxVisiblePages = 5;
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      if (startPage > 1) {
+        const firstPageBtn = document.createElement('button');
+        firstPageBtn.className = 'page-btn';
+        firstPageBtn.textContent = '1';
+        firstPageBtn.addEventListener('click', () => {
+          currentPage = 1;
+          updatePagination();
+        });
+        pagination.appendChild(firstPageBtn);
+
+        if (startPage > 2) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '0.5rem';
+          pagination.appendChild(dots);
+        }
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+          currentPage = i;
+          updatePagination();
+        });
+        pagination.appendChild(pageBtn);
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+          const dots = document.createElement('span');
+          dots.textContent = '...';
+          dots.style.padding = '0.5rem';
+          pagination.appendChild(dots);
+        }
+
+        const lastPageBtn = document.createElement('button');
+        lastPageBtn.className = 'page-btn';
+        lastPageBtn.textContent = totalPages;
+        lastPageBtn.addEventListener('click', () => {
+          currentPage = totalPages;
+          updatePagination();
+        });
+        pagination.appendChild(lastPageBtn);
+      }
+
+      const nextBtn = document.createElement('button');
+      nextBtn.className = 'page-btn';
+      nextBtn.textContent = 'Sau';
+      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePagination();
+        }
+      });
+      pagination.appendChild(nextBtn);
+    }
+
+    // Initialize tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     if (tooltipTriggerList.length > 0) {
       [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     }
 
-    // Xử lý nút xóa
+    // Handle delete buttons
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach(button => {
       button.addEventListener('click', function(event) {
         const currentButton = event.currentTarget;
-        const movieName = currentButton.dataset.movieName || "phim này"; // Fallback if name is not set
+        const movieName = currentButton.dataset.movieName || "phim này";
         const confirmationMessage = `Bạn có chắc chắn muốn xóa ${movieName}?`;
         if (confirm(confirmationMessage)) {
           const form = currentButton.closest('form');
@@ -436,34 +756,105 @@
       });
     });
 
-    // Tự động ẩn thông báo flash
+    // Auto-hide flash message
     const flashMessage = document.getElementById('flash-message');
     if (flashMessage) {
       setTimeout(function() {
         flashMessage.style.opacity = '0';
-        flashMessage.style.transform = 'translateY(-20px)'; /* Optional: slide up effect */
+        flashMessage.style.transform = 'translateY(-20px)';
         setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
       }, 3000);
     }
-  });
 
-  // Tìm kiếm trong bảng
-  function searchTable() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const table = document.getElementById('movieTable');
-    if (!table) return; // Guard clause if table not found
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length > 0) {
-        // Lấy text từ tất cả các cell TRỪ cell cuối cùng (chứa nút hành động)
-        const textToSearch = Array.from(cells)
-                .slice(0, -1) // Bỏ qua cột hành động
-                .map(cell => cell.textContent.toLowerCase())
-                .join(' ');
-        row.style.display = textToSearch.includes(input) ? '' : 'none';
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchWrapper = searchInput.closest('.search-wrapper');
+    const clearBtn = document.querySelector('.clear-btn');
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    let suggestions = [];
+
+    // Sample movie data for autocomplete
+    const movieData = [
+      /*[[${movies}]]*/ []
+    ].flatMap(movie => movie.tenPhim || []);
+
+    suggestions = movieData;
+
+    searchInput.addEventListener('focus', () => {
+      searchWrapper.classList.add('focused');
+      if (searchInput.value.trim()) {
+        showSuggestions(searchInput.value);
       }
     });
+
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        searchWrapper.classList.remove('focused');
+        suggestionsContainer.classList.remove('show');
+      }, 200);
+    });
+
+    searchInput.addEventListener('input', () => {
+      const value = searchInput.value.trim();
+      clearBtn.style.display = value ? 'block' : 'none';
+      showSuggestions(value);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      clearBtn.style.display = 'none';
+      suggestionsContainer.classList.remove('show');
+      searchInput.focus();
+    });
+
+    function showSuggestions(value) {
+      suggestionsContainer.innerHTML = '';
+      if (!value) {
+        suggestionsContainer.classList.remove('show');
+        return;
+      }
+
+      const filteredSuggestions = suggestions.filter(movie =>
+              movie.toLowerCase().includes(value.toLowerCase())
+      );
+
+      if (filteredSuggestions.length > 0) {
+        const ul = document.createElement('ul');
+        filteredSuggestions.slice(0, 5).forEach(suggestion => {
+          const li = document.createElement('li');
+          li.textContent = suggestion;
+          li.addEventListener('click', () => {
+            searchInput.value = suggestion;
+            clearBtn.style.display = 'block';
+            suggestionsContainer.classList.remove('show');
+            searchInput.closest('form').submit();
+          });
+          ul.appendChild(li);
+        });
+        suggestionsContainer.appendChild(ul);
+        suggestionsContainer.classList.add('show');
+      } else {
+        suggestionsContainer.classList.remove('show');
+      }
+    }
+
+    document.querySelector('.search-form').addEventListener('submit', (e) => {
+      if (!searchInput.value.trim()) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    // Initialize pagination on load
+    initPagination();
+
+    // Expose searchTable to global scope
+    window.searchTable = searchTable;
+  });
+
+  function searchTable(keyword) {
+    // Existing searchTable function (if any)
+    // Add logic here if needed
   }
 </script>
 <script th:inline="javascript">

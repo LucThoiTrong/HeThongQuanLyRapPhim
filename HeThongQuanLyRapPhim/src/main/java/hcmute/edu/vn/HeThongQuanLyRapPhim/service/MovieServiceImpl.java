@@ -1,21 +1,25 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.facade.MovieSearchFacade;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
+    private final MovieSearchFacade movieSearchFacade;
 
     @Autowired
-    public MovieServiceImpl(MovieRepository movieRepository) {
+    public MovieServiceImpl(MovieRepository movieRepository, MovieSearchFacade movieSearchFacade) {
         this.movieRepository = movieRepository;
+        this.movieSearchFacade = movieSearchFacade;
     }
 
     @Override
@@ -78,5 +82,11 @@ public class MovieServiceImpl implements MovieService {
         }
         return false;
     }
+
+    @Override
+    public List<Phim> searchMovies(String keyword) {
+        return movieSearchFacade.timKiemPhim(keyword);
+    }
+
 }
 
