@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class AppEventManager {
+public class AppEventManager implements Subject {
     private final Map<Class<? extends AppEvent>, List<EventListener>> listenersPerEventType = new HashMap<>();
     private final ExecutorService notificationExecutor;
 
