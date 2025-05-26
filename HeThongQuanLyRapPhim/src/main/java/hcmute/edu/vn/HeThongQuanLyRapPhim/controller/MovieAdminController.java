@@ -2,6 +2,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
 import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.filter.FilteredMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.pagination.PaginatedMovieService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.sort.SortedMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,42 +36,44 @@ public class MovieAdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
-            @RequestParam(required = false) DoTuoi doTuoi) {
-
-        // Bắt đầu từ service gốc
+            @RequestParam(required = false) DoTuoi doTuoi,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending
+    ) {
         MovieService service = movieService;
 
-        // Áp dụng filter nếu có tham số
+        // B1: Lọc
         service = new FilteredMovieService(service, trangThaiPhim, doTuoi);
 
-        // Áp dụng phân trang
+        // B2: Sắp xếp
+        if (sortBy != null && !sortBy.isEmpty()) {
+            service = new SortedMovieService(service, sortBy, ascending);
+        }
+
+        // B3: Phân trang
         service = new PaginatedMovieService(service, page, size);
 
-        // Lấy danh sách phim đã lọc và phân trang
         List<Phim> dsPhim = service.getAllMovies();
 
-        // Tính tổng phim theo bộ lọc (chưa phân trang) để tính số trang maxPage
-        int totalMovies = new FilteredMovieService(movieService, trangThaiPhim, doTuoi).getAllMovies().size();
-        int maxPage = (totalMovies + size - 1) / size - 1;
+        // Tính tổng số trang sau khi lọc (trước khi phân trang)
+        int totalFilteredMovies = new FilteredMovieService(movieService, trangThaiPhim, doTuoi).getAllMovies().size();
+        int maxPage = (totalFilteredMovies + size - 1) / size - 1;
 
-        // Đưa dữ liệu vào model cho view
         model.addAttribute("movies", dsPhim);
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("maxPage", maxPage);
 
-        // Truyền danh sách enum để hiển thị dropdown filter trong view
+        // Phục vụ hiển thị form
         model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
         model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
-
-        // Truyền lại giá trị đã chọn để giữ trạng thái filter trên UI
         model.addAttribute("selectedTrangThaiPhim", trangThaiPhim);
         model.addAttribute("selectedDoTuoi", doTuoi);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("ascending", ascending);
 
         return "MoviePage";
     }
-
-
 
     @GetMapping("/new")
     public String showAddForm(Model model) {
