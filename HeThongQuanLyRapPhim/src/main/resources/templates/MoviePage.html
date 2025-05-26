@@ -528,6 +528,104 @@
       }
     }
 
+    /* New Filter Form Styles */
+    .filter-container {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      padding: 0 10px;
+    }
+
+    .filter-form {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--card-bg);
+      border-radius: 25px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .filter-form:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .filter-form select {
+      flex: 1;
+      padding: 12px 40px 12px 15px;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+      font-size: 1rem;
+      border-radius: 15px;
+      appearance: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+    }
+
+    [data-theme="dark"] .filter-form select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    }
+
+    .filter-form select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .filter-form select:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-form button {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: var(--primary-gradient);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .filter-form button:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .filter-form label {
+      display: none; /* Ẩn label trên giao diện, nhưng giữ để hỗ trợ accessibility */
+    }
+
+    @media (max-width: 768px) {
+      .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 15px;
+      }
+
+      .filter-form select {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+
+      .filter-form button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
@@ -641,6 +739,34 @@
         </button>
       </div>
       <div class="search-suggestions" id="searchSuggestions"></div>
+    </form>
+  </div>
+
+  <div class="filter-container animate__animated animate__fadeIn">
+    <form th:action="@{/movies}" method="get" class="filter-form">
+      <label for="trangThaiPhim">Trạng thái phim:</label>
+      <select id="trangThaiPhim" name="trangThaiPhim">
+        <option value="" th:selected="${selectedTrangThaiPhim == null}">-- Tất cả trạng thái --</option>
+        <option th:each="tt : ${trangThaiPhimList}"
+                th:value="${tt}"
+                th:text="${tt}"
+                th:selected="${tt == selectedTrangThaiPhim}">
+        </option>
+      </select>
+
+      <label for="doTuoi">Độ tuổi:</label>
+      <select id="doTuoi" name="doTuoi">
+        <option value="" th:selected="${selectedDoTuoi == null}">-- Tất cả độ tuổi --</option>
+        <option th:each="dt : ${doTuoiList}"
+                th:value="${dt}"
+                th:text="${dt}"
+                th:selected="${dt == selectedDoTuoi}">
+        </option>
+      </select>
+
+      <button type="submit">
+        <i class="fas fa-filter"></i> Lọc
+      </button>
     </form>
   </div>
 

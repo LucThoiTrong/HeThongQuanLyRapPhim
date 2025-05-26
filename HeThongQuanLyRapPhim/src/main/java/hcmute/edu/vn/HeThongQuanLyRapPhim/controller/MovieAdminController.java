@@ -1,5 +1,7 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.filter.FilteredMovieService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.pagination.PaginatedMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +29,48 @@ public class MovieAdminController {
         this.movieService = movieService;
     }
 
-    @GetMapping("/")
-    public String showList(Model model) {
-        List<Phim> dsPhim = movieService.getAllMovies();
+    @GetMapping({"", "/"})
+    public String showList(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
+            @RequestParam(required = false) DoTuoi doTuoi) {
+
+        // Bắt đầu từ service gốc
+        MovieService service = movieService;
+
+        // Áp dụng filter nếu có tham số
+        service = new FilteredMovieService(service, trangThaiPhim, doTuoi);
+
+        // Áp dụng phân trang
+        service = new PaginatedMovieService(service, page, size);
+
+        // Lấy danh sách phim đã lọc và phân trang
+        List<Phim> dsPhim = service.getAllMovies();
+
+        // Tính tổng phim theo bộ lọc (chưa phân trang) để tính số trang maxPage
+        int totalMovies = new FilteredMovieService(movieService, trangThaiPhim, doTuoi).getAllMovies().size();
+        int maxPage = (totalMovies + size - 1) / size - 1;
+
+        // Đưa dữ liệu vào model cho view
         model.addAttribute("movies", dsPhim);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("maxPage", maxPage);
+
+        // Truyền danh sách enum để hiển thị dropdown filter trong view
+        model.addAttribute("doTuoiList", Arrays.asList(DoTuoi.values()));
+        model.addAttribute("trangThaiPhimList", Arrays.asList(TrangThaiPhim.values()));
+
+        // Truyền lại giá trị đã chọn để giữ trạng thái filter trên UI
+        model.addAttribute("selectedTrangThaiPhim", trangThaiPhim);
+        model.addAttribute("selectedDoTuoi", doTuoi);
+
         return "MoviePage";
     }
+
+
 
     @GetMapping("/new")
     public String showAddForm(Model model) {
