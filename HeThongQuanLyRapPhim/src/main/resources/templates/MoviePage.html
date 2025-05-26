@@ -223,8 +223,8 @@
 
     .button-group {
       display: flex;
-      justify-content: flex-end; /* Điều chỉnh lại nếu muốn căn chỉnh khác */
-      flex-wrap: wrap; /* Cho phép các nút xuống dòng nếu không đủ không gian */
+      justify-content: flex-end;
+      flex-wrap: wrap;
       margin-bottom: 2rem;
       gap: 1rem;
     }
@@ -253,15 +253,15 @@
     }
 
     .btn-secondary {
-      background: #6c757d; /* Bootstrap secondary color */
+      background: #6c757d;
     }
     .btn-secondary:hover {
       background: #5a6268;
       filter: brightness(1.1);
     }
 
-    .btn-danger { /* Thêm style cho btn-danger nếu chưa có hoặc dùng mặc định của Bootstrap */
-      background-color: #dc3545; /* Bootstrap danger color */
+    .btn-danger {
+      background-color: #dc3545;
       border-color: #dc3545;
     }
     .btn-danger:hover {
@@ -270,8 +270,8 @@
       filter: brightness(1.1);
     }
 
-    .btn-success { /* Thêm style cho btn-success nếu chưa có hoặc dùng mặc định của Bootstrap */
-      background-color: #198754; /* Bootstrap success color */
+    .btn-success {
+      background-color: #198754;
       border-color: #198754;
     }
     .btn-success:hover {
@@ -280,8 +280,7 @@
       filter: brightness(1.1);
     }
 
-
-    .btnDelete { /* Giữ lại style cũ của bạn cho nút Xóa cụ thể */
+    .btnDelete {
       background: #dc3545;
     }
 
@@ -337,7 +336,6 @@
 
     tbody tr:hover td {
       background-color: rgba(0,0,0,0.03);
-      /* transform: scale(1.005); Bỏ scale ở td để tránh hiệu ứng kép */
     }
 
     tbody tr:hover {
@@ -407,49 +405,6 @@
       text-align: center;
     }
 
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .pagination .page-btn {
-      padding: 0.5rem 1rem;
-      min-width: 40px;
-      text-align: center;
-      border-radius: 25px;
-      background: var(--card-bg);
-      color: var(--text-color);
-      border: 1px solid rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-      font-weight: 500;
-    }
-
-    .pagination .page-btn:hover {
-      background: var(--primary-gradient);
-      color: #fff;
-      transform: translateY(-2px);
-    }
-
-    .pagination .page-btn.active {
-      background: var(--primary-gradient);
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .pagination .page-btn:disabled {
-      background: rgba(0,0,0,0.1);
-      cursor: not-allowed;
-      transform: none;
-      color: var(--text-color);
-      opacity: 0.6;
-    }
-
     .badge {
       font-size: 0.85rem;
       padding: 0.4rem 0.8rem;
@@ -490,6 +445,87 @@
     .badge:hover {
       transform: scale(1.05);
       filter: brightness(1.1);
+    }
+
+    /* Improved Pagination Styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      background: var(--card-bg);
+      border-radius: 50px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .pagination li {
+      list-style: none;
+    }
+
+    .pagination li a,
+    .pagination li span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      padding: 0.5rem;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--card-bg);
+      border-radius: 50%;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination li a:hover {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .pagination li.active a,
+    .pagination li.active span {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 600;
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .pagination li.disabled span {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-color);
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .pagination li a i {
+      font-size: 1rem;
+    }
+
+    /* Responsive adjustments for pagination */
+    @media (max-width: 768px) {
+      .pagination {
+        gap: 0.3rem;
+        padding: 0.3rem;
+      }
+
+      .pagination li a,
+      .pagination li span {
+        min-width: 35px;
+        height: 35px;
+        font-size: 0.85rem;
+      }
     }
 
     @keyframes slideIn {
@@ -576,11 +612,6 @@
       .action-buttons .btn:last-child,
       .action-buttons .btnDelete:last-child {
         margin-bottom: 0;
-      }
-      .pagination .page-btn {
-        padding: 0.4rem 0.8rem;
-        min-width: 35px;
-        font-size: 0.85rem;
       }
     }
   </style>
@@ -684,7 +715,40 @@
     </tbody>
   </table>
 
-  <div class="pagination" id="pagination"></div>
+  <div>
+    <ul class="pagination">
+      <!-- Nút Prev -->
+      <li th:classappend="${currentPage == 0} ? 'disabled'">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/movies(page=${currentPage - 1}, size=${pageSize})}"
+           aria-label="Previous">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+        <span th:if="${currentPage == 0}">
+          <i class="fas fa-chevron-left"></i>
+        </span>
+      </li>
+
+      <!-- Vòng lặp trang -->
+      <li th:each="i : ${#numbers.sequence(0, maxPage)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a th:href="@{/movies(page=${i}, size=${pageSize})}"
+           th:text="${i + 1}">1</a>
+      </li>
+
+      <!-- Nút Next -->
+      <li th:classappend="${currentPage == maxPage} ? 'disabled'">
+        <a th:if="${currentPage < maxPage}"
+           th:href="@{/movies(page=${currentPage + 1}, size=${pageSize})}"
+           aria-label="Next">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        <span th:if="${currentPage == maxPage}">
+          <i class="fas fa-chevron-right"></i>
+        </span>
+      </li>
+    </ul>
+  </div>
 </div>
 
 <button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
@@ -695,128 +759,6 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Pagination settings
-    const rowsPerPage = 10;
-    let currentPage = 1;
-    let allRows = [];
-    let filteredRows = [];
-
-    // Initialize pagination
-    function initPagination() {
-      const table = document.getElementById('movieTable');
-      if (!table) return;
-      allRows = Array.from(table.querySelectorAll('tbody tr'));
-      filteredRows = [...allRows];
-      updatePagination();
-    }
-
-    // Update pagination display
-    function updatePagination() {
-      const table = document.getElementById('movieTable');
-      if (!table) return;
-      const tbody = table.querySelector('tbody');
-      if (!tbody) return;
-
-      tbody.innerHTML = '';
-
-      const startIndex = (currentPage - 1) * rowsPerPage;
-      const endIndex = Math.min(startIndex + rowsPerPage, filteredRows.length);
-
-      for (let i = startIndex; i < endIndex; i++) {
-        tbody.appendChild(filteredRows[i]);
-      }
-
-      renderPaginationControls();
-    }
-
-    // Render pagination buttons
-    function renderPaginationControls() {
-      const pagination = document.getElementById('pagination');
-      if (!pagination) return;
-      pagination.innerHTML = '';
-
-      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-
-      const prevBtn = document.createElement('button');
-      prevBtn.className = 'page-btn';
-      prevBtn.textContent = 'Trước';
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          updatePagination();
-        }
-      });
-      pagination.appendChild(prevBtn);
-
-      const maxVisiblePages = 5;
-      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-      if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-      }
-
-      if (startPage > 1) {
-        const firstPageBtn = document.createElement('button');
-        firstPageBtn.className = 'page-btn';
-        firstPageBtn.textContent = '1';
-        firstPageBtn.addEventListener('click', () => {
-          currentPage = 1;
-          updatePagination();
-        });
-        pagination.appendChild(firstPageBtn);
-
-        if (startPage > 2) {
-          const dots = document.createElement('span');
-          dots.textContent = '...';
-          dots.style.padding = '0.5rem';
-          pagination.appendChild(dots);
-        }
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-        pageBtn.textContent = i;
-        pageBtn.addEventListener('click', () => {
-          currentPage = i;
-          updatePagination();
-        });
-        pagination.appendChild(pageBtn);
-      }
-
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          const dots = document.createElement('span');
-          dots.textContent = '...';
-          dots.style.padding = '0.5rem';
-          pagination.appendChild(dots);
-        }
-
-        const lastPageBtn = document.createElement('button');
-        lastPageBtn.className = 'page-btn';
-        lastPageBtn.textContent = totalPages;
-        lastPageBtn.addEventListener('click', () => {
-          currentPage = totalPages;
-          updatePagination();
-        });
-        pagination.appendChild(lastPageBtn);
-      }
-
-      const nextBtn = document.createElement('button');
-      nextBtn.className = 'page-btn';
-      nextBtn.textContent = 'Sau';
-      nextBtn.disabled = currentPage === totalPages || filteredRows.length === 0; // Disable if no rows
-      nextBtn.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-          currentPage++;
-          updatePagination();
-        }
-      });
-      pagination.appendChild(nextBtn);
-    }
-
     // Initialize tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     if (tooltipTriggerList.length > 0) {
@@ -858,12 +800,11 @@
     const suggestionsContainer = document.getElementById('searchSuggestions');
     let suggestions = [];
 
-    // Sample movie data for autocomplete - Ensure movieData is populated correctly
+    // Sample movie data for autocomplete
     const movieDataFromServer = /*[[${movies}]]*/ [];
     if (Array.isArray(movieDataFromServer)) {
       suggestions = movieDataFromServer.map(movie => movie.tenPhim).filter(Boolean);
     }
-
 
     if(searchInput && searchWrapper && clearBtn && suggestionsContainer) {
       searchInput.addEventListener('focus', () => {
@@ -892,21 +833,13 @@
           clearBtn.style.display = 'none';
           if (suggestionsContainer) suggestionsContainer.classList.remove('show');
           searchInput.focus();
-          // After clearing, re-filter to show all movies
-          filteredRows = [...allRows];
-          currentPage = 1;
-          updatePagination();
         });
       }
 
       document.querySelector('.search-form').addEventListener('submit', (e) => {
-        // Allow form submission for server-side search.
-        // Client-side filtering will be based on the result if this is a client-side search only.
-        // If server provides filtered results, pagination needs to adjust to that.
-        // For this example, we assume server-side search, and `movies` variable would be updated.
+        // Allow form submission for server-side search
       });
     }
-
 
     function showSuggestions(value) {
       if (!suggestionsContainer) return;
@@ -929,10 +862,7 @@
             searchInput.value = suggestion;
             if(clearBtn) clearBtn.style.display = 'block';
             suggestionsContainer.classList.remove('show');
-            // Option 1: Submit form for server-side search
             searchInput.closest('form').submit();
-            // Option 2: Client-side filter (if you want to avoid server trip for suggestions)
-            // clientSideFilter(suggestion);
           });
           ul.appendChild(li);
         });
@@ -942,38 +872,11 @@
         suggestionsContainer.classList.remove('show');
       }
     }
-
-    // Function for client-side filtering (if needed in conjunction with search)
-    // This would be called if your primary search is client-side
-    window.clientSideFilter = function(keyword) {
-      const lowerKeyword = keyword.toLowerCase();
-      filteredRows = allRows.filter(row => {
-        // Adjust this to search in specific cells or all cells
-        const cells = Array.from(row.getElementsByTagName('td'));
-        return cells.some(cell => cell.textContent.toLowerCase().includes(lowerKeyword));
-      });
-      currentPage = 1; // Reset to first page
-      updatePagination();
-    };
-
-    // If search is primarily client-side and searchInput should trigger clientSideFilter:
-    // if (searchInput) {
-    //    searchInput.addEventListener('input', function() {
-    //        clientSideFilter(this.value);
-    //    });
-    // }
-
-
-    // Initialize pagination on load
-    initPagination();
-
   });
 
-  /*]]>*/
   function goToHome() {
     window.location.href = /*[[@{/manage/}]]*/ '/manage/';
   }
-  /*]]>*/
 </script>
 </body>
 </html>
