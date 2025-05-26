@@ -1,6 +1,5 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 
-import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.pagination.PaginatedMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,40 +27,10 @@ public class MovieAdminController {
         this.movieService = movieService;
     }
 
-    private MovieService getDecoratedService(int page, int size) {
-        // Bắt đầu từ service gốc
-        MovieService service = movieService;
-
-        // TODO: Nếu cần filter/sort, bạn có thể bọc thêm decorator ở đây
-        // Ví dụ: service = new FilteredMovieService(service, ...);
-        // service = new SortedMovieService(service, ...);
-
-        // Bọc phân trang decorator
-        service = new PaginatedMovieService(service, page, size);
-
-        return service;
-    }
-
-    @GetMapping({"", "/"})
-    public String showList(
-            Model model,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        MovieService service = movieService;
-        service = new PaginatedMovieService(service, page, size);
-
-        List<Phim> dsPhim = service.getAllMovies();
-
-        // Tổng phim không phân trang (để tính maxPage)
-        int totalMovies = movieService.getAllMovies().size();
-        int maxPage = (totalMovies + size - 1) / size - 1;
-
+    @GetMapping("/")
+    public String showList(Model model) {
+        List<Phim> dsPhim = movieService.getAllMovies();
         model.addAttribute("movies", dsPhim);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("pageSize", size);
-        model.addAttribute("maxPage", maxPage);
-
         return "MoviePage";
     }
 
@@ -120,20 +89,9 @@ public class MovieAdminController {
     }
 
     @GetMapping("/search")
-    public String searchMovies(
-            @RequestParam("keyword") String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            Model model) {
-
-        MovieService service = getDecoratedService(page, size);
-        List<Phim> ketQua = service.searchMovies(keyword);
-
+    public String searchMovies(@RequestParam("keyword") String keyword, Model model) {
+        List<Phim> ketQua = movieService.searchMovies(keyword);
         model.addAttribute("movies", ketQua);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("pageSize", size);
-        model.addAttribute("keyword", keyword);
-
         return "MoviePage";
     }
 }
