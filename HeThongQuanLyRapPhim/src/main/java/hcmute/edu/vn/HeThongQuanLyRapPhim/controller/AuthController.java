@@ -17,7 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class AuthController {
     private final AuthService authService;
-
     @Autowired
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -50,17 +49,14 @@ public class AuthController {
             return "redirect:/signin";
         }
 
-        // Đăng nhập thành công
-        redirectAttributes.addFlashAttribute("message", "Đăng nhập thành công");
-        redirectAttributes.addFlashAttribute("message_type", "SUCCESS");
-
         if (result.getLoaiDoiTuongSuDung() == LoaiDoiTuongSuDung.KHACH_HANG) {
             session.setAttribute("user", result);
             session.setAttribute("idCustomer", result.getIdDoiTuongSuDung());
             return "redirect:/";
+        } else {
+            session.setAttribute("admin", result);
+            return "redirect:/manage/";
         }
-
-        return "redirect:/manage/";
     }
 
     // Thực hiện chức năng đăng xuất
