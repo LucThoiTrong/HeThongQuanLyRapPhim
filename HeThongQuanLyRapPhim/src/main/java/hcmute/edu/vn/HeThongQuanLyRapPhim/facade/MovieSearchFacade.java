@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.facade;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.MovieRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.specification.MovieSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class MovieSearchFacade {
     private final MovieRepository movieRepository;
 
+    @Autowired
     public MovieSearchFacade(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
@@ -21,4 +23,3 @@ public class MovieSearchFacade {
         return movieRepository.findAll(spec);
     }
 }
-

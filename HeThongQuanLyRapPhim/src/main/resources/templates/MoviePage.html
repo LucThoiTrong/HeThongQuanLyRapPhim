@@ -223,7 +223,8 @@
 
     .button-group {
       display: flex;
-      justify-content: flex-end;
+      justify-content: flex-end; /* Điều chỉnh lại nếu muốn căn chỉnh khác */
+      flex-wrap: wrap; /* Cho phép các nút xuống dòng nếu không đủ không gian */
       margin-bottom: 2rem;
       gap: 1rem;
     }
@@ -252,15 +253,35 @@
     }
 
     .btn-secondary {
-      background: #6c757d;
+      background: #6c757d; /* Bootstrap secondary color */
     }
-
     .btn-secondary:hover {
       background: #5a6268;
       filter: brightness(1.1);
     }
 
-    .btnDelete {
+    .btn-danger { /* Thêm style cho btn-danger nếu chưa có hoặc dùng mặc định của Bootstrap */
+      background-color: #dc3545; /* Bootstrap danger color */
+      border-color: #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+      filter: brightness(1.1);
+    }
+
+    .btn-success { /* Thêm style cho btn-success nếu chưa có hoặc dùng mặc định của Bootstrap */
+      background-color: #198754; /* Bootstrap success color */
+      border-color: #198754;
+    }
+    .btn-success:hover {
+      background-color: #157347;
+      border-color: #146c43;
+      filter: brightness(1.1);
+    }
+
+
+    .btnDelete { /* Giữ lại style cũ của bạn cho nút Xóa cụ thể */
       background: #dc3545;
     }
 
@@ -316,7 +337,7 @@
 
     tbody tr:hover td {
       background-color: rgba(0,0,0,0.03);
-      transform: scale(1.005);
+      /* transform: scale(1.005); Bỏ scale ở td để tránh hiệu ứng kép */
     }
 
     tbody tr:hover {
@@ -596,6 +617,12 @@
     <a th:href="@{/movies/new}" class="btn" data-bs-toggle="tooltip" title="Thêm phim mới">
       <i class="fas fa-plus"></i> Thêm phim mới
     </a>
+    <a th:href="@{/export/pdf}" class="btn btn-danger" data-bs-toggle="tooltip" title="Xuất danh sách phim ra PDF">
+      <i class="fas fa-file-pdf"></i> Xuất PDF
+    </a>
+    <a th:href="@{/export/excel}" class="btn btn-success" data-bs-toggle="tooltip" title="Xuất danh sách phim ra Excel">
+      <i class="fas fa-file-excel"></i> Xuất Excel
+    </a>
     <a th:href="@{/manage/}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại trang quản lý">
       <i class="fas fa-arrow-left"></i> Quay lại
     </a>
@@ -780,7 +807,7 @@
       const nextBtn = document.createElement('button');
       nextBtn.className = 'page-btn';
       nextBtn.textContent = 'Sau';
-      nextBtn.disabled = currentPage === totalPages;
+      nextBtn.disabled = currentPage === totalPages || filteredRows.length === 0; // Disable if no rows
       nextBtn.addEventListener('click', () => {
         if (currentPage < totalPages) {
           currentPage++;
@@ -826,46 +853,63 @@
 
     // Search functionality
     const searchInput = document.getElementById('searchInput');
-    const searchWrapper = searchInput.closest('.search-wrapper');
+    const searchWrapper = searchInput ? searchInput.closest('.search-wrapper') : null;
     const clearBtn = document.querySelector('.clear-btn');
     const suggestionsContainer = document.getElementById('searchSuggestions');
     let suggestions = [];
 
-    // Sample movie data for autocomplete
-    const movieData = [
-      /*[[${movies}]]*/ []
-    ].flatMap(movie => movie.tenPhim || []);
+    // Sample movie data for autocomplete - Ensure movieData is populated correctly
+    const movieDataFromServer = /*[[${movies}]]*/ [];
+    if (Array.isArray(movieDataFromServer)) {
+      suggestions = movieDataFromServer.map(movie => movie.tenPhim).filter(Boolean);
+    }
 
-    suggestions = movieData;
 
-    searchInput.addEventListener('focus', () => {
-      searchWrapper.classList.add('focused');
-      if (searchInput.value.trim()) {
-        showSuggestions(searchInput.value);
+    if(searchInput && searchWrapper && clearBtn && suggestionsContainer) {
+      searchInput.addEventListener('focus', () => {
+        searchWrapper.classList.add('focused');
+        if (searchInput.value.trim()) {
+          showSuggestions(searchInput.value);
+        }
+      });
+
+      searchInput.addEventListener('blur', () => {
+        setTimeout(() => {
+          if (searchWrapper) searchWrapper.classList.remove('focused');
+          if (suggestionsContainer) suggestionsContainer.classList.remove('show');
+        }, 200);
+      });
+
+      searchInput.addEventListener('input', () => {
+        const value = searchInput.value.trim();
+        if (clearBtn) clearBtn.style.display = value ? 'block' : 'none';
+        showSuggestions(value);
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          clearBtn.style.display = 'none';
+          if (suggestionsContainer) suggestionsContainer.classList.remove('show');
+          searchInput.focus();
+          // After clearing, re-filter to show all movies
+          filteredRows = [...allRows];
+          currentPage = 1;
+          updatePagination();
+        });
       }
-    });
 
-    searchInput.addEventListener('blur', () => {
-      setTimeout(() => {
-        searchWrapper.classList.remove('focused');
-        suggestionsContainer.classList.remove('show');
-      }, 200);
-    });
+      document.querySelector('.search-form').addEventListener('submit', (e) => {
+        // Allow form submission for server-side search.
+        // Client-side filtering will be based on the result if this is a client-side search only.
+        // If server provides filtered results, pagination needs to adjust to that.
+        // For this example, we assume server-side search, and `movies` variable would be updated.
+      });
+    }
 
-    searchInput.addEventListener('input', () => {
-      const value = searchInput.value.trim();
-      clearBtn.style.display = value ? 'block' : 'none';
-      showSuggestions(value);
-    });
-
-    clearBtn.addEventListener('click', () => {
-      searchInput.value = '';
-      clearBtn.style.display = 'none';
-      suggestionsContainer.classList.remove('show');
-      searchInput.focus();
-    });
 
     function showSuggestions(value) {
+      if (!suggestionsContainer) return;
       suggestionsContainer.innerHTML = '';
       if (!value) {
         suggestionsContainer.classList.remove('show');
@@ -883,9 +927,12 @@
           li.textContent = suggestion;
           li.addEventListener('click', () => {
             searchInput.value = suggestion;
-            clearBtn.style.display = 'block';
+            if(clearBtn) clearBtn.style.display = 'block';
             suggestionsContainer.classList.remove('show');
+            // Option 1: Submit form for server-side search
             searchInput.closest('form').submit();
+            // Option 2: Client-side filter (if you want to avoid server trip for suggestions)
+            // clientSideFilter(suggestion);
           });
           ul.appendChild(li);
         });
@@ -896,27 +943,33 @@
       }
     }
 
-    document.querySelector('.search-form').addEventListener('submit', (e) => {
-      if (!searchInput.value.trim()) {
-        e.preventDefault();
-        searchInput.focus();
-      }
-    });
+    // Function for client-side filtering (if needed in conjunction with search)
+    // This would be called if your primary search is client-side
+    window.clientSideFilter = function(keyword) {
+      const lowerKeyword = keyword.toLowerCase();
+      filteredRows = allRows.filter(row => {
+        // Adjust this to search in specific cells or all cells
+        const cells = Array.from(row.getElementsByTagName('td'));
+        return cells.some(cell => cell.textContent.toLowerCase().includes(lowerKeyword));
+      });
+      currentPage = 1; // Reset to first page
+      updatePagination();
+    };
+
+    // If search is primarily client-side and searchInput should trigger clientSideFilter:
+    // if (searchInput) {
+    //    searchInput.addEventListener('input', function() {
+    //        clientSideFilter(this.value);
+    //    });
+    // }
+
 
     // Initialize pagination on load
     initPagination();
 
-    // Expose searchTable to global scope
-    window.searchTable = searchTable;
   });
 
-  function searchTable(keyword) {
-    // Existing searchTable function (if any)
-    // Add logic here if needed
-  }
-</script>
-<script th:inline="javascript">
-  /*<![CDATA[*/
+  /*]]>*/
   function goToHome() {
     window.location.href = /*[[@{/manage/}]]*/ '/manage/';
   }
