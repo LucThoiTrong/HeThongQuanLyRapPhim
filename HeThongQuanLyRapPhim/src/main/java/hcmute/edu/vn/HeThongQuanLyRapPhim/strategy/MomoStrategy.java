@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.config.MomoConfig;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.event.InvoiceGeneratedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.observer.AppEventManager;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -18,6 +18,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -27,19 +28,19 @@ public class MomoStrategy implements PaymentStrategy{
     private final ChairRepository chairRepository;
     private final PopcornDrinkComboRepository popcornDrinkComboRepository;
     private final DiscountRepository discountRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final AppEventManager appEventManager;
     private final MomoConfig momoConfig;
     @Autowired
     public MomoStrategy(InvoiceRepository invoiceRepository,
                         ChairRepository chairRepository,
                         PopcornDrinkComboRepository popcornDrinkComboRepository,
                         DiscountRepository discountRepository, MomoConfig momoConfig,
-                        ApplicationEventPublisher eventPublisher) {
+                        AppEventManager appEventManager) {
         this.invoiceRepository = invoiceRepository;
         this.chairRepository = chairRepository;
         this.popcornDrinkComboRepository = popcornDrinkComboRepository;
         this.discountRepository = discountRepository;
-        this.eventPublisher = eventPublisher;
+        this.appEventManager = appEventManager;
         this.momoConfig = momoConfig;
     }
     public String createPayment(String amount) throws Exception {
@@ -83,8 +84,7 @@ public class MomoStrategy implements PaymentStrategy{
 
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         ObjectMapper mapper = new ObjectMapper();
-        String payUrl = mapper.readTree(response.body()).get("payUrl").asText();
-        return payUrl;  //trả về url de chuyen huong sang trang cua momo
+        return mapper.readTree(response.body()).get("payUrl").asText();  //trả về url de chuyen huong sang trang cua momo
     }
 
     @Override
@@ -111,8 +111,8 @@ public class MomoStrategy implements PaymentStrategy{
         invoiceRepository.save(hoaDon);
 
         // Tiến hành gửi mail
-        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(this, customer.getEmail(), hoaDon);
-        eventPublisher.publishEvent(invoiceGeneratedEvent);
+        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(customer.getEmail(), hoaDon);
+        appEventManager.notify(invoiceGeneratedEvent);
     }
 
     private Set<ChiTietComBoBapNuoc> createDetailCombo(Map<Integer, Integer> dsChiTietComBoBapNuoc, HoaDon hoaDon) {
@@ -155,7 +155,7 @@ public class MomoStrategy implements PaymentStrategy{
         SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(secretKeySpec);
-        byte[] hmacData = mac.doFinal(data.getBytes("UTF-8"));
+        byte[] hmacData = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder();
         for (byte b : hmacData) {
             sb.append(String.format("%02x", b));

@@ -17,6 +17,33 @@ import java.util.stream.Collectors;
 public class PdfExporter extends BaseFileExporter {
     private final PDType0Font font;
 
+    private final String[] columnKeys = {
+            "idPhim",
+            "tenPhim",
+            "daoDien",
+            "doTuoi",
+            "trangThaiPhim",
+            "ngonNgu"
+    };
+
+    private final String[] headers = {
+            "ID",
+            "Tên Phim",
+            "Đạo Diễn",
+            "Độ Tuổi",
+            "Trạng Thái",
+            "Ngôn Ngữ"
+    };
+
+    private final float[] columnWidths = {
+            30f,  // idPhim
+            200f, // tenPhim (có thể rộng hơn nữa)
+            100f, // daoDien (rộng hơn)
+            50f,  // doTuoi
+            80f,  // trangThaiPhim (rộng hơn)
+            60f   // ngonNgu
+    };
+
     public PdfExporter() {
         PDDocument document = new PDDocument();
         try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream("fonts/arial.ttf")) {
@@ -46,33 +73,6 @@ public class PdfExporter extends BaseFileExporter {
         float yPosition = yStart;
         float leading = 15f;
         float fontSize = 10f;
-
-        String[] columnKeys = {
-                "idPhim",
-                "tenPhim",
-                "daoDien",
-                "doTuoi",
-                "trangThaiPhim",
-                "ngonNgu"
-        };
-
-        String[] headers = {
-                "ID",
-                "Tên Phim",
-                "Đạo Diễn",
-                "Độ Tuổi",
-                "Trạng Thái",
-                "Ngôn Ngữ"
-        };
-
-        float[] columnWidths = {
-                30f,  // idPhim
-                200f, // tenPhim (có thể rộng hơn nữa)
-                100f, // daoDien (rộng hơn)
-                50f,  // doTuoi
-                80f,  // trangThaiPhim (rộng hơn)
-                60f   // ngonNgu
-        };
 
         try {
             PDPageContentStream contentStream = new PDPageContentStream(document, page);
