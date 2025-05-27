@@ -10,6 +10,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -21,7 +22,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Service
+@Component
 public class MomoStrategy implements PaymentStrategy{
     private final InvoiceRepository invoiceRepository;
     private final ChairRepository chairRepository;
@@ -29,6 +30,7 @@ public class MomoStrategy implements PaymentStrategy{
     private final DiscountRepository discountRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final MomoConfig momoConfig;
+
     @Autowired
     public MomoStrategy(InvoiceRepository invoiceRepository,
                         ChairRepository chairRepository,

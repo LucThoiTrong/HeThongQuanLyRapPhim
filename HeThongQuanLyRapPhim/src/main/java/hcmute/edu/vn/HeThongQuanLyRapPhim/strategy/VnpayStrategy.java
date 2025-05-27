@@ -9,6 +9,7 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -16,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-@Service
+@Component
 public class VnpayStrategy implements PaymentStrategy{
     private final InvoiceRepository invoiceRepository;
     private final ChairRepository chairRepository;
