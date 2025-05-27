@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Combo Bắp Nước - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            padding-top: 20px; /* Adjusted back for no fixed header */
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .site-container {
+            width: 90%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        .main-content-wrapper {
+            flex-grow: 1;
+        }
+
+        .page-main-title {
+            font-size: 2.2em;
+            /* color: #1a202c; */ /* Old color */
+            color: #e53e3e; /* New color to match button */
+            font-weight: 700;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px !important;
+            padding-bottom: 15px;
+            position: relative;
+        }
+        .page-main-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100px;
+            height: 4px;
+            background: #f56565; /* This already matches the button's lighter red */
+            border-radius: 2px;
+        }
+
+        .card-style {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(45, 55, 72, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .table-section {
+            /* Inherits .card-style */
+        }
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background-color: #f8f9fa;
+            color: #2d3748;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .table thead th {
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+            border-top: none;
+            border-bottom: none;
+        }
+        .table thead th:first-child,
+        .table thead th:nth-child(2) {
+            text-align: left;
+        }
+
+        .table tbody td {
+            padding: 0.9rem 0.75rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #e9ecef;
+            border-top: none;
+        }
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .table tbody td:first-child,
+        .table tbody td:nth-child(2) {
+            text-align: left;
+        }
+        .table tbody td:nth-child(3),
+        .table tbody td:nth-child(4),
+        .table tbody td:nth-child(5) {
+            text-align: center;
+        }
+        .table tbody tr:hover {
+            background-color: #f0f2f5;
+        }
+
+        .table .gia-tien {
+            font-weight: 500;
+            color: #343a40;
+        }
+        .table .thanh-tien {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .table input.so-luong {
+            max-width: 70px;
+            text-align: center;
+            border-radius: 6px;
+            border: 1px solid #cbd5e0;
+            padding: 0.4rem 0.5rem;
+            box-shadow: none;
+            margin-left: auto;
+            margin-right: auto;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .table input.so-luong:focus {
+            border-color: #3182ce;
+            box-shadow: 0 0 0 0.2rem rgba(49, 130, 206, 0.2);
+        }
+
+        .table tbody tr.total-combo-row td {
+            background-color: #f8f9fa;
+            font-weight: 700;
+            border-top: 2px solid #dee2e6;
+            color: #1a202c;
+        }
+        .table tbody tr.total-combo-row td:first-child {
+            text-align: right;
+            padding-right: 15px;
+        }
+        .table #tong-tien {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #e53e3e;
+            text-align: center;
+        }
+
+        .ticket-container {
+            margin-top: 0;
+        }
+        .ticket-details {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #cbd5e0;
+        }
+        .ticket-details .column {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ticket-details .column:first-child {
+            flex-basis: 100%;
+            font-size: 1.3em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .ticket-details .label {
+            font-size: 0.85em;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        .ticket-details .bold {
+            font-weight: 600;
+            font-size: 1em;
+            color: #2d3748;
+        }
+        .ticket-details .bold#final-price,
+        .ticket-details .bold#combo-price {
+            color: #e53e3e;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .nav-button-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        .nav-button.next {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .nav-button.next:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(229, 62, 62, 0.3);
+        }
+        .nav-button.next i {
+            font-size: 1em;
+        }
+        form {
+            width: 100%;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .page-main-title { font-size: 1.8em; }
+            .card-style { padding: 20px; }
+
+            .table thead { display: none; }
+            .table tbody tr {
+                display: block;
+                margin-bottom: 1.5rem;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                padding: 1rem;
+                background-color: #fff;
+                box-shadow: 0 2px 8px rgba(45, 55, 72, 0.06);
+            }
+            .table tbody tr:hover { background-color: #fff; }
+
+            .table tbody tr.total-combo-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                border-top: 2px solid #dee2e6;
+                border-left: none; border-right: none; border-bottom: none;
+                border-radius: 0;
+                margin-bottom: 0;
+                box-shadow: none;
+                background-color: #f8f9fa;
+            }
+            .table tbody tr.total-combo-row td {
+                display: inline;
+                padding: 0;
+                border: none;
+                text-align: left !important;
+                position: static;
+            }
+            .table tbody tr.total-combo-row td::before { content: none !important; }
+            .table tbody tr.total-combo-row td:first-child {
+                font-weight: 700;
+            }
+            .table #tong-tien {
+                text-align: right !important;
+                padding-left: 10px;
+            }
+
+            .table tbody td {
+                display: block;
+                text-align: right !important;
+                padding-left: 50%;
+                position: relative;
+                border-bottom: 1px solid #e9ecef;
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+            }
+            .table tbody td:last-child { border-bottom: none; }
+            .table tbody td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: calc(50% - 1rem);
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left !important;
+                font-weight: bold;
+                color: #4a5568;
+            }
+            .table tbody td[data-label="Tên Combo"]::before { content: "Tên Combo:"; }
+            .table tbody td[data-label="Mô Tả"]::before { content: "Mô Tả:"; }
+            .table tbody td[data-label="Giá Tiền"]::before { content: "Giá Tiền:"; }
+            .table tbody td[data-label="Số lượng"]::before { content: "Số lượng:"; }
+            .table tbody td[data-label="Thành tiền"]::before { content: "Thành tiền:"; }
+
+            .table input.so-luong {
+                max-width: 80px;
+                margin-left: 0;
+            }
+
+            .ticket-details { flex-direction: column; gap: 15px; }
+            .ticket-details .column:first-child { font-size: 1.2em; }
+            .ticket-container { padding: 20px; }
+
+            .nav-button-wrapper { justify-content: center; }
+            .nav-button.next { width: 100%; justify-content: center; padding: 12px 20px; }
+        }
+
+        @media (max-width: 480px) {
+            .page-main-title { font-size: 1.6em; margin-bottom: 30px !important;}
+            .card-style { padding: 15px; }
+            .ticket-details .column:first-child { font-size: 1.1em; }
+
+            .table tbody td { padding-left: 45%; }
+            .table tbody td::before { width: calc(45% - 0.75rem); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content-wrapper">
+    <div class="site-container mt-4 mb-5">
+        <form action="/booking/thanh-toan" method="post">
+            <h2 class="page-main-title"><i class="fas fa-shopping-basket"></i> Chọn Combo Bắp Nước</h2>
+
+            <div class="table-section card-style">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th scope="col">Tên Combo</th>
+                            <th scope="col">Mô Tả</th>
+                            <th scope="col">Giá Tiền</th>
+                            <th scope="col">Số lượng</th>
+                            <th scope="col">Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="combo : ${danhSachCombo}">
+                            <td data-label="Tên Combo" th:text="${combo.tenCombo}">Combo Phim Hay</td>
+                            <td data-label="Mô Tả" th:text="${combo.moTaCombo}">1 Bắp + 2 Nước ngọt</td>
+                            <td data-label="Giá Tiền" class="gia-tien" th:data-gia="${combo.giaTien}" th:text="${#numbers.formatDecimal(combo.giaTien, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</td>
+                            <td data-label="Số lượng">
+                                <input type="number" class="form-control so-luong" min="0" value="0" th:data-id="${combo.idComboBapNuoc}" th:name="'comboQuantities[' + ${combo.idComboBapNuoc} + ']'">
+                            </td>
+                            <td data-label="Thành tiền" class="thanh-tien">0 VND</td>
+                        </tr>
+                        <tr th:if="${danhSachCombo == null or #lists.isEmpty(danhSachCombo)}">
+                            <td colspan="5" class="text-center py-4">Hiện không có combo nào.</td>
+                        </tr>
+                        <tr class="total-combo-row">
+                            <td colspan="4">Tổng tiền Combo:</td>
+                            <td id="tong-tien">0 VND</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="ticket-container card-style">
+                <div class="ticket-details">
+                    <div class="column">
+                        <span class="bold" th:text="${session.phim?.tenPhim ?: 'Tên Phim'}"></span>
+                    </div>
+                    <div class="column">
+                        <span class="label">Rạp</span>
+                        <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.rapPhim?.tenRapPhim ?: 'Rạp'}"></span>
+                        <span class="label">Suất chiếu</span>
+                        <span class="bold">
+                            <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'HH:mm') : ''}" ></span>
+                            <br>
+                            <span th:text="${session.suatChieu != null ? #temporals.format(session.suatChieu.ngayGioChieu, 'dd/MM/yyyy') : ''}" ></span>
+                        </span>
+                    </div>
+                    <div class="column">
+                        <span class="label">Phòng chiếu</span>
+                        <span class="bold" th:text="${session.suatChieu?.phongChieuPhim?.tenPhongChieuPhim ?: 'Phòng'}"></span>
+                        <span class="label">Số ghế</span>
+                        <span class="bold" th:text="${session.danhSachGheDuocChon ?: 'Chưa chọn ghế'}"></span>
+                    </div>
+                    <div class="column">
+                        <span class="label">Giá vé</span>
+                        <span class="bold" th:text="${tongGiaVe != null ? #numbers.formatDecimal(tongGiaVe, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                        <span class="label">Tiền Combo</span>
+                        <span class="bold" id="combo-price">0 ₫</span>
+                        <span class="label">Tổng cộng</span>
+                        <span class="bold" id="final-price" th:text="${tongGiaVe != null ? #numbers.formatDecimal(tongGiaVe, 0, 'COMMA', 0, 'POINT') : '0'} + ' ₫'"></span>
+                    </div>
+                </div>
+
+                <input type="hidden" name="tongVePrice" id="tongVePrice" th:value="${tongGiaVe}">
+                <input type="hidden" name="giaTienCombo" id="giaTienCombo" value="0">
+                <input type="hidden" name="tongComboVaVe" id="tongComboVaVe" th:value="${tongGiaVe}">
+
+                <div class="nav-button-wrapper">
+                    <button type="submit" id="continue-button" class="nav-button next">
+                        Thanh Toán <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <div class="site-container">
+        <p>&copy; <span id="currentYear">2024</span> PhimHay. All rights reserved.</p>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        // COMBO CALCULATION LOGIC
+        const tongTienComboCell = document.getElementById("tong-tien");
+        const comboPriceSpan = document.getElementById("combo-price");
+        const finalPriceSpan = document.getElementById("final-price");
+        const giaVe = parseInt(/*[[${tongGiaVe}]]*/) || 0;
+
+        function formatCurrency(number) {
+            return number.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+        }
+
+        function capNhatTongTien() {
+            let tongComboValue = 0;
+
+            document.querySelectorAll("tbody tr input.so-luong").forEach(soLuongInput => {
+                const row = soLuongInput.closest("tr");
+                if (!row || row.classList.contains('total-combo-row')) return;
+
+                const giaTienCell = row.querySelector(".gia-tien");
+                const thanhTienCell = row.querySelector(".thanh-tien");
+
+                if (!giaTienCell || !thanhTienCell) return;
+
+                const giaTien = parseFloat(giaTienCell.dataset.gia);
+                let soLuong = parseInt(soLuongInput.value) || 0;
+
+                if (soLuong < 0) {
+                    soLuongInput.value = 0;
+                    soLuong = 0;
+                }
+                const thanhTien = giaTien * soLuong;
+
+                thanhTienCell.textContent = formatCurrency(thanhTien);
+                tongComboValue += thanhTien;
+            });
+
+            if (comboPriceSpan) comboPriceSpan.textContent = formatCurrency(tongComboValue);
+            if (tongTienComboCell) tongTienComboCell.textContent = formatCurrency(tongComboValue);
+
+            const tongCuoi = giaVe + tongComboValue;
+            if (finalPriceSpan) finalPriceSpan.textContent = formatCurrency(tongCuoi);
+
+            const giaTienComboInput = document.getElementById("giaTienCombo");
+            const tongComboVaVeInput = document.getElementById("tongComboVaVe");
+            if (giaTienComboInput) giaTienComboInput.value = tongComboValue;
+            if (tongComboVaVeInput) tongComboVaVeInput.value = tongCuoi;
+        }
+
+        document.querySelectorAll("tbody tr input.so-luong").forEach(soLuongInput => {
+            soLuongInput.addEventListener("input", capNhatTongTien);
+        });
+
+        capNhatTongTien();
+
+        // CURRENT YEAR
+        const yearSpan = document.getElementById('currentYear');
+        if (yearSpan) { yearSpan.textContent = new Date().getFullYear(); }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

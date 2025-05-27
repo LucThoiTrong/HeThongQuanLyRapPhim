@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm Rạp Phim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- Animate.css for animations -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      --text-color: #333;
+      --bg-color: #f0f4f8;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --primary-gradient: linear-gradient(45deg, #1e3a8a, #6d28d9);
+      --text-color: #e5e7eb;
+      --bg-color: #1f2937;
+      --card-bg: rgba(31, 41, 55, 0.9);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .toast.bg-danger {
+      background: #991b1b !important;
+      color: #fff;
+    }
+
+    [data-theme="dark"] .toast-body {
+      color: #e5e7eb;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    header {
+      background: var(--primary-gradient);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      flex: 1;
+    }
+
+    form {
+      max-width: 600px;
+      width: 100%;
+      padding: 2rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.5s ease;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      font-size: 1rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    input:required::after {
+      content: '*';
+      color: #ef4444;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .button-group {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 25px;
+      text-decoration: none;
+      color: #fff;
+      background: var(--primary-gradient);
+      border: none;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-cancel {
+      background: #6b7280;
+    }
+
+    .btn-cancel:hover {
+      background: #4b5563;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+      z-index: 2000;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(360deg);
+      box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+    }
+
+    .theme-toggle i {
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        margin: 1rem;
+        padding: 1rem;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      form {
+        padding: 1.5rem;
+      }
+      .form-group {
+        margin-bottom: 1rem;
+      }
+      .button-group {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .btn {
+        width: 100%;
+      }
+      .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="animate__animated animate__fadeInDown">
+  <h1>Thêm Rạp Phim Mới</h1>
+</header>
+
+<div class="container animate__animated animate__fadeIn">
+  <form th:action="@{/cinemas/new}" th:object="${rapPhim}" method="post">
+    <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.1s">
+      <label for="tenRapPhim">Tên Rạp Phim:</label>
+      <input type="text" id="tenRapPhim" th:field="*{tenRapPhim}" required>
+      <div th:if="${tenRapPhimError}" class="text-danger mt-1" th:text="${tenRapPhimError}"></div>
+    </div>
+
+    <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.2s">
+      <label for="diaChiRapPhim">Địa Chỉ Rạp Phim:</label>
+      <input type="text" id="diaChiRapPhim" th:field="*{diaChiRapPhim}" required>
+    </div>
+
+    <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.3s">
+      <label for="trangThaiRapPhim">Trạng Thái:</label>
+      <select id="trangThaiRapPhim" th:field="*{trangThaiRapPhim}" required>
+        <option th:each="trangThai : ${trangThaiList}"
+                th:value="${trangThai}"
+                th:text="${trangThai.moTa}"></option>
+      </select>
+    </div>
+
+    <div class="form-group animate__animated animate__fadeInUp" data-animate-delay="0.4s">
+      <label for="nhanVien">Chọn Nhân Viên Quản Lý:</label>
+      <select id="nhanVien" th:field="*{nhanVien}">
+        <option value="">--Chọn nhân viên--</option>
+        <option th:each="nv : ${nhanVienList}"
+                th:value="${nv.idDoiTuongSuDung}" th:text="${nv.hoTen}"></option>
+      </select>
+    </div>
+
+    <div class="button-group animate__animated animate__fadeInUp" data-animate-delay="0.5s">
+      <button type="submit" class="btn" data-bs-toggle="tooltip" title="Thêm rạp phim mới">
+        <i class="fas fa-plus"></i> Thêm
+      </button>
+      <a th:href="@{/cinemas/}" class="btn btn-cancel" data-bs-toggle="tooltip" title="Hủy và quay lại danh sách">
+        <i class="fas fa-times"></i> Hủy
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle animate__animated animate__fadeIn" onclick="toggleTheme()">
+  <i class="fas fa-moon"></i>
+</button>
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000;">
+  <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 animate__animated animate__fadeInUp" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:if="${tenRapPhimError}" th:text="${tenRapPhimError}"></span>
+        <span th:unless="${tenRapPhimError}">Tên rạp phim đã tồn tại. Vui lòng chọn tên khác.</span>
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Kích hoạt tooltip của Bootstrap
+  document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+    // Kích hoạt toast nếu có lỗi
+    const errorToast = document.getElementById('errorToast');
+    const errorMessage = /*[[${tenRapPhimError}]]*/ '';
+    console.log('tenRapPhimError:', errorMessage); // Debug giá trị
+    if (errorMessage) {
+      const toast = new bootstrap.Toast(errorToast, {
+        autohide: true,
+        delay: 5000
+      });
+      toast.show();
+    }
+  });
+
+  // Chuyển đổi chủ đề sáng/tối
+  function toggleTheme() {
+    const body = document.body;
+    const currentTheme = body.getAttribute('data-theme');
+    if (currentTheme === 'dark') {
+      body.removeAttribute('data-theme');
+      document.querySelector('.theme-toggle i').classList.replace('fa-sun', 'fa-moon');
+    } else {
+      body.setAttribute('data-theme', 'dark');
+      document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
+    }
+  }
+</script>
+</body>
+</html>

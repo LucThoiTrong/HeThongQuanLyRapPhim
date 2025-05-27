@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt vé xem phim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            padding-top: 20px;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .page-main-title {
+            font-size: 2.2em;
+            color: #1a202c;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            position: relative;
+        }
+        .page-main-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 100px;
+            height: 4px;
+            background: #f56565; /* Accent color */
+            border-radius: 2px;
+        }
+
+        .booking-section {
+            background: #ffffff;
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: #e2e8f0;
+            margin: 30px 0;
+        }
+
+        /* Date Selection - Themed */
+        .date-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .date-cell {
+            background-color: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 100px;
+            text-align: left;
+            color: #4a5568;
+        }
+        .date-cell:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .date-cell.selected {
+            background-color: #f56565; /* MODIFIED: Red accent */
+            border-color: #e53e3e;   /* MODIFIED: Darker red accent for border */
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3); /* MODIFIED: Red shadow */
+        }
+        .date-cell:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.4);
+        }
+        .date-cell.selected:focus-visible { /* Added focus state for selected */
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.7);
+        }
+
+        .date-cell .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-right: 12px;
+            border-right: 1px dashed #cbd5e0;
+        }
+        .date-cell.selected .left {
+            border-right: 1px dashed rgba(255,255,255,0.5); /* MODIFIED: Lighter dash for contrast */
+        }
+        .date-cell .month, .date-cell .day, .date-cell .date {
+            transition: color 0.3s ease; /* Smooth color transition */
+        }
+        .date-cell .month {
+            font-size: 0.75em;
+            font-weight: 500;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        .date-cell .day {
+            font-size: 0.85em;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+        .date-cell .date {
+            font-size: 1.8em;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .date-cell.selected .month,
+        .date-cell.selected .day,
+        .date-cell.selected .date {
+            color: #fff;
+        }
+
+        /* Format Selection - Themed */
+        .format-container {
+            margin-top: 10px;
+        }
+        .format-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        .format-box .btn {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .format-box .btn:hover {
+            border-color: #cbd5e0;
+            background-color: #edf2f7;
+        }
+        .format-box.selected .btn {
+            background-color: #f56565; /* MODIFIED: Red accent */
+            border-color: #e53e3e;   /* MODIFIED: Darker red accent for border */
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25); /* MODIFIED: Red shadow */
+        }
+        .format-box .btn:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.4);
+        }
+        .format-box.selected .btn:focus-visible { /* Added focus state for selected */
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25), 0 0 0 3px rgba(255, 255, 255, 0.7);
+        }
+
+
+        /* Screening List - Themed */
+        .screening-list {
+            list-style: none;
+            padding: 0;
+        }
+        .screening-list > li {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fdfdfe; /* Slightly off-white for card feel */
+            border: 1px solid #e9edf1;
+            border-radius: 8px;
+        }
+        .cinema-name {
+            font-size: 1.3em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cinema-name i {
+            color: #f56565; /* Red icon color */
+        }
+
+        .screening-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .screening-row form {
+            display: inline-block;
+        }
+        .time-default { /* Nút giờ chiếu - Teal color */
+            background-color: #17a2b8; /* MODIFIED: Teal color */
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .time-default:hover {
+            background-color: #138496; /* MODIFIED: Darker Teal on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .time-default:focus-visible { /* Added focus state */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.5);
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-main-title { font-size: 1.8em; margin-bottom: 20px; }
+            .section-title { font-size: 1.3em; }
+            .booking-section { padding: 20px; }
+            .date-grid, .format-row, .screening-row { gap: 10px; }
+            .date-cell { min-width: 90px; padding: 10px; gap: 8px; }
+            .date-cell .left { padding-right: 8px;}
+            .date-cell .date { font-size: 1.5em; }
+            .format-box .btn, .time-default { padding: 8px 15px; font-size: 0.9em; }
+        }
+        @media (max-width: 480px) {
+            body { padding-top: 15px; padding-bottom: 20px;}
+            .container { width: 95%; }
+            .page-main-title { font-size: 1.6em; }
+            .section-title { font-size: 1.2em; }
+            .booking-section { padding: 15px; }
+            .date-grid { flex-direction: column; align-items: stretch; }
+            .date-cell { flex-direction: row; justify-content: space-between; width: 100%;}
+            .date-cell .left { border-right: none; padding-right: 0; flex-direction: row; gap: 8px; align-items: baseline;}
+            .date-cell .date { margin-left: auto;}
+            .format-row { justify-content: flex-start;}
+            .screening-row { justify-content: flex-start;}
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="page-main-title" th:text="'Đặt vé cho ' + ${session.phim.tenPhim}">Đặt vé cho Tên Phim</h1>
+
+    <form th:action="@{/booking/{idPhim}(idPhim=${session.phim.idPhim})}" method="get" id="mainForm">
+        <input type="hidden" name="ngayChieu" id="ngayChieuInput" th:value="${ngayChieu}">
+        <input type="hidden" name="hinhThucChieu" id="hinhThucInput" th:value="${hinhThucChieu}">
+
+        <div class="booking-section">
+            <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Chọn ngày chiếu</h2>
+            <div class="date-grid">
+            </div>
+            <p id="no-dates-message" style="display: none;">Không có ngày chiếu khả dụng.</p>
+        </div>
+
+        <div class="booking-section">
+            <h2 class="section-title"><i class="fas fa-film"></i> Chọn hình thức chiếu</h2>
+            <div class="format-container">
+                <div class="format-row">
+                    <th:block th:each="ht : ${danhSachHinhThuc}">
+                        <div class="format-box"
+                             th:classappend="${ht.name() == hinhThucChieu?.name()} ? ' selected' : ''">
+                            <button type="button"
+                                    class="btn"
+                                    th:text="${ht.moTa}"
+                                    th:attr="data-ht=${ht.name()}">
+                                2D Phụ đề
+                            </button>
+                        </div>
+                    </th:block>
+                    <p th:if="${danhSachHinhThuc == null or #lists.isEmpty(danhSachHinhThuc)}">Không có hình thức chiếu khả dụng cho ngày đã chọn.</p>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="booking-section">
+    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Danh sách rạp &amp; giờ chiếu</h2>
+    <ul class="screening-list">
+        <th:block th:if="${groupedByRap != null and not #maps.isEmpty(groupedByRap)}">
+            <li th:each="entry : ${groupedByRap}">
+                <h3 class="cinema-name"><i class="fas fa-video"></i> <span th:text="${entry.key}">Tên Rạp Chiếu</span></h3>
+                <div class="screening-row">
+                    <form th:each="suat : ${entry.value}" th:action="@{/booking/so-do-ghe}" method="get">
+                        <input type="hidden" name="idSuatChieu" th:value="${suat.idSuatChieu}">
+                        <button
+                                type="submit"
+                                class="time-default"
+                                th:text="${#temporals.format(suat.ngayGioChieu, 'HH:mm')}">
+                            10:00
+                        </button>
+                    </form>
+                    <p th:if="${#lists.isEmpty(entry.value)}">Rạp này hiện không có suất chiếu cho lựa chọn của bạn.</p>
+                </div>
+            </li>
+        </th:block>
+        <li th:if="${groupedByRap == null or #maps.isEmpty(groupedByRap)}">
+            <p>Không có suất chiếu nào phù hợp với lựa chọn của bạn. Vui lòng thử ngày hoặc hình thức chiếu khác.</p>
+        </li>
+    </ul>
+</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Lựa chọn các phần tử DOM cần thiết ---
+        const dateGrid = document.querySelector('.date-grid'); // Container cho các ô ngày
+        const noDatesMessage = document.getElementById('no-dates-message'); // Thông báo khi không có ngày
+        const today = new Date(); // Lấy ngày hiện tại
+        const numberOfDaysToShow = 15; // Số ngày sẽ hiển thị
+
+        // Input ẩn để lưu trữ giá trị ngày chiếu và hình thức chiếu gửi lên server
+        const ngayChieuInput = document.getElementById('ngayChieuInput');
+        const hinhThucInput = document.getElementById('hinhThucInput');
+        const mainForm = document.getElementById('mainForm'); // Form chính chứa các input
+
+        // --- Các hàm trợ giúp ---
+
+        /**
+         * Định dạng đối tượng Date sang chuỗi tháng tiếng Việt (ví dụ: "Thg 5")
+         * @param {Date} date - Đối tượng Date cần định dạng
+         * @returns {string} Chuỗi tháng đã định dạng
+         */
+        function getVietnameseMonth(date) {
+            return new Intl.DateTimeFormat('vi-VN', { month: 'short' }).format(date).replace('.', '');
+        }
+
+        /**
+         * Định dạng đối tượng Date sang chuỗi thứ trong tuần tiếng Việt (ví dụ: "Thứ Hai")
+         * @param {Date} date - Đối tượng Date cần định dạng
+         * @returns {string} Chuỗi thứ đã định dạng và viết hoa chữ cái đầu
+         */
+        function getVietnameseDayOfWeek(date) {
+            let dayName = new Intl.DateTimeFormat('vi-VN', { weekday: 'long' }).format(date);
+            return dayName.charAt(0).toUpperCase() + dayName.slice(1);
+        }
+
+        /**
+         * Định dạng đối tượng Date hoặc chuỗi ngày sang chuỗi YYYY-MM-DD
+         * @param {Date|string} date - Đối tượng Date hoặc chuỗi ngày cần định dạng
+         * @returns {string|null} Chuỗi ngày theo định dạng YYYY-MM-DD hoặc null nếu đầu vào không hợp lệ
+         */
+        function formatDateToISO(date) {
+            // Kiểm tra và chuyển đổi nếu đầu vào là chuỗi ngày
+            if (!(date instanceof Date && !isNaN(date))) {
+                if (typeof date === 'string') {
+                    const parsedDate = new Date(date); // Thử phân tích chuỗi ngày
+                    if (parsedDate instanceof Date && !isNaN(parsedDate)) {
+                        date = parsedDate;
+                    } else {
+                        console.error("Lỗi định dạng ngày (formatDateToISO):", date);
+                        return null;
+                    }
+                } else {
+                    console.error("Đối tượng ngày không hợp lệ (formatDateToISO):", date);
+                    return null;
+                }
+            }
+            // Định dạng ngày thành YYYY-MM-DD
+            const year = date.getFullYear();
+            const month = ('0' + (date.getMonth() + 1)).slice(-2); // Tháng trong JS bắt đầu từ 0
+            const day = ('0' + date.getDate()).slice(-2);
+            return `${year}-${month}-${day}`;
+        }
+
+        /**
+         * Kiểm tra xem một chuỗi có phải là định dạng ngày YYYY-MM-DD hợp lệ không
+         * @param {string} dateString - Chuỗi ngày cần kiểm tra
+         * @returns {boolean} True nếu hợp lệ, False nếu không
+         */
+        function isValidDateString(dateString) {
+            if (!dateString) return false;
+            // Sử dụng regex để kiểm tra định dạng và new Date() để kiểm tra tính hợp lệ của ngày
+            return /^\d{4}-\d{2}-\d{2}$/.test(dateString) && !isNaN(new Date(dateString + "T00:00:00"));
+        }
+
+        // --- Phần 1: Tạo động các ô chọn ngày và xác định ngày được chọn ban đầu ---
+        let initiallySelectedDateISO; // Biến lưu trữ ngày được chọn ban đầu (YYYY-MM-DD)
+        const todayISO = formatDateToISO(today); // Ngày hôm nay ở định dạng YYYY-MM-DD
+
+        // Ưu tiên lấy ngày đã chọn từ server (qua input#ngayChieuInput mà Thymeleaf đã điền giá trị)
+        // Điều này quan trọng để duy trì trạng thái "selected" sau khi submit form và trang tải lại.
+        if (ngayChieuInput && ngayChieuInput.value && isValidDateString(ngayChieuInput.value)) {
+            initiallySelectedDateISO = ngayChieuInput.value;
+        } else {
+            // Nếu không có giá trị từ server, hoặc giá trị không hợp lệ, mặc định là ngày hôm nay
+            initiallySelectedDateISO = todayISO;
+            if (ngayChieuInput) {
+                // Cập nhật input ẩn với ngày hôm nay nếu nó rỗng hoặc không hợp lệ khi tải trang
+                ngayChieuInput.value = todayISO;
+            }
+        }
+
+        // Kiểm tra xem container .date-grid có tồn tại không
+        if (!dateGrid) {
+            console.error("Không tìm thấy phần tử '.date-grid'.");
+            if (noDatesMessage) noDatesMessage.style.display = 'block'; // Hiển thị thông báo lỗi
+        } else {
+            // Vòng lặp để tạo các ô ngày (button)
+            for (let i = 0; i < numberOfDaysToShow; i++) {
+                const currentDateObj = new Date(today); // Bắt đầu từ ngày hôm nay
+                currentDateObj.setDate(today.getDate() + i); // Tính toán cho các ngày tiếp theo
+
+                const button = document.createElement('button');
+                button.setAttribute('type', 'button'); // Quan trọng: để button không tự submit form
+                button.classList.add('date-cell'); // Thêm class CSS
+
+                const dateISO = formatDateToISO(currentDateObj); // Lấy ngày hiện tại của vòng lặp ở định dạng YYYY-MM-DD
+                button.setAttribute('data-ngay', dateISO); // Lưu trữ ngày vào data attribute
+
+                // Quan trọng: Thêm class 'selected' nếu ngày này trùng với ngày được chọn ban đầu
+                if (dateISO === initiallySelectedDateISO) {
+                    button.classList.add('selected');
+                }
+
+                // Tạo cấu trúc HTML bên trong button (left, month, day, date)
+                const leftDiv = document.createElement('div');
+                leftDiv.classList.add('left');
+
+                const monthDiv = document.createElement('div');
+                monthDiv.classList.add('month');
+                monthDiv.textContent = getVietnameseMonth(currentDateObj);
+
+                const dayOfWeekDiv = document.createElement('div');
+                dayOfWeekDiv.classList.add('day');
+                dayOfWeekDiv.textContent = getVietnameseDayOfWeek(currentDateObj);
+
+                leftDiv.appendChild(monthDiv);
+                leftDiv.appendChild(dayOfWeekDiv);
+
+                const dateDiv = document.createElement('div');
+                dateDiv.classList.add('date');
+                dateDiv.textContent = ('0' + currentDateObj.getDate()).slice(-2); // Hiển thị ngày (dd)
+
+                button.appendChild(leftDiv);
+                button.appendChild(dateDiv);
+                dateGrid.appendChild(button); // Thêm button ngày vào grid
+            }
+
+            // Kiểm tra và hiển thị/ẩn thông báo nếu không có ngày nào được tạo
+            if (dateGrid.children.length === 0) {
+                if (noDatesMessage) noDatesMessage.style.display = 'block';
+            } else {
+                if (noDatesMessage) noDatesMessage.style.display = 'none';
+            }
+        }
+
+        // --- Phần 2: Gắn sự kiện click cho các ô ngày và các nút chọn hình thức ---
+
+        // Gắn sự kiện cho các ô ngày đã được tạo động
+        if (mainForm && ngayChieuInput) {
+            document.querySelectorAll('.date-grid .date-cell').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Khi click vào một ngày:
+                    // 1. Cập nhật giá trị của input#ngayChieuInput
+                    ngayChieuInput.value = btn.getAttribute('data-ngay');
+                    console.log('Ngày đã chọn (sẽ submit):', ngayChieuInput.value);
+                    // 2. Submit form để tải lại trang với ngày chiếu mới
+                    // Class 'selected' sẽ được áp dụng lại ở Phần 1 khi trang tải lại.
+                    mainForm.submit();
+                });
+            });
+        } else {
+            console.error("Lỗi JS khi gắn sự kiện ngày: Không tìm thấy 'mainForm' hoặc 'ngayChieuInput'.");
+        }
+
+        // Gắn sự kiện cho các nút chọn hình thức
+        if (mainForm && hinhThucInput) {
+            // Lưu ý: Việc áp class 'selected' cho hình thức hiện tại chủ yếu do Thymeleaf xử lý
+            // khi trang tải lại (th:classappend trong HTML).
+            // JavaScript ở đây chủ yếu để cập nhật input và submit form.
+            document.querySelectorAll('.format-box .btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Khi click vào một hình thức:
+                    // Tùy chọn: Cập nhật class 'selected' cho div.format-box cha ngay lập tức (trước khi submit)
+                    // để người dùng thấy phản hồi. Tuy nhiên, Thymeleaf sẽ là nguồn chính xác định
+                    // class 'selected' khi trang tải lại.
+                    const parentFormatBox = btn.closest('.format-box');
+                    if (parentFormatBox) {
+                        // Xóa 'selected' khỏi các .format-box khác
+                        document.querySelectorAll('.format-box.selected').forEach(selectedBox => {
+                            selectedBox.classList.remove('selected');
+                        });
+                        // Thêm 'selected' cho .format-box hiện tại
+                        parentFormatBox.classList.add('selected');
+                    }
+
+                    // 1. Cập nhật giá trị của input#hinhThucInput
+                    hinhThucInput.value = btn.getAttribute('data-ht');
+                    console.log('Hình thức đã chọn (sẽ submit):', hinhThucInput.value);
+                    // 2. Submit form
+                    mainForm.submit();
+                });
+            });
+        } else {
+            console.error("Lỗi JS khi gắn sự kiện hình thức: Không tìm thấy 'mainForm' hoặc 'hinhThucInput'.");
+        }
+    });
+</script>
+
+</body>
+</html>

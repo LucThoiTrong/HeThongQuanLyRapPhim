@@ -1,0 +1,136 @@
+.btn {
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    padding: 5px
+}
+
+.btn-default {
+    background-color: #eee;
+    color: #333;
+}
+
+.btn-selected {
+    background-color: #f39c12;
+    color: white;
+}
+
+.btn:hover {
+    background-color: #f2edff;
+}
+/*ngay gio chieu*/
+.date-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    padding: 20px;
+}
+
+.date-cell {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    height: 70px;
+    background-color: #e8e6e6;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+}
+
+.date-cell .left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.1;
+}
+
+.date-cell .month {
+    font-size: 12px;
+    color: #777;
+}
+
+.date-cell .day {
+    font-size: 14px;
+    color: #444;
+}
+
+.date-cell .date {
+    font-size: 32px;
+    font-weight: bold;
+    color: #222;
+    margin-left: 8px;
+}
+
+.date-cell.selected {
+    border: 2px solid black;
+    background: #ffbebe;
+}
+
+/*hình thuc chieu*/
+.format-container {
+    display: flex;
+}
+
+.format-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.format-box {
+    display: inline-block;
+    padding: 8px;
+    margin: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+}
+
+.format-box.selected {
+    border-color: #ffbebe;
+    background-color: #ffbebe;
+}
+
+.format-box .btn {
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
+    font-size: 1em;
+}
+
+/*gio chieu*/
+#screening-times {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.screening-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.time-default {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    background-color: #eee;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.time-default:hover {
+    background-color: #ddd;
+    transform: scale(1.1);
+}
+
+
