@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản Lý Mã Giảm Giá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Google Fonts: Inter & Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #7c3aed, #db2777);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --text-color: #1f2937;
+            --bg-color: #e5e7eb;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --glow: 0 0 15px rgba(124, 58, 237, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --primary-gradient: linear-gradient(135deg, #4c1d95, #be185d);
+            --secondary-gradient: linear-gradient(135deg, #0e7490, #1e40af);
+            --text-color: #e5e7eb;
+            --bg-color: #111827;
+            --card-bg: rgba(31, 41, 55, 0.85);
+            --glass-bg: rgba(31, 41, 55, 0.2);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --glow: 0 0 15px rgba(192, 132, 252, 0.5);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"%3E%3Cpath fill="url(%23gradient)" fill-opacity="0.3" d="M0,224L48,213.3C96,203,192,181,288,170.7C384,160,480,160,576,176C672,192,768,224,864,229.3C960,235,1056,213,1152,197.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"%3E%3C/path%3E%3Cdefs%3E%3ClinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%"%3E%3Cstop offset="0%" style="stop-color:%237c3aed;stop-opacity:1" /%3E%3Cstop offset="100%" style="stop-color:%23db2777;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E') no-repeat bottom;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 40px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-bg);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        h4 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--glow);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .form-control, .form-select {
+            background: var(--glass-bg);
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            background: var(--card-bg);
+            box-shadow: var(--glow);
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .form-check-input {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            background: var(--glass-bg);
+            border: 2px solid var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .form-check-input:checked {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            box-shadow: var(--glow);
+        }
+
+        .form-check-input:checked::after {
+            content: '\f00c'; /* Font Awesome check icon */
+            font-family: 'Font Awesome 6 Free',serif;
+            font-weight: 900;
+            color: #fff;
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .form-check-input:hover {
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+        }
+
+        .form-check-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .form-check-input:checked + .form-check-label {
+            color: #7c3aed;
+        }
+
+        .error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            background: var(--secondary-gradient);
+        }
+
+        .btn-outline-custom {
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            border-color: #7c3aed;
+            color: #7c3aed;
+        }
+
+        .link-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .link-container a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .link-container a:hover {
+            color: #7c3aed;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(360deg);
+            box-shadow: var(--glow);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 30px;
+                padding: 25px;
+            }
+            h4 {
+                font-size: 2rem;
+            }
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
+            .form-check-input {
+                width: 20px;
+                height: 20px;
+            }
+            .form-check-label {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-overlay"></div>
+<div class="container form-container animate__animated animate__fadeIn">
+    <h4>Thông Tin Mã Giảm Giá</h4>
+
+    <form id="discountForm" th:action="@{/discount/save}" th:object="${maGiamGia}" method="post" onsubmit="return validateForm()">
+
+        <input type="hidden" th:field="*{idMaGiamGia}">
+
+        <div class="mb-4">
+            <label class="form-label">Chiến dịch giảm giá</label>
+            <select th:field="*{chienDichGiamGia}" class="form-select" id="chienDichGiamGia">
+                <option value="">Chọn chiến dịch</option>
+                <option th:each="cd : ${listChienDichGiamGia}"
+                        th:value="${cd.idChienDichGiamGia}"
+                        th:text="${cd.tenChienDich}"
+                        th:attr="data-ngaybatdau=${cd.ngayBatDauChienDich},data-ngayketthuc=${cd.ngayKetThucChienDich}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Tên mã giảm giá</label>
+            <input type="text" th:field="*{tenMaGiamGia}" class="form-control" placeholder="Nhập tên mã giảm giá">
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <label class="form-label">Phần trăm giảm giá (%)</label>
+                <input type="number" th:field="*{phanTramGiamGia}" class="form-control" placeholder="0-100">
+            </div>
+            <div class="col-md-4 mb-4">
+                <label class="form-label">Hạn mức áp dụng</label>
+                <input type="number" th:field="*{hanMucApDung}" class="form-control" placeholder="Số tiền tối thiểu">
+            </div>
+            <div class="col-md-4 mb-4">
+                <label class="form-label">Giá trị giảm tối đa</label>
+                <input type="number" th:field="*{giaTriGiamToiDa}" class="form-control" placeholder="Số tiền tối đa">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label for="ngayBatDauApDung" class="form-label">Ngày bắt đầu áp dụng</label>
+                <input type="datetime-local"
+                       id="ngayBatDauApDung"
+                       name="ngayBatDauApDung"
+                       th:value="${#temporals.format(maGiamGia.ngayBatDauApDung, 'yyyy-MM-dd''T''HH:mm')}"
+                       class="form-control"/>
+            </div>
+            <div class="col-md-6 mb-4">
+                <label for="ngayKetThucApDung" class="form-label">Ngày kết thúc áp dụng</label>
+                <input type="datetime-local"
+                       id="ngayKetThucApDung"
+                       name="ngayKetThucApDung"
+                       th:value="${#temporals.format(maGiamGia.ngayKetThucApDung, 'yyyy-MM-dd''T''HH:mm')}"
+                       class="form-control"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <label class="form-label">Trạng thái sử dụng</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                           th:field="*{trangThaiSuDung}" value="true" id="trangThaiTrue">
+                    <label class="form-check-label" for="trangThaiTrue">Đã sử dụng</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio"
+                           th:field="*{trangThaiSuDung}" value="false" id="trangThaiFalse">
+                    <label class="form-check-label" for="trangThaiFalse">Chưa sử dụng</label>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <label class="form-label">Số lượng mã giảm giá</label>
+                <input type="number" name="soLuongMaGiamGia" th:value="${soLuongMaGiamGia}" class="form-control" placeholder="Số lượng">
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-custom"><i class="fas fa-save me-2"></i>Lưu</button>
+            <a th:href="@{/discount/list}" class="btn btn-outline-custom"><i class="fas fa-list me-2"></i>Xem danh sách</a>
+        </div>
+
+        <div class="link-container">
+            <span id="errorMessage" class="error"></span>
+        </div>
+    </form>
+</div>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+    // Theme toggle
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            body.removeAttribute('data-theme');
+            document.querySelector('.theme-toggle i').classList.replace('fa-sun', 'fa-moon');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
+        }
+    }
+
+    // Form validation
+    function validateForm() {
+        const selectChienDich = document.getElementById("chienDichGiamGia");
+        const selectedOption = selectChienDich.options[selectChienDich.selectedIndex];
+        const tenMaGiamGia = document.querySelector("[name='tenMaGiamGia']").value.trim();
+        const phanTramGiamGia = document.querySelector("[name='phanTramGiamGia']").value.trim();
+        const hanMucApDung = document.querySelector("[name='hanMucApDung']").value.trim();
+        const giaTriGiamToiDa = document.querySelector("[name='giaTriGiamToiDa']").value.trim();
+        const ngayBatDauApDung = document.querySelector("[name='ngayBatDauApDung']").value;
+        const ngayKetThucApDung = document.querySelector("[name='ngayKetThucApDung']").value;
+        const radioTrangThai = document.querySelector("input[name='trangThaiSuDung']:checked");
+        const soLuongMaGiamGia = document.querySelector("[name='soLuongMaGiamGia']").value.trim();
+        const errorMessage = document.getElementById("errorMessage");
+
+        // Check for empty fields
+        if (!selectChienDich.value || !tenMaGiamGia || !phanTramGiamGia || !hanMucApDung || !giaTriGiamToiDa || !ngayBatDauApDung || !ngayKetThucApDung || !radioTrangThai || !soLuongMaGiamGia) {
+            errorMessage.textContent = "Vui lòng điền đầy đủ thông tin.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        // Check for non-negative numbers
+        if (parseFloat(phanTramGiamGia) < 0 || parseFloat(hanMucApDung) < 0 || parseFloat(giaTriGiamToiDa) < 0 || parseInt(soLuongMaGiamGia) < 0) {
+            errorMessage.textContent = "Các giá trị số không được nhỏ hơn 0.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        // Check percentage range
+        if (parseFloat(phanTramGiamGia) > 100) {
+            errorMessage.textContent = "Phần trăm giảm giá không được lớn hơn 100%.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        // Check date validity
+        const start = new Date(ngayBatDauApDung);
+        const end = new Date(ngayKetThucApDung);
+        if (start >= end) {
+            errorMessage.textContent = "Ngày kết thúc phải sau ngày bắt đầu.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        // Check if dates are within campaign period
+        const ngayBatDauChienDich = selectedOption.getAttribute("data-ngaybatdau");
+        const ngayKetThucChienDich = selectedOption.getAttribute("data-ngayketthuc");
+        const startDate = new Date(ngayBatDauChienDich);
+        const endDate = new Date(ngayKetThucChienDich);
+
+        if (start < startDate || start > endDate) {
+            errorMessage.textContent = "Ngày bắt đầu áp dụng mã giảm giá phải nằm trong khoảng thời gian chiến dịch.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        if (end < startDate || end > endDate) {
+            errorMessage.textContent = "Ngày kết thúc áp dụng mã giảm giá phải nằm trong khoảng thời gian chiến dịch.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+</script>
+</body>
+</html>

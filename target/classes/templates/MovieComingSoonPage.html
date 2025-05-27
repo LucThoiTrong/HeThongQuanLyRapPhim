@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phim Sắp Chiếu - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee); /* Nền xám nhạt chung */
+            color: #2d3748; /* Màu chữ mặc định */
+            padding-top: 80px; /* Khoảng đệm cho fixed header */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1280px;
+            margin: auto;
+            padding: 0 20px;
+        }
+
+        .main-content {
+            flex-grow: 1;
+        }
+
+        /* --- HEADER (LIGHT THEME) --- */
+        header {
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        header .logo a {
+            color: #1a202c; /* Màu chữ logo tối */
+            font-size: 2em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        header .logo a i {
+            color: #f56565; /* Màu nhấn đỏ/san hô cho icon logo */
+            font-size: 1.2em;
+        }
+
+        header nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding-left: 0;
+        }
+
+        header nav ul li a {
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        header nav ul li a:hover,
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .header-actions .btn-login:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+
+        /* --- CSS CHO USER MENU DROPDOWN --- */
+        .header-actions .user-menu-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .header-actions .user-profile-toggle {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            text-decoration: none;
+            color: #1a202c; /* Màu chữ tối cho tên user */
+            background-color: transparent;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt khi hover */
+            color: #c53030; /* Màu chữ nhấn khi hover */
+        }
+
+        .header-actions .user-profile-toggle .user-icon {
+            font-size: 1.3em;
+            color: #1a202c; /* Màu icon user theo màu chữ */
+        }
+
+        .header-actions .user-profile-toggle #headerUserDisplayName {
+            font-weight: 500;
+        }
+
+        .header-actions .user-profile-toggle .dropdown-arrow {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .header-actions .user-profile-toggle.open .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .header-actions .dropdown-menu-content { /* Dropdown menu vẫn giữ nền trắng chữ tối */
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 5px);
+            background-color: #fff;
+            min-width: 220px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-radius: 6px;
+            z-index: 1001;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            padding: 8px 0;
+        }
+
+        .header-actions .dropdown-menu-content.show {
+            display: block;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.95em;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            gap: 10px;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            color: #718096;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item:hover {
+            background-color: #f0f2f5;
+            color: #1a202c;
+        }
+
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover {
+            background-color: #fef2f2; /* Nền đỏ rất nhạt cho active link */
+            color: #e53e3e; /* Màu chữ nhấn cho active link */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i {
+            color: #e53e3e; /* Icon màu nhấn cho active link */
+        }
+        /* --- KẾT THÚC CSS CHO USER MENU DROPDOWN --- */
+
+
+        /* --- PAGE TITLE SECTION --- */
+        .page-header {
+            background-color: #fff; /* Nền trắng cho tiêu đề trang */
+            padding: 30px 0;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .page-header h1 {
+            font-size: 2.5em;
+            color: #1a202c; /* Chữ tối */
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .page-header h1 i { /* Thêm màu nhấn cho icon tiêu đề */
+            color: #f56565;
+        }
+
+
+        /* --- MOVIE LISTING GRID --- */
+        .movie-listing-container {
+            padding: 0 0 30px 0;
+            margin-bottom: 30px;
+        }
+        .movie-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+        }
+        .movie-card {
+            background: #fff; /* Nền trắng cho thẻ phim */
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .movie-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .movie-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
+        .movie-card .rating-badge { /* Giữ nguyên màu cam cho rating */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f6ad55;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        .movie-card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .movie-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+            color: #1a202c; /* Chữ tối */
+            font-weight: 600;
+            min-height: 2.6em;
+            line-height: 1.3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .movie-card p.genre {
+            font-size: 0.9em;
+            color: #718096; /* Chữ xám cho thể loại */
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 1.8em;
+        }
+        .movie-card .btn-detail { /* Nút chi tiết màu nhấn */
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.95em;
+            font-weight: 500;
+            margin-top: auto;
+            transition: all 0.3s ease;
+        }
+        .movie-card .btn-detail:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+
+        /* --- FOOTER (LIGHT THEME - NÂNG CẤP VỚI BẢN ĐỒ) --- */
+        footer {
+            background: #1a202c; /* Nền tối sang trọng */
+            color: #e2e8f0; /* Chữ sáng để nổi bật trên nền tối */
+            padding: 60px 0 30px;
+            margin-top: 40px;
+            border-top: 4px solid #f56565; /* Viền trên màu nhấn */
+        }
+        footer .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 cột cho desktop */
+            gap: 30px;
+            align-items: start;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        footer h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff; /* Tiêu đề trắng sáng */
+            position: relative;
+            padding-bottom: 10px;
+        }
+        footer h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: #f56565; /* Dòng dưới tiêu đề màu nhấn */
+        }
+        footer p, footer ul, footer a {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: #cbd5e0; /* Màu chữ nhạt hơn cho nội dung */
+        }
+        .footer-about p { margin-bottom: 15px; }
+        .footer-links ul, .footer-contact ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links ul li, .footer-contact ul li {
+            margin-bottom: 10px;
+        }
+        .footer-links ul li a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-links ul li a:hover {
+            color: #f56565; /* Màu nhấn khi hover */
+            transform: translateX(5px); /* Dịch nhẹ sang phải */
+        }
+        .footer-contact ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-contact ul li i {
+            color: #f56565; /* Icon màu nhấn */
+            font-size: 1.2em;
+        }
+        .footer-social h3 { margin-bottom: 15px; }
+        .social-media {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+        .social-media a {
+            color: #e2e8f0;
+            font-size: 1.8em;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-media a:hover {
+            color: #f56565;
+            transform: scale(1.2); /* Phóng to nhẹ khi hover */
+        }
+        .footer-map h3 { margin-bottom: 15px; }
+        .footer-map iframe {
+            width: 140%;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .footer-bottom {
+            border-top: 1px solid #4a5568; /* Đường phân cách phía trên phần bottom */
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #a0aec0;
+        }
+        .footer-bottom p { margin: 0; }
+
+        /* --- RESPONSIVE DESIGN CHO FOOTER --- */
+        @media (max-width: 992px) {
+            footer .container {
+                grid-template-columns: repeat(2, 1fr); /* 2 cột cho tablet */
+                gap: 20px;
+            }
+            .footer-map iframe {
+                height: 150px; /* Giảm chiều cao bản đồ trên tablet */
+            }
+        }
+        @media (max-width: 480px) {
+            footer .container {
+                grid-template-columns: 1fr; /* 1 cột cho mobile */
+                gap: 30px;
+                text-align: center;
+            }
+            footer h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .footer-links ul li a:hover {
+                transform: translateX(0); /* Bỏ hiệu ứng dịch chuyển trên mobile */
+            }
+            .social-media {
+                justify-content: center;
+            }
+            .footer-contact ul li {
+                justify-content: center;
+            }
+            .footer-map iframe {
+                height: 120px; /* Giảm chiều cao bản đồ trên mobile */
+            }
+        }
+
+
+        /* --- RESPONSIVE CSS HEADER --- */
+        /* Lưu ý: Các giá trị padding-top cho body ở các breakpoint cần được kiểm tra và điều chỉnh
+           cẩn thận dựa trên chiều cao thực tế của header khi nó wrap trên các kích thước màn hình khác nhau.
+           Các giá trị dưới đây là dựa trên cấu trúc responsive bạn đã cung cấp.
+        */
+        @media (max-width: 992px) {
+            /* Điều chỉnh padding-top nếu header thay đổi chiều cao đáng kể.
+               Giá trị '150px' từ code gốc có vẻ lớn, có thể giảm bớt nếu header light theme gọn hơn. */
+            body { padding-top: 120px; } /* Giảm ví dụ, cần test thực tế */
+            header .container {
+                justify-content: space-around; /* Cho phép các item dàn đều khi wrap */
+            }
+            .logo {
+                order: 1;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            header nav {
+                order: 3; /* Nav xuống dưới cùng */
+                width: 100%;
+                margin-top: 10px;
+            }
+            header nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            .header-actions {
+                order: 2; /* Actions nằm giữa logo và nav */
+                width: 100%; /* Chiếm full width để dễ căn giữa */
+                justify-content: center; /* Căn giữa nội dung của actions (ví dụ: nút login) */
+                margin-top: 0;
+                margin-bottom: 10px; /* Khoảng cách với nav */
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* padding-top cho body ở 768px, ví dụ 120px nếu header wrap thành khoảng 2-3 dòng */
+            body { padding-top: 120px; } /* Giữ nguyên hoặc điều chỉnh nếu cần */
+            header .container {
+                /* flex-direction: row; là mặc định */
+                justify-content: space-between; /* Logo bên trái, actions bên phải */
+                align-items: center;
+            }
+            .logo {
+                order: 1;
+                width: auto; /* Co lại theo nội dung */
+                text-align: left;
+                margin-bottom: 0;
+            }
+            header nav {
+                order: 3; /* Nav vẫn ở dưới cùng */
+                width: 100%;
+                margin-top: 15px; /* Khoảng cách với hàng trên */
+            }
+            .header-actions {
+                order: 2; /* Actions ở cùng hàng với logo */
+                width: auto; /* Co lại theo nội dung */
+                margin-top: 0;
+                margin-bottom: 0; /* Reset margin bottom từ 992px */
+                justify-content: flex-end; /* Căn phải actions */
+            }
+
+            /* Các style khác của trang này ở 768px */
+            .page-header h1 { font-size: 2em; }
+            .movie-list-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+            .movie-card { min-width: 0; width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            /* padding-top cho body ở 480px, ví dụ 110px */
+            body { padding-top: 110px; } /* Giữ nguyên hoặc điều chỉnh */
+
+            header nav ul {
+                gap: 0; /* Bỏ gap, dùng margin cho li nếu cần */
+            }
+            header nav ul li {
+                margin: 5px; /* Khoảng cách giữa các mục nav */
+            }
+            header nav ul li a {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+            .header-actions .btn-login,
+            .header-actions .user-profile-toggle {
+                padding: 6px 12px;
+                font-size: 0.9em;
+            }
+            .header-actions .dropdown-menu-content { min-width: 180px; }
+            .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
+
+
+            /* Các style khác của trang này ở 480px */
+            .page-header h1 { font-size: 1.8em; }
+            .movie-list-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+            .movie-card img { height: 240px;}
+
+            .footer-nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            .social-media {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <a th:href="@{/}"><i class="fas fa-film"></i> PhimHay</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}">Trang Chủ</a></li>
+                <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
+                <li><a th:href="@{/movies/coming-soon}" class="active">Phim Sắp Chiếu</a></li> <li><a th:href="@{/coupon}">Mã Giảm Giá</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <th:block th:if="${session.user == null}">
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
+            </th:block>
+            <th:block th:if="${session.user != null}">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span id="headerUserDisplayName" th:text="'Chào, ' + ${session.user.hoTen}">Chào, Tên User</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-content" id="userDropdownMenu">
+                        <a th:href="@{/user/profile}" class="dropdown-item"> <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/signout}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<div class="main-content">
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-hourglass-half"></i> Phim Sắp Chiếu</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="movie-listing-container">
+            <div class="movie-list-grid">
+                <article class="movie-card" th:each="phim : ${danhSachPhim}">
+                    <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}">
+                        <img th:src="${phim.linkAnh}" th:alt="${phim.tenPhim}" />
+                    </a>
+
+                    <div class="movie-card-content">
+                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" style="text-decoration:none;">
+                            <h3 th:text="${phim.tenPhim}">Tên phim mẫu</h3>
+                        </a>
+                        <p class="genre">
+                            <i class="fas fa-tag"></i>
+                            <span th:text="${phim.theLoai}">Thể loại mẫu</span>
+                        </p>
+                        <a th:href="@{/movies/movie-detail/{id}(id=${phim.idPhim})}" class="btn-detail">
+                            <i class="fas fa-info-circle"></i> Xem Chi Tiết
+                        </a>
+                    </div>
+                </article>
+
+                <div th:if="${danhSachPhim == null or #lists.isEmpty(danhSachPhim)}">
+                    <p>Hiện chưa có thông tin phim sắp chiếu.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-about">
+            <h3>Về PhimHay</h3>
+            <p>PhimHay là nền tảng xem phim trực tuyến hàng đầu, mang đến cho bạn những bộ phim bom tấn và câu chuyện hấp dẫn từ khắp nơi trên thế giới.</p>
+            <p>Khám phá, thưởng thức và đắm chìm trong thế giới điện ảnh ngay hôm nay!</p>
+        </div>
+        <div class="footer-links">
+            <h3>Liên Kết Nhanh</h3>
+            <ul>
+                <li><a th:href="@{/}"><i class="fas fa-info-circle"></i> Về Chúng Tôi</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-file-alt"></i> Điều Khoản Dịch Vụ</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-shield-alt"></i> Chính Sách Bảo Mật</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            </ul>
+        </div>
+        <div class="footer-social">
+            <h3>Kết Nối Với Chúng Tôi</h3>
+            <div class="social-media">
+                <a th:href="@{/}" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a th:href="@{/}" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a th:href="@{/}" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a th:href="@{/}" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-map">
+            <h3>Tìm Chúng Tôi</h3>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238705.58444823645!2d106.49129390716558!3d10.844981448249275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752763f23816ab%3A0x282f711441b6916f!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTxrAgcGjhuqFtIEvhu7kgdGh14bqtdCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmg!5e1!3m2!1svi!2s!4v1747468156366!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="currentYear">2025</span> PhimHay. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const yearSpan = document.getElementById('currentYear');
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // --- JAVASCRIPT CHO USER MENU DROPDOWN (Đồng bộ từ trang chủ) ---
+        const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        if (userProfileLinkToggle && userDropdownMenu) {
+            userProfileLinkToggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                userDropdownMenu.classList.toggle('show');
+                this.classList.toggle('open');
+            });
+            // Click outside to close dropdown
+            document.addEventListener('click', function(event) {
+                const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu.contains(event.target);
+
+                if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    userProfileLinkToggle.classList.remove('open');
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Phòng Chiếu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            --text-color: #333;
+            --bg-color: #f0f4f8;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color); color: var(--text-color); min-height: 100vh;
+            display: flex; flex-direction: column; transition: all 0.3s ease;
+        }
+        header {
+            background: var(--primary-gradient); color: #fff; padding: 1.5rem 2rem;
+            box-shadow: var(--shadow); position: sticky; top: 0; z-index: 1000; text-align: center;
+        }
+        h1 { font-size: 2rem; font-weight: 800; margin: 0; letter-spacing: 1px; }
+        .container {
+            max-width: 600px; width: 100%; margin: 2rem auto; padding: 2rem;
+            background: var(--card-bg); backdrop-filter: blur(10px);
+            border-radius: 20px; box-shadow: var(--shadow); animation: slideIn 0.5s ease;
+        }
+        .alert {
+            padding: 1rem; margin-bottom: 1rem; /* Adjusted margin for when alert is inside container */
+            border-radius: 10px; text-align: center; transition: opacity 0.5s ease-out;
+            max-width: 600px;
+            /* If alert is outside container and needs centering: */
+            /* margin-left: auto; margin-right: auto; margin-bottom: 2rem; */
+        }
+        .alert-success { background: rgba(34, 197, 94, 0.1); color: #15803d; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .alert-danger { background: rgba(239, 68, 68, 0.1); color: #b91c1c; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-color); }
+        input[type="text"], select {
+            width: 100%; padding: 12px 15px; border: 1px solid rgba(0,0,0,0.1); /* Subtle border */
+            border-radius: 25px; background: rgba(227, 232, 239, 0.6);
+            color: var(--text-color); box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease; font-size: 1rem;
+        }
+        input[type="text"]:focus, select:focus {
+            outline: none; background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); border-color: rgba(59, 130, 246, 0.3);
+        }
+        .error { box-shadow: 0 0 0 2px #ef4444 !important; border-color: #ef4444 !important; }
+        .error-message {
+            color: #ef4444; font-size: 0.9rem; margin-top: 0.5rem; display: none;
+            padding: 0.5rem; border-radius: 4px; background: rgba(239, 68, 68, 0.1);
+        }
+        .button-group { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+        .btn {
+            padding: 0.75rem 1.5rem; font-size: 1rem; font-weight: 500; border-radius: 25px;
+            text-decoration: none; color: #fff; background: var(--primary-gradient);
+            border: none; box-shadow: var(--shadow); transition: all 0.3s ease; cursor: pointer;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
+        .btn-secondary { background: #6b7280; }
+        .btn-secondary:hover { background: #4b5563; }
+        .home-button {
+            position: fixed; top: 20px; right: 20px; background: var(--primary-gradient);
+            border: none; border-radius: 50%; width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+            z-index: 2000; transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+        .home-button:hover { transform: scale(1.1) rotate(360deg); box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7); }
+        .home-button i { font-size: 1.2rem; color: #fff; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .container { margin: 1rem; padding: 1.5rem; }
+            h1 { font-size: 1.5rem; }
+            .button-group { flex-direction: column; gap: 0.5rem; }
+            .btn { width: 100%; }
+            .home-button { top: 10px; right: 10px; width: 40px; height: 40px; }
+            input[type="text"], select { padding: 10px 12px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+<header class="animate__animated animate__fadeInDown">
+    <h1>Thêm Phòng Chiếu</h1>
+</header>
+
+<div th:if="${message}" class="alert animate__animated animate__fadeIn"
+     th:classappend="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}"
+     th:text="${message}" id="flash-message-global"
+     style="margin-left: auto; margin-right: auto; display: block; max-width: 600px;">
+</div>
+
+
+<div class="container animate__animated animate__fadeIn">
+    <form th:action="@{/rooms/new(idRapPhim=${idRapPhim})}" th:object="${phongChieuPhim}" method="post" id="roomForm" onsubmit="return validateForm(event)">
+        <input type="hidden" th:field="*{rapPhim.idRapPhim}" th:value="${idRapPhim}"/>
+
+        <div class="form-group">
+            <label for="tenPhongChieuPhim">Tên phòng chiếu</label>
+            <input type="text" id="tenPhongChieuPhim" th:field="*{tenPhongChieuPhim}" required>
+            <span id="tenPhongChieuPhimError" class="error-message" th:text="${tenPhongChieuPhimError}"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="kichThuocPhong">Kích thước phòng</label>
+            <select id="kichThuocPhong" th:field="*{kichThuocPhong}" required>
+                <option value="">--Chọn kích thước--</option>
+                <option value="NHO">Nhỏ</option>
+                <option value="VUA">Vừa</option>
+                <option value="LON">Lớn</option>
+            </select>
+            <span id="kichThuocPhongError" class="error-message" th:text="${kichThuocPhongError}"></span>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn" data-bs-toggle="tooltip" title="Thêm phòng chiếu mới">
+                <i class="fas fa-plus"></i> Thêm phòng chiếu
+            </button>
+            <a th:href="@{/rooms/{id}(id=${idRapPhim})}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại danh sách phòng chiếu">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </form>
+</div>
+
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+    <i class="fas fa-home"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        const flashMessageGlobal = document.getElementById('flash-message-global');
+        if (flashMessageGlobal && flashMessageGlobal.textContent.trim() !== "") {
+            setTimeout(function() {
+                flashMessageGlobal.style.opacity = '0';
+                setTimeout(function() { flashMessageGlobal.style.display = 'none'; }, 500);
+            }, 3000);
+        } else if (flashMessageGlobal) {
+            flashMessageGlobal.style.display = 'none';
+        }
+
+        // Hiển thị lỗi từ server nếu có (khi form được POST lại và controller thêm lỗi vào model)
+        const tenPhongChieuPhimErrorSpan = document.getElementById('tenPhongChieuPhimError');
+        const kichThuocPhongErrorSpan = document.getElementById('kichThuocPhongError');
+
+        if (tenPhongChieuPhimErrorSpan && tenPhongChieuPhimErrorSpan.textContent && tenPhongChieuPhimErrorSpan.textContent.trim() !== "") {
+            const tenPhongInput = document.getElementById('tenPhongChieuPhim');
+            if (tenPhongInput) tenPhongInput.classList.add('error');
+            tenPhongChieuPhimErrorSpan.style.display = 'block';
+        }
+        if (kichThuocPhongErrorSpan && kichThuocPhongErrorSpan.textContent && kichThuocPhongErrorSpan.textContent.trim() !== "") {
+            const kichThuocSelect = document.getElementById('kichThuocPhong');
+            if (kichThuocSelect) kichThuocSelect.classList.add('error');
+            kichThuocPhongErrorSpan.style.display = 'block';
+        }
+    });
+
+    function validateForm(event) {
+        let isValid = true;
+
+        const errorElements = document.querySelectorAll('.error-message');
+        const inputElements = document.querySelectorAll('input[type="text"], select');
+        errorElements.forEach(el => el.style.display = 'none');
+        inputElements.forEach(el => el.classList.remove('error'));
+
+        // 1. Kiểm tra Tên phòng chiếu
+        const tenPhongChieuPhimInput = document.getElementById('tenPhongChieuPhim');
+        const tenPhongChieuPhim = tenPhongChieuPhimInput.value.trim();
+        if (!tenPhongChieuPhim) { // KIỂM TRA KHÔNG ĐỂ TRỐNG
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu không được để trống.');
+            isValid = false;
+        } else if (tenPhongChieuPhim.length < 3 || tenPhongChieuPhim.length > 50) {
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu phải từ 3 đến 50 ký tự.');
+            isValid = false;
+        } else if (!/^[a-zA-Z0-9\s\u00C0-\u1EF9\-']+$/.test(tenPhongChieuPhim)) {
+            showError('tenPhongChieuPhim', 'Tên phòng chiếu chỉ chứa chữ, số, khoảng trắng, gạch nối, nháy đơn.');
+            isValid = false;
+        }
+
+        // 2. Kiểm tra Kích thước phòng
+        const kichThuocPhongSelect = document.getElementById('kichThuocPhong');
+        const kichThuocPhong = kichThuocPhongSelect.value;
+        if (!kichThuocPhong) { // KIỂM TRA KHÔNG ĐỂ TRỐNG (chưa chọn)
+            showError('kichThuocPhong', 'Vui lòng chọn kích thước phòng.');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+        }
+        return isValid;
+    }
+
+    function showError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(fieldId + 'Error');
+        if (field) field.classList.add('error');
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    function goToHome() {
+        window.location.href = '/manage/'; // Hoặc URL trang chủ của bạn
+    }
+</script>
+</body>
+</html>

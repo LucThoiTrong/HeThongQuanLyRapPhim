@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cập nhật Combo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e40af, #3b82f6);
+            --danger-gradient: linear-gradient(135deg, #ef4444, #f87171);
+            --neon-glow: 0 0 12px rgba(59, 130, 246, 0.6), 0 0 24px rgba(59, 130, 246, 0.3);
+            --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #f3f4f6, #e5e7eb);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"%3E%3Cg fill="%23ffffff22"%3E%3Ccircle cx="200" cy="200" r="15"/%3Ccircle cx="600" cy="600" r="10"/%3Ccircle cx="300" cy="500" r="8"/%3C/g%3E%3C/svg%3E');
+            background-size: cover;
+            opacity: 0.1;
+            animation: floatPopcorn 20s ease infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatPopcorn {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        header {
+            background: var(--primary-gradient);
+            box-shadow: var(--neon-glow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--neon-glow), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+            z-index: 0;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--neon-glow);
+            animation: pulseGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: var(--neon-glow); }
+            50% { box-shadow: 0 0 18px rgba(59, 130, 246, 0.8), 0 0 36px rgba(59, 130, 246, 0.4); }
+        }
+
+        .form-input {
+            transition: var(--transition);
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+        }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+            background: #ffffff;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            animation: bounceIn 0.5s ease-out;
+        }
+
+        .alert {
+            background: var(--glass-bg);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+            animation: spotlight 0.8s ease-out;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes spotlight {
+            0% { transform: scale(0.9) translateY(-20px); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .tilt {
+            transition: transform 0.2s ease;
+        }
+
+        .magnetic {
+            transition: transform 0.2s ease;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="py-6 px-8">
+    <h1 class="text-3xl font-bold text-white">Cập nhật Combo Bắp Nước</h1>
+</header>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="card bg-white rounded-2xl overflow-hidden tilt max-w-2xl mx-auto">
+        <div class="card-header p-6 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 text-center">Cập nhật Combo</h2>
+        </div>
+        <div class="card-body p-6">
+            <!-- Hiển thị thông báo nếu có -->
+            <div th:if="${message}" class="alert bg-green-100/80 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-6 text-center" th:text="${message}"></div>
+
+            <form th:action="@{/combos/update/{id}(id=${comboBapNuoc.idComboBapNuoc})}" th:object="${comboBapNuoc}" method="post" novalidate>
+                <input type="hidden" th:field="*{idComboBapNuoc}">
+                <div class="mb-6">
+                    <input type="text" th:field="*{tenCombo}" class="form-input w-full p-3 rounded-lg text-gray-700 placeholder-gray-400" placeholder="Tên combo">
+                </div>
+                <div class="mb-6">
+                    <input type="text" th:field="*{moTaCombo}" class="form-input w-full p-3 rounded-lg text-gray-700 placeholder-gray-400" placeholder="Mô tả combo">
+                </div>
+                <div class="mb-6">
+                    <input type="text" th:field="*{giaTien}" class="form-input w-full p-3 rounded-lg text-gray-700 placeholder-gray-400" placeholder="Giá tiền (VND)">
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="btn bg-gradient-to-r from-indigo-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-indigo-600 hover:to-blue-700 magnetic">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Lưu
+                    </button>
+                    <a th:href="@{/combos/}" class="btn bg-gradient-to-r from-gray-500 to-gray-600 text-white px-6 py-3 rounded-lg hover:from-gray-600 hover:to-gray-700 magnetic">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        Quay lại Danh Sách
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        const form = document.querySelector('form');
+        const tenComboInput = document.querySelector('[name="tenCombo"]');
+        const moTaComboInput = document.querySelector('[name="moTaCombo"]');
+        const giaTienInput = document.querySelector('[name="giaTien"]');
+
+        form.addEventListener('submit', function(event) {
+            document.querySelectorAll('.error-message').forEach(e => e.remove());
+            let isValid = true;
+
+            function showError(inputElement, message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = message;
+                inputElement.parentElement.appendChild(errorDiv);
+            }
+
+            if (!tenComboInput.value.trim()) {
+                showError(tenComboInput, 'Tên combo không được để trống');
+                isValid = false;
+            }
+            if (!moTaComboInput.value.trim()) {
+                showError(moTaComboInput, 'Mô tả combo không được để trống');
+                isValid = false;
+            }
+            const giaTien = parseFloat(giaTienInput.value);
+            if (!giaTienInput.value.trim()) {
+                showError(giaTienInput, 'Giá tiền không được để trống');
+                isValid = false;
+            } else if (isNaN(giaTien) || giaTien <= 0) {
+                showError(giaTienInput, 'Giá tiền phải là số và lớn hơn 0');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        // 3D Tilt Effect for card
+        const card = document.querySelector('.tilt');
+        card.addEventListener('mousemove', function(e) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 40;
+            const rotateY = (centerX - x) / 40;
+            card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
+        });
+
+        // Ripple Effect for buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const rect = button.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                button.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Magnetic Effect for buttons
+        const magneticButtons = document.querySelectorAll('.magnetic');
+        magneticButtons.forEach(button => {
+            button.addEventListener('mousemove', function(e) {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                const translateX = x * 0.3;
+                const translateY = y * 0.3;
+                button.style.transform = `translate(${translateX}px, ${translateY}px) scale(1.05)`;
+            });
+
+            button.addEventListener('mouseleave', function() {
+                button.style.transform = 'translate(0, 0) scale(1)';
+            });
+        });
+    });
+</script>
+</body>
+</html>

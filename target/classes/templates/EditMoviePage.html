@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Chỉnh sửa phim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      --text-color: #333;
+      --bg-color: #f0f4f8; /* Light grayish blue background */
+      --card-bg: rgba(255, 255, 255, 0.95); /* Slightly more opaque card */
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      --input-bg: rgba(0, 0, 0, 0.03);
+      --input-border: rgba(0,0,0,0.1);
+      --input-focus-border: #8b5cf6;
+      --input-focus-shadow: rgba(59, 130, 246, 0.25);
+      --danger-color: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-weight: 400; /* Default font weight */
+    }
+
+    header {
+      background: var(--primary-gradient);
+      color: #fff;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      text-align: center;
+    }
+
+    h1.page-title { /* Specific class for page title in header */
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .form-title {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .main-container {
+      max-width: 900px;
+      width: 90%;
+      margin: 2rem auto;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.5s ease;
+      flex: 1;
+    }
+
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out, background-color .15s ease-in-out;
+      border-radius: 0.375rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--input-focus-border);
+      background-color: #fff;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 0 0 0.25rem var(--input-focus-shadow);
+      outline: 0;
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .error-message {
+      color: var(--danger-color);
+      font-size: 0.875em;
+      padding-top: 0.25rem;
+      display: block;
+      width: 100%;
+      margin-left: 0;
+    }
+    .error-message:empty { /* Provided by user, kept for consistency */
+      display: none;
+    }
+
+    .invalid-feedback { /* Bootstrap's client-side validation feedback */
+      font-size: 0.875em;
+      margin-top: 0.25rem;
+    }
+
+    .custom-input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 10px;
+      align-items: flex-start;
+    }
+    .custom-input-group > .flex-grow-1 {
+      flex-basis: 0;
+    }
+    .custom-input-group > .error-message-container {
+      flex-shrink: 0;
+      padding-top: 2.25rem; /* Align with top of input if label is present, adjust if no label or label style changes */
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 25px;
+      text-decoration: none;
+      color: #fff;
+      background: var(--primary-gradient);
+      border: none;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .home-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+      z-index: 2000;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+
+    .home-button:hover {
+      transform: scale(1.1) rotate(360deg);
+    }
+
+    .home-button i {
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        margin: 1rem auto;
+        padding: 1.5rem;
+        width: 95%;
+      }
+      h1.page-title {
+        font-size: 1.75rem;
+      }
+      .form-title {
+        font-size: 1.5rem;
+      }
+      .form-actions {
+        flex-direction: column;
+      }
+      .form-actions .btn {
+        width: 100%;
+      }
+      .custom-input-group > .flex-grow-1,
+      .custom-input-group > .error-message-container {
+        flex-basis: 100%; /* Full width for both blocks on small screens */
+      }
+      .custom-input-group > .error-message-container {
+        padding-top: 0.25rem; /* Reduce top padding when stacked */
+      }
+    }
+  </style>
+</head>
+<body>
+<header class="animate__animated animate__fadeInDown">
+  <h1 class="page-title">Chỉnh Sửa Phim</h1>
+</header>
+
+<div class="main-container animate__animated animate__fadeIn">
+  <h2 class="form-title">Cập Nhật Thông Tin Phim</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      <form th:action="@{/movies/update/{id}(id=${phim.idPhim})}" th:object="${phim}" method="post" class="needs-validation" novalidate>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="tenPhim" class="form-label">Tên phim</label>
+            <input type="text" class="form-control" id="tenPhim" th:field="*{tenPhim}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên phim.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('tenPhim')}" th:errors="*{tenPhim}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="daoDien" class="form-label">Đạo diễn</label>
+            <input type="text" class="form-control" id="daoDien" th:field="*{daoDien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên đạo diễn.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('daoDien')}" th:errors="*{daoDien}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="dienVien" class="form-label">Diễn viên</label>
+            <input type="text" class="form-control" id="dienVien" th:field="*{dienVien}" required>
+            <div class="invalid-feedback">Vui lòng nhập tên diễn viên.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('dienVien')}" th:errors="*{dienVien}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="moTaPhim" class="form-label">Mô tả phim</label>
+            <textarea class="form-control" id="moTaPhim" th:field="*{moTaPhim}" rows="4" required></textarea>
+            <div class="invalid-feedback">Vui lòng nhập mô tả phim.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('moTaPhim')}" th:errors="*{moTaPhim}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="theLoai" class="form-label">Thể loại</label>
+            <input type="text" class="form-control" id="theLoai" th:field="*{theLoai}" required>
+            <div class="invalid-feedback">Vui lòng nhập thể loại.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('theLoai')}" th:errors="*{theLoai}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="thoiGianKhoiChieu" class="form-label">Thời gian khởi chiếu</label>
+            <input type="date" class="form-control" id="thoiGianKhoiChieu" th:field="*{thoiGianKhoiChieu}"
+                   th:value="${phim.thoiGianKhoiChieu != null ? #dates.format(phim.thoiGianKhoiChieu, 'yyyy-MM-dd') : ''}" required>
+            <div class="invalid-feedback">Vui lòng chọn thời gian khởi chiếu.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('thoiGianKhoiChieu')}" th:errors="*{thoiGianKhoiChieu}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="thoiLuongChieu" class="form-label">Thời lượng chiếu (phút)</label>
+            <input type="number" class="form-control" id="thoiLuongChieu" th:field="*{thoiLuongChieu}" required min="1">
+            <div class="invalid-feedback">Vui lòng nhập thời lượng chiếu hợp lệ (số dương).</div>
+          </div>
+          <div th:if="${#fields.hasErrors('thoiLuongChieu')}" th:errors="*{thoiLuongChieu}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="linkTrailer" class="form-label">Link trailer</label>
+            <input type="url" class="form-control" id="linkTrailer" th:field="*{linkTrailer}" placeholder="https://example.com/trailer" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:if="${#fields.hasErrors('linkTrailer')}" th:errors="*{linkTrailer}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="linkAnh" class="form-label">Link ảnh</label>
+            <input type="url" class="form-control" id="linkAnh" th:field="*{linkAnh}" placeholder="https://example.com/image.jpg" pattern="https?://.+">
+            <div class="invalid-feedback">Vui lòng nhập URL hợp lệ (bắt đầu bằng http:// hoặc https://).</div>
+          </div>
+          <div th:if="${#fields.hasErrors('linkAnh')}" th:errors="*{linkAnh}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="doTuoi" class="form-label">Độ tuổi</label>
+            <select class="form-select" id="doTuoi" th:field="*{doTuoi}" required>
+              <option value="">Chọn độ tuổi</option>
+              <option th:each="doTuoiOpt : ${doTuoiList}"
+                      th:value="${doTuoiOpt}"
+                      th:text="${doTuoiOpt}"
+                      th:selected="${doTuoiOpt == phim.doTuoi}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn độ tuổi.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('doTuoi')}" th:errors="*{doTuoi}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="trangThaiPhim" class="form-label">Trạng thái phim</label>
+            <select class="form-select" id="trangThaiPhim" th:field="*{trangThaiPhim}" required>
+              <option value="">Chọn trạng thái</option>
+              <option th:each="trangThaiOpt : ${trangThaiPhimList}"
+                      th:value="${trangThaiOpt}"
+                      th:text="${trangThaiOpt}"
+                      th:selected="${trangThaiOpt == phim.trangThaiPhim}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn trạng thái phim.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('trangThaiPhim')}" th:errors="*{trangThaiPhim}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="hinhThucChieu" class="form-label">Hình thức chiếu</label>
+            <select class="form-select" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
+              <option value="">Chọn hình thức chiếu</option>
+              <option th:each="hinhThucOpt : ${hinhThucChieuList}"
+                      th:value="${hinhThucOpt.name()}"
+                      th:text="${hinhThucOpt.moTa}"
+                      th:selected="${hinhThucOpt == phim.hinhThucChieu}"></option>
+            </select>
+            <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('hinhThucChieu')}" th:errors="*{hinhThucChieu}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="mb-3 custom-input-group">
+          <div class="flex-grow-1">
+            <label for="ngonNgu" class="form-label">Ngôn ngữ</label>
+            <input type="text" class="form-control" id="ngonNgu" th:field="*{ngonNgu}" required>
+            <div class="invalid-feedback">Vui lòng nhập ngôn ngữ.</div>
+          </div>
+          <div th:if="${#fields.hasErrors('ngonNgu')}" th:errors="*{ngonNgu}" class="error-message-container error-message"></div>
+        </div>
+
+        <div class="form-actions">
+          <a th:href="@{/movies/}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Hủy và quay lại danh sách">
+            <i class="fas fa-times"></i> Hủy
+          </a>
+          <button type="submit" class="btn" data-bs-toggle="tooltip" title="Lưu thay đổi cho phim">
+            <i class="fas fa-save"></i> Cập nhật phim
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ quản lý">
+  <i class="fas fa-home"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+  // Standard Bootstrap validation script
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  // Common JS functions
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Bootstrap tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    if (tooltipTriggerList.length > 0) {
+      [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    }
+  });
+
+  function goToHome() {
+    // Giả sử trang quản lý chính của bạn là /manage/
+    // Nếu khác, bạn cần thay đổi cho phù hợp
+    window.location.href = /*[[@{/manage/}]]*/ '/manage/';
+  }
+</script>
+</body>
+</html>

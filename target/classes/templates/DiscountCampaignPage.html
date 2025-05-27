@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông Tin Chiến Dịch Giảm Giá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Google Fonts: Inter & Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #7c3aed, #db2777);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --text-color: #1f2937;
+            --bg-color: #e5e7eb;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --glow: 0 0 15px rgba(124, 58, 237, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --primary-gradient: linear-gradient(135deg, #4c1d95, #be185d);
+            --secondary-gradient: linear-gradient(135deg, #0e7490, #1e40af);
+            --text-color: #e5e7eb;
+            --bg-color: #111827;
+            --card-bg: rgba(31, 41, 55, 0.85);
+            --glass-bg: rgba(31, 41, 55, 0.2);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --glow: 0 0 15px rgba(192, 132, 252, 0.5);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"%3E%3Cpath fill="url(%23gradient)" fill-opacity="0.3" d="M0,224L48,213.3C96,203,192,181,288,170.7C384,160,480,160,576,176C672,192,768,224,864,229.3C960,235,1056,213,1152,197.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"%3E%3C/path%3E%3Cdefs%3E%3ClinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%"%3E%3Cstop offset="0%" style="stop-color:%237c3aed;stop-opacity:1" /%3E%3Cstop offset="100%" style="stop-color:%23db2777;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E') no-repeat bottom;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container-custom {
+            max-width: 1400px;
+            margin: 100px auto;
+            padding: 50px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-bg);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--glow);
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            width: 150px;
+            height: 6px;
+            background: var(--secondary-gradient);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 3px;
+            box-shadow: var(--glow);
+        }
+
+        .search-bar {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto 40px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            background: var(--glass-bg);
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+            font-size: 1.1rem;
+            transition: all 0.4s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: var(--card-bg);
+            box-shadow: var(--glow);
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .search-bar input:focus + i {
+            color: #7c3aed;
+        }
+
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .campaign-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.4s ease; /* Removed transform to avoid click issues */
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-bg);
+        }
+
+        .campaign-card:hover {
+            box-shadow: var(--glow);
+        }
+
+        .campaign-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary-gradient);
+            transition: height 0.3s ease;
+            z-index: 0; /* Ensure pseudo-element is behind content */
+        }
+
+        .campaign-card:hover::before {
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .campaign-card h5 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            position: relative;
+            z-index: 1; /* Ensure text is above pseudo-element */
+        }
+
+        .campaign-card p {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .campaign-card .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            position: relative;
+            z-index: 2; /* Ensure buttons are above all elements */
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto; /* Ensure button is clickable */
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            background: var(--secondary-gradient);
+        }
+
+        .btn-info, .btn-danger {
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-size: 0.9rem;
+            pointer-events: auto; /* Ensure buttons are clickable */
+            position: relative;
+            z-index: 2; /* Ensure buttons are above pseudo-element */
+        }
+
+        .btn-info {
+            background: #10b981;
+        }
+
+        .btn-info:hover {
+            background: #059669;
+            transform: translateY(-3px);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-3px);
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+            z-index: 2000;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+        }
+
+        .home-button i {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container-custom {
+                margin: 30px;
+                padding: 30px;
+            }
+            .campaign-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-bar {
+                max-width: 100%;
+            }
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
+            h2 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-overlay"></div>
+<div class="container container-custom animate__animated animate__fadeIn">
+    <h2>Thông tin Chiến dịch Giảm giá</h2>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm chiến dịch..." onkeyup="searchGrid()">
+        <i class="fas fa-search"></i>
+    </div>
+
+    <div class="d-flex justify-content-end mb-5">
+        <a th:href="@{/discount-campaign/themChienDich}" class="btn btn-custom">
+            <i class="fas fa-plus"></i> Thêm chiến dịch
+        </a>
+    </div>
+
+    <div class="campaign-grid" id="campaignGrid">
+        <div th:each="chienDich : ${chienDichGiamGiaList}" class="campaign-card">
+            <h5 th:text="${chienDich.tenChienDich}"></h5>
+            <p><strong>ID:</strong> <span th:text="${chienDich.idChienDichGiamGia}"></span></p>
+            <p><strong>Bắt đầu:</strong> <span th:text="${#temporals.format(chienDich.ngayBatDauChienDich, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p><strong>Kết thúc:</strong> <span th:text="${#temporals.format(chienDich.ngayKetThucChienDich, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <div class="actions">
+                <a th:href="@{/discount-campaign/HienFormDeCapNhat(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}"
+                   class="btn btn-info btn-sm"
+                   data-bs-toggle="tooltip"
+                   title="Cập nhật chiến dịch">
+                    <i class="fas fa-edit"></i> Cập nhật
+                </a>
+                <a th:href="@{/discount-campaign/delete(idChienDichGiamGia=${chienDich.idChienDichGiamGia})}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa chiến dịch này không?')"
+                   data-bs-toggle="tooltip"
+                   title="Xóa chiến dịch">
+                    <i class="fas fa-trash"></i> Xóa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Home Button -->
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+    <i class="fas fa-home"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Ensure DOM is ready before initializing scripts
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enable Bootstrap tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => {
+            try {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            } catch (e) {
+                console.error('Tooltip initialization error:', e);
+                return null;
+            }
+        }).filter(tooltip => tooltip !== null);
+
+        // Search grid
+        function searchGrid() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('#campaignGrid .campaign-card');
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        // Attach searchGrid to window for global access
+        window.searchGrid = searchGrid;
+    });
+</script>
+</script>
+// Điều hướng về trang chủ
+<script th:inline="javascript">
+    function goToHome() {
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/manage/}]]*/ '/manage/'}
+    /*]]>*/
+</script>
+</body>
+</html>

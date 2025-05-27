@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .register-container {
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .register-header {
+            margin-bottom: 25px;
+        }
+
+        .register-header .logo a {
+            color: #1a202c;
+            font-size: 2.2em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .register-header .logo a i.fa-film {
+            color: #f56565;
+            font-size: 1em;
+        }
+
+        .register-header h2 {
+            font-size: 1.8em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .register-form .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+            position: relative;
+        }
+
+        .register-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+
+        .register-form .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .register-form input[type="text"],
+        .register-form input[type="password"],
+        .register-form input[type="email"],
+        .register-form input[type="tel"],
+        .register-form input[type="date"],
+        .register-form select {
+            width: 100%;
+            padding: 10px 15px;
+            padding-left: 40px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            color: #2d3748;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .register-form input[type="date"] {
+            line-height: normal;
+        }
+        .register-form input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .register-form input[type="date"]:focus::-webkit-calendar-picker-indicator {
+            opacity: 1;
+        }
+
+        .register-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234A5568' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+        .register-form select:invalid { /* Dùng cho placeholder của select */
+            color: #718096;
+        }
+        .register-form select.placeholder-shown { /* Thêm class nếu muốn JS kiểm soát placeholder */
+            color: #718096;
+        }
+
+
+        .register-form input:focus,
+        .register-form select:focus {
+            border-color: #3182ce;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+        }
+        /* Thêm style cho input lỗi từ client-side validation */
+        .register-form input.is-invalid,
+        .register-form select.is-invalid {
+            border-color: #e53e3e; /* Màu đỏ cho border lỗi */
+        }
+        .register-form input.is-invalid:focus,
+        .register-form select.is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2); /* Shadow đỏ khi focus lỗi */
+        }
+
+
+        .register-form .symbol-input {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+            font-size: 1.1em;
+            pointer-events: none;
+        }
+        .register-form .field-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #718096;
+            font-size: 1.2em;
+        }
+
+        .btn-register-submit {
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-register-submit:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+        }
+
+        .register-footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #718096;
+        }
+
+        .register-footer a {
+            color: #f56565;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .register-footer a.login-link {
+            color: #e53e3e !important;
+            font-style: italic;
+        }
+
+        .register-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .server-error-message { /* Lỗi từ server (Thymeleaf) */
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #ef9a9a;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .server-error-message i {
+            margin-right: 8px;
+        }
+
+        .field-error-message { /* Lỗi theo trường từ server (Thymeleaf) */
+            color: #c62828;
+            font-size: 0.85em;
+            margin-top: 4px;
+            display: block;
+        }
+        .client-error-message { /* Lỗi từ client-side JS */
+            color: #d9534f; /* Màu đỏ khác một chút để phân biệt (tùy chọn) */
+            font-size: 0.85em;
+            margin-top: 4px;
+            display: block; /* Để nó xuống dòng */
+        }
+
+
+        @media (max-width: 640px) {
+            .register-container {
+                padding: 25px 20px;
+                margin-top: 20px;
+            }
+            .register-header .logo a {
+                font-size: 1.8em;
+            }
+            .register-header h2 {
+                font-size: 1.5em;
+            }
+            .register-form input[type="text"],
+            .register-form input[type="password"],
+            .register-form input[type="email"],
+            .register-form input[type="tel"],
+            .register-form input[type="date"],
+            .register-form select {
+                padding: 10px 12px;
+                padding-left: 35px;
+                font-size: 0.9em;
+            }
+            .register-form .symbol-input {
+                left: 12px;
+                font-size: 1em;
+            }
+            .register-form .field-icon {
+                right: 12px;
+                font-size: 1.1em;
+            }
+            .btn-register-submit {
+                font-size: 1em;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="register-container">
+    <div class="register-header">
+        <div class="logo">
+            <a th:href="@{/}"><i class="fas fa-film"></i> PhimHay</a> </div>
+        <h2>ĐĂNG KÝ TÀI KHOẢN</h2>
+    </div>
+
+    <div th:if="${signupErrorMessage != null and !signupErrorMessage.isEmpty()}" class="server-error-message">
+        <i class="fas fa-exclamation-circle"></i> <span th:text="${signupErrorMessage}"></span>
+    </div>
+
+    <form class="register-form" id="signup-form" th:action="@{/register}" method="post" novalidate>
+        <div class="form-group">
+            <label for="signup-ho_ten">Họ và tên</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-id-card'></i></span>
+                <input type="text" placeholder="Họ và tên của bạn" id="signup-ho_ten" th:field="${doiTuongSuDung.hoTen}">
+            </div>
+            <span class="client-error-message" id="ho_ten-client-error"></span>
+            <small th:if="${#fields.hasErrors('doiTuongSuDung.hoTen')}" th:errors="${doiTuongSuDung.hoTen}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-username">Tên đăng nhập (Tài khoản)</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-user'></i></span>
+                <input type="text" placeholder="Chọn tên đăng nhập" id="signup-username" th:field="${taiKhoan.tenDangNhap}">
+            </div>
+            <span class="client-error-message" id="username-client-error"></span>
+            <small th:if="${#fields.hasErrors('taiKhoan.tenDangNhap')}" th:errors="${taiKhoan.tenDangNhap}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-password-field">Mật khẩu</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-key'></i></span>
+                <input autocomplete="off" type="password" placeholder="Tạo mật khẩu" id="signup-password-field" th:field="${taiKhoan.matKhau}">
+                <span toggle="#signup-password-field" class="bx fa-fw bx-hide field-icon click-eye"></span>
+            </div>
+            <span class="client-error-message" id="password-client-error"></span>
+            <small th:if="${#fields.hasErrors('taiKhoan.matKhau')}" th:errors="${taiKhoan.matKhau}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-confirm-password-field">Xác nhận mật khẩu</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-key'></i></span>
+                <input autocomplete="off" type="password" placeholder="Nhập lại mật khẩu" name="signup_confirm_password" id="signup-confirm-password-field">
+                <span toggle="#signup-confirm-password-field" class="bx fa-fw bx-hide field-icon click-eye"></span>
+            </div>
+            <span class="client-error-message" id="confirm-password-client-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-email">Email</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-envelope'></i></span>
+                <input type="email" placeholder="Địa chỉ email của bạn" id="signup-email" th:field="${doiTuongSuDung.email}">
+            </div>
+            <span class="client-error-message" id="email-client-error"></span>
+            <small th:if="${#fields.hasErrors('doiTuongSuDung.email')}" th:errors="${doiTuongSuDung.email}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-so_dien_thoai">Số điện thoại</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-phone'></i></span>
+                <input type="tel" placeholder="Số điện thoại liên hệ" id="signup-so_dien_thoai" th:field="${doiTuongSuDung.soDienThoai}">
+            </div>
+            <span class="client-error-message" id="so_dien_thoai-client-error"></span>
+            <small th:if="${#fields.hasErrors('doiTuongSuDung.soDienThoai')}" th:errors="${doiTuongSuDung.soDienThoai}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-ngay_sinh">Ngày sinh</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-calendar'></i></span>
+                <input type="date" id="signup-ngay_sinh" th:field="${doiTuongSuDung.ngaySinh}">
+            </div>
+            <span class="client-error-message" id="ngay_sinh-client-error"></span>
+            <small th:if="${#fields.hasErrors('doiTuongSuDung.ngaySinh')}" th:errors="${doiTuongSuDung.ngaySinh}" class="field-error-message"></small>
+        </div>
+
+        <div class="form-group">
+            <label for="signup-gioi_tinh">Giới tính</label>
+            <div class="input-wrapper">
+                <span class="symbol-input"><i class='bx bx-male-female'></i></span>
+                <select id="signup-gioi_tinh" th:field="${doiTuongSuDung.gioiTinh}">
+                    <option value="" disabled>Chọn giới tính của bạn</option>
+                    <option value="NAM">Nam</option>
+                    <option value="NU">Nữ</option>
+                    <option value="KHAC">Khác</option>
+                </select>
+            </div>
+            <span class="client-error-message" id="gioi_tinh-client-error"></span>
+            <small th:if="${#fields.hasErrors('doiTuongSuDung.gioiTinh')}" th:errors="${doiTuongSuDung.gioiTinh}" class="field-error-message"></small>
+        </div>
+
+        <button type="submit" id="signup-submit" class="btn-register-submit">
+            <i class="fas fa-user-plus"></i> Đăng Ký
+        </button>
+    </form>
+
+    <div class="register-footer">
+        <p>
+            <a class="login-link" th:href="@{/signin}" onclick="toggleForm('login'); return false;">Đã có tài khoản? Đăng nhập</a>
+        </p>
+    </div>
+</main>
+
+<script>
+    // JavaScript cho việc show/hide password
+    document.querySelectorAll('.click-eye').forEach(eyeIcon => {
+        eyeIcon.addEventListener('click', function () {
+            const targetField = document.querySelector(this.getAttribute('toggle'));
+            if (targetField) {
+                if (targetField.type === 'password') {
+                    targetField.type = 'text';
+                    this.classList.remove('bx-hide');
+                    this.classList.add('bx-show');
+                } else {
+                    targetField.type = 'password';
+                    this.classList.remove('bx-show');
+                    this.classList.add('bx-hide');
+                }
+            }
+        });
+    });
+
+    // Client-side Form Validation
+    const form = document.getElementById('signup-form');
+    const hoTenInput = document.getElementById('signup-ho_ten');
+    const usernameInput = document.getElementById('signup-username');
+    const passwordInput = document.getElementById('signup-password-field');
+    const confirmPasswordInput = document.getElementById('signup-confirm-password-field');
+    const emailInput = document.getElementById('signup-email');
+    const soDienThoaiInput = document.getElementById('signup-so_dien_thoai');
+    const ngaySinhInput = document.getElementById('signup-ngay_sinh');
+    const gioiTinhSelect = document.getElementById('signup-gioi_tinh');
+
+    // Regex cho mật khẩu
+    const uppercaseRegex = /[A-Z]/;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const minPasswordLength = 6;
+
+
+    function showError(inputElement, errorElementId, message) {
+        const errorElement = document.getElementById(errorElementId);
+        if(errorElement) errorElement.innerText = message;
+        if(inputElement) inputElement.classList.add('is-invalid');
+    }
+
+    function clearError(inputElement, errorElementId) {
+        const errorElement = document.getElementById(errorElementId);
+        if(errorElement) errorElement.innerText = '';
+        if(inputElement) inputElement.classList.remove('is-invalid');
+    }
+
+    function validateNotEmpty(inputElement, errorElementId, fieldName) {
+        if (inputElement.value.trim() === '') {
+            showError(inputElement, errorElementId, `${fieldName} không được để trống.`);
+            return false;
+        }
+        clearError(inputElement, errorElementId);
+        return true;
+    }
+
+    function validateSelectNotEmpty(selectElement, errorElementId, fieldName) {
+        if (selectElement.value === '') {
+            showError(selectElement, errorElementId, `Vui lòng chọn ${fieldName}.`);
+            return false;
+        }
+        clearError(selectElement, errorElementId);
+        return true;
+    }
+
+    function validateEmail(emailInputElement, errorElementId) {
+        if (!validateNotEmpty(emailInputElement, errorElementId, 'Email')) return false;
+        const emailValue = emailInputElement.value.trim();
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailValue)) {
+            showError(emailInputElement, errorElementId, 'Email không hợp lệ.');
+            return false;
+        }
+        clearError(emailInputElement, errorElementId);
+        return true;
+    }
+
+    function validatePhoneNumber(phoneInputElement, errorElementId) {
+        if (!validateNotEmpty(phoneInputElement, errorElementId, 'Số điện thoại')) return false;
+        const phoneValue = phoneInputElement.value.trim();
+        // Regex cơ bản cho số điện thoại Việt Nam (10 chữ số, bắt đầu bằng 0)
+        const phonePattern = /^0\d{9}$/;
+        if (!phonePattern.test(phoneValue)) {
+            showError(phoneInputElement, errorElementId, 'Số điện thoại không hợp lệ (phải gồm 10 chữ số, bắt đầu bằng 0).');
+            return false;
+        }
+        clearError(phoneInputElement, errorElementId);
+        return true;
+    }
+
+
+    function validatePassword() {
+        let isValid = true;
+        const passwordValue = passwordInput.value;
+
+        if (passwordValue.length < minPasswordLength) {
+            showError(passwordInput, 'password-client-error', `Mật khẩu phải có ít nhất ${minPasswordLength} ký tự.`);
+            isValid = false;
+        } else if (!uppercaseRegex.test(passwordValue)) {
+            showError(passwordInput, 'password-client-error', 'Mật khẩu phải chứa ít nhất một chữ cái viết hoa.');
+            isValid = false;
+        } else if (!specialCharRegex.test(passwordValue)) {
+            showError(passwordInput, 'password-client-error', 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt.');
+            isValid = false;
+        } else {
+            clearError(passwordInput, 'password-client-error');
+        }
+        return isValid;
+    }
+
+    function validateConfirmPassword() {
+        if (confirmPasswordInput.value.trim() === '') {
+            showError(confirmPasswordInput, 'confirm-password-client-error', 'Xác nhận mật khẩu không được để trống.');
+            return false;
+        }
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            showError(confirmPasswordInput, 'confirm-password-client-error', 'Mật khẩu xác nhận không khớp.');
+            return false;
+        }
+        clearError(confirmPasswordInput, 'confirm-password-client-error');
+        return true;
+    }
+
+    form.addEventListener('submit', function(event) {
+        // Clear tất cả lỗi client-side trước khi validate lại
+        clearError(hoTenInput, 'ho_ten-client-error');
+        clearError(usernameInput, 'username-client-error');
+        clearError(passwordInput, 'password-client-error');
+        clearError(confirmPasswordInput, 'confirm-password-client-error');
+        clearError(emailInput, 'email-client-error');
+        clearError(soDienThoaiInput, 'so_dien_thoai-client-error');
+        clearError(ngaySinhInput, 'ngay_sinh-client-error');
+        clearError(gioiTinhSelect, 'gioi_tinh-client-error');
+
+        let isFormValid = true;
+
+        if (!validateNotEmpty(hoTenInput, 'ho_ten-client-error', 'Họ và tên')) isFormValid = false;
+        if (!validateNotEmpty(usernameInput, 'username-client-error', 'Tên đăng nhập')) isFormValid = false;
+        if (!validatePassword()) isFormValid = false; // Validate password trước
+        if (!validateConfirmPassword()) isFormValid = false; // Sau đó validate confirm password
+        if (!validateEmail(emailInput, 'email-client-error')) isFormValid = false;
+        if (!validatePhoneNumber(soDienThoaiInput, 'so_dien_thoai-client-error')) isFormValid = false;
+        if (!validateNotEmpty(ngaySinhInput, 'ngay_sinh-client-error', 'Ngày sinh')) isFormValid = false;
+        if (!validateSelectNotEmpty(gioiTinhSelect, 'gioi_tinh-client-error', 'giới tính')) isFormValid = false;
+
+
+        if (!isFormValid) {
+            event.preventDefault(); // Ngăn chặn form submit nếu có lỗi
+        }
+    });
+
+    // Xử lý placeholder cho select (nếu vẫn muốn dùng JS)
+    if (gioiTinhSelect.value === "") {
+        gioiTinhSelect.classList.add('placeholder-shown');
+    }
+    gioiTinhSelect.addEventListener('change', function() {
+        if (this.value === "") {
+            this.classList.add('placeholder-shown');
+        } else {
+            this.classList.remove('placeholder-shown');
+        }
+    });
+
+</script>
+</body>
+</html>
