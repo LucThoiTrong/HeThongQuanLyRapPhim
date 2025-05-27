@@ -38,8 +38,7 @@ public class MovieAdminController {
             @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
             @RequestParam(required = false) DoTuoi doTuoi,
             @RequestParam(required = false) String sortBy,
-            @RequestParam(defaultValue = "true") boolean ascending
-    ) {
+            @RequestParam(defaultValue = "true") boolean ascending) {
         MovieService service = movieService;
 
         // B1: Lọc

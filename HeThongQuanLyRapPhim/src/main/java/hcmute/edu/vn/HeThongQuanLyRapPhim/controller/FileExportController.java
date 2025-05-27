@@ -47,8 +47,6 @@ public class FileExportController {
         fileExportService.exportToExcel(response.getOutputStream());
     }
 
-
-
     private String getCurrentDateTimeString() {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
