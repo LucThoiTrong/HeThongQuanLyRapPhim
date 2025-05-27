@@ -20,36 +20,16 @@ public class SortedMovieService extends MovieServiceDecorator {
 
     @Override
     public List<Phim> getAllMovies() {
-        Comparator<Phim> comparator;
-
-        switch (sortBy) {
-            case "id":
-                comparator = Comparator.comparing(Phim::getIdPhim);
-                break;
-            case "tenPhim":
-                comparator = Comparator.comparing(Phim::getTenPhim, String.CASE_INSENSITIVE_ORDER);
-                break;
-            case "daoDien":
-                comparator = Comparator.comparing(Phim::getDaoDien, String.CASE_INSENSITIVE_ORDER);
-                break;
-            case "theLoai":
-                comparator = Comparator.comparing(Phim::getTheLoai, String.CASE_INSENSITIVE_ORDER);
-                break;
-            case "khoiChieu":
-                comparator = Comparator.comparing(Phim::getThoiGianKhoiChieu);
-                break;
-            case "thoiLuong":
-                comparator = Comparator.comparing(Phim::getThoiLuongChieu);
-                break;
-            case "doTuoi":
-                comparator = Comparator.comparing(phim -> phim.getDoTuoi().ordinal());
-                break;
-            case "trangThaiPhim":
-                comparator = Comparator.comparing(phim -> phim.getTrangThaiPhim().ordinal());
-                break;
-            default:
-                comparator = Comparator.comparing(Phim::getIdPhim);
-        }
+        Comparator<Phim> comparator = switch (sortBy) {
+            case "tenPhim" -> Comparator.comparing(Phim::getTenPhim, String.CASE_INSENSITIVE_ORDER);
+            case "daoDien" -> Comparator.comparing(Phim::getDaoDien, String.CASE_INSENSITIVE_ORDER);
+            case "theLoai" -> Comparator.comparing(Phim::getTheLoai, String.CASE_INSENSITIVE_ORDER);
+            case "khoiChieu" -> Comparator.comparing(Phim::getThoiGianKhoiChieu);
+            case "thoiLuong" -> Comparator.comparing(Phim::getThoiLuongChieu);
+            case "doTuoi" -> Comparator.comparing(phim -> phim.getDoTuoi().ordinal());
+            case "trangThaiPhim" -> Comparator.comparing(phim -> phim.getTrangThaiPhim().ordinal());
+            default -> Comparator.comparing(Phim::getIdPhim);
+        };
 
         if (!ascending) {
             comparator = comparator.reversed();
