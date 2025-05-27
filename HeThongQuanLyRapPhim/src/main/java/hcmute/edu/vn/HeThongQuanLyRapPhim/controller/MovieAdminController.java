@@ -3,6 +3,7 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.controller;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.filter.FilteredMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.pagination.PaginatedMovieService;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.decorator.sort.SortedMovieService;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.facade.MovieSearchFacade;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,12 @@ public class MovieAdminController {
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final MovieService movieService;
+    private final MovieSearchFacade movieSearchFacade;
 
     @Autowired
-    public MovieAdminController(MovieService movieService) {
+    public MovieAdminController(MovieService movieService, MovieSearchFacade movieSearchFacade) {
         this.movieService = movieService;
+        this.movieSearchFacade = movieSearchFacade;
     }
 
     private void prepareFormModel(Model model) {
@@ -44,27 +47,13 @@ public class MovieAdminController {
                 .toList();
     }
 
-    @GetMapping({"", "/"})
-    public String showList(
-            Model model,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
-            @RequestParam(required = false) DoTuoi doTuoi,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(defaultValue = "true") boolean ascending,
-            @RequestParam(required = false) String keyword) {
-
+    private void processMovies(List<Phim> movies, int page, int size, TrangThaiPhim trangThaiPhim,
+                               DoTuoi doTuoi, String sortBy, boolean ascending, String keyword, Model model) {
         // Kiểm tra giá trị đầu vào
         if (page < 0) page = 0;
         if (size <= 0) size = DEFAULT_PAGE_SIZE;
 
-        // B1: Lấy danh sách phim (tìm kiếm hoặc toàn bộ)
-        List<Phim> movies = (keyword != null && !keyword.trim().isEmpty())
-                ? movieService.searchMovies(keyword)
-                : movieService.getAllMovies();
-
-        // B2: Lọc
+        // B1: Lọc
         List<Phim> filteredMovies = filterMovies(movies, trangThaiPhim, doTuoi);
         MovieService service = new FilteredMovieService(movieService, trangThaiPhim, doTuoi) {
             @Override
@@ -73,12 +62,12 @@ public class MovieAdminController {
             }
         };
 
-        // B3: Sắp xếp
+        // B2: Sắp xếp
         if (sortBy != null && !sortBy.isEmpty()) {
             service = new SortedMovieService(service, sortBy, ascending);
         }
 
-        // B4: Phân trang
+        // B3: Phân trang
         service = new PaginatedMovieService(service, page, size);
         List<Phim> dsPhim = service.getAllMovies();
 
@@ -99,6 +88,45 @@ public class MovieAdminController {
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("ascending", ascending);
         model.addAttribute("keyword", keyword);
+    }
+
+    @GetMapping({"", "/"})
+    public String showList(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
+            @RequestParam(required = false) DoTuoi doTuoi,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending) {
+
+        // Lấy toàn bộ danh sách phim
+        List<Phim> movies = movieService.getAllMovies();
+
+        // Xử lý danh sách phim
+        processMovies(movies, page, size, trangThaiPhim, doTuoi, sortBy, ascending, null, model);
+
+        return MOVIE_PAGE;
+    }
+
+    @GetMapping("/search")
+    public String searchMovies(
+            Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) TrangThaiPhim trangThaiPhim,
+            @RequestParam(required = false) DoTuoi doTuoi,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(defaultValue = "true") boolean ascending,
+            @RequestParam(required = false) String keyword) {
+
+        // Tìm kiếm phim bằng MovieSearchFacade
+        List<Phim> movies = (keyword != null && !keyword.trim().isEmpty())
+                ? movieSearchFacade.timKiemPhim(keyword)
+                : movieService.getAllMovies();
+
+        // Xử lý danh sách phim
+        processMovies(movies, page, size, trangThaiPhim, doTuoi, sortBy, ascending, keyword, model);
 
         return MOVIE_PAGE;
     }
