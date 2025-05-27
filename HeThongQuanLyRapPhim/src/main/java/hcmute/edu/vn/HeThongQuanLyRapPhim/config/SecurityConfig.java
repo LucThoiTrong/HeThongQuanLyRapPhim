@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -19,15 +20,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll() // Cho phép tất cả yêu cầu
+                .authorizeHttpRequests(auth -> auth
+                        // Cho phép truy cập các trang không cần đăng nhập
+                        .requestMatchers("/", "/signin", "/register", "/forgot-password", "/submit-email", "/reset-password", "/auth/verify").permitAll()
+                        // Cho phép truy cập danh sách phim
+                        .requestMatchers("/movies/**").permitAll()
+                        // Các request còn lại cho phép truy cập
+                        .anyRequest().permitAll()
                 )
-                .formLogin(form -> form
-                        .disable() // Vô hiệu hóa form login
-                )
-                .csrf(csrf -> csrf
-                        .disable() // Vô hiệu hóa CSRF để kiểm tra
-                );
+                .csrf(AbstractHttpConfigurer::disable);
+
         return http.build();
     }
 }

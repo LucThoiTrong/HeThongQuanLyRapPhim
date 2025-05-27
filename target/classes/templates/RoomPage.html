@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Phòng Chiếu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
+            --text-color: #333;
+            --bg-color: #f0f4f8;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            background: var(--primary-gradient);
+            color: #fff;
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.5s ease;
+            flex: 1;
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #15803d;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #b91c1c;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .search-bar {
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px 40px 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 25px;
+            text-decoration: none;
+            color: #fff;
+            background: var(--primary-gradient);
+            border: none;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--card-bg);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        th {
+            background: var(--primary-gradient);
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        td {
+            background: var(--card-bg);
+        }
+
+        tr {
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.01);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .action-buttons .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow), 0 0 15px rgba(59, 130, 246, 0.5);
+            z-index: 2000;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .home-button:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: var(--shadow), 0 0 25px rgba(59, 130, 246, 0.7);
+        }
+
+        .home-button i {
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .search-bar {
+                max-width: 100%;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            th, td {
+                font-size: 0.9rem;
+                padding: 0.75rem;
+            }
+            .action-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .action-buttons .btn {
+                width: 100%;
+            }
+            .home-button {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="animate__animated animate__fadeInDown">
+    <h1>Danh Sách Phòng Chiếu</h1>
+</header>
+
+<div class="container animate__animated animate__fadeIn">
+    <div th:if="${message}" class="alert animate__animated animate__fadeIn" th:class="${message.contains('thành công') ? 'alert-success' : 'alert-danger'}" th:text="${message}" id="flash-message"></div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Tìm kiếm phòng chiếu..." onkeyup="searchTable()">
+        <i class="fas fa-search"></i>
+    </div>
+
+    <div class="button-group">
+        <a th:href="@{/rooms/new(idRapPhim=${idRapPhim})}" class="btn" data-bs-toggle="tooltip" title="Thêm phòng chiếu mới">
+            <i class="fas fa-plus"></i> Thêm phòng chiếu
+        </a>
+        <a th:href="@{/cinemas/update/{id}(id=${idRapPhim})}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại chỉnh sửa rạp phim">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <table id="roomTable">
+        <thead>
+        <tr>
+            <th>Tên Phòng Chiếu</th>
+            <th>Kích Thước Phòng</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="phong : ${dsPhongChieuPhim}" class="animate__animated animate__fadeInUp">
+            <td th:text="${phong.tenPhongChieuPhim}"></td>
+            <td th:text="${phong.kichThuocPhong != null} ? ${phong.kichThuocPhong.moTa} : 'Trống'"></td>
+            <td>
+                <div class="action-buttons">
+                    <a th:href="@{/rooms/update/{id}(idRapPhim=${idRapPhim},id=${phong.idPhongChieuPhim})}" class="btn btn-warning" data-bs-toggle="tooltip" title="Sửa thông tin phòng chiếu">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <form th:action="@{/rooms/delete/{id}(idRapPhim=${idRapPhim},id=${phong.idPhongChieuPhim})}" method="post" class="delete-form" style="display:inline;">
+                        <button type="button" class="btn btn-danger delete-button" th:attr="data-room-name=${phong.tenPhongChieuPhim}" data-bs-toggle="tooltip" title="Xóa phòng chiếu">
+                            <i class="fas fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Home Button -->
+<button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
+    <i class="fas fa-home"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Kích hoạt tooltip của Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        // Xử lý nút xóa
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const roomName = event.target.dataset.roomName;
+                const confirmationMessage = `Bạn có chắc chắn muốn xóa phòng chiếu ${roomName}?`;
+                if (confirm(confirmationMessage)) {
+                    const form = event.target.closest('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error("Không tìm thấy form cha để submit.");
+                    }
+                }
+            });
+        });
+
+        // Tự động ẩn thông báo flash
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(function() {
+                flashMessage.style.opacity = '0';
+                setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
+            }, 3000);
+        }
+    });
+
+
+    // Tìm kiếm trong bảng
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#roomTable tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const text = Array.from(cells).map(cell => cell.textContent.toLowerCase()).join(' ');
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+</script>
+<script th:inline="javascript">
+    function goToHome() {
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/manage/}]]*/ '/manage/'}
+    /*]]>*/
+</script>
+</body>
+</html>

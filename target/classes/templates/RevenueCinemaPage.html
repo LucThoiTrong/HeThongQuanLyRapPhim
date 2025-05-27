@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|Doanh Thu ${rapPhim?.tenRapPhim ?: 'Rạp Phim'} - Năm ${nam ?: 'N/A'}|">Biểu Đồ Doanh Thu Rạp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f0f2f5, #ffffff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .main-content-wrapper {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .action-button i {
+            font-size: 1.2em;
+        }
+
+        .action-button:hover {
+            background: #f0f0f0;
+            transform: translateY(-3px);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .back-button i {
+            font-size: 1.2em;
+        }
+
+        .back-button:hover {
+            background: #f0f0f0;
+            transform: translateX(-3px);
+        }
+
+        .cinema-name {
+            font-size: 2em;
+            font-weight: 600;
+            color: #2c3e50;
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .year-selector label {
+            font-size: 1em;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .year-selector select {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            background-color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .year-selector select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+            outline: none;
+        }
+
+        .chart-title {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 600px; /* Tăng chiều cao để cải thiện chất lượng hình ảnh */
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            position: relative;
+            animation: slideDown 0.8s ease-in-out;
+        }
+
+        canvas#revenueChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #e74c3c;
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            .header-controls, .action-buttons, .back-button, .year-selector {
+                display: none !important;
+            }
+            .chart-container {
+                box-shadow: none;
+                padding: 0;
+            }
+            .chart-title, .cinema-name {
+                color: #000 !important;
+                -webkit-text-fill-color: #000 !important;
+                text-shadow: none !important;
+            }
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-controls {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .cinema-name {
+                font-size: 1.6em;
+            }
+
+            .chart-title {
+                font-size: 1.4em;
+            }
+
+            .chart-container {
+                height: 400px;
+            }
+
+            .year-selector select, .action-button, .back-button {
+                padding: 8px 16px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-content-wrapper">
+    <div class="header-controls">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="javascript:history.back()" class="back-button">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <div class="action-buttons">
+                <button class="action-button" onclick="printChart()">
+                    <i class="fas fa-print"></i> In
+                </button>
+                <button class="action-button" onclick="exportToImage()">
+                    <i class="fas fa-image"></i> Xuất Ảnh
+                </button>
+                <button class="action-button" onclick="exportToExcel()">
+                    <i class="fas fa-file-excel"></i> Xuất Excel
+                </button>
+            </div>
+        </div>
+        <h1 class="cinema-name" th:text="|Tên Rạp: ${rapPhim?.tenRapPhim ?: 'Không xác định'}|">Tên Rạp: Placeholder</h1>
+        <div class="year-selector">
+            <label for="year-select"><i class="fas fa-calendar-alt"></i> Chọn năm:</label>
+            <select id="year-select" name="year">
+                <th:block th:with="currentYear=${T(java.time.Year).now().getValue()}">
+                    <option th:each="yearOpt : ${#numbers.sequence(currentYear, currentYear - 9, -1)}"
+                            th:value="${yearOpt}"
+                            th:text="${yearOpt}"
+                            th:selected="${yearOpt == nam}">2023</option>
+                </th:block>
+            </select>
+        </div>
+    </div>
+
+    <h2 class="chart-title" th:text="|Biểu Đồ Doanh Thu Hàng Tháng (Năm ${nam ?: 'N/A'})|">Biểu Đồ Doanh Thu Hàng Tháng</h2>
+
+    <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Dữ liệu từ Thymeleaf
+    const revenueData = [];
+    const months = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+    /*[# th:each="monthNumber : ${#numbers.sequence(1, 12)}"]*/
+    revenueData.push(/*[[${tongDoanhThu['Tháng ' + monthNumber] ?: 0.0}]]*/ 0);
+    /*[/]*/
+
+    // Khởi tạo biểu đồ Chart.js với độ phân giải cao
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Doanh Thu (VNĐ)',
+                data: revenueData,
+                backgroundColor: function(context) {
+                    const chart = context.chart;
+                    const {ctx, chartArea} = chart;
+                    if (!chartArea) return;
+                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    gradient.addColorStop(0, '#3498db');
+                    gradient.addColorStop(1, '#2ecc71');
+                    return gradient;
+                },
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1,
+                hoverBackgroundColor: function(context) {
+                    const chart = context.chart;
+                    const {ctx, chartArea} = chart;
+                    if (!chartArea) return;
+                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    gradient.addColorStop(0, '#2980b9');
+                    gradient.addColorStop(1, '#27ae60');
+                    return gradient;
+                },
+                hoverBorderColor: 'rgba(41, 128, 185, 1)',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: window.devicePixelRatio || 2, // Tăng độ phân giải cho canvas
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Doanh Thu (VNĐ)',
+                        font: { size: 14, family: 'Poppins', weight: '600' },
+                        color: '#2c3e50'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                        },
+                        font: { size: 12, family: 'Poppins' },
+                        color: '#555'
+                    },
+                    grid: { color: '#e0e0e0', lineWidth: 1 }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tháng',
+                        font: { size: 14, family: 'Poppins', weight: '600' },
+                        color: '#2c3e50'
+                    },
+                    ticks: { font: { size: 12, family: 'Poppins' }, color: '#555' },
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: { family: 'Poppins', size: 12, weight: '600' },
+                    bodyFont: { family: 'Poppins', size: 12 },
+                    padding: 10,
+                    cornerRadius: 6,
+                    callbacks: {
+                        label: function(context) {
+                            return `Doanh Thu: ${context.parsed.y.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}`;
+                        }
+                    }
+                }
+            },
+            animation: {
+                duration: 1500,
+                easing: 'easeOutQuart',
+                x: {
+                    from: 0,
+                    delay: (context) => context.dataIndex * 100
+                }
+            }
+        }
+    });
+
+    // Xử lý sự kiện chọn năm
+    document.getElementById('year-select')?.addEventListener('change', function() {
+        const selectedYear = this.value;
+        const cinemaId = /*[[${rapPhim?.idRapPhim ?: '0'}]]*/ '0';
+
+        if (!cinemaId || cinemaId === '0' || !selectedYear) {
+            console.error('Lỗi: cinemaId hoặc selectedYear không hợp lệ', { cinemaId, selectedYear });
+            alert('Không thể chuyển năm do thông tin rạp phim hoặc năm không hợp lệ!');
+            return;
+        }
+
+        const newUrl = `/revenue/${encodeURIComponent(cinemaId)}/${encodeURIComponent(selectedYear)}`;
+        console.log('Điều hướng đến:', newUrl);
+        window.location.href = newUrl;
+    });
+
+    // Chức năng in biểu đồ
+    function printChart() {
+        window.print();
+    }
+
+    // Chức năng xuất ảnh
+    function exportToImage() {
+        const chartContainer = document.querySelector('.chart-container');
+        const chartTitle = document.querySelector('.chart-title').textContent;
+        const cinemaName = document.querySelector('.cinema-name').textContent;
+
+        // Tăng kích thước canvas và thêm tiêu đề
+        html2canvas(chartContainer, {
+            scale: 6, // Tăng độ phân giải cao hơn
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            logging: false
+        }).then(canvas => {
+            // Tạo canvas mới để thêm tiêu đề
+            const newCanvas = document.createElement('canvas');
+            const ctx = newCanvas.getContext('2d');
+            const padding = 20;
+            const titleHeight = 60;
+            newCanvas.width = canvas.width + padding * 2;
+            newCanvas.height = canvas.height + titleHeight + padding * 2;
+
+            // Vẽ nền trắng
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, newCanvas.width, newCanvas.height);
+
+            // Vẽ tiêu đề rạp và năm
+            ctx.font = 'bold 24px Poppins';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.fillText(cinemaName, newCanvas.width / 2, padding + 20);
+            ctx.fillText(chartTitle, newCanvas.width / 2, padding + 50);
+
+            // Vẽ biểu đồ
+            ctx.drawImage(canvas, padding, padding + titleHeight);
+
+            // Tải xuống hình ảnh
+            const link = document.createElement('a');
+            link.href = newCanvas.toDataURL('image/png', 1.0);
+            link.download = `BieuDoDoanhThu_${/*[[${nam ?: 'N/A'}]]*/ 'N/A'}.png`;
+            link.click();
+        }).catch(err => {
+            console.error('Lỗi khi xuất ảnh:', err);
+            alert('Không thể xuất ảnh do lỗi hệ thống! Vui lòng thử lại.');
+        });
+    }
+
+    // Chức năng xuất Excel
+    function exportToExcel() {
+        try {
+            const data = months.map((month, index) => ({
+                'Tháng': month,
+                'Doanh Thu (VNĐ)': revenueData[index]
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Doanh Thu');
+
+            // Định dạng cột
+            ws['!cols'] = [{ wch: 15 }, { wch: 20 }];
+
+            // Tạo file Excel và tải xuống
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            saveAs(blob, `DoanhThu_${/*[[${nam ?: 'N/A'}]]*/ 'N/A'}.xlsx`);
+        } catch (err) {
+            console.error('Lỗi khi xuất Excel:', err);
+            alert('Không thể xuất Excel do lỗi hệ thống! Vui lòng thử lại.');
+        }
+    }
+    /*]]>*/
+</script>
+
+</body>
+</html>

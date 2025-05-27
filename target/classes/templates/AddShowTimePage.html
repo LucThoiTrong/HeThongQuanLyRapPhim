@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm suất chiếu mới</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+    }
+    .card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .icon {
+      color: #3b82f6;
+      transition: transform 0.2s ease;
+    }
+    .input-group:hover .icon {
+      transform: scale(1.2);
+    }
+    .alert {
+      animation: fadeInDown 0.5s ease;
+      border: 1px solid;
+    }
+    .btn {
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    .title-gradient {
+      font-family: 'Bebas Neue', 'Montserrat', sans-serif !important;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+    .title-gradient::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      opacity: 0.6;
+    }
+    .title-icon {
+      color: #3b82f6;
+      transition: transform 0.3s ease;
+    }
+    .title-icon:hover {
+      transform: scale(1.1);
+    }
+    .error-message:empty {
+      display: none;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .invalid-feedback {
+      display: none;
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 0.25rem;
+    }
+    .was-validated .form-control:invalid,
+    .was-validated .form-select:invalid {
+      border-color: #dc3545;
+    }
+    .was-validated .form-control:invalid ~ .invalid-feedback,
+    .was-validated .form-select:invalid ~ .invalid-feedback {
+      display: block;
+    }
+    @media (max-width: 640px) {
+      .title-gradient {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-3xl">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold animate__animated animate__slideInLeft">
+      <span class="title-gradient"><i class="fas fa-ticket-alt title-icon mr-2"></i>Thêm suất chiếu mới</span>
+    </h1>
+    <a th:href="@{/showtimes/}" class="btn inline-block px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+      <i class="fas fa-arrow-left mr-2"></i> Hủy
+    </a>
+  </div>
+
+  <div th:if="${message}"
+       class="alert bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-md animate__animated animate__fadeInDown"
+       role="alert">
+    <p class="font-bold"><i class="fas fa-exclamation-triangle mr-2"></i>Lỗi</p>
+    <p th:text="${message}">Nội dung thông báo lỗi ở đây.</p>
+  </div>
+
+  <div class="card p-6 rounded-xl animate__animated animate__fadeInUp">
+    <form th:action="@{/showtimes/new}" th:object="${suatChieu}" method="post" class="needs-validation" novalidate>
+      <div class="mb-4 input-group relative">
+        <label for="ngayGioChieu" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-calendar-alt icon mr-2"></i> Ngày giờ chiếu
+        </label>
+        <input type="datetime-local" class="form-control w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="ngayGioChieu" th:field="*{ngayGioChieu}" required>
+        <div class="invalid-feedback">Vui lòng chọn ngày giờ chiếu.</div>
+        <div th:if="${#fields.hasErrors('ngayGioChieu')}" th:errors="*{ngayGioChieu}" class="error-message absolute right-0 top-9"></div>
+      </div>
+      <div class="mb-4 input-group relative">
+        <label for="hinhThucChieu" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-video icon mr-2"></i> Hình thức chiếu
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="hinhThucChieu" th:field="*{hinhThucChieu}" required>
+          <option value="">Chọn hình thức chiếu</option>
+          <option th:each="hinhThuc : ${hinhThucChieuList}" th:value="${hinhThuc}" th:text="${hinhThuc.getMoTa()}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn hình thức chiếu.</div>
+        <div th:if="${#fields.hasErrors('hinhThucChieu')}" th:errors="*{hinhThucChieu}" class="error-message absolute right-0 top-9"></div>
+      </div>
+
+      <div class="mb-4 input-group relative">
+        <label for="rapPhim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-theater-masks icon mr-2"></i> Rạp phim
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="rapPhim"
+                name="rapPhim_trigger" required>
+          <option value="">Chọn rạp phim</option>
+          <option th:each="rap : ${rapPhimList}" th:value="${rap.idRapPhim}" th:text="${rap.tenRapPhim}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn rạp phim.</div>
+      </div>
+
+      <div class="mb-4 input-group relative">
+        <label for="phongChieuPhim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-door-open icon mr-2"></i> Phòng chiếu
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                id="phongChieuPhim"
+                th:field="*{phongChieuPhim.idPhongChieuPhim}" required disabled>
+          <option value="">Chọn phòng chiếu</option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn phòng chiếu.</div>
+        <div th:if="${#fields.hasErrors('phongChieuPhim.idPhongChieuPhim')}" th:errors="*{phongChieuPhim.idPhongChieuPhim}" class="error-message absolute right-0 top-9"></div>
+      </div>
+
+      <div class="mb-4 input-group relative">
+        <label for="phim" class="block text-sm font-medium text-gray-700 mb-1">
+          <i class="fas fa-film icon mr-2"></i> Phim
+        </label>
+        <select class="form-select w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" id="phim" th:field="*{phim.idPhim}" required>
+          <option value="">Chọn phim</option>
+          <option th:each="p : ${phimList}" th:value="${p.idPhim}" th:text="${p.tenPhim}"></option>
+        </select>
+        <div class="invalid-feedback">Vui lòng chọn phim.</div>
+        <div th:if="${#fields.hasErrors('phim')}" th:errors="*{phim}" class="error-message absolute right-0 top-9"></div>
+      </div>
+
+      <div id="room-loading-error" class="alert bg-red-100 text-red-800 border-red-300 p-3 rounded-lg mb-4 hidden animate__animated animate__fadeIn"></div>
+
+      <div class="flex space-x-3">
+        <button type="submit" class="btn px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <i class="fas fa-plus mr-2"></i> Thêm suất chiếu
+        </button>
+        <a th:href="@{/showtimes/}" class="btn px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+          <i class="fas fa-times mr-2"></i> Hủy
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Bootstrap validation
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  async function loadRooms(selectedIdRapPhimString) {
+    const roomSelect = document.getElementById('phongChieuPhim');
+    const roomLoadingErrorDiv = document.getElementById('room-loading-error');
+
+    // Reset phòng chiếu
+    roomSelect.innerHTML = '<option value="">Chọn phòng chiếu</option>';
+    roomSelect.value = '';
+    roomSelect.disabled = true;
+    roomLoadingErrorDiv.classList.add('hidden');
+    roomLoadingErrorDiv.textContent = '';
+
+    if (!selectedIdRapPhimString || selectedIdRapPhimString === '') {
+      return;
+    }
+
+    const selectedIdRapPhim = parseInt(selectedIdRapPhimString, 10);
+    if (isNaN(selectedIdRapPhim)) {
+      console.error('ID rạp phim không hợp lệ:', selectedIdRapPhimString);
+      roomLoadingErrorDiv.textContent = 'ID rạp phim không hợp lệ.';
+      roomLoadingErrorDiv.classList.remove('hidden');
+      return;
+    }
+
+    const baseUrl = /*[[@{/showtimes/rap-phim/}]]*/ '/showtimes/rap-phim/';
+    const url = baseUrl + selectedIdRapPhim + '/phong-chieu';
+    console.log("Đang gọi API lấy phòng chiếu với URL:", url);
+
+    try {
+      const response = await fetch(url);
+      const responseText = await response.text(); // <<<<---- LẤY RESPONSE DƯỚI DẠNG TEXT
+
+      console.log("===== RAW JSON RESPONSE FROM SERVER ====="); // <<<<---- LOG RA CONSOLE
+      console.log(responseText);                              // <<<<---- LOG RA CONSOLE
+      console.log("========================================");
+
+      if (!response.ok) {
+        let errorMsg = `Lỗi HTTP: ${response.status}`;
+        try {
+          // Thử parse responseText để lấy message lỗi chi tiết hơn nếu có
+          const errorData = JSON.parse(responseText); // Dùng responseText đã lấy
+          if (errorData && errorData.message) {
+            errorMsg = errorData.message;
+          } else if (typeof errorData === 'string' && errorData.length < 100) {
+            errorMsg = errorData; // Nếu server trả về lỗi dạng chuỗi thuần
+          }
+        } catch (e) {
+          // Nếu responseText không phải JSON (ví dụ lỗi HTML từ server)
+          // thì errorMsg giữ nguyên hoặc có thể gán responseText nếu nó ngắn gọn
+          console.warn("Response lỗi không phải là JSON:", responseText);
+          if (responseText.length < 200) { // Chỉ hiển thị nếu nó không quá dài
+            errorMsg += ` (Server response: ${responseText})`;
+          }
+        }
+        throw new Error(errorMsg);
+      }
+
+      // Sau khi đã log, bạn có thể parse nó
+      const rooms = JSON.parse(responseText); // Parse từ responseText đã lấy
+
+      if (rooms && rooms.length > 0) {
+        rooms.forEach(room => {
+          const option = document.createElement('option');
+          option.value = room.idPhongChieuPhim;
+          option.text = room.tenPhongChieuPhim;
+          roomSelect.appendChild(option);
+        });
+        roomSelect.disabled = false;
+      } else {
+        roomSelect.innerHTML = '<option value="">Rạp này không có phòng chiếu</option>';
+      }
+    } catch (error) {
+      console.error('Không thể tải danh sách phòng chiếu:', error);
+      roomSelect.innerHTML = '<option value="">Lỗi tải phòng chiếu</option>';
+      let displayErrorMessage = 'Không thể tải danh sách phòng chiếu. ' + error.message;
+
+      // Nếu lỗi là SyntaxError (lỗi parse JSON), chúng ta đã có responseText ở trên
+      // Nếu không, chúng ta cần fetch lại để lấy responseText (hoặc bạn có thể cấu trúc lại để luôn có responseText)
+      if (error instanceof SyntaxError) {
+        // Trong trường hợp này, responseText sẽ được log ở block try rồi
+        // Bạn có thể thêm vào đây nếu muốn chắc chắn
+        // console.error("Dữ liệu JSON không hợp lệ:", responseText); // responseText cần được truyền vào đây
+      }
+
+      roomLoadingErrorDiv.textContent = displayErrorMessage;
+      roomLoadingErrorDiv.classList.remove('hidden');
+    }
+  }
+
+  // Handle initial state and attach event listener
+  document.addEventListener('DOMContentLoaded', function() {
+    const rapPhimSelect = document.getElementById('rapPhim');
+    const phongChieuSelect = document.getElementById('phongChieuPhim');
+
+    // Attach onchange event
+    rapPhimSelect.addEventListener('change', function() {
+      const selectedId = this.value;
+      console.log('Rạp phim được chọn, ID:', selectedId);
+      loadRooms(selectedId);
+    });
+
+    // Check initial state
+    if (rapPhimSelect.value) {
+      loadRooms(rapPhimSelect.value);
+    } else {
+      phongChieuSelect.disabled = true;
+    }
+  });
+</script>
+</body>
+</html>

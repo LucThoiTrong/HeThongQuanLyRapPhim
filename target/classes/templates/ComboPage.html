@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Combo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --danger-gradient: linear-gradient(135deg, #ef4444, #f87171);
+            --card-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom right, #e0e7ff, #f3e8ff);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: var(--primary-gradient);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .card:hover::before {
+            opacity: 0.05;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        tr {
+            transition: var(--transition);
+        }
+
+        tr:hover {
+            transform: scale(1.02);
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert {
+            animation: slideInRight 0.5s ease-out;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tilt {
+            transition: transform 0.2s ease;
+        }
+    </style>
+</head>
+<body>
+<header class="py-6 px-8">
+    <h1 class="text-4xl font-bold text-white tracking-tight">Danh Sách Combo Bắp Nước</h1>
+</header>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div th:if="${message}" class="alert bg-green-100 border-l-4 border-green-500 text-green-700 p-5 rounded-lg mb-8" th:text="${message}" id="flash-message"></div>
+
+    <div class="card bg-white rounded-2xl overflow-hidden tilt">
+        <div class="card-header flex justify-between items-center p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-800">Danh sách Combo</h2>
+            <a th:href="@{/combos/new}" class="btn bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2.5 rounded-xl hover:from-blue-600 hover:to-purple-700 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Thêm Combo
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-900 text-sm uppercase tracking-wider">
+                        <th class="py-5 px-6 text-center w-1/4">Tên Combo</th>
+                        <th class="py-5 px-6 text-center w-1/3">Mô Tả</th>
+                        <th class="py-5 px-6 text-right w-1/6">Giá Tiền (VNĐ)</th>
+                        <th class="py-5 px-6 text-center w-1/4">Thao Tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="temp : ${comboBapNuocs}" class="border-b border-gray-200">
+                        <td class="py-5 px-6 text-gray-800 font-medium" th:text="${temp.tenCombo}"></td>
+                        <td class="py-5 px-6 text-gray-600" th:text="${temp.moTaCombo}"></td>
+                        <td class="py-5 px-6 text-gray-800 font-medium text-right" th:text="${#numbers.formatDecimal(temp.giaTien, 0, 'COMMA', 0, 'POINT')}"></td>
+                        <td class="py-5 px-6 text-center">
+                            <div class="flex justify-center space-x-3">
+                                <form th:action="@{/combos/update/{id}(id=${temp.idComboBapNuoc})}" method="get" class="inline">
+                                    <button type="submit" class="btn bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700">
+                                        <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                        Cập nhật
+                                    </button>
+                                </form>
+                                <form th:action="@{/combos/delete/{id}(id=${temp.idComboBapNuoc})}" method="post" class="inline">
+                                    <button type="button" class="btn bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 delete-button" th:attr="data-combo-name=${temp.tenCombo}">
+                                        <svg class="w-5 h-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4M9 7v12m6-12v12"></path></svg>
+                                        Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(comboBapNuocs)}">
+                        <td colspan="4" class="py-8 text-center text-gray-500 text-lg">Không có combo nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Xử lý nút xóa
+        const deleteButtons = document.querySelectorAll('.delete-button');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                const comboName = event.target.dataset.comboName;
+                const confirmMsg = `Bạn có chắc chắn muốn xóa combo "${comboName}" không?`;
+                if (confirm(confirmMsg)) {
+                    const form = event.target.closest('form');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        console.error("Không tìm thấy form cha để submit.");
+                    }
+                }
+            });
+        });
+
+        // Ẩn flash message sau 3 giây
+        const flashMessage = document.getElementById('flash-message');
+        if (flashMessage) {
+            setTimeout(function() {
+                flashMessage.classList.add('fade-out');
+                setTimeout(function() {
+                    flashMessage.style.display = 'none';
+                }, 500);
+            }, 3000);
+        }
+
+        // 3D Tilt Effect cho card
+        const card = document.querySelector('.tilt');
+        card.addEventListener('mousemove', function(e) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 50;
+            const rotateY = (centerX - x) / 50;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
+    });
+</script>
+</body>
+</html>

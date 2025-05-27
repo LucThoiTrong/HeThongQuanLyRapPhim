@@ -4,15 +4,10 @@
   <meta charset="UTF-8">
   <title>Danh Sách Phim</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
   <style>
     :root {
       --primary-gradient: linear-gradient(45deg, #3b82f6, #8b5cf6);
@@ -22,7 +17,7 @@
       --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
-    [data-theme="dark"] { /* Placeholder for potential dark theme */
+    [data-theme="dark"] {
       --primary-gradient: linear-gradient(45deg, #1e3a8a, #6d28d9);
       --text-color: #e5e7eb;
       --bg-color: #1f2937;
@@ -64,9 +59,9 @@
       letter-spacing: 1px;
     }
 
-    .main-container { /* Renamed from .container to avoid Bootstrap conflict if desired, but can be .container */
+    .main-container {
       max-width: 1300px;
-      width: 90%; /* Added for better responsiveness on very large screens */
+      width: 90%;
       margin: 2rem auto;
       padding: 2rem;
       background: var(--card-bg);
@@ -77,41 +72,159 @@
       flex: 1;
     }
 
-    .search-bar {
+    .search-container {
       position: relative;
-      max-width: 400px;
-      margin: 0 auto 2rem;
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      padding: 0 10px;
     }
 
-    .search-bar input {
+    .search-form {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-wrapper {
+      position: relative;
       width: 100%;
-      padding: 12px 40px 12px 20px;
-      border-radius: 25px;
-      border: none;
-      background: rgba(0, 0, 0, 0.05); /* Slightly darker background for better visibility on light card */
-      color: var(--text-color);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      background: var(--card-bg);
+      border-radius: 50px;
+      padding: 5px;
+      box-shadow: var(--shadow);
       transition: all 0.3s ease;
     }
 
-    .search-bar input:focus {
-      outline: none;
-      background: rgba(0, 0, 0, 0.07);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 2px var(--primary-gradient); /* Focus ring with gradient */
+    .search-wrapper:hover,
+    .search-wrapper.focused {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.95);
     }
 
-    .search-bar i {
+    [data-theme="dark"] .search-wrapper:hover,
+    [data-theme="dark"] .search-wrapper.focused {
+      background: rgba(55, 65, 81, 0.95);
+    }
+
+    .search-icon {
       position: absolute;
-      right: 20px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--text-color);
-      opacity: 0.7;
+      opacity: 0.6;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-wrapper.focused .search-icon {
+      color: #3b82f6;
+      opacity: 1;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .search-form input {
+      flex: 1;
+      padding: 12px 20px 12px 50px;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+      font-size: 1rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .search-form input:focus {
+      outline: none;
+      background: transparent;
+    }
+
+    .search-btn {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: var(--primary-gradient);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      margin-left: 5px;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--text-color);
+      opacity: 0.6;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .clear-btn:hover {
+      opacity: 1;
+      color: #dc3545;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .search-suggestions.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    .search-suggestions ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .search-suggestions li {
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: all 0.2s ease;
+    }
+
+    .search-suggestions li:hover {
+      background: var(--primary-gradient);
+      color: #fff;
     }
 
     .button-group {
       display: flex;
       justify-content: flex-end;
+      flex-wrap: wrap;
       margin-bottom: 2rem;
       gap: 1rem;
     }
@@ -140,16 +253,35 @@
     }
 
     .btn-secondary {
-      background: #6c757d; /* Bootstrap secondary color for consistency */
+      background: #6c757d;
     }
-
     .btn-secondary:hover {
       background: #5a6268;
       filter: brightness(1.1);
     }
 
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+      filter: brightness(1.1);
+    }
+
+    .btn-success {
+      background-color: #198754;
+      border-color: #198754;
+    }
+    .btn-success:hover {
+      background-color: #157347;
+      border-color: #146c43;
+      filter: brightness(1.1);
+    }
+
     .btnDelete {
-      background: #dc3545; /* Bootstrap danger color */
+      background: #dc3545;
     }
 
     .btnDelete:hover {
@@ -161,22 +293,22 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      background: transparent; /* Table itself is transparent, cells will have background */
+      background: transparent;
       border-radius: 15px;
-      overflow: hidden; /* Important for border-radius on th/td */
+      overflow: hidden;
       box-shadow: var(--shadow);
     }
 
     th, td {
-      padding: 1rem 1.25rem; /* Increased padding slightly */
+      padding: 1rem 1.25rem;
       text-align: left;
-      border: none; /* Remove all borders, spacing handled by border-spacing or th/td styles */
-      border-bottom: 1px solid rgba(0,0,0,0.05); /* Subtle bottom border for rows */
+      border: none;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
       transition: all 0.3s ease;
     }
 
     tr:last-child td {
-      border-bottom: none; /* No border for the last row's cells */
+      border-bottom: none;
     }
 
     th {
@@ -184,10 +316,9 @@
       color: #fff;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px; /* Reduced letter-spacing for uppercase */
+      letter-spacing: 0.5px;
     }
 
-    /* Apply border radius to first and last th */
     th:first-child {
       border-top-left-radius: 15px;
     }
@@ -196,27 +327,25 @@
     }
 
     td {
-      background: var(--card-bg); /* Cells get the card background */
+      background: var(--card-bg);
     }
 
-    tbody tr { /* Keep hover on tbody rows only */
+    tbody tr {
       transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
-    tbody tr:hover td { /* Hover effect on all tds of the hovered row */
-      background-color: rgba(0,0,0,0.03); /* Subtle hover, adjust as needed */
-      transform: scale(1.005); /* Slight scale on hover, applied to row or cells */
+    tbody tr:hover td {
+      background-color: rgba(0,0,0,0.03);
     }
 
     tbody tr:hover {
-      transform: scale(1.005); /* Slight scale on hover */
+      transform: scale(1.005);
     }
 
-
     .alert {
-      padding: 1rem; /* Adjusted padding */
+      padding: 1rem;
       margin-bottom: 2rem;
-      border-radius: 10px; /* Consistent border-radius */
+      border-radius: 10px;
       border: 1px solid transparent;
       transition: opacity 0.5s ease-out, transform 0.5s ease-out;
       text-align: center;
@@ -232,7 +361,6 @@
       color: #842029;
       border-color: #f5c2c7;
     }
-
 
     .home-button {
       position: fixed;
@@ -266,7 +394,7 @@
       display: flex;
       gap: 0.5rem;
       align-items: center;
-      justify-content: flex-start; /* Default for LTR languages */
+      justify-content: flex-start;
     }
 
     .action-buttons .btn,
@@ -277,12 +405,285 @@
       text-align: center;
     }
 
+    .badge {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .badge.bg-success {
+      background: linear-gradient(45deg, #2ecc71, #27ae60);
+    }
+
+    .badge.bg-info {
+      background: linear-gradient(45deg, #17a2b8, #0dcaf0);
+    }
+
+    .badge.bg-warning {
+      background: linear-gradient(45deg, #f1c40f, #e67e22);
+    }
+
+    .badge.bg-primary {
+      background: var(--primary-gradient);
+    }
+
+    .badge.bg-danger {
+      background: linear-gradient(45deg, #e74c3c, #c0392b);
+    }
+
+    .badge.bg-secondary {
+      background: linear-gradient(45deg, #6c757d, #5a6268);
+    }
+
+    [data-theme="dark"] .badge {
+      filter: brightness(0.9);
+    }
+
+    .badge:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    /* Improved Pagination Styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      background: var(--card-bg);
+      border-radius: 50px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .pagination li {
+      list-style: none;
+    }
+
+    .pagination li a,
+    .pagination li span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 40px;
+      height: 40px;
+      padding: 0.5rem;
+      text-decoration: none;
+      color: var(--text-color);
+      background: var(--card-bg);
+      border-radius: 50%;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination li a:hover {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .pagination li.active a,
+    .pagination li.active span {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 600;
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .pagination li.disabled span {
+      background: rgba(0, 0, 0, 0.1);
+      color: var(--text-color);
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .pagination li a i {
+      font-size: 1rem;
+    }
+
+    /* Filter and Sort Container */
+    .filter-sort-container {
+      display: flex;
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+      padding: 0 10px;
+    }
+
+    .filter-container, .sort-container {
+      flex: 1;
+      position: relative;
+    }
+
+    .filter-form, .sort-form {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--card-bg);
+      border-radius: 25px;
+      padding: 10px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .filter-form:hover, .sort-form:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .filter-form select, .sort-form select {
+      flex: 1;
+      padding: 12px 40px 12px 15px;
+      border: none;
+      background: transparent;
+      color: var(--text-color);
+      font-size: 1rem;
+      border-radius: 15px;
+      appearance: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px center;
+    }
+
+    [data-theme="dark"] .filter-form select, [data-theme="dark"] .sort-form select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e5e7eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    }
+
+    .filter-form select:focus, .sort-form select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    .filter-form select:hover, .sort-form select:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .sort-form .radio-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .sort-form .radio-group label {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 15px;
+      background: var(--card-bg);
+      color: var(--text-color);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sort-form .radio-group input[type="radio"] {
+      display: none;
+    }
+
+    .sort-form .radio-group input[type="radio"]:checked + label {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .sort-form .radio-group label:hover {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .filter-form button, .sort-form button {
+      padding: 10px 20px;
+      border-radius: 25px;
+      background: var(--primary-gradient);
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .filter-form button:hover, .sort-form button:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    @media (max-width: 992px) {
+      .filter-sort-container {
+        flex-direction: column;
+      }
+
+      .filter-container, .sort-container {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .filter-form, .sort-form {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 15px;
+      }
+
+      .filter-form select, .sort-form select, .sort-form .radio-group, .filter-form button, .sort-form button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+      }
+
+      .sort-form .radio-group {
+        justify-content: space-between;
+      }
+
+      .sort-form .radio-group label {
+        flex: 1;
+        text-align: center;
+      }
+
+      .filter-form button, .sort-form button {
+        justify-content: center;
+      }
+    }
+
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(30px); } /* Reduced Y translation */
+      from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 992px) { /* Adjusted breakpoint for table scroll */
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 992px) {
       .main-container {
         width: 95%;
         padding: 1.5rem;
@@ -290,10 +691,10 @@
       table {
         display: block;
         overflow-x: auto;
-        white-space: nowrap; /* Ensures table content doesn't wrap, allowing horizontal scroll */
+        white-space: nowrap;
       }
       th, td {
-        white-space: nowrap; /* Prevent content within cells from wrapping unnecessarily */
+        white-space: nowrap;
       }
     }
 
@@ -304,14 +705,29 @@
         width: 95%;
       }
       h1 {
-        font-size: 1.75rem; /* Slightly adjusted */
+        font-size: 1.75rem;
       }
-      .search-bar {
+      .search-container {
         max-width: 100%;
+        padding: 0 5px;
+      }
+      .search-form input {
+        padding: 10px 15px 10px 40px;
+        font-size: 0.95rem;
+      }
+      .search-btn {
+        padding: 8px 15px;
+      }
+      .search-icon {
+        left: 15px;
+        font-size: 1rem;
+      }
+      .clear-btn {
+        right: 50px;
       }
       .button-group {
         flex-direction: column;
-        gap: 0.75rem; /* Adjusted gap */
+        gap: 0.75rem;
         align-items: stretch;
       }
       .button-group .btn {
@@ -319,7 +735,7 @@
         justify-content: center;
       }
       th, td {
-        font-size: 0.875rem; /* Standard small font size */
+        font-size: 0.875rem;
         padding: 0.75rem 0.5rem;
       }
       .action-buttons {
@@ -351,14 +767,105 @@
        id="flash-message">
   </div>
 
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Tìm kiếm phim..." onkeyup="searchTable()">
-    <i class="fas fa-search"></i>
+  <!-- Search Forms -->
+  <div class="search-container animate__animated animate__fadeIn">
+    <form th:action="@{/movies/search}" method="get" class="search-form">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" name="keyword" id="searchInput" placeholder="Tìm kiếm phim..." autocomplete="off">
+        <!-- Thêm các tham số ẩn -->
+        <input type="hidden" name="page" th:value="${currentPage}">
+        <input type="hidden" name="size" th:value="${pageSize}">
+        <input type="hidden" name="trangThaiPhim" th:value="${selectedTrangThaiPhim}">
+        <input type="hidden" name="doTuoi" th:value="${selectedDoTuoi}">
+        <input type="hidden" name="sortBy" th:value="${sortBy}">
+        <input type="hidden" name="ascending" th:value="${ascending}">
+        <button type="button" class="clear-btn" style="display: none;">
+          <i class="fas fa-times"></i>
+        </button>
+        <button type="submit" class="search-btn">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      <div class="search-suggestions" id="searchSuggestions"></div>
+    </form>
+  </div>
+
+  <!-- Filter and Sort Forms -->
+  <div class="filter-sort-container animate__animated animate__fadeIn">
+    <!-- Filter Form -->
+    <div class="filter-container">
+      <form method="get" th:action="@{/movies}" class="filter-form">
+        <select name="trangThaiPhim">
+          <option value="" th:selected="${selectedTrangThaiPhim == null}">Tất cả trạng thái</option>
+          <option th:each="tt : ${trangThaiPhimList}"
+                  th:value="${tt}"
+                  th:text="${tt.getMoTa()}"
+                  th:selected="${tt == selectedTrangThaiPhim}">
+          </option>
+        </select>
+
+        <select name="doTuoi">
+          <option value="" th:selected="${selectedDoTuoi == null}">Tất cả độ tuổi</option>
+          <option th:each="dt : ${doTuoiList}"
+                  th:value="${dt}"
+                  th:text="${dt}"
+                  th:selected="${dt == selectedDoTuoi}">
+          </option>
+        </select>
+
+        <!-- Gửi kèm các tham số của form sắp xếp -->
+        <input type="hidden" name="sortBy" th:value="${sortBy}">
+        <input type="hidden" name="ascending" th:value="${ascending}">
+
+        <button type="submit">
+          <i class="fas fa-filter"></i> Lọc
+        </button>
+      </form>
+    </div>
+
+    <!-- Sort Form -->
+    <div class="sort-container">
+      <form method="get" th:action="@{/movies}" class="sort-form">
+        <select name="sortBy">
+          <option value="" th:selected="${sortBy == null}">Sắp xếp theo</option>
+          <option value="id" th:selected="${sortBy == 'id'}">ID</option>
+          <option value="tenPhim" th:selected="${sortBy == 'tenPhim'}">Tên phim</option>
+          <option value="daoDien" th:selected="${sortBy == 'daoDien'}">Đạo diễn</option>
+          <option value="theLoai" th:selected="${sortBy == 'theLoai'}">Thể loại</option>
+          <option value="khoiChieu" th:selected="${sortBy == 'khoiChieu'}">Khởi chiếu</option>
+          <option value="thoiLuong" th:selected="${sortBy == 'thoiLuong'}">Thời lượng</option>
+          <option value="doTuoi" th:selected="${sortBy == 'doTuoi'}">Độ tuổi</option>
+          <option value="trangThaiPhim" th:selected="${sortBy == 'trangThaiPhim'}">Trạng thái</option>
+        </select>
+
+        <div class="radio-group">
+          <input type="radio" name="ascending" value="true" id="asc" th:checked="${ascending}">
+          <label for="asc">Tăng dần</label>
+          <input type="radio" name="ascending" value="false" id="desc" th:checked="${!ascending}">
+          <label for="desc">Giảm dần</label>
+        </div>
+
+        <!-- Gửi kèm các tham số của form lọc -->
+        <input type="hidden" name="trangThaiPhim" th:value="${selectedTrangThaiPhim}">
+        <input type="hidden" name="doTuoi" th:value="${selectedDoTuoi}">
+
+        <button type="submit">
+          <i class="fas fa-sort"></i> Sắp xếp
+        </button>
+      </form>
+    </div>
   </div>
 
   <div class="button-group">
     <a th:href="@{/movies/new}" class="btn" data-bs-toggle="tooltip" title="Thêm phim mới">
       <i class="fas fa-plus"></i> Thêm phim mới
+    </a>
+    <a th:href="@{/export/pdf}" class="btn btn-danger" data-bs-toggle="tooltip" title="Xuất danh sách phim ra PDF">
+      <i class="fas fa-file-pdf"></i> Xuất PDF
+    </a>
+    <a th:href="@{/export/excel}" class="btn btn-success" data-bs-toggle="tooltip" title="Xuất danh sách phim ra Excel">
+      <i class="fas fa-file-excel"></i> Xuất Excel
     </a>
     <a th:href="@{/manage/}" class="btn btn-secondary" data-bs-toggle="tooltip" title="Quay lại trang quản lý">
       <i class="fas fa-arrow-left"></i> Quay lại
@@ -385,8 +892,26 @@
       <td th:text="${phim.tenPhim}"></td>
       <td th:text="${phim.daoDien}"></td>
       <td th:text="${phim.theLoai}"></td>
-      <td th:text="${phim.thoiGianKhoiChieu}"></td> <td th:text="${phim.thoiLuongChieu} ? ${phim.thoiLuongChieu} + ' phút' : ''"></td> <td th:text="${phim.doTuoi}"></td>
-      <td th:text="${phim.trangThaiPhim}"></td>
+      <td th:text="${phim.thoiGianKhoiChieu}"></td>
+      <td th:text="${phim.thoiLuongChieu} ? ${phim.thoiLuongChieu} + ' phút' : ''"></td>
+      <td>
+        <span class="badge"
+              th:class="'badge ' +
+                         (${phim.doTuoi.name()} == 'K' ? 'bg-success' :
+                         (${phim.doTuoi.name()} == 'P' ? 'bg-info' :
+                         (${phim.doTuoi.name()} == 'T13' ? 'bg-warning' :
+                         (${phim.doTuoi.name()} == 'T16' ? 'bg-primary' :
+                         (${phim.doTuoi.name()} == 'T18' ? 'bg-danger' : 'bg-secondary')))))"
+              th:text="${phim.doTuoi.name()}"></span>
+      </td>
+      <td>
+        <span class="badge"
+              th:class="'badge ' +
+                         (${phim.trangThaiPhim.name()} == 'DANG_CHIEU' ? 'bg-success' :
+                         (${phim.trangThaiPhim.name()} == 'SAP_CHIEU' ? 'bg-primary' :
+                         (${phim.trangThaiPhim.name()} == 'NGUNG_CHIEU' ? 'bg-danger' : 'bg-secondary')))"
+              th:text="${phim.trangThaiPhim.moTa}"></span>
+      </td>
       <td>
         <div class="action-buttons">
           <a th:href="@{/movies/update/{id}(id=${phim.idPhim})}" class="btn" data-bs-toggle="tooltip" title="Sửa thông tin phim">
@@ -402,6 +927,64 @@
     </tr>
     </tbody>
   </table>
+
+  <!-- Phân Trang -->
+  <div>
+    <ul class="pagination">
+      <!-- Nút Prev -->
+      <li th:classappend="${currentPage == 0} ? 'disabled'">
+        <a th:if="${currentPage > 0}"
+           th:href="@{/movies(
+           page=${currentPage - 1},
+           size=${pageSize},
+           sortBy=${sortBy},
+           ascending=${ascending},
+           doTuoi=${selectedDoTuoi},
+           trangThaiPhim=${selectedTrangThaiPhim}
+         )}"
+           aria-label="Previous">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+        <span th:if="${currentPage == 0}">
+        <i class="fas fa-chevron-left"></i>
+      </span>
+      </li>
+
+      <!-- Vòng lặp trang -->
+      <li th:each="i : ${#numbers.sequence(0, maxPage)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a th:href="@{/movies(
+            page=${i},
+            size=${pageSize},
+            sortBy=${sortBy},
+            ascending=${ascending},
+            doTuoi=${selectedDoTuoi},
+            trangThaiPhim=${selectedTrangThaiPhim}
+          )}"
+           th:text="${i + 1}">1</a>
+      </li>
+
+      <!-- Nút Next -->
+      <li th:classappend="${currentPage == maxPage} ? 'disabled'">
+        <a th:if="${currentPage < maxPage}"
+           th:href="@{/movies(
+           page=${currentPage + 1},
+           size=${pageSize},
+           sortBy=${sortBy},
+           ascending=${ascending},
+           doTuoi=${selectedDoTuoi},
+           trangThaiPhim=${selectedTrangThaiPhim}
+         )}"
+           aria-label="Next">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        <span th:if="${currentPage == maxPage}">
+        <i class="fas fa-chevron-right"></i>
+      </span>
+      </li>
+    </ul>
+  </div>
+
 </div>
 
 <button class="home-button animate__animated animate__fadeIn" onclick="goToHome()" data-bs-toggle="tooltip" title="Quay về trang chủ">
@@ -412,18 +995,18 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Kích hoạt tooltip của Bootstrap
+    // Initialize tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     if (tooltipTriggerList.length > 0) {
       [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     }
 
-    // Xử lý nút xóa
+    // Handle delete buttons
     const deleteButtons = document.querySelectorAll('.delete-button');
     deleteButtons.forEach(button => {
       button.addEventListener('click', function(event) {
         const currentButton = event.currentTarget;
-        const movieName = currentButton.dataset.movieName || "phim này"; // Fallback if name is not set
+        const movieName = currentButton.dataset.movieName || "phim này";
         const confirmationMessage = `Bạn có chắc chắn muốn xóa ${movieName}?`;
         if (confirm(confirmationMessage)) {
           const form = currentButton.closest('form');
@@ -436,42 +1019,100 @@
       });
     });
 
-    // Tự động ẩn thông báo flash
+    // Auto-hide flash message
     const flashMessage = document.getElementById('flash-message');
     if (flashMessage) {
       setTimeout(function() {
         flashMessage.style.opacity = '0';
-        flashMessage.style.transform = 'translateY(-20px)'; /* Optional: slide up effect */
+        flashMessage.style.transform = 'translateY(-20px)';
         setTimeout(function() { flashMessage.style.display = 'none'; }, 500);
       }, 3000);
     }
+
+    // Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchWrapper = searchInput ? searchInput.closest('.search-wrapper') : null;
+    const clearBtn = document.querySelector('.clear-btn');
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    let suggestions = [];
+
+    // Sample movie data for autocomplete
+    const movieDataFromServer = /*[[${movies}]]*/ [];
+    if (Array.isArray(movieDataFromServer)) {
+      suggestions = movieDataFromServer.map(movie => movie.tenPhim).filter(Boolean);
+    }
+
+    if(searchInput && searchWrapper && clearBtn && suggestionsContainer) {
+      searchInput.addEventListener('focus', () => {
+        searchWrapper.classList.add('focused');
+        if (searchInput.value.trim()) {
+          showSuggestions(searchInput.value);
+        }
+      });
+
+      searchInput.addEventListener('blur', () => {
+        setTimeout(() => {
+          if (searchWrapper) searchWrapper.classList.remove('focused');
+          if (suggestionsContainer) suggestionsContainer.classList.remove('show');
+        }, 200);
+      });
+
+      searchInput.addEventListener('input', () => {
+        const value = searchInput.value.trim();
+        if (clearBtn) clearBtn.style.display = value ? 'block' : 'none';
+        showSuggestions(value);
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          clearBtn.style.display = 'none';
+          if (suggestionsContainer) suggestionsContainer.classList.remove('show');
+          searchInput.focus();
+        });
+      }
+
+      document.querySelector('.search-form').addEventListener('submit', (e) => {
+        // Allow form submission for server-side search
+      });
+    }
+
+    function showSuggestions(value) {
+      if (!suggestionsContainer) return;
+      suggestionsContainer.innerHTML = '';
+      if (!value) {
+        suggestionsContainer.classList.remove('show');
+        return;
+      }
+
+      const filteredSuggestions = suggestions.filter(movie =>
+              movie.toLowerCase().includes(value.toLowerCase())
+      );
+
+      if (filteredSuggestions.length > 0) {
+        const ul = document.createElement('ul');
+        filteredSuggestions.slice(0, 5).forEach(suggestion => {
+          const li = document.createElement('li');
+          li.textContent = suggestion;
+          li.addEventListener('click', () => {
+            searchInput.value = suggestion;
+            if(clearBtn) clearBtn.style.display = 'block';
+            suggestionsContainer.classList.remove('show');
+            searchInput.closest('form').submit();
+          });
+          ul.appendChild(li);
+        });
+        suggestionsContainer.appendChild(ul);
+        suggestionsContainer.classList.add('show');
+      } else {
+        suggestionsContainer.classList.remove('show');
+      }
+    }
   });
 
-  // Tìm kiếm trong bảng
-  function searchTable() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const table = document.getElementById('movieTable');
-    if (!table) return; // Guard clause if table not found
-    const rows = table.querySelectorAll('tbody tr');
-    rows.forEach(row => {
-      const cells = row.querySelectorAll('td');
-      if (cells.length > 0) {
-        // Lấy text từ tất cả các cell TRỪ cell cuối cùng (chứa nút hành động)
-        const textToSearch = Array.from(cells)
-                .slice(0, -1) // Bỏ qua cột hành động
-                .map(cell => cell.textContent.toLowerCase())
-                .join(' ');
-        row.style.display = textToSearch.includes(input) ? '' : 'none';
-      }
-    });
-  }
-</script>
-<script th:inline="javascript">
-  /*<![CDATA[*/
   function goToHome() {
     window.location.href = /*[[@{/manage/}]]*/ '/manage/';
   }
-  /*]]>*/
 </script>
 </body>
 </html>

@@ -13,4 +13,6 @@ public interface MovieService {
     Phim createMovie(Phim phim);
     Phim updateMovie(int id, Phim Phim);
     boolean deleteMovieById(int id);
+    List<Phim> searchMovies(String keyword);
+
 }

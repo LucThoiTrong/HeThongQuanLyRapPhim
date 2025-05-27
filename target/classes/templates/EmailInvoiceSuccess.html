@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hóa Đơn Thanh Toán - PhimHay</title>
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Sử dụng font tương đồng với web */
+            background-color: #f0f2f5; /* Nền xám nhạt từ body của web */
+            padding: 20px;
+            margin: 0;
+            line-height: 1.6;
+            color: #2d3748; /* Màu chữ mặc định từ body của web */
+        }
+
+        .email-container {
+            background-color: #ffffff; /* Nền trắng cho nội dung chính */
+            max-width: 680px;
+            margin: 20px auto;
+            padding: 30px 40px;
+            border-radius: 12px; /* Bo góc mềm mại */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Đổ bóng nhẹ nhàng */
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0; /* Đường kẻ phân cách nhẹ */
+        }
+
+        .header .logo {
+            color: #1a202c; /* Màu chữ logo tối */
+            font-size: 28px; /* Kích thước lớn hơn cho email */
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .header .logo i {
+            color: #f56565; /* Màu nhấn đỏ/san hô cho icon logo */
+            margin-right: 8px;
+        }
+
+        h2, h3 {
+            color: #1a202c; /* Màu chữ tối cho tiêu đề, tương tự header web */
+            margin-top: 25px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 22px;
+            border-bottom: 2px solid #f56565; /* Đường gạch chân màu nhấn */
+            display: inline-block; /* Để border bottom vừa với chữ */
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #e53e3e; /* Tiêu đề phụ dùng màu nhấn nhẹ hơn hoặc tối hơn */
+        }
+
+
+        p {
+            margin: 8px 0;
+            color: #4a5568; /* Màu chữ xám đậm hơn cho nội dung thường */
+        }
+
+        .section {
+            margin-top: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e2e8f0; /* Phân cách các section bằng nét đứt */
+        }
+        .section:last-of-type {
+            border-bottom: none; /* Không có border cho section cuối */
+        }
+
+
+        .bold, strong { /* class .bold và thẻ strong */
+            font-weight: 600; /* Tăng độ đậm */
+            color: #1a202c; /* Màu chữ đậm hơn cho thông tin quan trọng */
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 150px auto; /* Cột nhãn và cột giá trị */
+            gap: 5px 15px; /* Khoảng cách giữa các dòng và cột */
+            margin-bottom: 10px;
+        }
+        .info-grid .label {
+            font-weight: 600;
+            color: #1a202c;
+        }
+        .info-grid .value {
+            color: #2d3748;
+        }
+
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            padding: 5px 0;
+            color: #4a5568;
+        }
+
+        .total-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f56565; /* Đường kẻ nhấn mạnh tổng tiền */
+            text-align: right;
+        }
+
+        .total-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        .total-value {
+            font-size: 24px; /* Tổng tiền to, rõ */
+            font-weight: 700;
+            color: #e53e3e; /* Màu đỏ nhấn mạnh cho tổng tiền */
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #718096; /* Màu xám nhạt hơn cho footer */
+        }
+        .footer a {
+            color: #f56565; /* Link màu nhấn */
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Thêm class cho icon nếu cần */
+        .fa-film, .fa-receipt, .fa-ticket-alt, .fa-popcorn, .fa-calendar-alt, .fa-desktop, .fa-map-marker-alt, .fa-user, .fa-money-bill-wave {
+            margin-right: 8px;
+            color: #f56565; /* Màu nhấn cho icon */
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <a href="#" class="logo"><i class="fas fa-film"></i> PhimHay</a>
+    </div>
+
+    <h2><i class="fas fa-receipt"></i>Hóa Đơn Thanh Toán</h2>
+    <p>Cảm ơn <strong th:text="${hoaDon.doiTuongSuDung.hoTen}">Quý Khách</strong> đã sử dụng dịch vụ của PhimHay!</p>
+    <p>Dưới đây là chi tiết hóa đơn của bạn:</p>
+
+    <div class="section">
+        <h3><i class="fas fa-info-circle"></i>Thông Tin Hóa Đơn</h3>
+        <div class="info-grid">
+            <span class="label">Mã Hóa Đơn:</span> <span class="value" th:text="${hoaDon.idHoaDon}">HD12345</span>
+            <span class="label">Ngày Thanh Toán:</span>
+            <span class="value" th:text="${#temporals.format(hoaDon.ngayThanhToan, 'dd/MM/yyyy HH:mm')}">15/05/2024 10:30</span>
+            <span class="label">Khách Hàng:</span> <span class="value" th:text="${hoaDon.doiTuongSuDung.hoTen}">Nguyễn Văn A</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3><i class="fas fa-ticket-alt"></i>Chi Tiết Vé Xem Phim</h3>
+        <div class="info-grid">
+            <span class="label"><i class="fas fa-film" style="color: #718096;"></i> Phim:</span>
+            <span class="value" th:text="${hoaDon.suatChieu.phim.tenPhim}">Tên Phim Rất Hay</span>
+
+            <span class="label"><i class="fas fa-calendar-alt" style="color: #718096;"></i> Thời Gian Chiếu:</span>
+            <span class="value" th:text="${#temporals.format(hoaDon.suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}">16/05/2024 20:00</span>
+
+            <span class="label"><i class="fas fa-desktop" style="color: #718096;"></i> Phòng Chiếu:</span>
+            <span class="value" th:text="${hoaDon.suatChieu.phongChieuPhim.tenPhongChieuPhim}">Phòng 01</span>
+
+            <span class="label"><i class="fas fa-chair" style="color: #718096;"></i> Ghế:</span>
+            <span class="value" th:remove="tag">
+                <span th:each="ve, stat : ${hoaDon.dsVeXemPhimDaMua}" th:remove="tag">
+                    <span th:text="${ve.ghe.dayGhe.tenDayGhe + ve.ghe.idGhe}" th:remove="tag">A1</span>
+                    <span th:if="${!stat.last}" th:remove="tag">, </span>
+                </span>
+                 <th:block th:if="${hoaDon.dsVeXemPhimDaMua == null or #lists.isEmpty(hoaDon.dsVeXemPhimDaMua)}">A1, A2</th:block>
+            </span>
+        </div>
+    </div>
+
+    <div class="section" th:if="${hoaDon.dsComBoDaMua != null and !hoaDon.dsComBoDaMua.isEmpty()}">
+        <h3>🍿 Combo Bắp Nước</h3>
+        <ul>
+            <li th:each="combo : ${hoaDon.dsComBoDaMua}">
+                <span th:text="${combo.comboBapNuoc.tenCombo + ' x ' + combo.soLuong}">Combo Friend x 1</span>
+            </li>
+        </ul>
+        <ul th:if="${hoaDon.dsComBoDaMua == null or hoaDon.dsComBoDaMua.isEmpty()}">
+            <li>Combo Lớn x 1 (Giá: 100,000 VNĐ)</li>
+            <li>Nước Ngọt x 2 (Giá: 50,000 VNĐ)</li>
+        </ul>
+    </div>
+
+    <div class="total-section">
+        <p><span class="total-label">Tổng Tiền:</span></p>
+        <p><span class="total-value" th:text="${#numbers.formatDecimal(hoaDon.tongGiaTien, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">250,000 VNĐ</span></p>
+    </div>
+
+    <div class="footer">
+        <p>Vui lòng giữ email này cẩn thận để xuất trình khi nhận vé tại rạp hoặc quét mã QR (nếu có).</p>
+        <p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua <a href="mailto:hotro@phimhay.com">hotro@phimhay.com</a> hoặc hotline <a href="tel:19001234">1900 XXXX</a>.</p>
+        <p>Trân trọng,<br><strong>Đội ngũ PhimHay</strong></p>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> PhimHay. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

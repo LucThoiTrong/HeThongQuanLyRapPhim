@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Danh sách suất chiếu</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+    }
+    .card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .icon {
+      color: #3b82f6;
+      transition: transform 0.2s ease;
+    }
+    .card:hover .icon {
+      transform: scale(1.2);
+    }
+    .alert {
+      animation: fadeInDown 0.5s ease;
+      border: 1px solid;
+    }
+    .search-bar {
+      background: #f1f5f9;
+      border: 1px solid #d1d5db;
+    }
+    .btn {
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    .title-gradient {
+      font-family: 'Bebas Neue', 'Montserrat', sans-serif !important;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2.5rem;
+      line-height: 1.2;
+    }
+    .title-gradient::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+      opacity: 0.6;
+    }
+    .title-icon {
+      color: #3b82f6;
+      transition: transform 0.3s ease;
+    }
+    .title-icon:hover {
+      transform: scale(1.1);
+    }
+    @media (max-width: 640px) {
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+      .title-gradient {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold animate__animated animate__slideInLeft">
+      <span class="title-gradient"><i class="fas fa-ticket-alt title-icon mr-2"></i>Danh sách suất chiếu</span>
+    </h1>
+    <div class="space-x-3">
+      <a th:href="@{/showtimes/new}" class="btn inline-block px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <i class="fas fa-plus mr-2"></i> Thêm suất chiếu mới
+      </a>
+      <a th:href="@{/manage/}" class="btn inline-block px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">
+        <i class="fas fa-arrow-left mr-2"></i> Quay lại
+      </a>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="mb-6">
+    <div class="relative">
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <input type="text" id="search" placeholder="Tìm kiếm suất chiếu..." class="search-bar w-full pl-10 p-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+  </div>
+
+  <!-- Flash Message -->
+  <div th:if="${message}" id="flash-message" class="alert mb-6 p-4 rounded-lg flex justify-between items-center animate__animated animate__fadeInDown"
+       th:class="${message.contains('thành công') ? 'bg-green-100 text-green-800 border-green-300' : 'bg-red-100 text-red-800 border-red-300'}">
+    <span th:text="${message}"></span>
+    <button onclick="this.parentElement.style.opacity='0'; setTimeout(() => this.parentElement.remove(), 500)" class="text-sm font-medium hover:underline">
+      Đóng
+    </button>
+  </div>
+
+  <!-- Showtime Cards -->
+  <div class="card-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div th:each="suatChieu : ${showtimes}" class="card p-6 rounded-xl animate__animated animate__fadeInUp">
+      <h3 class="text-lg font-semibold text-gray-900 mb-3">
+        <i class="fas fa-film icon mr-2"></i> <span th:text="${suatChieu.phim.tenPhim}"></span>
+      </h3>
+      <p class="text-sm text-gray-600 mb-2">
+        <i class="fas fa-theater-masks icon mr-2"></i> <span th:text="${suatChieu.phongChieuPhim.rapPhim.tenRapPhim}"></span>
+      </p>
+      <p class="text-sm text-gray-600 mb-2">
+        <i class="fas fa-door-open icon mr-2"></i> <span th:text="${suatChieu.phongChieuPhim.tenPhongChieuPhim}"></span>
+      </p>
+      <p class="text-sm text-gray-600 mb-2">
+        <i class="fas fa-clock icon mr-2"></i> <span th:text="${#temporals.format(suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm')}"></span>
+      </p>
+      <p class="text-sm text-gray-600 mb-4">
+        <i class="fas fa-video icon mr-2"></i> <span th:text="${suatChieu.hinhThucChieu.getMoTa()}"></span>
+      </p>
+      <div class="flex space-x-3">
+        <a th:href="@{/showtimes/update/{id}(id=${suatChieu.idSuatChieu})}" class="btn px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
+          <i class="fas fa-edit mr-2"></i> Sửa
+        </a>
+        <form th:action="@{/showtimes/delete/{id}(id=${suatChieu.idSuatChieu})}" method="post" class="inline">
+          <button type="submit" class="btn px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  onclick="return confirm('Bạn có chắc muốn xóa suất chiếu này?')">
+            <i class="fas fa-trash mr-2"></i> Xóa
+          </button>
+        </form>
+      </div>
+    </div>
+    <div th:if="${showtimes.isEmpty}" class="col-span-full text-center p-8 bg-gray-100 rounded-lg">
+      <p class="text-gray-500 text-lg"><i class="fas fa-exclamation-circle mr-2"></i> Không có suất chiếu nào.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script>
+  // Flash Message Auto-Hide
+  window.onload = function () {
+    const flashMessage = document.getElementById('flash-message');
+    if (flashMessage) {
+      setTimeout(() => {
+        flashMessage.style.opacity = '0';
+        setTimeout(() => flashMessage.remove(), 500);
+      }, 5000);
+    }
+  };
+
+  // Search Filter
+  document.getElementById('search').addEventListener('input', function (e) {
+    const searchText = e.target.value.toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(searchText) ? 'block' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

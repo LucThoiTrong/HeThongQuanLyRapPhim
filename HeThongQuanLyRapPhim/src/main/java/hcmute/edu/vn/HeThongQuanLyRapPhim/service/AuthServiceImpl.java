@@ -4,10 +4,10 @@ import hcmute.edu.vn.HeThongQuanLyRapPhim.event.PasswordRecoveryRequestedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.event.RegistrationInitiatedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.DoiTuongSuDung;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TKDoiTuongSuDung;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.observer.AppEventManager;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.UserAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,17 +21,17 @@ public class AuthServiceImpl implements AuthService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final AppEventManager appEventManager;
 
     @Autowired
     public AuthServiceImpl(UserRepository doiTuongSuDungRepository,
                            UserAccountRepository tkDoiTuongSuDungRepository,
                            BCryptPasswordEncoder passwordEncoder,
-                           ApplicationEventPublisher eventPublisher) {
+                           AppEventManager appEventManager) {
         this.doiTuongSuDungRepository = doiTuongSuDungRepository;
         this.tkDoiTuongSuDungRepository = tkDoiTuongSuDungRepository;
         this.passwordEncoder = passwordEncoder;
-        this.eventPublisher = eventPublisher;
+        this.appEventManager = appEventManager;
     }
 
     // Check tài khoản đã được kích hoạt hay chưa
@@ -80,8 +80,8 @@ public class AuthServiceImpl implements AuthService {
         // Thực hiện lưu tài khoản khách hàng
         TKDoiTuongSuDung result = tkDoiTuongSuDungRepository.save(tkDoiTuongSuDung);
 
-        RegistrationInitiatedEvent registrationInitiatedEvent = new RegistrationInitiatedEvent(this, doiTuongSuDung.getEmail(), result.getIdTKDoiTuongSuDung());
-        eventPublisher.publishEvent(registrationInitiatedEvent);
+        RegistrationInitiatedEvent registrationInitiatedEvent = new RegistrationInitiatedEvent(doiTuongSuDung.getEmail(), result.getIdTKDoiTuongSuDung());
+        appEventManager.notify(registrationInitiatedEvent);
 
         return true;
     }
@@ -105,8 +105,8 @@ public class AuthServiceImpl implements AuthService {
         if (doiTuongSuDung == null) {
             return false;
         }
-        PasswordRecoveryRequestedEvent passwordRecoveryRequestedEvent = new PasswordRecoveryRequestedEvent(this, email, doiTuongSuDung.getTkDoiTuongSuDung().getIdTKDoiTuongSuDung());
-        eventPublisher.publishEvent(passwordRecoveryRequestedEvent);
+        PasswordRecoveryRequestedEvent passwordRecoveryRequestedEvent = new PasswordRecoveryRequestedEvent(email, doiTuongSuDung.getTkDoiTuongSuDung().getIdTKDoiTuongSuDung());
+        appEventManager.notify(passwordRecoveryRequestedEvent);
         return true;
     }
 

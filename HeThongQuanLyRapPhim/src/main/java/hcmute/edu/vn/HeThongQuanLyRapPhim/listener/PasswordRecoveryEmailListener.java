@@ -1,19 +1,21 @@
 package hcmute.edu.vn.HeThongQuanLyRapPhim.listener;
 
+import hcmute.edu.vn.HeThongQuanLyRapPhim.event.AppEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.event.PasswordRecoveryRequestedEvent;
+
+import hcmute.edu.vn.HeThongQuanLyRapPhim.observer.EventListener;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+
 @Component
-public class PasswordRecoveryEmailListener {
+public class PasswordRecoveryEmailListener implements EventListener {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
@@ -23,22 +25,27 @@ public class PasswordRecoveryEmailListener {
         this.templateEngine = templateEngine;
     }
 
-    @EventListener
-    @Async
-    public void handlePasswordRecoveryRequested(PasswordRecoveryRequestedEvent event) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    @Override
+    public void update(AppEvent appEvent) {
+        if (appEvent instanceof PasswordRecoveryRequestedEvent(String email, int id)) {
+            try {
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        Context context = new Context();
-        String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + event.getId();
-        context.setVariable("verificationLink", verificationLink);
+                Context context = new Context();
+                String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + id;
+                context.setVariable("verificationLink", verificationLink);
 
-        String emailContent = templateEngine.process("EmailResetPassword", context);
+                String emailContent = templateEngine.process("EmailResetPassword", context);
 
-        helper.setTo(event.getEmail());
-        helper.setSubject("Khôi phục mật khẩu");
-        helper.setText(emailContent, true);
+                helper.setTo(email);
+                helper.setSubject("Khôi phục mật khẩu");
+                helper.setText(emailContent, true);
 
-        mailSender.send(message);
+                mailSender.send(message);
+            } catch (MessagingException e) {
+                System.err.println("Lỗi khi gửi email khôi phục mật khẩu (Hybrid): " + e.getMessage());
+            }
+        }
     }
 }

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý ghế</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --secondary-color: #8A8A8E;
+            --success-color: #34C759;
+            --danger-color: #FF3B30;
+            --warning-color: #FF9500;
+            --info-color: #5AC8FA;
+            --light-color: #F2F2F7;
+            --ultra-light-gray: #F9F9F9;
+            --neutral-color: #E5E5EA;
+            --text-color: #1C1C1E;
+            --text-color-secondary: #636366;
+            --border-color: #D1D1D6;
+            --background-gradient: linear-gradient(135deg, #F2F2F7, #E9F0F7);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-strong: 0 6px 16px rgba(0,0,0,0.12);
+            --border-radius: 0.75rem;
+            --border-radius-small: 0.5rem;
+            --transition-speed: 0.25s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 90px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 18px 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .header .btn-back {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 9px 18px;
+            border-radius: var(--border-radius-small);
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+        }
+
+        .header .btn-back:hover {
+            background-color: #005ECB;
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 950px;
+            width: 100%;
+            background: #fff;
+            border-radius: var(--border-radius);
+            padding: 35px;
+            box-shadow: var(--shadow-strong);
+            margin: 20px auto;
+            animation: fadeIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1.page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .screen {
+            width: 90%;
+            max-width: 600px;
+            height: 50px;
+            background: #333;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #E0E0E0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            border-bottom: 3px solid #222;
+        }
+        .screen span {
+            padding: 5px 15px;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+
+        .row-section {
+            display: grid;
+            grid-template-columns: 50px 1fr;
+            gap: 15px 20px;
+            padding: 12px 0;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto 15px auto;
+            align-items: center;
+            border-bottom: 1px solid var(--neutral-color);
+        }
+        .row-section:last-of-type {
+            border-bottom: none;
+        }
+
+        .row-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            padding-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+        }
+
+        .chair-row {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            flex-wrap: wrap;
+            min-height: 45px;
+            align-items: center;
+        }
+
+        .chair-btn {
+            height: 45px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed), background-color var(--transition-speed), border-color var(--transition-speed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-width: 45px;
+            width: 45px;
+            color: var(--text-color);
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .chair-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .chair-btn:hover::after {
+            content: attr(aria-label);
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--text-color);
+            color: var(--light-color);
+            padding: 6px 12px;
+            border-radius: var(--border-radius-small);
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+            opacity: 0;
+            animation: fadeInTooltip 0.2s ease 0.1s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInTooltip {
+            to { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+        }
+
+        .chair-btn.selected {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3), 0 3px 8px rgba(0,123,255,0.2);
+            transform: scale(1.08);
+            z-index: 2;
+        }
+
+        .chair-thuong {
+            background: linear-gradient(145deg, #B0BEC5, #90A4AE);
+            color: #fff;
+        }
+        .chair-vip {
+            background: linear-gradient(145deg, #FFA726, #FB8C00);
+            color: #fff;
+        }
+        .chair-doi {
+            background: linear-gradient(145deg, #26A69A, #00897B);
+            min-width: 100px;
+            width: 100px;
+            color: #fff;
+        }
+        .chair-unavailable, .chair-unavailable-doi {
+            background: linear-gradient(145deg, #E0E0E0, #CFD8DC);
+            border-color: #BDBDBD;
+            color: var(--secondary-color);
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        .chair-unavailable-doi {
+            min-width: 100px;
+            width: 100px;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 35px 0;
+            flex-wrap: wrap;
+            padding: 15px;
+            background-color: var(--ultra-light-gray);
+            border-radius: var(--border-radius-small);
+            border: 1px solid var(--border-color);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-color-secondary);
+        }
+
+        .legend-color {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .form-section {
+            background: var(--ultra-light-gray);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .selected-chair {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--primary-color), #005ECB);
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius-small);
+            font-size: 1rem;
+            margin-bottom: 25px;
+            display: none;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0, 123, 255, 0.2);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .selected-chair p {
+            margin: 0;
+        }
+        .selected-chair span {
+            font-weight: 600;
+            margin-left: 8px;
+            background-color: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color-secondary);
+            font-size: 0.9rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-small);
+            font-size: 0.95rem;
+            background-color: #fff;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238A8A8E' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+
+        small.form-text {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            margin-top: 8px;
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--border-radius-small);
+            cursor: pointer;
+            color: #fff;
+            text-decoration: none;
+            transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-save {
+            background-color: var(--success-color);
+        }
+
+        .btn-save:hover {
+            background-color: #28a745;
+        }
+
+        .btn-save:disabled {
+            background-color: var(--secondary-color);
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-cancel {
+            background-color: var(--secondary-color);
+        }
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--success-color);
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: var(--border-radius-small);
+            box-shadow: var(--shadow-strong);
+            z-index: 1001;
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInToast 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards, slideOutToast 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 3.5s forwards;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .toast.error {
+            background: var(--danger-color);
+        }
+
+        @keyframes slideInToast {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOutToast {
+            0% { opacity: 1; transform: translateX(0); }
+            80% { opacity: 1; transform: translateX(0); }
+            100% { opacity: 0; transform: translateX(100%); }
+        }
+
+        .no-data {
+            text-align: center;
+            color: var(--text-color-secondary);
+            font-size: 1.05rem;
+            margin: 30px 0;
+            font-style: italic;
+            width: 100%;
+            padding: 25px;
+            background-color: var(--ultra-light-gray);
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--border-color);
+        }
+
+        .container > .button-group.footer-buttons {
+            margin-top: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 15px; padding-top: 80px; }
+            .container { padding: 25px; max-width: 100%; }
+            h1.page-title { font-size: 1.6rem; margin-bottom: 25px;}
+            .header h1 { font-size: 1.2rem; }
+            .header { padding: 15px 20px; }
+
+            .row-section { grid-template-columns: 40px 1fr; gap: 8px 10px; }
+            .form-section { max-width: 100%; padding: 20px; }
+            .chair-btn {
+                height: 40px;
+                font-size: 0.7rem;
+                min-width: 40px;
+                width: 40px;
+            }
+            .chair-doi, .chair-unavailable-doi {
+                min-width: 88px;
+                width: 88px;
+            }
+            .chair-row { gap: 8px; }
+            .row-label { font-size: 0.9rem; padding-right: 5px; }
+            select { padding: 10px 12px; font-size: 0.9rem; }
+            .btn { padding: 10px 20px; font-size: 0.9rem; }
+            .chair-btn:hover::after { display: none; }
+            .toast { width: calc(100% - 40px); right: 20px; top: 75px; }
+            .screen { width: 95%; height: 45px; font-size: 0.8rem; margin-bottom: 30px;}
+            .legend { gap: 15px; padding: 10px; margin: 25px 0;}
+            .legend-item { font-size: 0.85rem; }
+            .legend-color { width: 18px; height: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            h1.page-title { font-size: 1.4rem; margin-bottom: 20px;}
+            .header h1 { font-size: 1.1rem; }
+            .header .btn-back { padding: 8px 14px; font-size: 0.85rem; }
+
+            .chair-btn {
+                height: 38px;
+                min-width: 38px;
+                width: 38px;
+                font-size: 0.65rem;
+            }
+            .chair-doi, .chair-unavailable-doi {
+                min-width: 82px;
+                width: 82px;
+            }
+            .row-label { font-size: 0.8rem; }
+            .row-section { grid-template-columns: 35px 1fr; gap: 6px 8px; }
+            .chair-row { gap: 6px; }
+            .form-section { padding: 15px; }
+            .selected-chair { padding: 12px 15px; font-size: 0.9rem; }
+            label { font-size: 0.85rem; }
+            select { padding: 9px 10px; font-size: 0.85rem; }
+            .btn { padding: 9px 18px; font-size: 0.85rem; }
+            .button-group { gap: 8px; }
+            .screen { height: 40px; font-size: 0.75rem; margin-bottom: 25px;}
+            .legend { gap: 10px; flex-direction: column; align-items: flex-start;}
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1 th:text="${phongChieuPhim != null ? phongChieuPhim.tenPhongChieuPhim : 'Tên phòng'}"></h1>
+    <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim ?: 'defaultRap'}, idPhongChieuPhim=${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : 'defaultPhong'})}" class="btn btn-back">Quay lại</a>
+</div>
+
+<div th:if="${message}" class="toast" th:classappend="${message.contains('thành công') ? '' : 'error'}" th:text="${message}" id="toast-message" style="display: none;"></div>
+
+<div class="container">
+    <h1 class="page-title" style="font-weight: bold;">Quản lý ghế</h1>
+    <div class="screen"><span>Màn hình chiếu</span></div>
+
+    <div th:if="${dsDayGhe != null and not #lists.isEmpty(dsDayGhe)}">
+        <div class="row-section" th:each="dayGhe : ${dsDayGhe}">
+            <div class="row-label" th:text="${dayGhe.tenDayGhe}">A</div>
+            <div class="chair-row">
+                <th:block th:if="${dayGhe.dsGhe != null and not #sets.isEmpty(dayGhe.dsGhe)}">
+                    <th:block th:each="ghe, iterStat : ${dayGhe.dsGhe}">
+                        <th:block th:if="${dayGhe.loaiGhe == null or dayGhe.loaiGhe.name() != 'DOI' or iterStat.index < 10}">
+                            <th:block th:with="loai=${dayGhe.loaiGhe != null ? dayGhe.loaiGhe.name() : 'THUONG'}">
+                                <button type="button"
+                                        th:id="'chair-' + ${ghe.idGhe}"
+                                        class="chair-btn"
+                                        th:classappend="${!ghe.trangThaiGhe ? (loai == 'DOI' ? 'chair-unavailable-doi' : 'chair-unavailable') :
+                                              (loai == 'THUONG' ? 'chair-thuong' :
+                                              (loai == 'VIP' ? 'chair-vip' :
+                                              (loai == 'DOI' ? 'chair-doi' : '')))}"
+                                        th:text="${loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count}"
+                                        th:attr="data-id-ghe=${ghe.idGhe},
+                                     data-chair-label=${dayGhe.tenDayGhe + (loai == 'DOI' ? iterStat.count + '-' + (iterStat.count + 1) : iterStat.count)},
+                                     data-trang-thai=${ghe.trangThaiGhe}"
+                                        th:onclick="'selectChair(this)'"
+                                        th:aria-label="${ghe.trangThaiGhe ? 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Khả dụng' : 'Ghế ' + dayGhe.tenDayGhe + iterStat.count + ' (' + loai + ') - Không khả dụng'}">
+                                </button>
+                                <th:block th:if="${loai == 'DOI' and iterStat.count % 2 == 1}">
+                                    <script th:inline="javascript"></script>
+                                </th:block>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                </th:block>
+                <div th:if="${dayGhe.dsGhe == null or #sets.isEmpty(dayGhe.dsGhe)}" style="padding: 5px 0; margin: 0; font-size: 0.9rem; color: var(--text-color-secondary); font-style: italic; align-self: center;">
+                    (Không có ghế)
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-color chair-thuong"></span> Ghế thường
+            </div>
+            <div class="legend-item">
+                <span class="legend-color chair-vip"></span> Ghế VIP
+            </div>
+            <div class="legend-item">
+                <span class="legend-color chair-doi"></span> Ghế đôi
+            </div>
+            <div class="legend-item">
+                <span class="legend-color chair-unavailable"></span> Không khả dụng
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="selected-chair" id="selected-chair">
+                <p>Đang chỉnh sửa ghế: <span id="chairLabel">N/A</span></p>
+            </div>
+            <form id="chairForm" th:action="@{/seats/update}" method="post">
+                <input type="hidden" name="idGhe" id="idGhe">
+                <input type="hidden" name="idRapPhim" th:value="${idRapPhim}">
+                <input type="hidden" name="idPhongChieuPhim" th:value="${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : ''}">
+                <div class="form-group">
+                    <label for="trangThaiGhe">Trạng thái ghế</label>
+                    <select id="trangThaiGhe" name="trangThaiGhe" class="form-control" aria-describedby="trangThaiGheHelp">
+                        <option value="true">Khả dụng</option>
+                        <option value="false">Không khả dụng</option>
+                    </select>
+                    <small id="trangThaiGheHelp" class="form-text">Chọn trạng thái ghế để cập nhật.</small>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-save" id="saveButton" disabled>Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${dsDayGhe == null or #lists.isEmpty(dsDayGhe)}" class="no-data">
+        Không có dãy ghế nào được cấu hình cho phòng này.
+    </div>
+
+    <div class="button-group footer-buttons">
+        <a th:href="@{/rows/{idRapPhim}/{idPhongChieuPhim}(idRapPhim=${idRapPhim ?: 'defaultRap'}, idPhongChieuPhim=${phongChieuPhim != null ? phongChieuPhim.idPhongChieuPhim : 'defaultPhong'})}" class="btn btn-cancel">Quay lại</a>
+    </div>
+</div>
+
+<script>
+    let currentSelectedButton = null;
+
+    function selectChair(button) {
+        const idGhe = button.getAttribute('data-id-ghe');
+        const chairLabel = button.getAttribute('data-chair-label');
+        const trangThaiGhe = button.getAttribute('data-trang-thai');
+
+        if (currentSelectedButton && currentSelectedButton !== button) {
+            currentSelectedButton.classList.remove('selected');
+        }
+
+        if (button.classList.contains('selected')) {
+            button.classList.remove('selected');
+            currentSelectedButton = null;
+            document.getElementById('selected-chair').style.display = 'none';
+            document.getElementById('saveButton').disabled = true;
+            document.getElementById('idGhe').value = '';
+            return;
+        } else {
+            button.classList.add('selected');
+            currentSelectedButton = button;
+        }
+
+        const selectedChairDiv = document.getElementById('selected-chair');
+        const chairLabelSpan = document.getElementById('chairLabel');
+        const saveButton = document.getElementById('saveButton');
+        const trangThaiSelect = document.getElementById('trangThaiGhe');
+        const idGheInput = document.getElementById('idGhe');
+
+        idGheInput.value = idGhe;
+        chairLabelSpan.textContent = chairLabel;
+        trangThaiSelect.value = trangThaiGhe;
+
+        selectedChairDiv.style.display = 'block';
+        selectedChairDiv.style.animation = 'none';
+        void selectedChairDiv.offsetWidth;
+        selectedChairDiv.style.animation = 'popIn 0.3s ease-out forwards';
+
+        saveButton.disabled = false;
+    }
+
+    window.onload = function () {
+        const toastMessageEl = document.getElementById('toast-message');
+        if (toastMessageEl && toastMessageEl.textContent && toastMessageEl.textContent.trim() !== '') {
+            toastMessageEl.style.display = 'block';
+        }
+
+        document.querySelectorAll('.chair-btn').forEach(button => {
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectChair(button);
+                }
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            const container = document.querySelector('.container');
+            const toastMsg = document.getElementById('toast-message');
+            const header = document.querySelector('.header');
+
+            let clickedInsideInteractiveArea = false;
+            if (container && container.contains(event.target)) clickedInsideInteractiveArea = true;
+            if (toastMsg && toastMsg.contains(event.target)) clickedInsideInteractiveArea = true;
+            if (header && header.contains(event.target)) clickedInsideInteractiveArea = true;
+
+            const isBodyOrHtml = event.target === document.body || event.target === document.documentElement;
+
+            if (isBodyOrHtml || !clickedInsideInteractiveArea) {
+                if (currentSelectedButton) {
+                    if (event.target.classList && event.target.classList.contains('chair-btn')) {
+                    } else if (event.target.closest('.chair-btn')) {
+                    } else {
+                        currentSelectedButton.classList.remove('selected');
+                        currentSelectedButton = null;
+                        document.getElementById('selected-chair').style.display = 'none';
+                        document.getElementById('saveButton').disabled = true;
+                        document.getElementById('idGhe').value = '';
+                    }
+                }
+            }
+        });
+    };
+</script>
+</body>
+</html>

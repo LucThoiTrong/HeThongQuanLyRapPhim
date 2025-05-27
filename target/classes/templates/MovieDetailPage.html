@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chi Tiết Phim - ' + ${phim.tenPhim ?: 'PhimHay'}">Chi Tiết Phim - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            /* Synchronized padding-top */
+            padding-top: 80px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1280px; /* Max-width for movie detail can be slightly different if needed */
+            margin: auto;
+            padding: 0 20px;
+        }
+        .page-content-wrapper { /* Renamed from .main-content to match this page's structure */
+            flex-grow: 1;
+        }
+
+        /* --- HEADER (LIGHT THEME APPLIED) --- */
+        header {
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        header .logo a {
+            color: #1a202c; /* Màu chữ logo tối */
+            font-size: 2em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        header .logo a i { color: #f56565; font-size: 1.2em; } /* Màu nhấn đỏ/san hô cho icon logo */
+
+        header nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding-left: 0;
+        }
+        header nav ul li a {
+            color: #2d3748; /* Màu chữ tối cho link điều hướng */
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        header nav ul li a:hover,
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng trên nền màu nhấn */
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .header-actions .btn-login:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+
+        /* CSS CHO USER MENU DROPDOWN (LIGHT THEME APPLIED) */
+        .header-actions .user-menu-container { position: relative; display: inline-block; }
+        .header-actions .user-profile-toggle {
+            display: flex; align-items: center; padding: 8px 15px; text-decoration: none;
+            color: #1a202c; /* Màu chữ tối */
+            background-color: transparent; border-radius: 6px; font-size: 1em;
+            font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer;
+        }
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt */
+            color: #c53030; /* Màu chữ nhấn */
+        }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; color: #1a202c; } /* Màu icon theo text */
+        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
+        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
+        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+        .header-actions .dropdown-menu-content { /* Nền dropdown giữ trắng */
+            display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff;
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px;
+            z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0;
+        }
+        .header-actions .dropdown-menu-content.show { display: block; }
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex;
+            align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
+        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover { /* Style cho active link (nếu có class này) */
+            background-color: #fef2f2; /* Nền đỏ rất nhạt */
+            color: #e53e3e; /* Màu chữ nhấn */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #e53e3e; }
+        /* KẾT THÚC CSS HEADER */
+
+
+        /* --- MAIN CONTENT STYLES FOR MOVIE DETAIL PAGE (KEPT FROM ORIGINAL AS REQUESTED) --- */
+        .movie-detail-wrapper {
+            padding: 40px 0;
+            background-color: #ffffff;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .movie-presentation {
+            display: flex;
+            gap: 40px;
+        }
+
+        .movie-poster-detail {
+            flex-shrink: 0;
+            width: 300px;
+        }
+
+        .movie-poster-detail img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        .movie-info-detail {
+            flex-grow: 1;
+        }
+
+        .movie-info-detail h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .movie-meta-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            color: #4a5568;
+            font-size: 1em;
+        }
+
+        .movie-meta-info span {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .movie-meta-info strong {
+            font-weight: 600;
+            color: #2d3748;
+            min-width: 120px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .movie-meta-info .meta-value {
+            flex-grow: 1;
+        }
+
+        .movie-actions-detail {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .action-btn-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: none;
+            cursor: pointer;
+        }
+        .action-btn-detail:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .trailer-btn-detail { /* Giữ nguyên màu đỏ như trong code gốc của bạn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+        }
+        .trailer-btn-detail:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+
+        .book-ticket-btn-detail { /* Giữ nguyên màu xanh như trong code gốc của bạn */
+            background: linear-gradient(45deg, #3182ce, #63b3ed);
+        }
+        .book-ticket-btn-detail:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+        }
+
+        .movie-description h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #1a202c;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            /* Thêm để icon và text cùng hàng nếu cần */
+            /* display: inline-flex; align-items: center; gap: 8px; */
+        }
+        /* Nếu muốn icon trong .movie-description h3 có màu nhấn: */
+        /* .movie-description h3 i { color: #f56565; } */
+
+        .movie-description p {
+            margin-bottom: 20px;
+            color: #4a5568;
+            text-align: justify;
+            line-height: 1.8;
+        }
+
+        .reviews-section-wrapper {
+            padding: 40px 0;
+            background-color: #ffffff;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .reviews-section-wrapper h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.4em;
+            color: #1a202c;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 12px;
+            /* Thêm để icon và text cùng hàng nếu cần */
+            /* display: inline-flex; align-items: center; gap: 10px; */
+            /* left: 50%; transform: translateX(-50%); */
+        }
+        /* Nếu muốn icon trong .reviews-section-wrapper h2 có màu nhấn: */
+        /* .reviews-section-wrapper h2 i { color: #f56565; } */
+
+        .reviews-section-wrapper h2::after { /* Gạch chân màu nhấn giữ nguyên */
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0; /* Đã có, điều chỉnh nếu cần */
+            width: 100px;
+            height: 4px;
+            background: #f56565;
+            border-radius: 2px;
+        }
+
+        /* --- START: FLASH MESSAGES CSS --- */
+        .flash-message-success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 20px; /* Added for spacing if it's directly above form/heading */
+            text-align: center;
+        }
+
+        .flash-message-error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-bottom: 20px; /* Added for spacing */
+            text-align: center;
+        }
+        /* --- END: FLASH MESSAGES CSS --- */
+
+        .review-form, .reply-form-container, .edit-review-form-container, .edit-reply-form-container {
+            background-color: #f7fafc;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .edit-review-form-container { background-color: #fdf8e1; padding: 20px; border-radius: 8px; margin-top: 15px; border: 1px solid #f0e68c; }
+        .edit-reply-form-container { background-color: #e6f7ff; padding: 15px; border-radius: 6px; margin-top: 10px; border: 1px solid #b3e0ff; }
+
+        .review-form h3, .reply-form-container h4, .edit-review-form-container h4, .edit-reply-form-container h4 {
+            font-size: 1.4em; font-weight: 600; color: #2d3748; margin-bottom: 20px;
+        }
+        .edit-reply-form-container h4 { font-size: 1.2em; margin-bottom: 12px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #4a5568; }
+        .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e0; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 1em; min-height: 100px; transition: border-color 0.3s ease; }
+        .edit-reply-form-container .form-group textarea { min-height: 70px; font-size: 0.95em; }
+        .form-group textarea:focus { outline: none; border-color: #63b3ed; box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.3); } /* Giữ nguyên focus xanh dương theo code gốc */
+
+        .star-rating-form { display: flex; align-items: center; gap: 5px; flex-direction: row-reverse; justify-content: flex-end; margin-bottom: 20px; }
+        .star-rating-form .star-input { display: none; }
+        .star-rating-form .star-label { font-size: 2em; color: #cbd5e0; cursor: pointer; transition: color 0.2s ease; }
+        .star-rating-form .star-input:checked ~ .star-label,
+        .star-rating-form .star-label:hover,
+        .star-rating-form .star-label:hover ~ .star-label { color: #f6ad55 !important; } /* Giữ nguyên màu cam cho sao */
+
+        .submit-review-btn { display: inline-flex; align-items: center; gap: 10px; color: #fff; padding: 10px 24px; text-decoration: none; border-radius: 8px; font-size: 1em; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); border: none; cursor: pointer; }
+        .submit-review-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2); }
+        /* Giữ nguyên màu xanh lá và vàng cho các nút submit cụ thể này theo code gốc */
+        #movie-review-form .submit-review-btn { background: linear-gradient(45deg, #48bb78, #81e6d9); }
+        #movie-review-form .submit-review-btn:hover { background: linear-gradient(45deg, #38a169, #4fd1c5); }
+
+        .edit-reply-form-container .submit-review-btn, .edit-reply-form-container .cancel-edit-reply-btn { padding: 8px 18px; font-size: 0.95em; }
+        .edit-reply-form-container .cancel-edit-reply-btn { background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
+        .edit-reply-form-container .cancel-edit-reply-btn:hover { background-color: #5a6268; transform: translateY(-1px); }
+
+
+        .review-list { margin-top: 30px; }
+        .review-item { background-color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-left: 4px solid #63b3ed; } /* Giữ nguyên border xanh */
+        .review-item:last-child { margin-bottom: 0; }
+
+        .reviewer-info-detail { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .reviewer-name { font-weight: 600; color: #2d3748; font-size: 1.1em; }
+        .review-date { font-size: 0.85em; color: #718096; }
+        .review-rating-display { margin-bottom: 10px; font-size: 1.1em; color: #f6ad55; } /* Giữ nguyên màu cam cho sao */
+        .review-text { line-height: 1.6; color: #4a5568; margin-bottom: 15px; word-wrap: break-word; }
+
+        .review-actions { display: flex; gap: 15px; align-items: center; margin-top: 10px; }
+        .review-action-btn { background: none; border: none; cursor: pointer; font-size: 0.9em; font-weight: 500; padding: 5px; transition: color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 5px; }
+        .review-action-btn:hover { transform: translateY(-1px); /* text-decoration: underline; Bỏ underline chung, để từng nút tự quyết định */ }
+        /* Giữ nguyên màu các nút action theo code gốc */
+        .review-action-btn.reply-btn-detail { color: #3182ce; }
+        .review-action-btn.reply-btn-detail:hover { color: #2b6cb0; text-decoration: underline; }
+        .review-action-btn.edit-action { color: #fab005; }
+        .review-action-btn.edit-action:hover { color: #e09d00; text-decoration: underline; }
+        .review-action-btn.delete-action { color: #e53e3e; }
+        .review-action-btn.delete-action:hover { color: #c53030; text-decoration: underline; }
+
+        .cancel-edit-btn { background-color: #6c757d; color: white; border: none; border-radius: 6px; font-size: 0.95em; padding: 8px 18px; cursor: pointer; font-weight: 500; transition: background-color 0.3s ease, transform 0.2s ease; display: inline-flex; align-items: center; gap: 6px; }
+        .cancel-edit-btn:hover { background-color: #5a6268; transform: translateY(-1px); }
+
+        .replies-container { margin-top: 15px; padding-left: 25px; border-left: 3px solid #e2e8f0; }
+        .reply-item { background-color: #f7fafc; padding: 15px; border-radius: 6px; margin-bottom: 15px; font-size: 0.95em; }
+        .reply-item .reviewer-name { font-size: 1em; }
+        .reply-item .review-text { margin-bottom: 10px; }
+        .reply-item .review-actions { margin-top: 8px; gap: 10px; }
+
+
+        /* --- FOOTER (LIGHT THEME - NÂNG CẤP VỚI BẢN ĐỒ) --- */
+        footer {
+            background: #1a202c; /* Nền tối sang trọng */
+            color: #e2e8f0; /* Chữ sáng để nổi bật trên nền tối */
+            padding: 60px 0 30px;
+            margin-top: 40px;
+            border-top: 4px solid #f56565; /* Viền trên màu nhấn */
+        }
+        footer .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 cột cho desktop */
+            gap: 30px;
+            align-items: start;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        footer h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff; /* Tiêu đề trắng sáng */
+            position: relative;
+            padding-bottom: 10px;
+        }
+        footer h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: #f56565; /* Dòng dưới tiêu đề màu nhấn */
+        }
+        footer p, footer ul, footer a {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: #cbd5e0; /* Màu chữ nhạt hơn cho nội dung */
+        }
+        .footer-about p { margin-bottom: 15px; }
+        .footer-links ul, .footer-contact ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links ul li, .footer-contact ul li {
+            margin-bottom: 10px;
+        }
+        .footer-links ul li a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-links ul li a:hover {
+            color: #f56565; /* Màu nhấn khi hover */
+            transform: translateX(5px); /* Dịch nhẹ sang phải */
+        }
+        .footer-contact ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-contact ul li i {
+            color: #f56565; /* Icon màu nhấn */
+            font-size: 1.2em;
+        }
+        .footer-social h3 { margin-bottom: 15px; }
+        .social-media {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+        .social-media a {
+            color: #e2e8f0;
+            font-size: 1.8em;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-media a:hover {
+            color: #f56565;
+            transform: scale(1.2); /* Phóng to nhẹ khi hover */
+        }
+        .footer-map h3 { margin-bottom: 15px; }
+        .footer-map iframe {
+            width: 140%;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .footer-bottom {
+            border-top: 1px solid #4a5568; /* Đường phân cách phía trên phần bottom */
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #a0aec0;
+        }
+        .footer-bottom p { margin: 0; }
+
+        /* --- RESPONSIVE DESIGN CHO FOOTER --- */
+        @media (max-width: 992px) {
+            footer .container {
+                grid-template-columns: repeat(2, 1fr); /* 2 cột cho tablet */
+                gap: 20px;
+            }
+            .footer-map iframe {
+                height: 150px; /* Giảm chiều cao bản đồ trên tablet */
+            }
+        }
+        @media (max-width: 480px) {
+            footer .container {
+                grid-template-columns: 1fr; /* 1 cột cho mobile */
+                gap: 30px;
+                text-align: center;
+            }
+            footer h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .footer-links ul li a:hover {
+                transform: translateX(0); /* Bỏ hiệu ứng dịch chuyển trên mobile */
+            }
+            .social-media {
+                justify-content: center;
+            }
+            .footer-contact ul li {
+                justify-content: center;
+            }
+            .footer-map iframe {
+                height: 120px; /* Giảm chiều cao bản đồ trên mobile */
+            }
+        }
+
+
+        /* TRAILER MODAL (Kept from original) */
+        .trailer-modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .trailer-modal-content { position: relative; background-color: #000; margin: auto; padding: 0; border: 1px solid #888; width: 80%; max-width: 800px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); animation-name: animatetop; animation-duration: 0.4s; }
+        @keyframes animatetop { from {top: -300px; opacity: 0} to {top: 0; opacity: 1} }
+        .trailer-modal-close { color: white; float: right; font-size: 28px; font-weight: bold; position: absolute; top: -35px; right: -5px; background: none; border: none; text-shadow: 0 1px 0 #000; }
+        .trailer-modal-close:hover, .trailer-modal-close:focus { color: #bbb; text-decoration: none; cursor: pointer; }
+        .trailer-modal-video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; }
+        .trailer-modal-video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+
+        /* --- RESPONSIVE CSS (Header parts synchronized, content parts kept original or adjusted for new header) --- */
+        @media (max-width: 992px) {
+            body { padding-top: 150px; }
+            header .container { justify-content: space-around; }
+            .logo { order: 1; width: 100%; text-align: center; margin-bottom: 10px; }
+            header nav { order: 3; width: 100%; margin-top: 10px; }
+            header nav ul { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .header-actions { order: 2; margin-left: 0; width: 100%; justify-content: center; margin-top: 0; margin-bottom: 10px; }
+
+            .movie-presentation { flex-direction: column; }
+            .movie-poster-detail { width: 100%; max-width: 350px; margin: 0 auto 30px auto; }
+            .movie-info-detail h1 { font-size: 2.4em; }
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 120px; }
+            header .container { justify-content: space-between; align-items: center; }
+            .logo { order: 1; width: auto; text-align: left; margin-bottom: 0; }
+            header nav { order: 3; width: 100%; margin-top: 15px; }
+            .header-actions { order: 2; width: auto; margin-top: 0; margin-bottom: 0; justify-content: flex-end; }
+
+            .movie-info-detail h1 { font-size: 2em; }
+            .action-btn-detail { padding: 10px 20px; font-size: 1em; }
+            .movie-meta-info { font-size: 0.9em; }
+            .reviews-section-wrapper h2 { font-size: 1.8em; }
+            .movie-description h3 { font-size: 1.3em; }
+            .trailer-modal-content { width: 90%; }
+            .trailer-modal-close { top: -30px; right: 0px; font-size: 24px;}
+            .review-actions { flex-wrap: wrap; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding-top: 110px; }
+            header nav ul { gap: 0; }
+            header nav ul li { margin: 5px; }
+            header nav ul li a { font-size: 0.9em; padding: 6px 12px; }
+            .header-actions .btn-login,
+            .header-actions .user-profile-toggle { padding: 6px 12px; font-size: 0.9em; }
+            .header-actions .dropdown-menu-content { min-width: 180px; }
+            .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
+
+            .movie-info-detail h1 { font-size: 1.8em; }
+            .movie-actions-detail { flex-direction: column; gap: 15px; }
+            .action-btn-detail { width: 100%; justify-content: center;}
+            .movie-meta-info span { width: 100%; gap: 6px; font-size: 0.85em;}
+            .movie-meta-info span strong { min-width: 90px;}
+            .footer-nav ul { flex-direction: column; align-items: center; gap: 10px; }
+            .social-media { gap: 20px; }
+            .trailer-modal-content { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <a th:href="@{/}"><i class="fas fa-film"></i> PhimHay</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}">Trang Chủ</a></li>
+                <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
+                <li><a th:href="@{/movies/coming-soon}">Phim Sắp Chiếu</a></li>
+                <li><a th:href="@{/coupon}">Mã Giảm Giá</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <th:block th:if="${session.user == null}">
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
+            </th:block>
+            <th:block th:if="${session.user != null}">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span id="headerUserDisplayName" th:text="'Chào, ' + ${session.user.hoTen}">Chào, Tên User</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-content" id="userDropdownMenu">
+                        <a th:href="@{/user/profile}" class="dropdown-item">
+                            <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/signout}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+    </div>
+</header>
+
+<div class="page-content-wrapper" th:object="${phim}" th:attr="data-trang-thai-phim=*{trangThaiPhim.name()}">
+    <input type="hidden" id="currentUserId" th:value="${session.idCustomer != null ? session.idCustomer : ''}"/>
+
+    <div class="movie-detail-wrapper">
+        <div class="container">
+            <section class="movie-presentation">
+                <div class="movie-poster-detail">
+                    <img th:src="*{linkAnh}" th:alt="*{tenPhim}" />
+                </div>
+                <div class="movie-info-detail">
+                    <h1 th:text="*{tenPhim}"></h1>
+                    <div class="movie-meta-info">
+                        <span><strong>Đạo diễn:</strong> <span class="meta-value" th:text="*{daoDien}"></span></span>
+                        <span><strong>Diễn viên:</strong> <span class="meta-value" th:text="*{dienVien}"></span></span>
+                        <span><strong>Thể loại:</strong> <span class="meta-value" th:text="*{theLoai}"></span></span>
+                        <span><strong>Khởi chiếu:</strong> <span class="meta-value" th:text="*{#dates.format(thoiGianKhoiChieu, 'dd-MM-yyyy')}"></span></span>
+                        <span><strong>Thời lượng:</strong> <span class="meta-value" th:text="|${phim.thoiLuongChieu} phút|"></span></span>
+                        <span><strong>Độ tuổi:</strong> <span class="meta-value" th:text="*{doTuoi}"></span></span>
+                        <span><strong>Ngôn ngữ:</strong> <span class="meta-value" th:text="*{ngonNgu}"></span></span>
+                        <span><strong>Hình thức chiếu:</strong> <span class="meta-value" th:text="*{hinhThucChieu.getMoTa()}"></span></span>
+                    </div>
+                    <div class="movie-actions-detail">
+                        <a th:if="*{linkTrailer != null and not #strings.isEmpty(linkTrailer)}"
+                           th:attr="data-trailer-url=*{linkTrailer}"
+                           href="javascript:void(0);"
+                           class="action-btn-detail trailer-btn-detail" id="openTrailerModalBtn">
+                            <i class="fas fa-play"></i> Xem Trailer
+                        </a>
+                        <a th:if="${phim.trangThaiPhim.name() == 'DANG_CHIEU' or phim.trangThaiPhim.name() == 'SAP_CHIEU'}"
+                           th:href="@{/booking/{id}(id=*{idPhim})}"
+                           class="action-btn-detail book-ticket-btn-detail" id="bookTicketBtnDetail">
+                            <i class="fas fa-ticket-alt"></i> Đặt Vé Ngay
+                        </a>
+                    </div>
+                    <div class="movie-description">
+                        <h3><i class="fas fa-align-left"></i> Nội dung phim</h3>
+                        <p th:text="*{moTaPhim}"></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="reviews-section-wrapper">
+        <div class="container">
+            <div id="flashMessageContainer">
+                <th:block th:if="${message}">
+                    <div th:classappend="${#strings.containsIgnoreCase(message, 'thành công') ? 'flash-message-success' : 'flash-message-error'}"
+                         th:text="${message}">
+                    </div>
+                </th:block>
+            </div>
+            <h2><i class="fas fa-comments"></i> Đánh Giá Phim</h2>
+<!--            Đánh giá-->
+            <div class="review-form">
+                <h3>Để lại đánh giá của bạn</h3>
+                <form id="movie-review-form" th:action="@{/movies/{movieId}/reviews(movieId=${phim.idPhim})}" method="post" th:object="${danhGia}">
+                    <div class="form-group">
+                        <label for="rating">Chất lượng phim:</label>
+                        <div class="star-rating-form" id="rating">
+                            <input type="radio" id="star5" name="diemDanhGia" th:field="*{diemDanhGia}" value="5" class="star-input"/><label for="star5" class="star-label" title="Tuyệt vời">★</label>
+                            <input type="radio" id="star4" name="diemDanhGia" th:field="*{diemDanhGia}" value="4" class="star-input"/><label for="star4" class="star-label" title="Rất tốt">★</label>
+                            <input type="radio" id="star3" name="diemDanhGia" th:field="*{diemDanhGia}" value="3" class="star-input"/><label for="star3" class="star-label" title="Tốt">★</label>
+                            <input type="radio" id="star2" name="diemDanhGia" th:field="*{diemDanhGia}" value="2" class="star-input"/><label for="star2" class="star-label" title="Tạm được">★</label>
+                            <input type="radio" id="star1" name="diemDanhGia" th:field="*{diemDanhGia}" value="1" class="star-input"/><label for="star1" class="star-label" title="Tệ">★</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="review-content">Cảm nghĩ của bạn:</label>
+                        <textarea id="review-content" th:field="*{noiDungDanhGia}" rows="5" placeholder="Bộ phim này như thế nào..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-review-btn"><i class="fas fa-paper-plane"></i> Gửi Đánh Giá</button>
+                </form>
+            </div>
+
+<!--            Danh sách đánh giá-->
+            <div class="review-list">
+                <h3 th:if="${phim.dsDanhGia != null and not #lists.isEmpty(phim.dsDanhGia)}">Bình luận nổi bật</h3>
+                <div th:if="${phim.dsDanhGia == null or #lists.isEmpty(phim.dsDanhGia)}">
+                    <p>Chưa có đánh giá nào cho phim này. Hãy là người đầu tiên đánh giá!</p>
+                </div>
+
+                <div class="review-item" th:each="danhGiaItem : ${phim.dsDanhGia}"
+                     th:id="'review-item-' + ${danhGiaItem.idDanhGia}"
+                     th:attr="data-reviewer-id=${danhGiaItem.doiTuongSuDung != null ? danhGiaItem.doiTuongSuDung.idDoiTuongSuDung : ''}">
+                    <div class="reviewer-info-detail">
+                        <span class="reviewer-name" th:text="${danhGiaItem.doiTuongSuDung != null ? danhGiaItem.doiTuongSuDung.hoTen : 'Người dùng ẩn'}"></span>
+                        <span class="review-date" th:text="${danhGiaItem.thoiGianDanhGia != null ? #dates.format(danhGiaItem.thoiGianDanhGia, 'dd/MM/yyyy HH:mm') : ''}"></span>
+                    </div>
+                    <div class="review-rating-display" th:if="${danhGiaItem.diemDanhGia != null}">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <span th:if="${i <= danhGiaItem.diemDanhGia}">★</span><span th:if="${i > danhGiaItem.diemDanhGia}">☆</span>
+                        </th:block>
+                    </div>
+                    <p class="review-text" th:text="${danhGiaItem.noiDungDanhGia}"></p>
+
+                    <div class="review-actions">
+                        <button class="reply-btn-detail review-action-btn" th:attr="data-review-id=${danhGiaItem.idDanhGia}"><i class="fas fa-reply"></i> Phản hồi</button>
+                        <button class="edit-btn-trigger review-action-btn edit-action" th:attr="data-review-id=${danhGiaItem.idDanhGia}" style="display: none;"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+<!--                        Xoá đánh giá-->
+                        <form th:action="@{/movies/{movieId}/reviews/{reviewId}/delete(movieId=${phim.idPhim}, reviewId=${danhGiaItem.idDanhGia})}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này không?');" style="display: none;">
+                            <button type="submit" class="review-action-btn delete-action"><i class="fas fa-trash"></i> Xóa</button>
+                        </form>
+                    </div>
+
+<!--                    Danh sách phản hồi-->
+                    <div class="replies-container">
+                        <div class="reply-item" th:each="phanHoi : ${danhGiaItem.dsPhanHoi}"
+                             th:id="'reply-item-' + ${phanHoi.idPhanHoi}"
+                             th:attr="data-replier-id=${phanHoi.doiTuongSuDung != null ? phanHoi.doiTuongSuDung.idDoiTuongSuDung : ''}">
+                            <div class="reviewer-info-detail">
+                                <span class="reviewer-name" th:text="${phanHoi.doiTuongSuDung != null ? phanHoi.doiTuongSuDung.hoTen : 'Người dùng ẩn'}"></span>
+                                <span class="review-date" th:text="${phanHoi.thoiGianPhanHoi != null ? #dates.format(phanHoi.thoiGianPhanHoi, 'dd/MM/yyyy HH:mm') :''}"></span>
+                            </div>
+                            <p class="review-text" th:text="${phanHoi.noiDungPhanHoi}"></p>
+
+                            <div class="review-actions">
+                                <button class="edit-reply-btn-trigger review-action-btn edit-action" th:attr="data-reply-id=${phanHoi.idPhanHoi}, data-parent-review-id=${danhGiaItem.idDanhGia}" style="display: none;"><i class="fas fa-edit"></i> Chỉnh sửa</button>
+<!--                                Xoá phản hồi-->
+                                <form th:action="@{/reviews/replies/{replyId}/delete(replyId=${phanHoi.idPhanHoi})}"
+                                      method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa phản hồi này không?');" style="display: none;">
+                                    <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
+                                    <button type="submit" class="review-action-btn delete-action"><i class="fas fa-trash"></i> Xóa</button>
+                                </form>
+                            </div>
+<!--                            Chỉnh sửa phản hồi-->
+                            <div class="edit-reply-form-container" th:id="'edit-reply-form-container-' + ${phanHoi.idPhanHoi}" style="display: none;">
+                                <h4 th:text="'Chỉnh sửa phản hồi của ' + (${phanHoi.doiTuongSuDung != null ? phanHoi.doiTuongSuDung.hoTen : 'Người dùng ẩn'})"></h4>
+                                <form class="edit-reply-form-actual" th:action="@{/reviews/replies/{replyId}/update(replyId=${phanHoi.idPhanHoi})}" method="post"
+                                      th:object="${phanHoi}">
+                                    <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
+                                    <div class="form-group">
+                                        <label th:for="'edit-reply-content-' + ${phanHoi.idPhanHoi}">Nội dung phản hồi:</label>
+                                        <textarea th:id="'edit-reply-content-' + ${phanHoi.idPhanHoi}" name="noiDungPhanHoi" rows="3" placeholder="Chỉnh sửa phản hồi của bạn..." required th:text="${phanHoi.noiDungPhanHoi}"></textarea>
+                                    </div>
+                                    <button type="submit" class="submit-review-btn" style="background: linear-gradient(45deg, #ffc107, #ff9800);"><i class="fas fa-save"></i> Lưu Thay Đổi</button>
+                                    <button type="button" class="cancel-edit-reply-btn" th:attr="data-reply-id=${phanHoi.idPhanHoi}"><i class="fas fa-times"></i> Hủy</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    form thêm phản hồi-->
+                    <div class="reply-form-container" th:id="'reply-form-container-' + ${danhGiaItem.idDanhGia}" style="display: none;">
+                        <form th:action="@{/reviews/{reviewId}/replies/new(reviewId=${danhGiaItem.idDanhGia})}" method="post"
+                              th:object="${phanHoi}">
+                            <input type="hidden" name="movieIdForRedirect" th:value="${phim.idPhim}" />
+                            <div class="form-group">
+                                <label th:for="'reply-text-' + ${danhGiaItem.idDanhGia}">Nội dung phản hồi:</label>
+                                <textarea th:field="*{noiDungPhanHoi}" th:id="'reply-text-' + ${danhGiaItem.idDanhGia}"
+                                          rows="3" placeholder="Viết phản hồi của bạn..." required></textarea>
+                            </div>
+                            <button type="submit" class="submit-review-btn"
+                                    style="background: linear-gradient(45deg, #38a169, #81e6d9);">
+                                <i class="fas fa-paper-plane"></i> Gửi
+                            </button>
+                        </form>
+                    </div>
+
+<!--                    Chỉnh sửa đánh giá-->
+                    <div class="edit-review-form-container" th:id="'edit-review-form-container-' + ${danhGiaItem.idDanhGia}" style="display: none;">
+                        <h4 th:text="'Chỉnh sửa đánh giá của ' + (${danhGiaItem.doiTuongSuDung != null ? danhGiaItem.doiTuongSuDung.hoTen : 'Người dùng ẩn'})"></h4>
+                        <form class="edit-review-form-actual" th:action="@{/movies/{movieId}/reviews/{reviewId}/update(movieId=${phim.idPhim}, reviewId=${danhGiaItem.idDanhGia})}" method="post">
+                            <div class="form-group">
+                                <label th:for="'edit-rating-' + ${danhGiaItem.idDanhGia}">Chất lượng phim:</label>
+                                <div class="star-rating-form edit-star-rating" th:id="'edit-rating-' + ${danhGiaItem.idDanhGia}">
+                                    <input type="radio" th:id="'edit-star5-' + ${danhGiaItem.idDanhGia}" name="diemDanhGia" value="5" class="star-input" th:checked="${danhGiaItem.diemDanhGia == 5}"/><label th:for="'edit-star5-' + ${danhGiaItem.idDanhGia}" class="star-label" title="Tuyệt vời">★</label>
+                                    <input type="radio" th:id="'edit-star4-' + ${danhGiaItem.idDanhGia}" name="diemDanhGia" value="4" class="star-input" th:checked="${danhGiaItem.diemDanhGia == 4}"/><label th:for="'edit-star4-' + ${danhGiaItem.idDanhGia}" class="star-label" title="Rất tốt">★</label>
+                                    <input type="radio" th:id="'edit-star3-' + ${danhGiaItem.idDanhGia}" name="diemDanhGia" value="3" class="star-input" th:checked="${danhGiaItem.diemDanhGia == 3}"/><label th:for="'edit-star3-' + ${danhGiaItem.idDanhGia}" class="star-label" title="Tốt">★</label>
+                                    <input type="radio" th:id="'edit-star2-' + ${danhGiaItem.idDanhGia}" name="diemDanhGia" value="2" class="star-input" th:checked="${danhGiaItem.diemDanhGia == 2}"/><label th:for="'edit-star2-' + ${danhGiaItem.idDanhGia}" class="star-label" title="Tạm được">★</label>
+                                    <input type="radio" th:id="'edit-star1-' + ${danhGiaItem.idDanhGia}" name="diemDanhGia" value="1" class="star-input" th:checked="${danhGiaItem.diemDanhGia == 1}"/><label th:for="'edit-star1-' + ${danhGiaItem.idDanhGia}" class="star-label" title="Tệ">★</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label th:for="'edit-review-content-' + ${danhGiaItem.idDanhGia}">Cảm nghĩ của bạn:</label>
+                                <textarea th:id="'edit-review-content-' + ${danhGiaItem.idDanhGia}" name="noiDungDanhGia" rows="4" placeholder="Chỉnh sửa cảm nghĩ của bạn..." required th:text="${danhGiaItem.noiDungDanhGia}"></textarea>
+                            </div>
+                            <button type="submit" class="submit-review-btn" style="background: linear-gradient(45deg, #ffc107, #ff9800);"><i class="fas fa-save"></i> Lưu Thay Đổi</button>
+                            <button type="button" class="cancel-edit-btn" th:attr="data-review-id=${danhGiaItem.idDanhGia}"><i class="fas fa-times"></i> Hủy</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="trailerModal" class="trailer-modal">
+    <div class="trailer-modal-content">
+        <button type="button" class="trailer-modal-close" id="closeTrailerModalBtn">×</button>
+        <div class="trailer-modal-video-container">
+            <iframe id="trailerVideo"
+                    width="560" height="315"
+                    src=""
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-about">
+            <h3>Về PhimHay</h3>
+            <p>PhimHay là nền tảng xem phim trực tuyến hàng đầu, mang đến cho bạn những bộ phim bom tấn và câu chuyện hấp dẫn từ khắp nơi trên thế giới.</p>
+            <p>Khám phá, thưởng thức và đắm chìm trong thế giới điện ảnh ngay hôm nay!</p>
+        </div>
+        <div class="footer-links">
+            <h3>Liên Kết Nhanh</h3>
+            <ul>
+                <li><a th:href="@{/}"><i class="fas fa-info-circle"></i> Về Chúng Tôi</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-file-alt"></i> Điều Khoản Dịch Vụ</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-shield-alt"></i> Chính Sách Bảo Mật</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            </ul>
+        </div>
+        <div class="footer-social">
+            <h3>Kết Nối Với Chúng Tôi</h3>
+            <div class="social-media">
+                <a th:href="@{/}" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a th:href="@{/}" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a th:href="@{/}" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a th:href="@{/}" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-map">
+            <h3>Tìm Chúng Tôi</h3>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238705.58444823645!2d106.49129390716558!3d10.844981448249275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752763f23816ab%3A0x282f711441b6916f!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTxrAgcGjhuqFtIEvhu7kgdGh14bqtdCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmg!5e1!3m2!1svi!2s!4v1747468156366!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="currentYear">2025</span> PhimHay. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CẬP NHẬT NĂM HIỆN TẠI ---
+        // Tìm phần tử span có ID 'currentYear' và cập nhật nội dung của nó thành năm hiện tại.
+        const yearSpan = document.getElementById('currentYear');
+        if (yearSpan) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+
+        // --- LẤY ID NGƯỜI DÙNG HIỆN TẠI VÀ KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP ---
+        // Lấy giá trị ID người dùng từ một phần tử ẩn (thường là input).
+        const currentUserIdElement = document.getElementById('currentUserId');
+        // Gán ID người dùng hoặc null nếu không tìm thấy hoặc giá trị rỗng.
+        const currentUserId = currentUserIdElement ? (currentUserIdElement.value || '').trim() : null;
+        // Biến boolean kiểm tra xem người dùng đã đăng nhập hay chưa.
+        const isLoggedIn = currentUserId && currentUserId !== '';
+
+        // --- LOGIC CHO MENU DROPDOWN CỦA NGƯỜI DÙNG ---
+        // Xử lý việc hiển thị và ẩn menu dropdown khi người dùng nhấp vào liên kết hồ sơ.
+        const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        if (userProfileLinkToggle && userDropdownMenu) {
+            // Khi nhấp vào nút bật/tắt menu
+            userProfileLinkToggle.addEventListener('click', function(event) {
+                event.preventDefault(); // Ngăn hành động mặc định của thẻ <a>
+                userDropdownMenu.classList.toggle('show'); // Thêm/xóa class 'show' để hiển thị/ẩn menu
+                this.classList.toggle('open'); // Thêm/xóa class 'open' trên nút để thay đổi giao diện (ví dụ: mũi tên)
+            });
+            // Đóng menu dropdown nếu nhấp ra ngoài
+            document.addEventListener('click', function(event) {
+                const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu.contains(event.target);
+                // Nếu nhấp ra ngoài cả nút và menu, và menu đang hiển thị
+                if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    userProfileLinkToggle.classList.remove('open');
+                }
+            });
+        }
+
+        // --- TỰ ĐỘNG ẨN THÔNG BÁO FLASH (FLASH MESSAGE) ---
+        // Hiển thị thông báo trong một khoảng thời gian ngắn rồi mờ dần và biến mất.
+        const flashMessageContainer = document.getElementById('flashMessageContainer');
+        if (flashMessageContainer) {
+            // Tìm div chứa nội dung thông báo thực sự (có thể được tạo bởi th:block trong Thymeleaf)
+            const flashMessageDiv = flashMessageContainer.querySelector('div');
+            // Nếu có thông báo và nội dung không rỗng
+            if (flashMessageDiv && flashMessageDiv.textContent.trim() !== '') {
+                flashMessageDiv.style.display = 'block'; // Đảm bảo thông báo được hiển thị
+                // Sau 5 giây, bắt đầu quá trình làm mờ
+                setTimeout(() => {
+                    let opacity = 1;
+                    const fadeInterval = setInterval(function() {
+                        if (opacity <= 0.1){ // Khi độ mờ đủ thấp
+                            clearInterval(fadeInterval); // Dừng làm mờ
+                            flashMessageDiv.style.display = 'none'; // Ẩn hoàn toàn
+                        }
+                        flashMessageDiv.style.opacity = opacity;
+                        opacity -= opacity * 0.1; // Giảm độ mờ theo cấp số nhân (mờ nhanh dần)
+                    }, 50); // Thực hiện mỗi 50ms
+                }, 5000); // Bắt đầu ẩn sau 5 giây
+            } else if (flashMessageDiv) {
+                // Nếu Thymeleaf render container bên ngoài nhưng div bên trong (thông báo) rỗng
+                flashMessageDiv.style.display = 'none';
+            }
+        }
+
+        // --- ẨN/HIỆN CÁC THÀNH PHẦN DỰA TRÊN TRẠNG THÁI ĐĂNG NHẬP ---
+
+        // --- FORM ĐÁNH GIÁ CHÍNH ---
+        // Ẩn form đánh giá nếu người dùng chưa đăng nhập và hiển thị thông báo yêu cầu đăng nhập.
+        const reviewFormDiv = document.querySelector('.review-form');
+        if (reviewFormDiv) {
+            if (!isLoggedIn) {
+                reviewFormDiv.style.display = 'none'; // Ẩn form đánh giá chính
+                // Tạo và thêm thông báo yêu cầu đăng nhập
+                const loginPrompt = document.createElement('p');
+                loginPrompt.innerHTML = 'Vui lòng <a href="/signin" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> để để lại đánh giá.';
+                loginPrompt.style.textAlign = 'center';
+                loginPrompt.style.marginTop = '20px';
+                loginPrompt.style.marginBottom = '20px';
+                // Chèn thông báo vào vị trí phù hợp
+                const reviewsSectionH2 = document.querySelector('.reviews-section-wrapper h2');
+                if (reviewsSectionH2) {
+                    reviewsSectionH2.parentNode.insertBefore(loginPrompt, reviewsSectionH2.nextSibling);
+                } else {
+                    reviewFormDiv.parentNode.insertBefore(loginPrompt, reviewFormDiv);
+                }
+            } else {
+                reviewFormDiv.style.display = 'block'; // Hiện form nếu đã đăng nhập
+            }
+        }
+
+        // --- NÚT PHẢN HỒI ---
+        // Ẩn tất cả các nút "Phản hồi" nếu người dùng chưa đăng nhập.
+        document.querySelectorAll('.reply-btn-detail').forEach(button => {
+            if (!isLoggedIn) {
+                button.style.display = 'none'; // Ẩn nút Phản hồi
+            } else {
+                button.style.display = 'inline-flex'; // Hiện nếu đã đăng nhập
+            }
+        });
+
+
+        // --- LOGIC HIỂN THỊ NÚT SỬA/XÓA CHO ĐÁNH GIÁ VÀ PHẢN HỒI ---
+        // Chỉ hiển thị nút Sửa/Xóa nếu người dùng đã đăng nhập VÀ là chủ sở hữu của đánh giá/phản hồi đó.
+        function toggleActionButtons() {
+            // Nếu chưa đăng nhập, ẩn tất cả các nút hành động (Sửa/Xóa)
+            if (!isLoggedIn) {
+                document.querySelectorAll('.review-item .review-actions .edit-btn-trigger, .review-item .review-actions form[method="post"], .reply-item .review-actions .edit-reply-btn-trigger, .reply-item .review-actions form[method="post"]').forEach(el => {
+                    el.style.display = 'none';
+                });
+                return; // Không cần làm gì thêm nếu chưa đăng nhập
+            }
+
+            // Nếu đã đăng nhập, kiểm tra quyền sở hữu cho từng đánh giá
+            document.querySelectorAll('.review-item').forEach(reviewItem => {
+                const reviewerId = (reviewItem.dataset.reviewerId || '').trim(); // Lấy ID người đánh giá từ data attribute
+                const editButton = reviewItem.querySelector('.review-actions .edit-btn-trigger');
+                const deleteForm = reviewItem.querySelector('.review-actions form[method="post"]'); // Form xóa thường là một form POST
+
+                // So sánh ID người dùng hiện tại với ID người đánh giá
+                if (reviewerId && currentUserId === reviewerId) {
+                    if (editButton) editButton.style.display = 'inline-flex';
+                    if (deleteForm) deleteForm.style.display = 'inline';
+                } else {
+                    if (editButton) editButton.style.display = 'none';
+                    if (deleteForm) deleteForm.style.display = 'none';
+                }
+            });
+
+            // Tương tự, kiểm tra quyền sở hữu cho từng phản hồi
+            document.querySelectorAll('.reply-item').forEach(replyItem => {
+                const replierId = (replyItem.dataset.replierId || '').trim(); // Lấy ID người phản hồi từ data attribute
+                const editButton = replyItem.querySelector('.review-actions .edit-reply-btn-trigger');
+                const deleteForm = replyItem.querySelector('.review-actions form[method="post"]');
+
+                if (replierId && currentUserId === replierId) {
+                    if (editButton) editButton.style.display = 'inline-flex';
+                    if (deleteForm) deleteForm.style.display = 'inline';
+                } else {
+                    if (editButton) editButton.style.display = 'none';
+                    if (deleteForm) deleteForm.style.display = 'none';
+                }
+            });
+        }
+        toggleActionButtons(); // Gọi hàm này ngay khi tải trang để áp dụng logic hiển thị
+
+        // --- LOGIC ẨN/HIỆN MỤC ĐÁNH GIÁ DỰA TRÊN TRẠNG THÁI PHIM ---
+        // Mục đánh giá chỉ hiển thị cho phim "Đang chiếu" hoặc "Đã chiếu".
+        const pageContentWrapper = document.querySelector('.page-content-wrapper');
+        const reviewsSection = document.querySelector('.reviews-section-wrapper');
+        if (pageContentWrapper && reviewsSection) {
+            const trangThaiPhim = pageContentWrapper.getAttribute('data-trang-thai-phim'); // Lấy trạng thái phim từ data attribute
+            // Hiển thị đánh giá cho cả phim đang chiếu và đã chiếu
+            if (trangThaiPhim === 'DANG_CHIEU' || trangThaiPhim === 'DA_CHIEU') {
+                reviewsSection.style.display = 'block';
+            } else {
+                reviewsSection.style.display = 'none';
+                // Nếu mục đánh giá bị ẩn, cũng ẩn luôn thông báo yêu cầu đăng nhập để đánh giá (nếu có)
+                const loginPromptForReviews = document.querySelector('.reviews-section-wrapper p a[href="/signin"]');
+                if (loginPromptForReviews && loginPromptForReviews.parentNode) {
+                    loginPromptForReviews.parentNode.style.display = 'none';
+                }
+            }
+        }
+
+        // --- THÊM KIỂM TRA ĐĂNG NHẬP VÀ VALIDATE DỮ LIỆU VÀO CÁC FORM SUBMIT HANDLER ---
+
+        // --- FORM ĐÁNH GIÁ CHÍNH (SUBMIT) ---
+        const mainReviewForm = document.getElementById('movie-review-form');
+        if (mainReviewForm) {
+            mainReviewForm.addEventListener('submit', (event) => {
+                // 1. Kiểm tra đăng nhập trước tiên
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để gửi đánh giá.');
+                    event.preventDefault(); // Ngăn form submit
+                    window.location.href = '/signin'; // Chuyển hướng đến trang đăng nhập
+                    return;
+                }
+                // 2. Các kiểm tra khác (điểm đánh giá, nội dung)
+                const ratingElement = mainReviewForm.querySelector('input[name="diemDanhGia"]:checked');
+                const reviewContent = mainReviewForm.querySelector('#review-content').value;
+                // Nếu có trường điểm đánh giá nhưng chưa chọn
+                if (mainReviewForm.querySelector('input[name="diemDanhGia"]') && !ratingElement) {
+                    alert('Vui lòng chọn điểm đánh giá.');
+                    event.preventDefault(); return;
+                }
+                // Nếu nội dung rỗng
+                if (!reviewContent.trim()) {
+                    alert('Vui lòng nhập nội dung cảm nghĩ.');
+                    event.preventDefault(); return;
+                }
+            });
+        }
+
+        // --- CÁC FORM PHẢN HỒI MỚI (SUBMIT) ---
+        // Áp dụng cho tất cả các form tạo phản hồi mới (thường có action chứa "/replies/new")
+        document.querySelectorAll('form[th\\:action*="/replies/new"]').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                // 1. Kiểm tra đăng nhập
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để gửi phản hồi.');
+                    event.preventDefault();
+                    window.location.href = '/signin';
+                    return;
+                }
+                // 2. Kiểm tra nội dung phản hồi
+                const replyContentArea = form.querySelector('textarea');
+                if (replyContentArea && !replyContentArea.value.trim()) {
+                    alert('Vui lòng nhập nội dung phản hồi.'); event.preventDefault();
+                }
+            });
+        });
+
+        // --- CÁC FORM CHỈNH SỬA ĐÁNH GIÁ (SUBMIT) ---
+        document.querySelectorAll('.edit-review-form-actual').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                // 1. Kiểm tra đăng nhập (dù nút sửa chỉ hiện khi đúng user, nhưng kiểm tra lại cho chắc)
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để chỉnh sửa đánh giá.');
+                    event.preventDefault();
+                    window.location.href = '/signin';
+                    return;
+                }
+                // 2. Các kiểm tra khác (điểm, nội dung)
+                const ratingElement = form.querySelector('input[name="diemDanhGia"]:checked');
+                const reviewContent = form.querySelector('textarea[name="noiDungDanhGia"]').value;
+                if (!ratingElement) { alert('Vui lòng chọn điểm đánh giá khi chỉnh sửa.'); event.preventDefault(); return; }
+                if (!reviewContent.trim()) { alert('Vui lòng nhập nội dung cảm nghĩ khi chỉnh sửa.'); event.preventDefault(); return; }
+            });
+        });
+
+        // --- CÁC FORM CHỈNH SỬA PHẢN HỒI (SUBMIT) ---
+        document.querySelectorAll('.edit-reply-form-actual').forEach(form => {
+            form.addEventListener('submit', (event) => {
+                // 1. Kiểm tra đăng nhập
+                if (!isLoggedIn) {
+                    alert('Vui lòng đăng nhập để chỉnh sửa phản hồi.');
+                    event.preventDefault();
+                    window.location.href = '/signin';
+                    return;
+                }
+                // 2. Kiểm tra nội dung
+                const replyContentArea = form.querySelector('textarea[name="noiDungPhanHoi"]');
+                if (replyContentArea && !replyContentArea.value.trim()) { alert('Vui lòng nhập nội dung phản hồi khi chỉnh sửa.'); event.preventDefault(); }
+            });
+        });
+
+        // --- LOGIC MỞ/ĐÓNG FORM PHẢN HỒI/CHỈNH SỬA ---
+        // Đảm bảo chỉ một form (phản hồi, sửa đánh giá, sửa phản hồi) được mở tại một thời điểm.
+
+        // --- NÚT "PHẢN HỒI" (MỞ FORM PHẢN HỒI) ---
+        document.querySelectorAll('.reply-btn-detail').forEach(button => {
+            if (isLoggedIn) { // Chỉ gán sự kiện nếu đã đăng nhập (nút này đã được ẩn nếu chưa đăng nhập)
+                button.addEventListener('click', () => {
+                    const reviewId = button.dataset.reviewId; // Lấy ID của đánh giá cần phản hồi
+                    const replyFormContainer = document.getElementById(`reply-form-container-${reviewId}`);
+                    if (replyFormContainer) {
+                        // Ẩn tất cả các form khác trước khi hiển thị form này
+                        document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
+                            if (form.id !== `reply-form-container-${reviewId}`) form.style.display = 'none';
+                        });
+                        // Bật/tắt hiển thị form phản hồi hiện tại
+                        const isHidden = replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '';
+                        replyFormContainer.style.display = isHidden ? 'block' : 'none';
+                        if (isHidden) replyFormContainer.querySelector('textarea')?.focus(); // Focus vào textarea nếu form được mở
+                    }
+                });
+            }
+        });
+
+        // --- NÚT "SỬA ĐÁNH GIÁ" (MỞ FORM SỬA ĐÁNH GIÁ) ---
+        document.querySelectorAll('.edit-btn-trigger').forEach(button => {
+            // Nút này chỉ hiển thị cho chủ sở hữu đã đăng nhập, nên không cần kiểm tra isLoggedIn ở đây nữa
+            button.addEventListener('click', () => {
+                const reviewId = button.dataset.reviewId;
+                const editFormContainer = document.getElementById(`edit-review-form-container-${reviewId}`);
+                if (editFormContainer) {
+                    // Ẩn các form khác
+                    document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
+                        if (form.id !== `edit-review-form-container-${reviewId}`) form.style.display = 'none';
+                    });
+                    // Bật/tắt form sửa đánh giá
+                    const isHidden = editFormContainer.style.display === 'none' || editFormContainer.style.display === '';
+                    editFormContainer.style.display = isHidden ? 'block' : 'none';
+                    if (isHidden) { // Nếu form được mở
+                        const textarea = editFormContainer.querySelector('textarea[name="noiDungDanhGia"]');
+                        if(textarea) {
+                            textarea.focus(); // Focus
+                            textarea.setSelectionRange(textarea.value.length, textarea.value.length); // Di chuyển con trỏ đến cuối text
+                        }
+                    }
+                }
+            });
+        });
+        // --- NÚT "HỦY" TRONG FORM SỬA ĐÁNH GIÁ ---
+        document.querySelectorAll('.cancel-edit-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const reviewId = button.dataset.reviewId;
+                const editFormContainer = document.getElementById(`edit-review-form-container-${reviewId}`);
+                if (editFormContainer) editFormContainer.style.display = 'none'; // Ẩn form
+            });
+        });
+
+        // --- NÚT "SỬA PHẢN HỒI" (MỞ FORM SỬA PHẢN HỒI) ---
+        document.querySelectorAll('.edit-reply-btn-trigger').forEach(button => {
+            button.addEventListener('click', () => {
+                const replyId = button.dataset.replyId;
+                const editReplyFormContainer = document.getElementById(`edit-reply-form-container-${replyId}`);
+                if (editReplyFormContainer) {
+                    // Ẩn các form khác
+                    document.querySelectorAll('.reply-form-container, .edit-review-form-container, .edit-reply-form-container').forEach(form => {
+                        if (form.id !== `edit-reply-form-container-${replyId}`) form.style.display = 'none';
+                    });
+                    // Bật/tắt form sửa phản hồi
+                    const isHidden = editReplyFormContainer.style.display === 'none' || editReplyFormContainer.style.display === '';
+                    editReplyFormContainer.style.display = isHidden ? 'block' : 'none';
+                    if (isHidden) { // Nếu form được mở
+                        const textarea = editReplyFormContainer.querySelector('textarea[name="noiDungPhanHoi"]');
+                        if (textarea) {
+                            textarea.focus();
+                            textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                        }
+                    }
+                }
+            });
+        });
+        // --- NÚT "HỦY" TRONG FORM SỬA PHẢN HỒI ---
+        document.querySelectorAll('.cancel-edit-reply-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const replyId = button.dataset.replyId;
+                const editReplyFormContainer = document.getElementById(`edit-reply-form-container-${replyId}`);
+                if (editReplyFormContainer) editReplyFormContainer.style.display = 'none'; // Ẩn form
+            });
+        });
+
+
+        // --- LOGIC CHO MODAL XEM TRAILER ---
+        const trailerModal = document.getElementById('trailerModal');
+        const openTrailerModalBtn = document.getElementById('openTrailerModalBtn');
+        const closeTrailerModalBtn = document.getElementById('closeTrailerModalBtn');
+        const trailerVideoIframe = document.getElementById('trailerVideo'); // Iframe để nhúng video
+
+        /**
+         * Chuyển đổi URL YouTube thông thường hoặc ID video thành URL nhúng.
+         * Hỗ trợ các định dạng URL:
+         * - https://www.youtube.com/watch?v=VIDEO_ID
+         * - https://www.youtube.com/embed/VIDEO_ID
+         * - https://www.youtube.com/v/VIDEO_ID
+         * - https://youtu.be/VIDEO_ID
+         * - VIDEO_ID (chỉ ID)
+         * @param {string} youtubeUrl - URL YouTube hoặc ID video.
+         * @returns {string} URL nhúng của YouTube hoặc chuỗi rỗng nếu không hợp lệ.
+         */
+        function getYouTubeEmbedUrl(youtubeUrl) {
+            if (!youtubeUrl) return ''; // Trả về rỗng nếu không có URL
+            let videoId = null;
+            try {
+                const url = new URL(youtubeUrl); // Thử phân tích URL
+                // Kiểm tra các hostname phổ biến của YouTube
+                if (url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com') {
+                    if (url.pathname === '/watch') {
+                        videoId = url.searchParams.get('v'); // Lấy từ param 'v' (ví dụ: /watch?v=VIDEO_ID)
+                    } else if (url.pathname.startsWith('/embed/')) {
+                        videoId = url.pathname.split('/embed/')[1]; // Lấy từ path (ví dụ: /embed/VIDEO_ID)
+                    } else if (url.pathname.startsWith('/v/')) {
+                        videoId = url.pathname.split('/v/')[1]; // Định dạng cũ (ví dụ: /v/VIDEO_ID)
+                    }
+                } else if (url.hostname === 'youtu.be') { // URL rút gọn
+                    videoId = url.pathname.substring(1); // Lấy từ path (ví dụ: /VIDEO_ID)
+                }
+            } catch (e) {
+                // Nếu không phải là URL hợp lệ, có thể nó chỉ là ID video
+                console.warn("URL trailer có thể không đúng định dạng, thử xử lý như ID:", youtubeUrl, e);
+                // Fallback: nếu là một chuỗi đơn giản không chứa '/' hoặc '?', coi đó là ID
+                if (typeof youtubeUrl === 'string' && !youtubeUrl.includes('/') && !youtubeUrl.includes('?')) {
+                    videoId = youtubeUrl;
+                } else {
+                    console.error("Không thể lấy Video ID từ URL:", youtubeUrl);
+                    return ''; // URL không hợp lệ hoặc không lấy được ID
+                }
+            }
+
+            if (videoId) {
+                // Loại bỏ các tham số phụ sau ID video (ví dụ: &list=...)
+                videoId = videoId.split('&')[0].split('?')[0];
+                return `https://www.youtube.com/embed/${videoId}?autoplay=1`; // Tạo URL nhúng với autoplay
+            }
+            console.error("Không tìm thấy Video ID hợp lệ từ:", youtubeUrl);
+            return ''; // Không tìm thấy videoId hợp lệ
+        }
+
+
+        if (openTrailerModalBtn && trailerModal && closeTrailerModalBtn && trailerVideoIframe) {
+            // Khi nhấp nút "Xem Trailer"
+            openTrailerModalBtn.addEventListener('click', () => {
+                const trailerUrl = openTrailerModalBtn.getAttribute('data-trailer-url'); // Lấy URL trailer từ data attribute
+                const embedUrl = getYouTubeEmbedUrl(trailerUrl); // Chuyển đổi sang URL nhúng
+                if (embedUrl) {
+                    trailerVideoIframe.src = embedUrl; // Đặt src cho iframe
+                    trailerModal.style.display = 'flex'; // Hiển thị modal (dùng flex để căn giữa)
+                } else {
+                    alert('Link trailer không hợp lệ hoặc không được hỗ trợ.');
+                }
+            });
+            // Khi nhấp nút đóng modal (X)
+            closeTrailerModalBtn.addEventListener('click', () => {
+                trailerModal.style.display = 'none'; // Ẩn modal
+                trailerVideoIframe.src = ''; // Dừng video bằng cách xóa src
+            });
+            // Khi nhấp ra ngoài modal
+            window.addEventListener('click', (event) => {
+                if (event.target === trailerModal) { // Nếu click vào nền mờ của modal
+                    trailerModal.style.display = 'none';
+                    trailerVideoIframe.src = ''; // Dừng video
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

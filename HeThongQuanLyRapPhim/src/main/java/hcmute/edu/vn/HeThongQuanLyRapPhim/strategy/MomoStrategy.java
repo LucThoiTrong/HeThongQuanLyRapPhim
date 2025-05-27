@@ -113,7 +113,7 @@ public class MomoStrategy implements PaymentStrategy{
         invoiceRepository.save(hoaDon);
 
         // Tiến hành gửi mail
-        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(this, customer.getEmail(), hoaDon);
+        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(customer.getEmail(), hoaDon);
         eventPublisher.publishEvent(invoiceGeneratedEvent);
     }
 

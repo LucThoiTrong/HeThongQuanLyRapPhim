@@ -3,7 +3,9 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.service;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.Phim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiPhim;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.MovieRepository;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.specification.MovieSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,5 +80,12 @@ public class MovieServiceImpl implements MovieService {
         }
         return false;
     }
+
+    @Override
+    public List<Phim> searchMovies(String keyword) {
+        Specification<Phim> spec = MovieSpecification.containsKeywordInAllFields(keyword);
+        return movieRepository.findAll(spec);
+    }
+
 }
 

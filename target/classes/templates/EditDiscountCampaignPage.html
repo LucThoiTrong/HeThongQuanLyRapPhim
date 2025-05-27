@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Cập Nhật Chiến dịch Giảm giá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Google Fonts: Inter & Orbitron -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #7c3aed, #db2777);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --text-color: #1f2937;
+            --bg-color: #e5e7eb;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --glow: 0 0 15px rgba(124, 58, 237, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --primary-gradient: linear-gradient(135deg, #4c1d95, #be185d);
+            --secondary-gradient: linear-gradient(135deg, #0e7490, #1e40af);
+            --text-color: #e5e7eb;
+            --bg-color: #111827;
+            --card-bg: rgba(31, 41, 55, 0.85);
+            --glass-bg: rgba(31, 41, 55, 0.2);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --glow: 0 0 15px rgba(192, 132, 252, 0.5);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.5s ease;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"%3E%3Cpath fill="url(%23gradient)" fill-opacity="0.3" d="M0,224L48,213.3C96,203,192,181,288,170.7C384,160,480,160,576,176C672,192,768,224,864,229.3C960,235,1056,213,1152,197.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"%3E%3C/path%3E%3Cdefs%3E%3ClinearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%"%3E%3Cstop offset="0%" style="stop-color:%237c3aed;stop-opacity:1" /%3E%3Cstop offset="100%" style="stop-color:%23db2777;stop-opacity:1" /%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E') no-repeat bottom;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-bg);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        h4 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--glow);
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .form-control {
+            background: var(--glass-bg);
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            color: var(--text-color);
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            background: var(--card-bg);
+            box-shadow: var(--glow);
+        }
+
+        .error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 8px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            border-radius: 50px;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+            background: var(--secondary-gradient);
+        }
+
+        .link-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .link-container a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .link-container a:hover {
+            color: #7c3aed;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(360deg);
+            box-shadow: var(--glow);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 30px;
+                padding: 25px;
+            }
+            h4 {
+                font-size: 2rem;
+            }
+            .theme-toggle {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-overlay"></div>
+<div class="container form-container animate__animated animate__fadeIn">
+    <h4>Cập Nhật Chiến dịch Giảm giá</h4>
+
+    <form action="#" th:action="@{/discount-campaign/capNhat}"
+          th:object="${chienDichGiamGia}"
+          onsubmit="return validateDates()"
+          class="form-container">
+
+        <!-- Hidden field -->
+        <input type="hidden" th:field="*{idChienDichGiamGia}">
+
+        <div class="mb-4">
+            <label for="tenChienDich" class="form-label">Tên chiến dịch</label>
+            <input type="text" th:field="*{tenChienDich}" id="tenChienDich"
+                   class="form-control" placeholder="Nhập tên chiến dịch">
+        </div>
+
+        <div class="mb-4">
+            <label for="ngayBatDauChienDich" class="form-label">Ngày bắt đầu</label>
+            <input type="datetime-local"
+                   id="ngayBatDauChienDich"
+                   name="ngayBatDauChienDich"
+                   th:value="${#temporals.format(chienDichGiamGia.ngayBatDauChienDich, 'yyyy-MM-dd''T''HH:mm')}"
+                   class="form-control">
+        </div>
+
+        <div class="mb-4">
+            <label for="ngayKetThucChienDich" class="form-label">Ngày kết thúc</label>
+            <input type="datetime-local"
+                   id="ngayKetThucChienDich"
+                   name="ngayKetThucChienDich"
+                   th:value="${#temporals.format(chienDichGiamGia.ngayKetThucChienDich, 'yyyy-MM-dd''T''HH:mm')}"
+                   class="form-control">
+            <span id="errorMessage" class="error"></span>
+        </div>
+
+        <div class="d-grid">
+            <button type="submit" class="btn btn-custom">Lưu</button>
+        </div>
+
+        <div class="link-container">
+            <a th:href="@{/discount-campaign/}" class="text-decoration-none">
+                <i class="fas fa-list me-2"></i>Xem danh sách các chiến dịch
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Theme Toggle Button -->
+<button class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+    // Theme toggle
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            body.removeAttribute('data-theme');
+            document.querySelector('.theme-toggle i').classList.replace('fa-sun', 'fa-moon');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            document.querySelector('.theme-toggle i').classList.replace('fa-moon', 'fa-sun');
+        }
+    }
+
+    // Form validation
+    function validateDates() {
+        const nameInput = document.getElementById("tenChienDich");
+        const startInput = document.getElementById("ngayBatDauChienDich");
+        const endInput = document.getElementById("ngayKetThucChienDich");
+        const errorMessage = document.getElementById("errorMessage");
+
+        const name = nameInput.value.trim();
+        const startValue = startInput.value;
+        const endValue = endInput.value;
+
+        if (name === "") {
+            errorMessage.textContent = "Tên chiến dịch không được để trống.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        if (!startValue || !endValue) {
+            errorMessage.textContent = "Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        const startDate = new Date(startValue);
+        const endDate = new Date(endValue);
+        const now = new Date();
+
+        if (startDate < now) {
+            errorMessage.textContent = "Ngày bắt đầu phải lớn hơn hoặc bằng thời gian hiện tại.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        if (endDate <= startDate) {
+            errorMessage.textContent = "Ngày kết thúc phải sau ngày bắt đầu.";
+            errorMessage.style.display = "block";
+            return false;
+        }
+
+        errorMessage.style.display = "none";
+        return true;
+    }
+</script>
+</body>
+</html>

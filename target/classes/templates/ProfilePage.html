@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Tài Khoản - PhimHay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            background: linear-gradient(135deg, #f0f2f5, #e3e8ee);
+            color: #2d3748;
+            /* padding-top sẽ được set bằng JS vì header fixed */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container { /* Container chung */
+            width: 90%;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px;
+        }
+
+        .main-content-area { /* Wrapper cho nội dung chính */
+            flex-grow: 1;
+            width: 100%;
+            display: flex; /* Để .container bên trong có thể căn giữa */
+        }
+
+        .main-content-area > .container { /* Container chứa .profile-page-container */
+            padding-top: 20px;
+            padding-bottom: 20px;
+            display: flex;
+            flex-grow: 1;
+        }
+
+        /* --- HEADER (LIGHT THEME APPLIED) --- */
+        header {
+            background: #fff; /* Nền trắng */
+            color: #1a202c; /* Màu chữ mặc định tối trong header */
+            padding: 1.2rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Bo viền đổ bóng nhẹ */
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        header .logo a {
+            color: #1a202c; /* Màu chữ logo tối */
+            font-size: 2em;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        header .logo a i { color: #f56565; font-size: 1.2em; } /* Màu nhấn đỏ/san hô */
+
+        header nav {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+        header nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding-left: 0;
+        }
+        header nav ul li a {
+            color: #2d3748; /* Màu chữ tối cho link */
+            text-decoration: none;
+            font-size: 1em;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        header nav ul li a:hover,
+        header nav ul li a.active {
+            background: #f56565; /* Nền màu nhấn khi active/hover */
+            color: #fff; /* Chữ trắng */
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-actions .btn-login { /* Nút CTA chính màu nhấn */
+            background: linear-gradient(45deg, #e53e3e, #f56565);
+            color: #fff;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .header-actions .btn-login:hover {
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+        }
+
+        .header-actions .user-menu-container { position: relative; display: inline-block; }
+        .header-actions .user-profile-toggle {
+            display: flex; align-items: center; padding: 8px 15px; text-decoration: none;
+            color: #1a202c; /* Màu chữ tối */
+            background-color: transparent; border-radius: 6px; font-size: 1em;
+            font-weight: 500; transition: all 0.3s ease; gap: 8px; cursor: pointer; border: none;
+        }
+        .header-actions .user-profile-toggle:hover {
+            background: #f0f2f5; /* Nền xám rất nhạt */
+            color: #c53030; /* Màu chữ nhấn */
+        }
+        .header-actions .user-profile-toggle .user-icon { font-size: 1.3em; color: #1a202c; }
+        .header-actions .user-profile-toggle #headerUserDisplayName { font-weight: 500; }
+        .header-actions .user-profile-toggle .dropdown-arrow { font-size: 0.8em; transition: transform 0.3s ease; margin-left: 5px; }
+        .header-actions .user-profile-toggle.open .dropdown-arrow { transform: rotate(180deg); }
+        .header-actions .dropdown-menu-content {
+            display: none; position: absolute; right: 0; top: calc(100% + 5px); background-color: #fff;
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px;
+            z-index: 1001; border: 1px solid #e2e8f0; overflow: hidden; padding: 8px 0;
+        }
+        .header-actions .dropdown-menu-content.show { display: block; }
+        .header-actions .dropdown-menu-content .dropdown-item {
+            color: #2d3748; padding: 10px 20px; text-decoration: none; display: flex;
+            align-items: center; font-size: 0.95em; transition: background-color 0.2s ease, color 0.2s ease; gap: 10px; white-space: nowrap;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item i { width: 16px; text-align: center; color: #718096; }
+        .header-actions .dropdown-menu-content .dropdown-item:hover { background-color: #f0f2f5; color: #1a202c; }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link,
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link:hover {
+            background-color: #fef2f2; /* Nền đỏ rất nhạt */
+            color: #e53e3e; /* Màu chữ nhấn */
+            font-weight: 500;
+        }
+        .header-actions .dropdown-menu-content .dropdown-item.active-header-link i { color: #e53e3e; }
+        /* --- KẾT THÚC CSS HEADER --- */
+
+
+        /* --- PROFILE PAGE CONTAINER (Giữ nguyên cấu trúc gốc) --- */
+        .profile-page-container {
+            display: flex;
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        /* --- PROFILE SIDEBAR (LIGHT THEME ADJUSTMENTS) --- */
+        .profile-sidebar {
+            width: 280px;
+            background: #f8f9fa; /* MODIFIED: Nền xám rất nhạt cho sidebar */
+            padding: 25px 0;
+            color: #4a5568; /* MODIFIED: Màu chữ tối hơn cho nội dung trong sidebar */
+            flex-shrink: 0;
+            border-right: 1px solid #e9ecef; /* Thêm đường kẻ phân cách nhẹ nhàng */
+        }
+
+        .profile-sidebar .user-info-section {
+            text-align: left;
+            margin-bottom: 25px;
+            padding: 0 25px;
+        }
+        .profile-sidebar .user-info-section h4 {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1a202c; /* MODIFIED: Màu chữ tối */
+        }
+        .profile-sidebar .user-info-section p {
+            font-size: 0.88em;
+            color: #718096; /* MODIFIED: Màu chữ xám đậm hơn */
+            word-break: break-all;
+        }
+
+        .profile-sidebar nav ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .profile-sidebar nav ul li a {
+            display: flex;
+            align-items: center;
+            padding: 14px 25px;
+            color: #495057; /* MODIFIED: Màu chữ tối cho link nav sidebar */
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            transition: background-color 0.2s ease, border-left-color 0.2s ease, color 0.2s ease;
+        }
+        .profile-sidebar nav ul li a i {
+            margin-right: 12px;
+            font-size: 1.1em;
+            width: 20px;
+            text-align: center;
+            color: #718096; /* MODIFIED: Màu icon mặc định */
+        }
+        .profile-sidebar nav ul li a:hover {
+            background-color: #e9ecef; /* MODIFIED: Nền xám nhạt hơn khi hover */
+            color: #1a202c; /* MODIFIED: Chữ đậm hơn khi hover */
+        }
+        .profile-sidebar nav ul li a.active {
+            background-color: #fef2f2; /* MODIFIED: Nền đỏ rất nhạt */
+            border-left-color: #f56565; /* Giữ viền đỏ */
+            color: #e53e3e; /* MODIFIED: Chữ màu nhấn đỏ */
+            font-weight: 600;
+        }
+        .profile-sidebar nav ul li a.active i {
+            color: #f56565; /* Giữ icon màu nhấn đỏ */
+        }
+        /* --- KẾT THÚC CSS PROFILE SIDEBAR --- */
+
+
+        /* --- PROFILE CONTENT (Giữ nguyên CSS Gốc) --- */
+        .profile-content {
+            flex-grow: 1;
+            padding: 25px 35px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .profile-content-section { display: none; }
+        .profile-content-section.active { display: block; }
+
+        .profile-content-section h2 {
+            font-size: 1.9em;
+            color: #1a202c;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .profile-content-section h2 i {
+            margin-right: 10px;
+            color: #f56565; /* Icon trong tiêu đề section màu đỏ */
+        }
+
+        .profile-form .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .profile-form .form-group {
+            position: relative;
+            margin-bottom: 5px;
+        }
+        .profile-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #4a5568;
+            font-size: 0.9em;
+        }
+        .profile-form .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .profile-form input[type="text"],
+        .profile-form input[type="email"],
+        .profile-form input[type="tel"],
+        .profile-form input[type="date"],
+        .profile-form input[type="password"],
+        .profile-form select {
+            width: 100%;
+            padding: 10px 12px;
+            padding-left: 38px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 0.92em;
+            color: #2d3748;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #f8fafc;
+        }
+        .profile-form input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            color: #718096;
+        }
+        .profile-form select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234A5568' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+        .profile-form select:invalid { color: #718096; }
+        .profile-form input:focus,
+        .profile-form select:focus {
+            border-color: #3182ce; /* Giữ focus xanh dương cho form input */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+            background-color: #fff;
+        }
+        .profile-form .symbol-input {
+            position: absolute; left: 12px; top: 50%;
+            transform: translateY(-50%); color: #718096;
+            font-size: 1em; pointer-events: none;
+        }
+        .profile-form .form-actions {
+            grid-column: 1 / -1; margin-top: 25px;
+            display: flex; gap: 12px; justify-content: flex-start;
+        }
+        .profile-form .btn-save,
+        .profile-form .btn-change-password {
+            background: linear-gradient(45deg, #e53e3e, #f56565); /* Nút Lưu màu đỏ */
+            color: #fff; padding: 10px 22px; text-decoration: none;
+            border-radius: 6px; font-size: 0.95em; font-weight: 500;
+            transition: all 0.3s ease; border: none; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .profile-form .btn-save:hover,
+        .profile-form .btn-change-password:hover { /* Hover chung đậm hơn */
+            background: linear-gradient(45deg, #c53030, #e53e3e);
+            transform: translateY(-2px);
+        }
+        .profile-form .btn-change-password {
+            background: linear-gradient(45deg, #3182ce, #63b3ed); /* Nút đổi mật khẩu màu xanh */
+        }
+        .profile-form .btn-change-password:hover {
+            background: linear-gradient(45deg, #2b6cb0, #4299e1);
+        }
+
+        .history-table, .coupon-list {
+            width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em;
+        }
+        .history-table th, .history-table td,
+        .coupon-list th, .coupon-list td {
+            border: 1px solid #e2e8f0; padding: 10px 12px;
+            text-align: left; vertical-align: middle;
+        }
+        .history-table th, .coupon-list th {
+            background-color: #f8fafc; font-weight: 600; color: #4a5568;
+        }
+        .history-table td .status, .coupon-list td .status {
+            padding: 4px 8px; border-radius: 12px; font-size: 0.82em;
+            font-weight: 500; color: #fff; white-space: nowrap;
+        }
+        .history-table td .status.completed { background-color: #34d399; }
+        .history-table td .status.pending { background-color: #f59e0b; }
+        .history-table td .status.cancelled { background-color: #ef4444; }
+        .history-table td .status.refunded { background-color: #63b3ed; }
+
+        .coupon-list .coupon-code {
+            font-weight: bold; color: #e53e3e; background-color: #fee2e2;
+            padding: 3px 8px; border-radius: 4px; display: inline-block; font-size: 0.95em;
+        }
+        .coupon-list .btn-copy-coupon {
+            background: #63b3ed; color: white; border: none; padding: 5px 10px;
+            border-radius: 4px; cursor: pointer; font-size: 0.85em;
+            transition: background-color 0.2s ease;
+        }
+        .coupon-list .btn-copy-coupon:hover { background: #4299e1; }
+        .coupon-list td .status.active { background-color: #34d399; }
+        .coupon-list td .status.expired { background-color: #9ca3af; }
+        .coupon-list td .status.used { background-color: #fbbf24; }
+
+        .no-data-message {
+            text-align: center; padding: 35px 20px; color: #718096; font-size: 1.05em;
+        }
+        .no-data-message i {
+            font-size: 2.8em; display: block; margin-bottom: 12px; color: #cbd5e0;
+        }
+
+        /* --- MODAL ĐỔI MẬT KHẨU (Giữ nguyên CSS gốc) --- */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); z-index: 1050;
+            justify-content: center; align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-container {
+            background-color: #fff; padding: 30px 35px; border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2); width: 100%; max-width: 480px;
+            position: relative; animation: slideDownModal 0.3s ease-out;
+        }
+        @keyframes slideDownModal {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-header h3 { font-size: 1.5em; color: #1a202c; font-weight: 600; }
+        .modal-close-btn {
+            background: none; border: none; font-size: 1.8em; color: #718096;
+            cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s ease;
+        }
+        .modal-close-btn:hover { color: #f56565; } /* Màu đỏ khi hover nút close modal */
+        .modal-body .form-group { margin-bottom: 20px; }
+        .modal-body input[type="password"] {
+            padding-left: 15px !important; font-size: 0.95em;
+        }
+        .modal-footer { margin-top: 30px; text-align: right; }
+        .modal-footer .btn-modal-save { /* Nút Lưu trong modal màu đỏ */
+            background: linear-gradient(45deg, #e53e3e, #f56565); color: #fff;
+            padding: 10px 25px; border: none; border-radius: 6px;
+            font-size: 1em; font-weight: 500; cursor: pointer; transition: background 0.3s ease;
+        }
+        .modal-footer .btn-modal-save:hover { background: linear-gradient(45deg, #c53030, #e53e3e); }
+        .modal-footer .btn-modal-cancel {
+            background-color: #e2e8f0; color: #4a5568; padding: 10px 20px;
+            border: none; border-radius: 6px; font-size: 1em; font-weight: 500;
+            cursor: pointer; margin-right: 10px; transition: background-color 0.3s ease;
+        }
+        .modal-footer .btn-modal-cancel:hover { background-color: #cbd5e0; }
+
+        .password-validation-error { color: red; font-size: 0.85em; margin-top: 5px; display: none; }
+        .error-message { color: red; font-size: 0.85em; margin-top: 5px; display: block; }
+        .alert { padding: 10px; margin-bottom: 15px; border: 1px solid transparent; border-radius: 5px; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+
+        .btn-refund-booking { /* Giữ nguyên màu gốc */
+            background-color: #f0ad4e; color: #fff; padding: 8px 12px;
+            border: none; border-radius: 6px; font-size: 0.9em;
+            text-decoration: none; transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer; display: inline-block; margin-top: 5px;
+        }
+        .btn-refund-booking:hover { background-color: #eea236; transform: translateY(-1px);
+        }
+        /* --- KẾT THÚC CSS PROFILE CONTENT --- */
+
+
+        /* --- FOOTER (LIGHT THEME - NÂNG CẤP VỚI BẢN ĐỒ) --- */
+        footer {
+            background: #1a202c; /* Nền tối sang trọng */
+            color: #e2e8f0; /* Chữ sáng để nổi bật trên nền tối */
+            padding: 60px 0 30px;
+            margin-top: 60px;
+            border-top: 4px solid #f56565; /* Viền trên màu nhấn */
+        }
+        footer .container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 cột cho desktop */
+            gap: 30px;
+            align-items: start;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        footer h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff; /* Tiêu đề trắng sáng */
+            position: relative;
+            padding-bottom: 10px;
+        }
+        footer h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: #f56565; /* Dòng dưới tiêu đề màu nhấn */
+        }
+        footer p, footer ul, footer a {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: #cbd5e0; /* Màu chữ nhạt hơn cho nội dung */
+        }
+        .footer-about p { margin-bottom: 15px; }
+        .footer-links ul, .footer-contact ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-links ul li, .footer-contact ul li {
+            margin-bottom: 10px;
+        }
+        .footer-links ul li a {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-links ul li a:hover {
+            color: #f56565; /* Màu nhấn khi hover */
+            transform: translateX(5px); /* Dịch nhẹ sang phải */
+        }
+        .footer-contact ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-contact ul li i {
+            color: #f56565; /* Icon màu nhấn */
+            font-size: 1.2em;
+        }
+        .footer-social h3 { margin-bottom: 15px; }
+        .social-media {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+        .social-media a {
+            color: #e2e8f0;
+            font-size: 1.8em;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .social-media a:hover {
+            color: #f56565;
+            transform: scale(1.2); /* Phóng to nhẹ khi hover */
+        }
+        .footer-map h3 { margin-bottom: 15px; }
+        .footer-map iframe {
+            width: 140%;
+            height: 300px;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .footer-bottom {
+            border-top: 1px solid #4a5568; /* Đường phân cách phía trên phần bottom */
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #a0aec0;
+        }
+        .footer-bottom p { margin: 0; }
+
+        /* --- RESPONSIVE DESIGN CHO FOOTER --- */
+        @media (max-width: 992px) {
+            footer .container {
+                grid-template-columns: repeat(2, 1fr); /* 2 cột cho tablet */
+                gap: 20px;
+            }
+            .footer-map iframe {
+                height: 150px; /* Giảm chiều cao bản đồ trên tablet */
+            }
+        }
+        @media (max-width: 480px) {
+            footer .container {
+                grid-template-columns: 1fr; /* 1 cột cho mobile */
+                gap: 30px;
+                text-align: center;
+            }
+            footer h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .footer-links ul li a:hover {
+                transform: translateX(0); /* Bỏ hiệu ứng dịch chuyển trên mobile */
+            }
+            .social-media {
+                justify-content: center;
+            }
+            .footer-contact ul li {
+                justify-content: center;
+            }
+            .footer-map iframe {
+                height: 120px; /* Giảm chiều cao bản đồ trên mobile */
+            }
+        }
+
+
+        /* --- RESPONSIVE DESIGN (Giữ nguyên logic, kiểm tra padding-top cho body và style sidebar mobile) --- */
+        @media (max-width: 992px) {
+            /* body padding-top sẽ được set bằng JS */
+            header .container { justify-content: space-around; flex-wrap: wrap; }
+            .logo { order: 1; width: 100%; text-align: center; margin-bottom: 10px; }
+            header nav { order: 3; width: 100%; margin-top: 10px; justify-content: center; }
+            header nav ul { flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .header-actions { order: 2; margin-left: 0; width: 100%; justify-content: center; margin-bottom: 10px;}
+
+            .profile-page-container { flex-direction: column; }
+            .profile-sidebar {
+                width: 100%; display: flex; flex-direction: column;
+                align-items: stretch; padding: 20px; height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e9ecef; /* Border dưới thay cho border phải */
+            }
+            .profile-sidebar .user-info-section { margin-bottom: 15px; padding: 0; text-align: center; }
+            .profile-sidebar nav { width: 100%; }
+            .profile-sidebar nav ul {
+                display: flex; flex-direction: row; justify-content: space-around;
+                border-top: 1px solid #e0e0e0; /* Đường kẻ trên nav items (màu xám nhạt hơn) */
+                padding-top: 10px; gap: 5px;
+            }
+            .profile-sidebar nav ul li a {
+                padding: 10px 8px; font-size: 0.85em; border-left: none;
+                border-bottom: 3px solid transparent; justify-content: center; text-align: center;
+                border-radius: 4px;
+            }
+            .profile-sidebar nav ul li a i { margin-right: 5px; font-size: 1em;}
+            .profile-sidebar nav ul li a.active {
+                border-bottom-color: #f56565; /* Giữ viền đỏ dưới */
+                background-color: #fef2f2; /* Nền đỏ rất nhạt cho active */
+                color: #e53e3e; /* Chữ màu đỏ cho active */
+            }
+            .profile-sidebar nav ul li a.active i { color: #f56565; } /* Icon màu đỏ cho active */
+            .profile-content { padding: 20px; }
+            .profile-content-section h2 { font-size: 1.6em; margin-bottom: 20px; }
+            .profile-form .form-grid { grid-template-columns: 1fr; gap: 15px; }
+        }
+
+        @media (max-width: 768px) {
+            /* body padding-top sẽ được set bằng JS */
+            header .container { flex-direction: row; justify-content: space-between; align-items: center;}
+            .logo { width: auto; text-align: left; margin-bottom: 0; order: 1;}
+            header nav { order: 3; margin-top: 15px; width: 100%; }
+            .header-actions { order: 2; width: auto; justify-content: flex-end; margin-bottom: 0; }
+            header nav ul { gap: 10px; }
+            header nav ul li a { padding: 8px 10px; font-size: 0.9em; }
+
+            .profile-sidebar nav ul { flex-wrap: wrap; justify-content: center; }
+            .profile-sidebar nav ul li { flex-basis: calc(50% - 10px); margin-bottom: 5px; }
+        }
+
+        @media (max-width: 480px) {
+            /* body padding-top sẽ được set bằng JS */
+            header nav { display: none; }
+            .header-actions .btn-login,
+            .header-actions .user-profile-toggle { padding: 6px 12px; font-size: 0.9em; }
+            .header-actions .dropdown-menu-content { min-width: 180px; }
+            .header-actions .dropdown-menu-content .dropdown-item { padding: 8px 15px; font-size: 0.9em; }
+
+            .profile-sidebar nav ul li { flex-basis: 100%; }
+            .profile-content { padding: 15px;}
+            .profile-content-section h2 {font-size: 1.4em; margin-bottom: 15px;}
+            .profile-form .form-actions { flex-direction: column; gap: 10px; }
+            .profile-form .btn-save, .profile-form .btn-change-password { width: 100%; justify-content: center;}
+            .history-table, .coupon-list { font-size: 0.85em; }
+            .history-table th, .history-table td,
+            .coupon-list th, .coupon-list td { padding: 8px; }
+            .coupon-list .btn-copy-coupon { padding: 4px 8px; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+
+<header id="pageHeader">
+    <div class="container">
+        <div class="logo">
+            <a th:href="@{/}"><i class="fas fa-film"></i> PhimHay</a>
+        </div>
+        <nav>
+            <ul>
+                <li><a th:href="@{/}">Trang Chủ</a></li>
+                <li><a th:href="@{/movies/now-showing}">Phim Đang Chiếu</a></li>
+                <li><a th:href="@{/movies/coming-soon}">Phim Sắp Chiếu</a></li>
+                <li><a th:href="@{/coupon}">Mã Giảm Giá</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <th:block th:if="${khachHang != null}">
+                <div class="user-menu-container">
+                    <a href="#" id="userProfileLinkToggle" class="user-profile-toggle">
+                        <i class="fas fa-user-circle user-icon"></i>
+                        <span id="headerUserDisplayName"
+                              th:text="${khachHang.hoTen != null && !khachHang.hoTen.trim().isEmpty()} ? 'Chào, ' + ${khachHang.hoTen} : 'Chào, Bạn'"></span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </a>
+                    <div class="dropdown-menu-content" id="userDropdownMenu">
+                        <a th:href="@{/user/profile}" class="dropdown-item active-header-link"> <i class="fas fa-user-edit"></i>Quản lý tài khoản
+                        </a>
+                        <a th:href="@{/signout}" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+            <th:block th:unless="${khachHang != null}">
+                <a th:href="@{/signin}" class="btn-login">Đăng Nhập</a>
+            </th:block>
+        </div>
+    </div>
+</header>
+<div class="main-content-area" id="mainContentArea">
+    <div class="container">
+        <div class="profile-page-container" th:if="${khachHang != null}">
+            <aside class="profile-sidebar">
+                <div class="user-info-section">
+                    <h4 id="sidebarUserDisplayName" th:text="${khachHang.hoTen ?: 'Chưa cập nhật'}">Trần Văn Admin</h4>
+                    <p id="sidebarUserEmailDisplay" th:text="${khachHang.email ?: 'Chưa cập nhật'}">admin@phimhay.com</p>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="profile-nav-link active" data-target="info-section"><i class="fas fa-user-cog"></i>Thông tin cá nhân</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="booking-history-section"><i class="fas fa-history"></i>Lịch sử đặt vé</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="refund-history-section"><i class="fas fa-undo-alt"></i>Lịch sử hoàn trả</a></li>
+                        <li><a href="#" class="profile-nav-link" data-target="my-coupons-section"><i class="fas fa-tags"></i>Mã giảm giá của tôi</a></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <main class="profile-content">
+                <section id="info-section" class="profile-content-section active">
+                    <h2><i class="fas fa-id-card"></i>Thông tin cá nhân</h2>
+                    <form class="profile-form" id="personalInfoForm" th:action="@{/user/profile/update}" th:object="${khachHang}" method="post">
+                        <div th:if="${message != null}"
+                             th:classappend="${message == 'Cập nhật thông tin thành công' ? 'alert-success' : 'alert-danger'}"
+                             class="alert" role="alert"
+                             th:text="${message}">
+                        </div>
+                        <div th:if="${param.success_update_info != null}" class="alert alert-success" role="alert">
+                            Cập nhật thông tin cá nhân thành công!
+                        </div>
+                        <div th:if="${param.error_update_info != null}" class="alert alert-danger" role="alert"
+                             th:text="${param.error_update_info_message ?: 'Cập nhật thông tin cá nhân thất bại! Vui lòng thử lại.'}">
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ho_ten">Họ và tên</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-user-circle'></i></span>
+                                    <input type="text" id="ho_ten" th:field="*{hoTen}" required>
+                                </div>
+                                <small th:if="${#fields.hasErrors('hoTen')}" th:errors="*{hoTen}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="ten_dang_nhap">Tên đăng nhập</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-user'></i></span>
+                                    <input type="text" id="ten_dang_nhap" name="ten_dang_nhap_display" th:value="${khachHang.tkDoiTuongSuDung?.tenDangNhap}" readonly> </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email_info">Email</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-envelope'></i></span>
+                                    <input type="email" id="email_info" th:field="*{email}" required>
+                                </div>
+                                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="so_dien_thoai">Số điện thoại</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-phone'></i></span>
+                                    <input type="tel" id="so_dien_thoai" th:field="*{soDienThoai}">
+                                </div>
+                                <small th:if="${#fields.hasErrors('soDienThoai')}" th:errors="*{soDienThoai}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="ngay_sinh">Ngày sinh</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-calendar'></i></span>
+                                    <input type="date" id="ngay_sinh" th:field="*{ngaySinh}"
+                                           th:value="${khachHang.ngaySinh != null ? #dates.format(khachHang.ngaySinh, 'yyyy-MM-dd') : ''}">
+                                </div>
+                                <small th:if="${#fields.hasErrors('ngaySinh')}" th:errors="*{ngaySinh}" class="error-message"></small>
+                            </div>
+                            <div class="form-group">
+                                <label for="gioi_tinh">Giới tính</label>
+                                <div class="input-wrapper">
+                                    <span class="symbol-input"><i class='bx bx-male-female'></i></span>
+                                    <select id="gioi_tinh" th:field="*{gioiTinh}">
+                                        <option value="" disabled selected>Chọn giới tính</option> <option value="NAM">Nam</option>
+                                        <option value="NU">Nữ</option>
+                                        <option value="KHAC">Khác</option>
+                                    </select>
+                                </div>
+                                <small th:if="${#fields.hasErrors('gioiTinh')}" th:errors="*{gioiTinh}" class="error-message"></small>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save"><i class="fas fa-save"></i>Lưu thay đổi</button>
+                            <button type="button" class="btn-change-password" id="btnOpenChangePasswordModal"><i class="fas fa-key"></i>Đổi mật khẩu</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section id="booking-history-section" class="profile-content-section">
+                    <h2><i class="fas fa-ticket-alt"></i>Lịch sử đặt vé</h2>
+                    <div th:if="${khachHang.dsHoaDon == null or #lists.isEmpty(khachHang.dsHoaDon)}">
+                        <div class="no-data-message" id="noBookingMessage">
+                            <i class="fas fa-film-alt"></i> <p>Bạn chưa có lịch sử đặt vé nào.</p>
+                        </div>
+                    </div>
+                    <table class="history-table" th:if="${khachHang.dsHoaDon != null and not #lists.isEmpty(khachHang.dsHoaDon)}">
+                        <thead>
+                        <tr>
+                            <th>Tên phim</th>
+                            <th>Rạp</th>
+                            <th>Ngày chiếu</th>
+                            <th>SL</th>
+                            <th>Tổng tiền</th>
+                            <th></th> </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="booking : ${khachHang.dsHoaDon}">
+                            <td th:text="${booking.suatChieu?.phim?.tenPhim}">Lật Mặt 7</td>
+                            <td th:text="${booking.suatChieu?.phongChieuPhim?.rapPhim?.tenRapPhim}">CGV Landmark 81</td>
+                            <td th:text="${booking.suatChieu?.ngayGioChieu != null ? #temporals.format(booking.suatChieu.ngayGioChieu, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                            <td th:text="${booking.soLuongVeXemPhimDaMua()}">2</td>
+                            <td th:text="${#numbers.formatDecimal(booking.tongGiaTien, 0, 'POINT', 0, 'DEFAULT')} + ' VNĐ'">250,000 VNĐ</td>
+                            <td>
+                                <a th:if="${booking.trangThaiHoaDon == T(hcmute.edu.vn.HeThongQuanLyRapPhim.model.TrangThaiHoaDon).DA_THANH_TOAN}"
+                                   th:href="@{/refund/yeu-cau-hoan-tra/{id}(id=${booking.idHoaDon})}"
+                                   class="btn-refund-booking"
+                                   title="Yêu cầu hoàn trả vé cho hóa đơn này">
+                                    <i class="fas fa-undo"></i> Hoàn trả
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="refund-history-section" class="profile-content-section">
+                    <h2><i class="fas fa-hand-holding-usd"></i>Lịch sử hoàn trả</h2>
+                    <div th:if="${khachHang.dsHoanTra == null or #lists.isEmpty(khachHang.dsHoanTra)}">
+                        <div class="no-data-message" id="noRefundMessage">
+                            <i class="fas fa-file-invoice-dollar"></i> <p>Bạn chưa có lịch sử hoàn trả nào.</p>
+                        </div>
+                    </div>
+                    <table class="history-table" th:if="${khachHang.dsHoanTra != null and not #lists.isEmpty(khachHang.dsHoanTra)}">
+                        <thead>
+                        <tr>
+                            <th>Mã vé gốc</th> <th>Tên phim</th> <th>Ngày YC</th> <th>Lý do hoàn trả</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="refund : ${khachHang.dsHoanTra}">
+                            <td th:text="${refund.hoaDon?.idHoaDon}">PHV00115</td>
+                            <td th:text="${refund.hoaDon?.suatChieu?.phim?.tenPhim}">Gấu Béo</td>
+                            <td th:text="${refund.ngayHoanTra != null ? #temporals.format(refund.ngayHoanTra, 'dd/MM/yyyy') : '-'}">02/05/2025</td>
+                            <td th:text="${refund.lyDoHoanTra}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section id="my-coupons-section" class="profile-content-section">
+                    <h2><i class="fas fa-tags"></i>Mã giảm giá của tôi</h2>
+                    <div th:if="${khachHang.dsMaGiamGia == null or #lists.isEmpty(khachHang.dsMaGiamGia)}">
+                        <div class="no-data-message" id="noCouponMessage">
+                            <i class="fas fa-barcode"></i> <p>Bạn chưa có mã giảm giá nào.</p>
+                        </div>
+                    </div>
+                    <table class="coupon-list" th:if="${khachHang.dsMaGiamGia != null and not #lists.isEmpty(khachHang.dsMaGiamGia)}">
+                        <thead>
+                        <tr>
+                            <th>Mã Code</th> <th>Mô tả chi tiết</th> <th>Hạn sử dụng</th>
+                            <th>Điều kiện áp dụng</th> <th>Trạng thái</th> <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="coupon : ${khachHang.dsMaGiamGia}">
+                            <td>
+                                <span class="coupon-code" th:text="${coupon.tenMaGiamGia}">MACODE</span>
+                            </td>
+                            <td th:text="|Giảm ${coupon.phanTramGiamGia}% (tối đa ${#numbers.formatInteger(coupon.giaTriGiamToiDa, 0, 'POINT')} VNĐ)|"></td>
+                            <td th:text="${coupon.ngayKetThucApDung != null ? #temporals.format(coupon.ngayKetThucApDung, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                            <td th:text="|Đơn hàng từ ${#numbers.formatDecimal(coupon.hanMucApDung, 0, 'POINT', 0, 'DEFAULT')} VNĐ|"></td>
+                            <td>
+                                <span th:with="now=${T(java.time.LocalDateTime).now()}">
+                                    <span th:if="${coupon.ngayKetThucApDung.isBefore(now)}" class="status expired">Hết hạn</span>
+                                    <span th:unless="${coupon.ngayKetThucApDung.isBefore(now)}">
+                                        <span th:if="${!coupon.trangThaiSuDung}" class="status used">Đã sử dụng/Vô hiệu</span>
+                                        <span th:if="${coupon.trangThaiSuDung}" class="status active">Còn hạn</span>
+                                    </span>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-copy-coupon" th:attr="data-coupon=${coupon.tenMaGiamGia}" title="Sao chép mã">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+        </div>
+        <div th:unless="${khachHang != null}" class="profile-page-container" style="justify-content: center; align-items: center; text-align: center; padding: 20px;">
+            <p>Không tìm thấy thông tin người dùng. Vui lòng <a th:href="@{/signin}" style="color: #e53e3e; text-decoration: underline;">đăng nhập</a> lại.</p>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="changePasswordModalOverlay">
+    <div class="modal-container" id="changePasswordModalContainer">
+        <div class="modal-header">
+            <h3>Đổi mật khẩu</h3>
+            <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form class="profile-form" id="changePasswordForm" th:action="@{/user/profile/change-password}" method="post">
+                <div th:if="${success_change_password_message != null}" class="alert alert-success" role="alert"
+                     th:text="${success_change_password_message}">
+                </div>
+                <div th:if="${error_change_password_message != null}" class="alert alert-danger" role="alert"
+                     th:text="${error_change_password_message}">
+                </div>
+
+                <div class="form-group">
+                    <label for="current_password_modal">Mật khẩu hiện tại</label>
+                    <input type="password" id="current_password_modal" name="currentPassword" placeholder="Nhập mật khẩu hiện tại của bạn" th:value="${val_currentPassword}"> <div th:if="${error_currentPassword != null}" class="password-validation-error" style="display:block" th:text="${error_currentPassword}"></div>
+                    <div class="password-validation-error js-error-current-password"></div>
+                </div>
+                <div class="form-group">
+                    <label for="new_password_modal">Mật khẩu mới</label>
+                    <input type="password" id="new_password_modal" name="newPassword" placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required th:value="${val_newPassword}">
+                    <div th:if="${error_newPassword != null}" class="password-validation-error" style="display:block" th:text="${error_newPassword}"></div>
+                    <div class="password-validation-error js-error-new-password"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_new_password_modal">Xác nhận mật khẩu mới</label>
+                    <input type="password" id="confirm_new_password_modal" name="confirmNewPassword" placeholder="Nhập lại mật khẩu mới" required>
+                    <div th:if="${error_confirmNewPassword != null}" class="password-validation-error" style="display:block" th:text="${error_confirmNewPassword}"></div>
+                    <div class="password-validation-error js-error-confirm-password"></div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-modal-cancel" id="modalCancelBtn">Hủy</button>
+            <button type="submit" form="changePasswordForm" class="btn-modal-save">Lưu mật khẩu</button>
+        </div>
+    </div>
+</div>
+<footer>
+    <div class="container">
+        <div class="footer-about">
+            <h3>Về PhimHay</h3>
+            <p>PhimHay là nền tảng xem phim trực tuyến hàng đầu, mang đến cho bạn những bộ phim bom tấn và câu chuyện hấp dẫn từ khắp nơi trên thế giới.</p>
+            <p>Khám phá, thưởng thức và đắm chìm trong thế giới điện ảnh ngay hôm nay!</p>
+        </div>
+        <div class="footer-links">
+            <h3>Liên Kết Nhanh</h3>
+            <ul>
+                <li><a th:href="@{/}"><i class="fas fa-info-circle"></i> Về Chúng Tôi</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-file-alt"></i> Điều Khoản Dịch Vụ</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-shield-alt"></i> Chính Sách Bảo Mật</a></li>
+                <li><a th:href="@{/}"><i class="fas fa-question-circle"></i> FAQ</a></li>
+            </ul>
+        </div>
+        <div class="footer-social">
+            <h3>Kết Nối Với Chúng Tôi</h3>
+            <div class="social-media">
+                <a th:href="@{/}" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a th:href="@{/}" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a th:href="@{/}" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a th:href="@{/}" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-map">
+            <h3>Tìm Chúng Tôi</h3>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d238705.58444823645!2d106.49129390716558!3d10.844981448249275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752763f23816ab%3A0x282f711441b6916f!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBTxrAgcGjhuqFtIEvhu7kgdGh14bqtdCBUaMOgbmggcGjhu5EgSOG7kyBDaMOtIE1pbmg!5e1!3m2!1svi!2s!4v1747468156366!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© <span id="currentYear">2025</span> PhimHay. All rights reserved.</p>
+    </div>
+</footer>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // Lấy các flash attributes (nếu có)
+    const flash_success_change_password_message = /*[[${success_change_password_message}]]*/ null;
+    const flash_error_change_password_message = /*[[${error_change_password_message}]]*/ null;
+    const flash_error_currentPassword = /*[[${error_currentPassword}]]*/ null;
+    const flash_error_newPassword = /*[[${error_newPassword}]]*/ null;
+    const flash_error_confirmNewPassword = /*[[${error_confirmNewPassword}]]*/ null;
+    const val_currentPassword_js = /*[[${val_currentPassword}]]*/ null;
+    const val_newPassword_js = /*[[${val_newPassword}]]*/ null;
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const pageHeader = document.getElementById('pageHeader');
+        const mainContentArea = document.getElementById('mainContentArea');
+
+        // --- Định nghĩa các hằng số cho validation mật khẩu ---
+        const minPasswordLength = 6; // Hoặc giá trị bạn muốn, ví dụ 8
+        const uppercaseRegex = /[A-Z]/;
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/; // Bạn có thể tùy chỉnh regex này
+
+        // --- Tính toán Padding cho Body dựa trên chiều cao Header ---
+        function setBodyPaddingTop() {
+            if (pageHeader) {
+                document.body.style.paddingTop = pageHeader.offsetHeight + 'px';
+            }
+        }
+        setBodyPaddingTop(); // Set khi tải trang
+        window.addEventListener('resize', setBodyPaddingTop); // Set lại khi thay đổi kích thước cửa sổ
+
+        // --- Xử lý chuyển tab trong trang Profile ---
+        const navLinks = document.querySelectorAll('.profile-nav-link');
+        const contentSections = document.querySelectorAll('.profile-content-section');
+
+        function setActiveTabFromHash() {
+            const hash = window.location.hash.substring(1);
+            let activeLinkFound = false;
+
+            navLinks.forEach(link => {
+                const target = link.dataset.target;
+                const section = document.getElementById(target);
+                if (section) { // Chỉ xử lý nếu section tồn tại
+                    if (target === hash) {
+                        link.classList.add('active');
+                        section.classList.add('active');
+                        activeLinkFound = true;
+                    } else {
+                        link.classList.remove('active');
+                        section.classList.remove('active');
+                    }
+                }
+            });
+
+            // Nếu không có hash hợp lệ hoặc không có hash, active tab đầu tiên
+            if (!activeLinkFound && navLinks.length > 0) {
+                const firstLink = navLinks[0];
+                const firstSection = document.getElementById(firstLink.dataset.target);
+                if (firstSection) {
+                    firstLink.classList.add('active');
+                    firstSection.classList.add('active');
+                    // Cập nhật hash mà không reload trang (nếu chưa có hash)
+                    if (!window.location.hash && history.replaceState) {
+                        history.replaceState(null, null, '#' + firstLink.dataset.target);
+                    }
+                }
+            }
+        }
+
+        setActiveTabFromHash(); // Set tab khi tải trang
+        window.addEventListener('hashchange', setActiveTabFromHash); // Nghe sự kiện thay đổi hash
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Thay đổi hash để trigger sự kiện 'hashchange'
+                window.location.hash = link.dataset.target;
+            });
+        });
+
+        // --- JAVASCRIPT CHO USER MENU DROPDOWN ---
+        const userProfileLinkToggle = document.getElementById('userProfileLinkToggle');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+
+        if (userProfileLinkToggle && userDropdownMenu) {
+            userProfileLinkToggle.addEventListener('click', function(event) {
+                event.preventDefault();
+                userDropdownMenu.classList.toggle('show');
+                this.classList.toggle('open');
+            });
+
+            document.addEventListener('click', function(event) {
+                const isClickInsideToggle = userProfileLinkToggle.contains(event.target);
+                const isClickInsideMenu = userDropdownMenu.contains(event.target);
+
+                if (!isClickInsideToggle && !isClickInsideMenu && userDropdownMenu.classList.contains('show')) {
+                    userDropdownMenu.classList.remove('show');
+                    if (userProfileLinkToggle) {
+                        userProfileLinkToggle.classList.remove('open');
+                    }
+                }
+            });
+        }
+        // --- KẾT THÚC JAVASCRIPT CHO USER MENU DROPDOWN ---
+
+
+        // --- JAVASCRIPT CHO MODAL ĐỔI MẬT KHẨU (ĐÃ CẬP NHẬT VALIDATION) ---
+        const btnOpenModal = document.getElementById('btnOpenChangePasswordModal');
+        const modalOverlay = document.getElementById('changePasswordModalOverlay');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        const currentPasswordInputModal = document.getElementById('current_password_modal');
+        const newPasswordInputModal = document.getElementById('new_password_modal');
+        const confirmNewPasswordInputModal = document.getElementById('confirm_new_password_modal');
+
+        const jsErrorCurrentPasswordDiv = modalOverlay?.querySelector('.js-error-current-password');
+        const jsErrorNewPasswordDiv = modalOverlay?.querySelector('.js-error-new-password');
+        const jsErrorConfirmPasswordDiv = modalOverlay?.querySelector('.js-error-confirm-password');
+
+        function clearPasswordModalJSErrors() {
+            if(jsErrorCurrentPasswordDiv) { jsErrorCurrentPasswordDiv.textContent = ''; jsErrorCurrentPasswordDiv.style.display = 'none'; }
+            if(jsErrorNewPasswordDiv) { jsErrorNewPasswordDiv.textContent = ''; jsErrorNewPasswordDiv.style.display = 'none'; }
+            if(jsErrorConfirmPasswordDiv) { jsErrorConfirmPasswordDiv.textContent = ''; jsErrorConfirmPasswordDiv.style.display = 'none'; }
+        }
+
+        function resetAndRepopulatePasswordForm() {
+            if(changePasswordForm) changePasswordForm.reset();
+            if(currentPasswordInputModal && val_currentPassword_js) currentPasswordInputModal.value = val_currentPassword_js;
+            if(newPasswordInputModal && val_newPassword_js) newPasswordInputModal.value = val_newPassword_js;
+        }
+
+        if (btnOpenModal && modalOverlay) {
+            btnOpenModal.addEventListener('click', () => {
+                modalOverlay.classList.add('active');
+                clearPasswordModalJSErrors();
+                resetAndRepopulatePasswordForm();
+                if(currentPasswordInputModal) currentPasswordInputModal.focus();
+            });
+        }
+
+        function closeModal() {
+            if (modalOverlay) modalOverlay.classList.remove('active');
+        }
+
+        if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+        if (modalCancelBtn) modalCancelBtn.addEventListener('click', closeModal);
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', (event) => {
+                if (event.target === modalOverlay) closeModal();
+            });
+        }
+
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener('submit', (e) => {
+                let isValid = true;
+                clearPasswordModalJSErrors();
+
+                // *** BƯỚC 1: KIỂM TRA MẬT KHẨU HIỆN TẠI ***
+                if (currentPasswordInputModal && currentPasswordInputModal.value.trim() === '') {
+                    if(jsErrorCurrentPasswordDiv) {
+                        jsErrorCurrentPasswordDiv.textContent = 'Mật khẩu hiện tại không được để trống.';
+                        jsErrorCurrentPasswordDiv.style.display = 'block';
+                    }
+                    isValid = false;
+                }
+
+                // *** BƯỚC 2: KIỂM TRA MẬT KHẨU MỚI (ĐÃ CẬP NHẬT) ***
+                if (newPasswordInputModal) { // Kiểm tra newPasswordInputModal tồn tại
+                    const newPasswordValue = newPasswordInputModal.value; // Lấy giá trị một lần
+
+                    if (newPasswordValue.trim() === '') {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới không được để trống.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (newPasswordValue.length < minPasswordLength) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = `Mật khẩu mới phải có ít nhất ${minPasswordLength} ký tự.`;
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (!uppercaseRegex.test(newPasswordValue)) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải chứa ít nhất một chữ cái viết hoa.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    } else if (!specialCharRegex.test(newPasswordValue)) {
+                        if (jsErrorNewPasswordDiv) {
+                            jsErrorNewPasswordDiv.textContent = 'Mật khẩu mới phải chứa ít nhất một ký tự đặc biệt.';
+                            jsErrorNewPasswordDiv.style.display = 'block';
+                        }
+                        isValid = false;
+                    }
+                    // Không cần 'else' để xóa lỗi ở đây vì clearPasswordModalJSErrors() đã chạy ở đầu
+                } else {
+                    // Trường hợp newPasswordInputModal không tồn tại (khó xảy ra nếu HTML đúng)
+                    isValid = false;
+                }
+
+
+                // *** BƯỚC 3: KIỂM TRA XÁC NHẬN MẬT KHẨU MỚI ***
+                if (confirmNewPasswordInputModal && confirmNewPasswordInputModal.value.trim() === '') {
+                    if(jsErrorConfirmPasswordDiv) {
+                        jsErrorConfirmPasswordDiv.textContent = 'Vui lòng xác nhận mật khẩu mới.';
+                        jsErrorConfirmPasswordDiv.style.display = 'block';
+                    }
+                    isValid = false;
+                } else if (newPasswordInputModal && confirmNewPasswordInputModal && newPasswordInputModal.value !== confirmNewPasswordInputModal.value) {
+                    if(jsErrorConfirmPasswordDiv) {
+                        jsErrorConfirmPasswordDiv.textContent = 'Mật khẩu xác nhận không khớp.';
+                        jsErrorConfirmPasswordDiv.style.display = 'block';
+                    }
+                    isValid = false;
+                }
+
+                // *** BƯỚC 4: NGĂN SUBMIT NẾU KHÔNG HỢP LỆ ***
+                if (!isValid) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        const shouldOpenModalDueToFlashError = flash_error_change_password_message || flash_error_currentPassword || flash_error_newPassword || flash_error_confirmNewPassword;
+        if (shouldOpenModalDueToFlashError && modalOverlay && !modalOverlay.classList.contains('active')) {
+            if (btnOpenModal) btnOpenModal.click();
+        }
+        if (flash_success_change_password_message && modalOverlay && modalOverlay.classList.contains('active')) {
+            closeModal();
+        }
+        // --- KẾT THÚC JAVASCRIPT CHO MODAL ---
+
+
+        // --- Copy Coupon ---
+        document.querySelectorAll('.btn-copy-coupon').forEach(button => {
+            button.addEventListener('click', function() {
+                const couponCode = this.dataset.coupon;
+                navigator.clipboard.writeText(couponCode).then(() => {
+                    const originalHTML = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check" style="color: lightgreen;"></i>&nbsp;Đã&nbsp;chép';
+                    setTimeout(() => { this.innerHTML = originalHTML; }, 1500);
+                }).catch(err => {
+                    console.error('Không thể sao chép: ', err);
+                });
+            });
+        });
+
+        // --- Cập nhật năm hiện tại ở Footer ---
+        const yearSpan = document.getElementById('currentYear');
+        if (yearSpan && !yearSpan.textContent) {
+            yearSpan.textContent = new Date().getFullYear();
+        }
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kết quả thanh toán</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+        }
+        .container-wrapper { /* Changed from .container to .container-wrapper to avoid Bootstrap conflict */
+            background-color: white;
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: 0px 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border-top: 5px solid #28a745; /* Default success green */
+            transition: border-top-color 0.3s ease-in-out; /* Smooth transition for color change */
+        }
+
+        .container-wrapper.status-error {
+            border-top-color: #dc3545; /* Bootstrap danger red for error */
+        }
+
+        .icon-display {
+            font-size: 50px;
+            margin-bottom: 20px;
+            transition: color 0.3s ease-in-out; /* Smooth transition for color change */
+        }
+
+        .icon-display.icon-success {
+            color: #28a745; /* Success green */
+        }
+
+        .icon-display.icon-error {
+            color: #dc3545; /* Bootstrap danger red for error */
+        }
+
+        h1 {
+            color: #343a40;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        /* Optional: if you want to color the h1 text too for error
+        h1.title-error {
+            color: #dc3545;
+        }
+        */
+        p {
+            color: #6c757d;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            padding: 12px 30px;
+            font-size: 17px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0050a0;
+            transform: translateY(-2px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-wrapper" id="paymentStatusContainer">
+    <div class="icon-display icon-success" id="statusIconContainer">
+        <i class="fas fa-check-circle" id="statusIcon"></i>
+    </div>
+
+    <h1 th:text="${message}" id="paymentMessage">Nội dung thông báo mặc định</h1>
+    <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi! Chúng tôi rất vui được phục vụ bạn.</p>
+    <a th:href="@{/}" class="btn btn-primary">Quay lại trang chủ</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentMessageElement = document.getElementById('paymentMessage');
+        const statusIconElement = document.getElementById('statusIcon');
+        const statusIconContainerElement = document.getElementById('statusIconContainer');
+        const paymentStatusContainerElement = document.getElementById('paymentStatusContainer');
+        // const h1TitleElement = paymentMessageElement; // If you want to change H1 color
+
+        if (paymentMessageElement && statusIconElement && statusIconContainerElement && paymentStatusContainerElement) {
+            const messageText = paymentMessageElement.textContent || paymentMessageElement.innerText;
+
+            // Các chuỗi thông báo bạn định nghĩa
+            const successMessage = "Thanh toán thành công!";
+            const failureMessage = "Thanh toán thất bại!"; // Hoặc các thông báo lỗi khác
+
+            if (messageText.includes(failureMessage) || !messageText.includes(successMessage)) { // Ưu tiên check thất bại
+                // Cập nhật cho UI thất bại
+                paymentStatusContainerElement.classList.remove('status-success'); // In case you add this
+                paymentStatusContainerElement.classList.add('status-error');
+
+                statusIconContainerElement.classList.remove('icon-success');
+                statusIconContainerElement.classList.add('icon-error');
+
+                statusIconElement.classList.remove('fa-check-circle');
+                statusIconElement.classList.add('fa-times-circle'); // Hoặc fa-exclamation-triangle, fa-exclamation-circle
+
+                // Optional: Thay đổi màu tiêu đề nếu muốn
+                // h1TitleElement.classList.add('title-error');
+
+            } else {
+                // Mặc định là UI thành công (đã được set trong HTML/CSS ban đầu)
+                // Nếu bạn muốn chắc chắn, có thể thêm class ở đây
+                paymentStatusContainerElement.classList.add('status-success'); // Nếu bạn có class này
+                statusIconContainerElement.classList.add('icon-success');
+                statusIconElement.classList.add('fa-check-circle');
+            }
+        } else {
+            console.error("Một hoặc nhiều element không tìm thấy để cập nhật UI.");
+        }
+    });
+</script>
+</body>
+</html>

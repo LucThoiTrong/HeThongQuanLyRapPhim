@@ -3,13 +3,12 @@ package hcmute.edu.vn.HeThongQuanLyRapPhim.strategy;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.config.VNPayConfig;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.event.InvoiceGeneratedEvent;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.model.*;
+import hcmute.edu.vn.HeThongQuanLyRapPhim.observer.AppEventManager;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.ChairRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.DiscountRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.InvoiceRepository;
 import hcmute.edu.vn.HeThongQuanLyRapPhim.repository.PopcornDrinkComboRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -17,29 +16,29 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
-@Component
+@Service
 public class VnpayStrategy implements PaymentStrategy{
     private final InvoiceRepository invoiceRepository;
     private final ChairRepository chairRepository;
     private final PopcornDrinkComboRepository popcornDrinkComboRepository;
     private final DiscountRepository discountRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final AppEventManager appEventManager;
     private final VNPayConfig vnPayConfig;
     @Autowired
     public VnpayStrategy(InvoiceRepository invoiceRepository,
                          ChairRepository chairRepository,
                          PopcornDrinkComboRepository popcornDrinkComboRepository,
                          DiscountRepository discountRepository, VNPayConfig vnPayConfig,
-                         ApplicationEventPublisher eventPublisher) {
+                         AppEventManager appEventManager) {
         this.invoiceRepository = invoiceRepository;
         this.chairRepository = chairRepository;
         this.popcornDrinkComboRepository = popcornDrinkComboRepository;
-        this.eventPublisher=eventPublisher;
+        this.appEventManager = appEventManager;
         this.discountRepository = discountRepository;
         this.vnPayConfig = vnPayConfig;
     }
     @Override
-    public String createPayment(String amount) throws Exception {
+    public String createPayment(String amount) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -127,8 +126,8 @@ public class VnpayStrategy implements PaymentStrategy{
         invoiceRepository.save(hoaDon);
 
         // Tiến hành gửi mail
-        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(this, customer.getEmail(), hoaDon);
-        eventPublisher.publishEvent(invoiceGeneratedEvent);
+        InvoiceGeneratedEvent invoiceGeneratedEvent = new InvoiceGeneratedEvent(customer.getEmail(), hoaDon);
+        appEventManager.notify(invoiceGeneratedEvent);
     }
 
     private Set<ChiTietComBoBapNuoc> createDetailCombo(Map<Integer, Integer> dsChiTietComBoBapNuoc, HoaDon hoaDon) {
