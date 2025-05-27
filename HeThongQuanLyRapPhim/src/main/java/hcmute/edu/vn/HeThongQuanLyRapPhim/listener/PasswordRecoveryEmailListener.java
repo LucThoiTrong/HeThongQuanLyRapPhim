@@ -27,18 +27,18 @@ public class PasswordRecoveryEmailListener implements EventListener {
 
     @Override
     public void update(AppEvent appEvent) {
-        if (appEvent instanceof PasswordRecoveryRequestedEvent event) {
+        if (appEvent instanceof PasswordRecoveryRequestedEvent(String email, int id)) {
             try {
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
                 Context context = new Context();
-                String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + event.id();
+                String verificationLink = "https://phimhay.azurewebsites.net/reset-password?id=" + id;
                 context.setVariable("verificationLink", verificationLink);
 
                 String emailContent = templateEngine.process("EmailResetPassword", context);
 
-                helper.setTo(event.email());
+                helper.setTo(email);
                 helper.setSubject("Khôi phục mật khẩu");
                 helper.setText(emailContent, true);
 

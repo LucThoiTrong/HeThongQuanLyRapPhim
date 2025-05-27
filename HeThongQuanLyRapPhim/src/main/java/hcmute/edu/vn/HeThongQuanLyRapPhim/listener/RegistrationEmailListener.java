@@ -26,18 +26,18 @@ public class RegistrationEmailListener implements EventListener {
 
     @Override
     public void update(AppEvent appEvent) {
-        if (appEvent instanceof RegistrationInitiatedEvent event) {
+        if (appEvent instanceof RegistrationInitiatedEvent(String email, int id)) {
             try {
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
                 Context context = new Context(); // Thymeleaf Context
-                String verificationLink = "https://phimhay.azurewebsites.net/auth/verify?id=" + event.id();
+                String verificationLink = "https://phimhay.azurewebsites.net/auth/verify?id=" + id;
                 context.setVariable("verificationLink", verificationLink);
 
                 String emailContent = templateEngine.process("EmailVerify", context);
 
-                helper.setTo(event.email());
+                helper.setTo(email);
                 helper.setSubject("Xác thực tài khoản");
                 helper.setText(emailContent, true);
 

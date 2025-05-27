@@ -26,16 +26,18 @@ public class PaymentEmailListener implements EventListener {
 
     @Override
     public void update(AppEvent appEvent) {
-        if (appEvent instanceof InvoiceGeneratedEvent event) {
+        if (appEvent instanceof InvoiceGeneratedEvent(
+                String email, hcmute.edu.vn.HeThongQuanLyRapPhim.model.HoaDon hoaDon
+        )) {
             try {
                 Context context = new Context(); // Thymeleaf Context
-                context.setVariable("hoaDon", event.hoaDon());
+                context.setVariable("hoaDon", hoaDon);
 
                 String htmlContent = templateEngine.process("EmailInvoiceSuccess", context);
 
                 MimeMessage message = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-                helper.setTo(event.email());
+                helper.setTo(email);
                 helper.setSubject("Hóa đơn thanh toán - Rạp chiếu phim");
                 helper.setText(htmlContent, true);
 
